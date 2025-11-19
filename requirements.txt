@@ -13,8 +13,10 @@ plotly>=5.14.0
 jupyter>=1.0.0
 ipywidgets>=8.0.0
 
-# For LaTeX rendering in plots
-latex>=0.7.0
+# For LaTeX rendering in plots (optional - requires system LaTeX)
+# Note: LaTeX rendering in matplotlib requires a system LaTeX installation
+# This is not a Python package, so it's commented out
+# Install LaTeX separately: MiKTeX (Windows), MacTeX (macOS), or TeX Live (Linux)
 
 # Development tools
 black>=23.0.0
