@@ -15,18 +15,34 @@ echo.
 echo ======================================================================
 echo.
 
+REM Try multiple ways to start Jupyter
 where jupyter >nul 2>&1
 if %errorlevel% equ 0 (
     jupyter notebook
 ) else (
-    echo ERROR: Jupyter not found!
-    echo.
-    echo Install Jupyter with:
-    echo   pip install jupyter ipywidgets
-    echo.
-    echo Or use:
-    echo   install_dependencies.bat
-    pause
-    exit /b 1
+    python -c "import notebook" >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo Using: python -m notebook
+        python -m notebook
+    ) else (
+        python -c "import jupyterlab" >nul 2>&1
+        if %errorlevel% equ 0 (
+            echo Using: python -m jupyterlab (JupyterLab instead)
+            python -m jupyterlab
+        ) else (
+            echo ERROR: Jupyter not found!
+            echo.
+            echo Install Jupyter with:
+            echo   pip install jupyter ipywidgets
+            echo.
+            echo Or use:
+            echo   install_dependencies.bat
+            echo.
+            echo Note: If Jupyter is installed but command not found,
+            echo try: python -m notebook
+            pause
+            exit /b 1
+        )
+    )
 )
 

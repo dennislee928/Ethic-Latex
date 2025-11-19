@@ -44,21 +44,36 @@ echo ""
 echo "======================================================================"
 echo "STEP 3: Jupyter Notebooks (optional)"
 echo "======================================================================"
+# Check for Jupyter (try multiple methods)
+JUPYTER_CMD=""
 if command -v jupyter &> /dev/null; then
+    JUPYTER_CMD="jupyter notebook"
+elif python -c "import notebook" 2>/dev/null; then
+    JUPYTER_CMD="python -m notebook"
+elif python3 -c "import notebook" 2>/dev/null; then
+    JUPYTER_CMD="python3 -m notebook"
+elif python -c "import jupyterlab" 2>/dev/null; then
+    JUPYTER_CMD="python -m jupyterlab"
+fi
+
+if [ -n "$JUPYTER_CMD" ]; then
     echo "Jupyter found. Opening notebooks..."
     cd simulation/notebooks
     echo "Starting Jupyter notebook server..."
     echo "The notebook will open in your browser."
     echo "Press Ctrl+C to stop the server."
-    jupyter notebook
+    $JUPYTER_CMD
     cd "$PROJECT_ROOT"
 else
     echo "Jupyter not found."
     echo "To open Jupyter notebooks, run:"
     echo "  cd simulation/notebooks"
-    echo "  jupyter notebook"
+    echo "  python -m notebook"
     echo ""
     echo "Or install Jupyter first: pip install jupyter"
+    echo ""
+    echo "Note: If Jupyter is installed but command not found, use:"
+    echo "  python -m notebook"
 fi
 
 echo ""

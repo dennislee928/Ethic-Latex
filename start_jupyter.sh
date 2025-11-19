@@ -16,8 +16,19 @@ echo ""
 echo "======================================================================"
 echo ""
 
+# Try multiple ways to start Jupyter
 if command -v jupyter &> /dev/null; then
+    echo "Using: jupyter notebook"
     jupyter notebook
+elif python -c "import notebook" 2>/dev/null; then
+    echo "Using: python -m notebook"
+    python -m notebook
+elif python3 -c "import notebook" 2>/dev/null; then
+    echo "Using: python3 -m notebook"
+    python3 -m notebook
+elif python -c "import jupyterlab" 2>/dev/null; then
+    echo "Using: python -m jupyterlab (JupyterLab instead of Notebook)"
+    python -m jupyterlab
 else
     echo "ERROR: Jupyter not found!"
     echo ""
@@ -26,6 +37,8 @@ else
     echo ""
     echo "Or use:"
     echo "  bash install_dependencies.sh"
+    echo ""
+    echo "If Jupyter is installed but command not found, try:"
+    echo "  python -m notebook"
     exit 1
 fi
-
