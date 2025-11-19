@@ -1,0 +1,197 @@
+# Ethical Riemann Hypothesis
+
+A mathematical framework for analyzing moral judgment errors through an analogy with the Riemann Hypothesis in number theory.
+
+## Project Overview
+
+This project introduces the **Ethical Riemann Hypothesis (ERH)**, which states that in a "healthy" moral judgment system, the error in predicting critical misjudgments grows at most like √x, where x is the complexity of the decision.
+
+### Key Concepts
+
+- **Ethical Primes**: Critical misjudgments that represent fundamental errors
+- **Π(x)**: Count of ethical primes up to complexity x
+- **E(x) = Π(x) - B(x)**: Error term comparing actual vs expected distribution
+- **ERH**: |E(x)| ≤ C·x^(1/2 + ε) for healthy judgment systems
+
+### Analogy with Number Theory
+
+| Number Theory | Ethical Judgment |
+|---------------|------------------|
+| Prime numbers | Ethical primes (critical misjudgments) |
+| π(x) | Π(x) (ethical prime count) |
+| Prime Number Theorem | Baseline expectation B(x) |
+| Riemann Hypothesis | Ethical Riemann Hypothesis |
+
+## Project Structure
+
+```
+Ethic-Latex/
+├── simulation/                    # Python simulation framework
+│   ├── core/                     # Core modules
+│   │   ├── action_space.py      # Action and world generation
+│   │   ├── judgement_system.py  # Judge implementations
+│   │   └── ethical_primes.py    # Prime selection and analysis
+│   ├── analysis/                # Analysis tools
+│   │   ├── zeta_function.py    # Ethical zeta function
+│   │   └── statistics.py       # Statistical analysis
+│   ├── visualization/           # Plotting utilities
+│   │   └── plots.py            # All visualization functions
+│   ├── notebooks/              # Jupyter notebooks
+│   │   ├── 01_basic_simulation.ipynb
+│   │   ├── 02_judge_comparison.ipynb
+│   │   ├── 03_zeta_zeros.ipynb
+│   │   ├── 04_parameter_sensitivity.ipynb
+│   │   └── 05_generate_paper_figures.ipynb
+│   ├── output/                 # Generated outputs
+│   │   └── figures/           # Saved figures
+│   └── README.md              # Simulation documentation
+├── figures/                    # Paper figures
+├── ethical_riemann_hypothesis.tex  # Main LaTeX paper
+├── references.bib             # Bibliography
+├── requirements.txt           # Python dependencies
+└── README.md                 # This file
+```
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10 or later
+- LaTeX distribution (for compiling the paper)
+
+### Python Setup
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Ethic-Latex
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### LaTeX Setup
+
+To compile the paper:
+
+```bash
+pdflatex ethical_riemann_hypothesis.tex
+bibtex ethical_riemann_hypothesis
+pdflatex ethical_riemann_hypothesis.tex
+pdflatex ethical_riemann_hypothesis.tex
+```
+
+## Quick Start
+
+### Running Basic Simulation
+
+```python
+from simulation.core import generate_world, BiasedJudge, evaluate_judgement
+from simulation.core import select_ethical_primes, compute_Pi_and_error
+from simulation.visualization import plot_Pi_B_E
+
+# Generate moral action space
+actions = generate_world(num_actions=1000, complexity_dist='zipf')
+
+# Create and apply a judgment system
+judge = BiasedJudge(bias_strength=0.2, noise_scale=0.1)
+evaluate_judgement(actions, judge, tau=0.3)
+
+# Extract ethical primes
+primes = select_ethical_primes(actions, importance_quantile=0.9)
+
+# Compute and plot error distribution
+Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes, X_max=100)
+plot_Pi_B_E(x_vals, Pi_x, B_x, E_x)
+```
+
+### Running Jupyter Notebooks
+
+```bash
+cd simulation/notebooks
+jupyter notebook
+```
+
+Start with `01_basic_simulation.ipynb` for an introduction.
+
+## Key Results
+
+(To be filled after running simulations)
+
+### Judge Comparison
+
+| Judge Type | Exponent α | ERH Satisfied | Growth Rate |
+|------------|-----------|---------------|-------------|
+| Biased     | TBD       | TBD           | TBD         |
+| Noisy      | TBD       | TBD           | TBD         |
+| Conservative| TBD      | TBD           | TBD         |
+| Radical    | TBD       | TBD           | TBD         |
+
+### Interpretation
+
+- **α ≈ 0.5**: ERH satisfied, "Riemann-healthy" system
+- **α < 0.5**: Better than ERH predicts, very robust
+- **0.5 < α < 1**: Suboptimal but not catastrophic
+- **α ≥ 1**: Linear or worse growth, systematic degradation
+
+## Documentation
+
+- **Simulation Framework**: See `simulation/README.md`
+- **API Documentation**: See docstrings in individual modules
+- **Theory**: See `ethical_riemann_hypothesis.tex`
+- **Tutorials**: See Jupyter notebooks in `simulation/notebooks/`
+
+## Applications to AI Ethics
+
+The ERH framework provides:
+
+1. **Quantitative Criterion**: AI systems should satisfy |E(x)| = O(√x)
+2. **Bias Detection**: Violations of ERH indicate systematic failures
+3. **Fairness Analysis**: Ethical primes highlight critical errors on vulnerable groups
+4. **Design Guidelines**: Bounded uncertainty growth, graceful degradation
+
+## Citation
+
+If you use this framework in your research, please cite:
+
+```bibtex
+@article{ethical_riemann_hypothesis,
+  title={The Ethical Riemann Hypothesis: A Mathematical Framework for Analyzing Moral Judgment Errors},
+  author={[To be completed]},
+  journal={[To be completed]},
+  year={2025}
+}
+```
+
+## Contributing
+
+This is a research project. Contributions, suggestions, and discussions are welcome.
+
+## License
+
+MIT License
+
+## Contact
+
+[To be added]
+
+## Acknowledgments
+
+This work draws inspiration from:
+- The Riemann Hypothesis and analytic number theory
+- AI ethics and fairness literature
+- Error analysis in complex systems
+- Computational social science
+
+## Future Work
+
+- Apply to real-world AI systems (recidivism prediction, content moderation)
+- Develop theoretical proofs for ERH conditions
+- Extend to multi-objective ethical frameworks
+- Connect to causal inference and counterfactual reasoning
+- Explore quantum computing implementations (QASM experiments)
+
+---
+
+**Note**: This is an exploratory research project combining pure mathematics, computational simulation, and AI ethics. The framework is meant to provoke new ways of thinking about moral judgment errors, not to replace existing ethical frameworks.
+
