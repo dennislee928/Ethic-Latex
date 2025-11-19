@@ -32,7 +32,7 @@ echo "======================================================================"
 echo "Checking if matplotlib is installed..."
 if python -c "import matplotlib" 2>/dev/null; then
     echo "matplotlib found. Generating figures..."
-    python generate_all_figures.py
+python generate_all_figures.py
 else
     echo "WARNING: matplotlib not installed. Skipping figure generation."
     echo "Install with: pip install matplotlib seaborn"
@@ -58,7 +58,7 @@ fi
 
 if [ -n "$JUPYTER_CMD" ]; then
     echo "Jupyter found. Opening notebooks..."
-    cd simulation/notebooks
+cd simulation/notebooks
     echo "Starting Jupyter notebook server..."
     echo "The notebook will open in your browser."
     echo "Press Ctrl+C to stop the server."

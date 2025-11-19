@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  jupyter:
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./simulation:/app/simulation
+      - ./figures:/app/figures
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: python -m notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    restart: unless-stopped
+
+  streamlit:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./simulation:/app/simulation
+      - ./figures:/app/figures
+    command: streamlit run simulation/app.py --server.port=8501 --server.address=0.0.0.0
+    restart: unless-stopped
+    depends_on:
+      - jupyter
+

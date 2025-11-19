@@ -122,6 +122,33 @@ jupyter notebook
 
 Start with `01_basic_simulation.ipynb` for an introduction.
 
+## Cloud Deployment
+
+### Quick Deploy Options
+
+**🚀 Streamlit Cloud (Recommended - 5 minutes)**
+1. Push to GitHub
+2. Visit https://share.streamlit.io
+3. Connect repo → Deploy
+4. Your app: `https://YOUR_APP.streamlit.app`
+
+**📓 Binder (For Notebooks - 2 minutes)**
+1. Push to GitHub
+2. Visit: `https://mybinder.org/v2/gh/YOUR_USERNAME/Ethic-Latex/main`
+3. Share the URL for live JupyterLab access
+
+**🐳 Docker (Any Platform)**
+```bash
+docker build -t erh-app .
+docker run -p 8501:8501 erh-app streamlit run simulation/app.py --server.port=8501 --server.address=0.0.0.0
+```
+
+See **[CLOUD_DEPLOYMENT.md](CLOUD_DEPLOYMENT.md)** for detailed guides on:
+- Streamlit Cloud, Binder, Railway, Render
+- AWS, GCP, Azure
+- Docker deployment
+- Security considerations
+
 ## Key Results
 
 (To be filled after running simulations)
