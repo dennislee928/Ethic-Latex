@@ -1,0 +1,22 @@
+# Ethical Riemann Hypothesis Simulation
+# Core scientific computing
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.14.0
+
+# Jupyter notebook
+jupyter>=1.0.0
+ipywidgets>=8.0.0
+
+# For LaTeX rendering in plots
+latex>=0.7.0
+
+# Development tools
+black>=23.0.0
+pytest>=7.3.0
+
