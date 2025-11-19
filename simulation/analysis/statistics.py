@@ -149,11 +149,20 @@ def compare_judges(
     >>> for name, metrics in comparison.items():
     ...     print(f"{name}: ERH satisfied = {metrics['erh_satisfied']}")
     """
-    from ..core.ethical_primes import (
-        select_ethical_primes,
-        compute_Pi_and_error,
-        analyze_error_growth
-    )
+    # Handle both relative and absolute imports
+    try:
+        from ..core.ethical_primes import (
+            select_ethical_primes,
+            compute_Pi_and_error,
+            analyze_error_growth
+        )
+    except ImportError:
+        # Fallback for direct script execution
+        from core.ethical_primes import (
+            select_ethical_primes,
+            compute_Pi_and_error,
+            analyze_error_growth
+        )
     
     comparison = {}
     
