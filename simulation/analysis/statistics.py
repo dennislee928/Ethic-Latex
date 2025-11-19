@@ -352,7 +352,7 @@ def generate_report(
                 f"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | "
                 f"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | "
                 f"{metrics['estimated_exponent']:.3f} | "
-                f"{'✓' if metrics['erh_satisfied'] else '✗'} | "
+                f"{'[OK]' if metrics['erh_satisfied'] else '[FAIL]'} | "
                 f"{metrics['growth_rate']} |"
             )
         
@@ -375,7 +375,7 @@ def generate_report(
             lines.append(f"- **Mean Absolute Error:** {metrics['mae']:.3f}")
             lines.append(f"- **RMSE:** {metrics['rmse']:.3f}")
             lines.append(f"- **Estimated Growth Exponent:** {metrics['estimated_exponent']:.3f}")
-            lines.append(f"- **ERH Satisfied:** {'Yes ✓' if metrics['erh_satisfied'] else 'No ✗'}")
+            lines.append(f"- **ERH Satisfied:** {'Yes [OK]' if metrics['erh_satisfied'] else 'No [FAIL]'}")
             lines.append(f"- **Growth Rate Category:** {metrics['growth_rate']}")
             lines.append(f"- **R² (fit quality):** {metrics['r_squared']:.3f}")
             lines.append("")

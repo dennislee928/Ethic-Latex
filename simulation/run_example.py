@@ -59,27 +59,27 @@ print(f"\nResults:")
 print(f"  Estimated exponent α: {analysis['estimated_exponent']:.3f}")
 print(f"  Expected (ERH):       0.500")
 print(f"  Deviation:           {abs(analysis['estimated_exponent'] - 0.5):.3f}")
-print(f"  ERH satisfied:       {'Yes ✓' if analysis['erh_satisfied'] else 'No ✗'}")
+print(f"  ERH satisfied:       {'Yes [OK]' if analysis['erh_satisfied'] else 'No [FAIL]'}")
 print(f"  Growth rate:         {analysis['growth_rate']}")
-print(f"  R² (fit quality):    {analysis['r_squared']:.3f}")
+print(f"  R^2 (fit quality):    {analysis['r_squared']:.3f}")
 
 print("\n" + "=" * 70)
 print("INTERPRETATION")
 print("=" * 70)
 
 if analysis['erh_satisfied']:
-    print("\n✓ This judgment system exhibits 'Riemann-healthy' behavior!")
+    print("\n[OK] This judgment system exhibits 'Riemann-healthy' behavior!")
     print("  Errors grow slowly (~√x), indicating the system maintains")
     print("  structural integrity even as problem complexity increases.")
 else:
     if analysis['estimated_exponent'] < 0.5:
-        print("\n✓ This system performs BETTER than ERH predicts!")
+        print("\n[OK] This system performs BETTER than ERH predicts!")
         print("  Exceptionally robust error control.")
     elif analysis['estimated_exponent'] < 1.0:
-        print("\n⚠ This system shows moderate error growth.")
+        print("\n[WARNING] This system shows moderate error growth.")
         print("  Worse than ERH but not catastrophic.")
     else:
-        print("\n✗ WARNING: This system shows problematic error growth!")
+        print("\n[WARNING] This system shows problematic error growth!")
         print("  Errors grow linearly or faster with complexity.")
         print("  Indicates systematic degradation.")
 

@@ -79,7 +79,7 @@ for name, metrics in comparison.items():
     print(f"  Mistake rate: {metrics['mistake_rate']:.3f}")
     print(f"  Num primes: {metrics['num_primes']}")
     print(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}")
-    print(f"  ERH satisfied: {'Yes ✓' if metrics['erh_satisfied'] else 'No ✗'}")
+    print(f"  ERH satisfied: {'Yes [OK]' if metrics['erh_satisfied'] else 'No [FAIL]'}")
     print(f"  Growth rate: {metrics['growth_rate']}")
 
 print("\n" + "=" * 70)
@@ -179,7 +179,13 @@ report = generate_report(results, output_path='output/judge_comparison_report.md
 print("\nReport saved to: output/judge_comparison_report.md")
 print("\nReport preview:")
 print("-" * 70)
-print(report[:1000])
+# Handle encoding for Windows console
+try:
+    print(report[:1000])
+except UnicodeEncodeError:
+    # Fallback: print ASCII-safe version
+    safe_report = report[:1000].encode('ascii', 'ignore').decode('ascii')
+    print(safe_report)
 print("...\n")
 
 # Save numerical results
@@ -218,10 +224,10 @@ with open('output/results_summary.txt', 'w') as f:
         f.write(f"  Mistake rate: {metrics['mistake_rate']:.3f}\n")
         f.write(f"  MAE: {metrics['mae']:.3f}\n")
         f.write(f"  RMSE: {metrics['rmse']:.3f}\n")
-        f.write(f"  Estimated exponent α: {metrics['estimated_exponent']:.3f}\n")
+        f.write(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}\n")
         f.write(f"  ERH satisfied: {'Yes' if metrics['erh_satisfied'] else 'No'}\n")
         f.write(f"  Growth rate: {metrics['growth_rate']}\n")
-        f.write(f"  R² (fit quality): {metrics['r_squared']:.3f}\n")
+        f.write(f"  R^2 (fit quality): {metrics['r_squared']:.3f}\n")
         f.write("\n")
 
 print("\nNumerical results saved to: output/results_summary.txt")

@@ -201,7 +201,7 @@ def plot_error_growth(
     
     # Add text box with analysis results
     if 'erh_satisfied' in analysis:
-        erh_status = "Satisfied ✓" if analysis['erh_satisfied'] else "Not Satisfied ✗"
+        erh_status = "Satisfied [OK]" if analysis['erh_satisfied'] else "Not Satisfied [FAIL]"
         textstr = f"ERH: {erh_status}\n"
         textstr += f"Growth Rate: {analysis.get('growth_rate', 'N/A')}\n"
         textstr += f"$R^2$: {analysis.get('r_squared', 0):.3f}"
