@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.pdf
+
+# But keep the paper PDF
+!ethical_riemann_hypothesis.pdf
+
+# Simulation outputs
+simulation/output/*.pdf
+simulation/output/*.png
+simulation/output/*.jpg
+simulation/output/*.txt
+simulation/output/*.md
+
+# Keep folder structure
+!simulation/output/.gitkeep
+!simulation/output/figures/.gitkeep
+
+# Figures
+figures/*.pdf
+figures/*.png
+!figures/.gitkeep
+
+# Data
+*.csv
+*.json
+*.pkl
+*.h5
+
+# Temporary files
+*.tmp
+*.temp
+
