@@ -51,6 +51,14 @@ Ethic-Latex/
 ├── requirements.txt           # Python dependencies
 └── README.md                 # This file
 ```
+## DEMO
+<img width="1647" height="1003" alt="螢幕擷取畫面 2025-11-19 144633" src="https://github.com/user-attachments/assets/86b7e910-dc49-4d9c-ab6e-bb8dd9dceb2a" />
+
+<img width="1732" height="994" alt="螢幕擷取畫面 2025-11-19 144430" src="https://github.com/user-attachments/assets/f883510f-b0e5-479c-a792-a93b554618be" />
+
+<img width="1688" height="1004" alt="螢幕擷取畫面 2025-11-19 144452" src="https://github.com/user-attachments/assets/421f952c-a732-43fe-8049-6da2dba27e51" />
+
+<img width="1026" height="574" alt="螢幕擷取畫面 2025-11-19 144748" src="https://github.com/user-attachments/assets/b1543552-036f-43b9-a35e-f058d8641683" />
 
 ## Installation
 
