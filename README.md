@@ -181,7 +181,7 @@ MIT License
 
 ## Contact
 
-[To be added]
+admin@dennisleehappy.org
 
 ## Acknowledgments
 
