@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.3.2 (Python 3.14.0 on win32)" generated="2025-11-20T16:54:58.239150" rpa="false" schemaversion="5">
+<suite id="s1" name="Notebook Tests" source="d:\GitHub\Ethic-Latex\tests\notebooks\notebook_tests.robot">
+<test id="s1-t1" name="Test Notebook 01 Basic Simulation" line="16">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:54:58.305322" level="INFO">${notebook} = 01_basic_simulation.ipynb</msg>
+<var>${notebook}</var>
+<arg>01_basic_simulation.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.305169" elapsed="0.000185"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:54:58.305585" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\01_basic_simulation.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.305457" elapsed="0.000145"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:54:58.306037" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\01_basic_simulation.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.305952" elapsed="0.000113"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:54:58.306286" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\01_basic_simulation.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\01_basic_simulation.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.306121" elapsed="0.000205"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:54:58.306487" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.306392" elapsed="0.000110"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:54:58.309531" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\01_basic_simulation.ipynb</msg>
+<msg time="2025-11-20T16:54:58.315658" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:55:42.879869" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:55:42.880166" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:54:58.306564" elapsed="44.573650"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.881073" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.880407" elapsed="0.000708"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.881240" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.881191" elapsed="0.000068"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:54:58.305760" elapsed="44.575546"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.881899" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.881735" elapsed="0.000193"/>
+</kw>
+<msg time="2025-11-20T16:55:42.881973" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.881657" elapsed="0.000330"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882046" elapsed="0.000092"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.882289" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf&lt;/a&gt;' is 31376 bytes.</msg>
+<msg time="2025-11-20T16:55:42.882325" level="INFO">${size} = 31376</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882185" elapsed="0.000151"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882383" elapsed="0.000167"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.882660" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig1_pi_b_e.pdf (31376 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882598" elapsed="0.000080"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}paper_fig1_pi_b_e.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:42.881436" elapsed="0.001273"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.883143" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.883016" elapsed="0.000154"/>
+</kw>
+<msg time="2025-11-20T16:55:42.883208" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882948" elapsed="0.000272"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.883269" elapsed="0.000098"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.883519" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf&lt;/a&gt;' is 34179 bytes.</msg>
+<msg time="2025-11-20T16:55:42.883556" level="INFO">${size} = 34179</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.883419" elapsed="0.000148"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.883610" elapsed="0.000144"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.883858" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig2_error_growth.pdf (34179 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.883799" elapsed="0.000078"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}paper_fig2_error_growth.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:42.882783" elapsed="0.001118"/>
+</kw>
+<doc>Test that 01_basic_simulation.ipynb executes successfully and generates expected outputs</doc>
+<tag>basic</tag>
+<tag>notebook</tag>
+<status status="PASS" start="2025-11-20T16:54:58.304446" elapsed="44.579514"/>
+</test>
+<test id="s1-t2" name="Test Notebook 02 Judge Comparison" line="29">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.884460" level="INFO">${notebook} = 02_judge_comparison.ipynb</msg>
+<var>${notebook}</var>
+<arg>02_judge_comparison.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.884389" elapsed="0.000093"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.884620" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\02_judge_comparison.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.884534" elapsed="0.000098"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:42.884866" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\02_judge_comparison.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.884814" elapsed="0.000070"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.886751" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\02_judge_comparison.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\02_judge_comparison.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.884923" elapsed="0.001887"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:42.887014" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.886900" elapsed="0.000131"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:55:42.889083" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\02_judge_comparison.ipynb</msg>
+<msg time="2025-11-20T16:55:42.895619" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:55:43.097162" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:55:43.097310" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:55:42.887089" elapsed="0.210236"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.098013" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.097448" elapsed="0.000602"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.098173" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.098121" elapsed="0.000072"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:55:42.884706" elapsed="0.213519"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.099016" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\judge_comparison_report.md"&gt;d:\GitHub\Ethic-Latex\simulation\output\judge_comparison_report.md&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.098564" elapsed="0.000497"/>
+</kw>
+<msg time="2025-11-20T16:55:43.099117" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.098500" elapsed="0.000627"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.099190" elapsed="0.000102"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.099454" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\judge_comparison_report.md"&gt;d:\GitHub\Ethic-Latex\simulation\output\judge_comparison_report.md&lt;/a&gt;' is 2132 bytes.</msg>
+<msg time="2025-11-20T16:55:43.099491" level="INFO">${size} = 2132</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.099342" elapsed="0.000160"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.099547" elapsed="0.000154"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.099829" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\judge_comparison_report.md (2132 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.099767" elapsed="0.000080"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}judge_comparison_report.md</arg>
+<arg>500</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:43.098315" elapsed="0.001560"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.100488" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.100185" elapsed="0.000343"/>
+</kw>
+<msg time="2025-11-20T16:55:43.100581" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.100124" elapsed="0.000469"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.100650" elapsed="0.000094"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.100884" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf&lt;/a&gt;' is 30362 bytes.</msg>
+<msg time="2025-11-20T16:55:43.100919" level="INFO">${size} = 30362</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.100791" elapsed="0.000139"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.100972" elapsed="0.000156"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.101241" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig3_judge_comparison.pdf (30362 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.101178" elapsed="0.000083"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}paper_fig3_judge_comparison.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:43.099953" elapsed="0.001332"/>
+</kw>
+<doc>Test that 02_judge_comparison.ipynb executes successfully and generates comparison report</doc>
+<tag>comparison</tag>
+<tag>notebook</tag>
+<status status="PASS" start="2025-11-20T16:55:42.884142" elapsed="0.217202"/>
+</test>
+<test id="s1-t3" name="Test Notebook 03 Zeta Zeros" line="42">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.101745" level="INFO">${notebook} = 03_zeta_zeros.ipynb</msg>
+<var>${notebook}</var>
+<arg>03_zeta_zeros.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.101676" elapsed="0.000084"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.101885" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\03_zeta_zeros.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.101806" elapsed="0.000091"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.102149" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\03_zeta_zeros.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.102094" elapsed="0.000085"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.102339" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\03_zeta_zeros.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\03_zeta_zeros.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.102219" elapsed="0.000146"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.102493" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.102413" elapsed="0.000095"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:55:43.103988" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\03_zeta_zeros.ipynb</msg>
+<msg time="2025-11-20T16:55:43.108306" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:55:43.309925" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:55:43.310062" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.102569" elapsed="0.207509"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.310760" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.310210" elapsed="0.000586"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.310911" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.310864" elapsed="0.000070"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:55:43.101975" elapsed="0.208990"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.311462" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\03_zeros.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\03_zeros.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.311307" elapsed="0.000202"/>
+</kw>
+<msg time="2025-11-20T16:55:43.311553" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.311243" elapsed="0.000322"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.311612" elapsed="0.000416"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.312253" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\03_zeros.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\03_zeros.pdf&lt;/a&gt;' is 10198 bytes.</msg>
+<msg time="2025-11-20T16:55:43.312363" level="INFO">${size} = 10198</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.312086" elapsed="0.000294"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.312466" elapsed="0.000219"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.312824" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\03_zeros.pdf (10198 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.312749" elapsed="0.000097"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}03_zeros.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:43.311061" elapsed="0.001819"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.313366" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\03_spectrum.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\03_spectrum.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.313220" elapsed="0.000173"/>
+</kw>
+<msg time="2025-11-20T16:55:43.313442" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.313155" elapsed="0.000297"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.313532" elapsed="0.000100"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.313776" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\03_spectrum.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\03_spectrum.pdf&lt;/a&gt;' is 24033 bytes.</msg>
+<msg time="2025-11-20T16:55:43.313817" level="INFO">${size} = 24033</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.313681" elapsed="0.000147"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.313875" elapsed="0.000165"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.314153" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\03_spectrum.pdf (24033 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.314090" elapsed="0.000081"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}03_spectrum.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:43.312963" elapsed="0.001245"/>
+</kw>
+<doc>Test that 03_zeta_zeros.ipynb executes successfully and generates zeta analysis plots</doc>
+<tag>notebook</tag>
+<tag>zeta</tag>
+<status status="PASS" start="2025-11-20T16:55:43.101475" elapsed="0.212787"/>
+</test>
+<test id="s1-t4" name="Test Notebook 04 Parameter Sensitivity" line="55">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.314661" level="INFO">${notebook} = 04_parameter_sensitivity.ipynb</msg>
+<var>${notebook}</var>
+<arg>04_parameter_sensitivity.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.314599" elapsed="0.000075"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.314834" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\04_parameter_sensitivity.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.314726" elapsed="0.000121"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:43.315142" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\04_parameter_sensitivity.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.315076" elapsed="0.000090"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.315334" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\04_parameter_sensitivity.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\04_parameter_sensitivity.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.315212" elapsed="0.000149"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:43.315495" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.315410" elapsed="0.000097"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:55:43.317027" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\04_parameter_sensitivity.ipynb</msg>
+<msg time="2025-11-20T16:55:43.321661" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:55:44.326295" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:55:44.326481" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:55:43.315555" elapsed="1.010946"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:55:44.327124" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.326636" elapsed="0.000523"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:44.327264" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.327222" elapsed="0.000060"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:55:43.314940" elapsed="1.012370"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:44.327865" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\04_sensitivity_bias.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\04_sensitivity_bias.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.327712" elapsed="0.000185"/>
+</kw>
+<msg time="2025-11-20T16:55:44.327949" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.327632" elapsed="0.000327"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.328016" elapsed="0.000091"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:44.328269" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\04_sensitivity_bias.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\04_sensitivity_bias.pdf&lt;/a&gt;' is 19946 bytes.</msg>
+<msg time="2025-11-20T16:55:44.328305" level="INFO">${size} = 19946</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.328152" elapsed="0.000163"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.328357" elapsed="0.000143"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:44.328602" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\04_sensitivity_bias.pdf (19946 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.328545" elapsed="0.000074"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}04_sensitivity_bias.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:44.327411" elapsed="0.001232"/>
+</kw>
+<doc>Test that 04_parameter_sensitivity.ipynb executes successfully</doc>
+<tag>notebook</tag>
+<tag>sensitivity</tag>
+<status status="PASS" start="2025-11-20T16:55:43.314392" elapsed="1.014298"/>
+</test>
+<test id="s1-t5" name="Test Notebook 05 Generate Paper Figures" line="67">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:55:44.329065" level="INFO">${notebook} = 05_generate_paper_figures.ipynb</msg>
+<var>${notebook}</var>
+<arg>05_generate_paper_figures.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.328995" elapsed="0.000083"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:44.329202" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\05_generate_paper_figures.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329124" elapsed="0.000089"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:44.329462" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\05_generate_paper_figures.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329413" elapsed="0.000067"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:44.329621" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\05_generate_paper_figures.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\05_generate_paper_figures.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329518" elapsed="0.000125"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:44.329745" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329683" elapsed="0.000088"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:55:44.331131" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\05_generate_paper_figures.ipynb</msg>
+<msg time="2025-11-20T16:55:44.335319" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:55:52.380038" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:55:52.380509" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329817" elapsed="8.050732"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.381825" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.380794" elapsed="0.001100"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.382102" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.382014" elapsed="0.000130"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:55:44.329306" elapsed="8.052949"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.382542" level="INFO">@{figures} = [ paper_fig1_pi_b_e.pdf | paper_fig2_error_growth.pdf | paper_fig3_judge_comparison.pdf | paper_fig4_exponent_comparison.pdf | paper_fig5_spectrum.pdf | paper_fig6_zeros.pdf | paper_fig7_complexity_di...</msg>
+<var>@{figures}</var>
+<arg>paper_fig1_pi_b_e.pdf</arg>
+<arg>paper_fig2_error_growth.pdf</arg>
+<arg>paper_fig3_judge_comparison.pdf</arg>
+<arg>paper_fig4_exponent_comparison.pdf</arg>
+<arg>paper_fig5_spectrum.pdf</arg>
+<arg>paper_fig6_zeros.pdf</arg>
+<arg>paper_fig7_complexity_dist.pdf</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.382365" elapsed="0.000206"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.384614" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.383694" elapsed="0.000999"/>
+</kw>
+<msg time="2025-11-20T16:55:52.384791" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.383534" elapsed="0.001282"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.385004" elapsed="0.000208"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.386273" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig1_pi_b_e.pdf&lt;/a&gt;' is 31376 bytes.</msg>
+<msg time="2025-11-20T16:55:52.386427" level="INFO">${size} = 31376</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.385325" elapsed="0.001138"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.386578" elapsed="0.000422"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.388599" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig1_pi_b_e.pdf (31376 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.388401" elapsed="0.000248"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.383101" elapsed="0.005754"/>
+</kw>
+<var name="${figure}">paper_fig1_pi_b_e.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.382920" elapsed="0.007934"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.392446" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.392098" elapsed="0.000492"/>
+</kw>
+<msg time="2025-11-20T16:55:52.392784" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.391881" elapsed="0.000945"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.392992" elapsed="0.000427"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.393966" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig2_error_growth.pdf&lt;/a&gt;' is 34179 bytes.</msg>
+<msg time="2025-11-20T16:55:52.394090" level="INFO">${size} = 34179</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.393630" elapsed="0.000487"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.394315" elapsed="0.000570"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.395222" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig2_error_growth.pdf (34179 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.395054" elapsed="0.000208"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.391361" elapsed="0.003963"/>
+</kw>
+<var name="${figure}">paper_fig2_error_growth.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.391101" elapsed="0.004265"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.397555" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.396560" elapsed="0.001071"/>
+</kw>
+<msg time="2025-11-20T16:55:52.397727" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.396391" elapsed="0.001356"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.397851" elapsed="0.000163"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.398866" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig3_judge_comparison.pdf&lt;/a&gt;' is 30362 bytes.</msg>
+<msg time="2025-11-20T16:55:52.399164" level="INFO">${size} = 30362</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.398101" elapsed="0.001097"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.399334" elapsed="0.000425"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.400038" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig3_judge_comparison.pdf (30362 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.399878" elapsed="0.000207"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.395633" elapsed="0.004519"/>
+</kw>
+<var name="${figure}">paper_fig3_judge_comparison.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.395483" elapsed="0.004710"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.402128" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig4_exponent_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig4_exponent_comparison.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.401055" elapsed="0.001177"/>
+</kw>
+<msg time="2025-11-20T16:55:52.402352" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.400916" elapsed="0.001466"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.402517" elapsed="0.000229"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.403633" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig4_exponent_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig4_exponent_comparison.pdf&lt;/a&gt;' is 21148 bytes.</msg>
+<msg time="2025-11-20T16:55:52.403887" level="INFO">${size} = 21148</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.402862" elapsed="0.001057"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.404037" elapsed="0.000553"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.404998" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig4_exponent_comparison.pdf (21148 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.404752" elapsed="0.000315"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.400487" elapsed="0.004660"/>
+</kw>
+<var name="${figure}">paper_fig4_exponent_comparison.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.400325" elapsed="0.004865"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.407237" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig5_spectrum.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig5_spectrum.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.406145" elapsed="0.001193"/>
+</kw>
+<msg time="2025-11-20T16:55:52.407793" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.405986" elapsed="0.001843"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.407987" elapsed="0.000322"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.409551" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig5_spectrum.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig5_spectrum.pdf&lt;/a&gt;' is 25701 bytes.</msg>
+<msg time="2025-11-20T16:55:52.410017" level="INFO">${size} = 25701</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.408477" elapsed="0.001598"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.411601" elapsed="0.000849"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.412875" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig5_spectrum.pdf (25701 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.412648" elapsed="0.000276"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.405486" elapsed="0.007501"/>
+</kw>
+<var name="${figure}">paper_fig5_spectrum.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.405322" elapsed="0.007702"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.414897" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig6_zeros.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig6_zeros.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.413794" elapsed="0.001182"/>
+</kw>
+<msg time="2025-11-20T16:55:52.415067" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.413675" elapsed="0.001409"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.415209" elapsed="0.000188"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.416355" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig6_zeros.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig6_zeros.pdf&lt;/a&gt;' is 10198 bytes.</msg>
+<msg time="2025-11-20T16:55:52.416485" level="INFO">${size} = 10198</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.415499" elapsed="0.001014"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.416641" elapsed="0.000363"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.417258" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig6_zeros.pdf (10198 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.417114" elapsed="0.000185"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.413278" elapsed="0.004080"/>
+</kw>
+<var name="${figure}">paper_fig6_zeros.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.413132" elapsed="0.004259"/>
+</iter>
+<iter>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.418835" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig7_complexity_dist.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig7_complexity_dist.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.418142" elapsed="0.000770"/>
+</kw>
+<msg time="2025-11-20T16:55:52.419008" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.418011" elapsed="0.001020"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.419139" elapsed="0.000172"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.419794" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig7_complexity_dist.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\paper_fig7_complexity_dist.pdf&lt;/a&gt;' is 20525 bytes.</msg>
+<msg time="2025-11-20T16:55:52.419985" level="INFO">${size} = 20525</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.419550" elapsed="0.000464"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.420128" elapsed="0.000364"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.420751" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\paper_fig7_complexity_dist.pdf (20525 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.420611" elapsed="0.000182"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}${figure}</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:55:52.417638" elapsed="0.003218"/>
+</kw>
+<var name="${figure}">paper_fig7_complexity_dist.pdf</var>
+<status status="PASS" start="2025-11-20T16:55:52.417494" elapsed="0.003394"/>
+</iter>
+<var>${figure}</var>
+<value>@{figures}</value>
+<status status="PASS" start="2025-11-20T16:55:52.382693" elapsed="0.038261"/>
+</for>
+<doc>Test that 05_generate_paper_figures.ipynb generates all paper figures</doc>
+<tag>figures</tag>
+<tag>notebook</tag>
+<tag>paper</tag>
+<status status="PASS" start="2025-11-20T16:55:44.328815" elapsed="8.092266"/>
+</test>
+<test id="s1-t6" name="Test Notebook 06 Baseline Comparison" line="90">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.421919" level="INFO">${notebook} = 06_baseline_comparison.ipynb</msg>
+<var>${notebook}</var>
+<arg>06_baseline_comparison.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.421773" elapsed="0.000174"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.422556" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\06_baseline_comparison.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.422052" elapsed="0.000540"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:55:52.423164" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\06_baseline_comparison.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.423043" elapsed="0.000160"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.424473" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\06_baseline_comparison.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\06_baseline_comparison.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.423369" elapsed="0.001207"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:55:52.424965" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.424741" elapsed="0.000259"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:55:52.430106" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\06_baseline_comparison.ipynb</msg>
+<msg time="2025-11-20T16:55:52.443032" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:56:49.598752" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:56:49.599060" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:55:52.425150" elapsed="57.173983"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.599989" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.599334" elapsed="0.000691"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.600149" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.600089" elapsed="0.000079"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:55:52.422780" elapsed="57.177427"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.601091" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\06_baseline_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\06_baseline_comparison.pdf&lt;/a&gt;' exists.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.600934" elapsed="0.000190"/>
+</kw>
+<msg time="2025-11-20T16:56:49.601172" level="INFO">${exists} = True</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.600514" elapsed="0.000669"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.601238" elapsed="0.000086"/>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.601477" level="INFO" html="true">Size of file '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\output\figures\06_baseline_comparison.pdf"&gt;d:\GitHub\Ethic-Latex\simulation\output\figures\06_baseline_comparison.pdf&lt;/a&gt;' is 30548 bytes.</msg>
+<msg time="2025-11-20T16:56:49.601516" level="INFO">${size} = 30548</msg>
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.601373" elapsed="0.000155"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.601572" elapsed="0.000167"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.601850" level="INFO">Verified output file: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\06_baseline_comparison.pdf (30548 bytes)</msg>
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.601788" elapsed="0.000080"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}06_baseline_comparison.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="PASS" start="2025-11-20T16:56:49.600328" elapsed="0.001565"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.602646" level="FAIL">File 'd:\GitHub\Ethic-Latex\simulation\output\figures\06_error_terms_comparison.pdf' does not exist.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2025-11-20T16:56:49.602198" elapsed="0.000640">File 'd:\GitHub\Ethic-Latex\simulation\output\figures\06_error_terms_comparison.pdf' does not exist.</status>
+</kw>
+<msg time="2025-11-20T16:56:49.602911" level="INFO">${exists} = False</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.602142" elapsed="0.000783"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.603119" level="FAIL">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\06_error_terms_comparison.pdf</msg>
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="FAIL" start="2025-11-20T16:56:49.602991" elapsed="0.000172">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\06_error_terms_comparison.pdf</status>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:49.603226" elapsed="0.000010"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:49.603276" elapsed="0.000009"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:49.603324" elapsed="0.000008"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}06_error_terms_comparison.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="FAIL" start="2025-11-20T16:56:49.601972" elapsed="0.001427">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\06_error_terms_comparison.pdf</status>
+</kw>
+<kw name="Verify Output File Exists">
+<arg>${OUTPUT_DIR}${/}baseline_comparison_summary.csv</arg>
+<arg>100</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:49.603483" elapsed="0.000011"/>
+</kw>
+<doc>Test that 06_baseline_comparison.ipynb executes successfully</doc>
+<tag>baseline</tag>
+<tag>notebook</tag>
+<status status="FAIL" start="2025-11-20T16:55:52.421321" elapsed="57.182251">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\06_error_terms_comparison.pdf</status>
+</test>
+<test id="s1-t7" name="Test Notebook 07 Zeta Zeros Deep Analysis" line="104">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.603996" level="INFO">${notebook} = 07_zeta_zeros_deep_analysis.ipynb</msg>
+<var>${notebook}</var>
+<arg>07_zeta_zeros_deep_analysis.ipynb</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.603917" elapsed="0.000092"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.604144" level="INFO">${notebook_path} = d:\GitHub\Ethic-Latex\simulation\notebooks\07_zeta_zeros_deep_analysis.ipynb</msg>
+<var>${notebook_path}</var>
+<arg>${NOTEBOOKS_DIR}</arg>
+<arg>${notebook}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604056" elapsed="0.000115"/>
+</kw>
+<kw name="Execute Notebook">
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:56:49.604433" level="INFO">Executing notebook: d:\GitHub\Ethic-Latex\simulation\notebooks\07_zeta_zeros_deep_analysis.ipynb</msg>
+<arg>Executing notebook: ${notebook_path}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604375" elapsed="0.000078"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.604620" level="INFO" html="true">File '&lt;a href="file://d:\GitHub\Ethic-Latex\simulation\notebooks\07_zeta_zeros_deep_analysis.ipynb"&gt;d:\GitHub\Ethic-Latex\simulation\notebooks\07_zeta_zeros_deep_analysis.ipynb&lt;/a&gt;' exists.</msg>
+<arg>${notebook_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604495" elapsed="0.000154"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:49.604763" level="INFO">${script_path} = d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py</msg>
+<var>${script_path}</var>
+<arg>d:\\GitHub\\Ethic-Latex\\tests\\notebooks</arg>
+<arg>execute_notebook.py</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604693" elapsed="0.000081"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<msg time="2025-11-20T16:56:49.606764" level="INFO">Starting process:
+python d:\GitHub\Ethic-Latex\tests\notebooks\execute_notebook.py d:\GitHub\Ethic-Latex\simulation\notebooks\07_zeta_zeros_deep_analysis.ipynb</msg>
+<msg time="2025-11-20T16:56:49.613063" level="INFO">Waiting for process to complete.</msg>
+<msg time="2025-11-20T16:56:53.728479" level="INFO">Process completed.</msg>
+<msg time="2025-11-20T16:56:53.728662" level="INFO">${result} = &lt;result object with rc 0&gt;</msg>
+<var>${result}</var>
+<arg>python</arg>
+<arg>${script_path}</arg>
+<arg>${notebook_path}</arg>
+<arg>timeout=${EXECUTION_TIMEOUT}</arg>
+<arg>on_timeout=continue</arg>
+<arg>stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt</arg>
+<arg>stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604818" elapsed="4.123862"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2025-11-20T16:56:53.729457" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<arg>Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2025-11-20T16:56:53.728821" elapsed="0.000676"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2025-11-20T16:56:53.729636" level="INFO">Notebook executed successfully</msg>
+<arg>Notebook executed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2025-11-20T16:56:53.729575" elapsed="0.000083"/>
+</kw>
+<arg>${notebook_path}</arg>
+<doc>Execute a notebook using Python script and verify it completes without errors</doc>
+<status status="PASS" start="2025-11-20T16:56:49.604248" elapsed="4.125446"/>
+</kw>
+<kw name="Verify Output File Exists">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2025-11-20T16:56:53.730242" level="FAIL">File 'd:\GitHub\Ethic-Latex\simulation\output\figures\07_critical_line_analysis.pdf' does not exist.</msg>
+<arg>${file_path}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="FAIL" start="2025-11-20T16:56:53.730075" elapsed="0.000216">File 'd:\GitHub\Ethic-Latex\simulation\output\figures\07_critical_line_analysis.pdf' does not exist.</status>
+</kw>
+<msg time="2025-11-20T16:56:53.730348" level="INFO">${exists} = False</msg>
+<var>${exists}</var>
+<arg>File Should Exist</arg>
+<arg>${file_path}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2025-11-20T16:56:53.730000" elapsed="0.000359"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<msg time="2025-11-20T16:56:53.730544" level="FAIL">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\07_critical_line_analysis.pdf</msg>
+<arg>${exists}</arg>
+<arg>Output file does not exist: ${file_path}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="FAIL" start="2025-11-20T16:56:53.730417" elapsed="0.000157">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\07_critical_line_analysis.pdf</status>
+</kw>
+<kw name="Get File Size" owner="OperatingSystem">
+<var>${size}</var>
+<arg>${file_path}</arg>
+<doc>Returns and logs file size as an integer in bytes.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:53.730636" elapsed="0.000015"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${size} &gt;= ${min_size}</arg>
+<arg>File ${file_path} is too small: ${size} bytes &lt; ${min_size} bytes</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:53.730693" elapsed="0.000009"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Verified output file: ${file_path} (${size} bytes)</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:53.730748" elapsed="0.000009"/>
+</kw>
+<arg>${OUTPUT_DIR}${/}figures${/}07_critical_line_analysis.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="FAIL" start="2025-11-20T16:56:53.729795" elapsed="0.001015">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\07_critical_line_analysis.pdf</status>
+</kw>
+<kw name="Verify Output File Exists">
+<arg>${OUTPUT_DIR}${/}figures${/}07_zero_correlation.pdf</arg>
+<arg>1000</arg>
+<doc>Verify that an output file exists and meets minimum size requirement</doc>
+<status status="NOT RUN" start="2025-11-20T16:56:53.730895" elapsed="0.000014"/>
+</kw>
+<doc>Test that 07_zeta_zeros_deep_analysis.ipynb executes successfully</doc>
+<tag>deep</tag>
+<tag>notebook</tag>
+<tag>zeta</tag>
+<status status="FAIL" start="2025-11-20T16:56:49.603722" elapsed="4.127262">Output file does not exist: d:\GitHub\Ethic-Latex\tests\notebooks\..\..\simulation\output\figures\07_critical_line_analysis.pdf</status>
+</test>
+<doc>Test suite for Jupyter notebooks in the Ethical Riemann Hypothesis project</doc>
+<status status="FAIL" start="2025-11-20T16:54:58.243159" elapsed="115.488161"/>
+</suite>
+<statistics>
+<total>
+<stat pass="5" fail="2" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="0" fail="1" skip="0">baseline</stat>
+<stat pass="1" fail="0" skip="0">basic</stat>
+<stat pass="1" fail="0" skip="0">comparison</stat>
+<stat pass="0" fail="1" skip="0">deep</stat>
+<stat pass="1" fail="0" skip="0">figures</stat>
+<stat pass="5" fail="2" skip="0">notebook</stat>
+<stat pass="1" fail="0" skip="0">paper</stat>
+<stat pass="1" fail="0" skip="0">sensitivity</stat>
+<stat pass="1" fail="1" skip="0">zeta</stat>
+</tag>
+<suite>
+<stat name="Notebook Tests" id="s1" pass="5" fail="2" skip="0">Notebook Tests</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

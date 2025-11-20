@@ -1,0 +1,19 @@
+% Alternative: Subfigure layout for side-by-side comparison
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/paper_fig1_pi_b_e.pdf}
+    \caption{$\Pi(x)$, $B(x)$, $E(x)$}
+    \label{fig:sub1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/paper_fig2_error_growth.pdf}
+    \caption{Error growth}
+    \label{fig:sub2}
+  \end{subfigure}
+  \caption{Main results}
+  \label{fig:combined}
+\end{figure}
