@@ -1,0 +1,29 @@
+# Expected Output Files for Notebook Tests
+# Format: notebook_name|output_file_path|min_size_bytes|description
+
+01_basic_simulation|simulation/output/figures/paper_fig1_pi_b_e.pdf|1000|Basic simulation Pi(x), B(x), E(x) plot
+01_basic_simulation|simulation/output/figures/paper_fig2_error_growth.pdf|1000|Error growth analysis plot
+
+02_judge_comparison|simulation/output/judge_comparison_report.md|500|Judge comparison report
+02_judge_comparison|simulation/output/figures/paper_fig3_judge_comparison.pdf|1000|Judge comparison visualization
+
+03_zeta_zeros|simulation/output/figures/03_zeros.pdf|1000|Zeta zeros distribution plot
+03_zeta_zeros|simulation/output/figures/03_spectrum.pdf|1000|Zeta spectrum analysis plot
+
+04_parameter_sensitivity|simulation/output/figures/04_sensitivity_bias.pdf|1000|Parameter sensitivity analysis
+
+05_generate_paper_figures|simulation/output/figures/paper_fig1_pi_b_e.pdf|1000|Paper figure 1
+05_generate_paper_figures|simulation/output/figures/paper_fig2_error_growth.pdf|1000|Paper figure 2
+05_generate_paper_figures|simulation/output/figures/paper_fig3_judge_comparison.pdf|1000|Paper figure 3
+05_generate_paper_figures|simulation/output/figures/paper_fig4_exponent_comparison.pdf|1000|Paper figure 4
+05_generate_paper_figures|simulation/output/figures/paper_fig5_spectrum.pdf|1000|Paper figure 5
+05_generate_paper_figures|simulation/output/figures/paper_fig6_zeros.pdf|1000|Paper figure 6
+05_generate_paper_figures|simulation/output/figures/paper_fig7_complexity_dist.pdf|1000|Paper figure 7
+
+06_baseline_comparison|simulation/output/figures/06_baseline_comparison.pdf|1000|Baseline comparison plot
+06_baseline_comparison|simulation/output/figures/06_error_terms_comparison.pdf|1000|Error terms comparison plot
+06_baseline_comparison|simulation/output/baseline_comparison_summary.csv|100|Baseline comparison summary CSV
+
+07_zeta_zeros_deep_analysis|simulation/output/figures/07_critical_line_analysis.pdf|1000|Critical line analysis plot
+07_zeta_zeros_deep_analysis|simulation/output/figures/07_zero_correlation.pdf|1000|Zero correlation analysis plot
+

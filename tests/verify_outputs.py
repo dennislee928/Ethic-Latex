@@ -8,7 +8,7 @@ print("VERIFYING GENERATED OUTPUT FILES")
 print("=" * 70)
 print()
 
-base_dir = "simulation/output"
+base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "simulation", "output")
 expected_files = [
     "figures/paper_fig1_pi_b_e.pdf",
     "figures/paper_fig2_error_growth.pdf",

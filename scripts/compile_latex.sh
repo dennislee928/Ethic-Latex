@@ -3,7 +3,7 @@
 # This script compiles the Ethical Riemann Hypothesis paper
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR/.."
 
 echo "======================================================================"
 echo "COMPILING LATEX PAPER"

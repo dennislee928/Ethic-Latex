@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add simulation directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'simulation'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'simulation'))
 
 try:
     # Test imports

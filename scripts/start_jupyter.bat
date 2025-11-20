@@ -1,7 +1,7 @@
 @echo off
 REM Start Jupyter Notebook Server (Windows)
 
-cd simulation\notebooks
+cd ..\simulation\notebooks
 
 echo ======================================================================
 echo STARTING JUPYTER NOTEBOOK SERVER
@@ -36,7 +36,7 @@ if %errorlevel% equ 0 (
             echo   pip install jupyter ipywidgets
             echo.
             echo Or use:
-            echo   install_dependencies.bat
+            echo   scripts\install_dependencies.bat
             echo.
             echo Note: If Jupyter is installed but command not found,
             echo try: python -m notebook

@@ -2,7 +2,7 @@
 # Start Jupyter Notebook Server
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR/simulation/notebooks"
+cd "$SCRIPT_DIR/../simulation/notebooks"
 
 echo "======================================================================"
 echo "STARTING JUPYTER NOTEBOOK SERVER"
@@ -36,7 +36,7 @@ else
     echo "  pip install jupyter ipywidgets"
     echo ""
     echo "Or use:"
-    echo "  bash install_dependencies.sh"
+    echo "  bash scripts/install_dependencies.sh"
     echo ""
     echo "If Jupyter is installed but command not found, try:"
     echo "  python -m notebook"

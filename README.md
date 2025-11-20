@@ -41,10 +41,26 @@ Ethic-Latex/
 │   │   ├── 02_judge_comparison.ipynb
 │   │   ├── 03_zeta_zeros.ipynb
 │   │   ├── 04_parameter_sensitivity.ipynb
-│   │   └── 05_generate_paper_figures.ipynb
+│   │   ├── 05_generate_paper_figures.ipynb
+│   │   ├── 06_baseline_comparison.ipynb
+│   │   └── 07_zeta_zeros_deep_analysis.ipynb
 │   ├── output/                 # Generated outputs
 │   │   └── figures/           # Saved figures
 │   └── README.md              # Simulation documentation
+├── scripts/                    # Utility scripts
+│   ├── install_dependencies.*  # Dependency installation
+│   ├── start_jupyter.*         # Jupyter server launcher
+│   ├── compile_latex.*         # LaTeX compilation
+│   └── quick-start-script/     # Quick start scripts
+├── docs/                       # Documentation files
+│   ├── INSTALL.md             # Installation guide
+│   ├── USAGE.md               # Usage guide
+│   ├── QUICKSTART.md          # Quick start guide
+│   └── ...                    # Other documentation
+├── tests/                      # Test files
+│   ├── notebooks/             # Notebook tests (Robot Framework)
+│   ├── test_streamlit_app.py  # Streamlit app test
+│   └── verify_outputs.py     # Output verification
 ├── figures/                    # Paper figures
 ├── ethical_riemann_hypothesis.tex  # Main LaTeX paper
 ├── references.bib             # Bibliography
@@ -83,6 +99,12 @@ pip install -r requirements.txt
 To compile the paper:
 
 ```bash
+# Using the provided script (recommended)
+bash scripts/compile_latex.sh
+# or on Windows:
+scripts\compile_latex.bat
+
+# Or manually:
 pdflatex ethical_riemann_hypothesis.tex
 bibtex ethical_riemann_hypothesis
 pdflatex ethical_riemann_hypothesis.tex
@@ -116,6 +138,12 @@ plot_Pi_B_E(x_vals, Pi_x, B_x, E_x)
 ### Running Jupyter Notebooks
 
 ```bash
+# Using the provided script (recommended)
+bash scripts/start_jupyter.sh
+# or on Windows:
+scripts\start_jupyter.bat
+
+# Or manually:
 cd simulation/notebooks
 jupyter notebook
 ```
@@ -172,9 +200,14 @@ See **[CLOUD_DEPLOYMENT.md](CLOUD_DEPLOYMENT.md)** for detailed guides on:
 ## Documentation
 
 - **Simulation Framework**: See `simulation/README.md`
+- **Installation Guide**: See `docs/INSTALL.md`
+- **Usage Guide**: See `docs/USAGE.md`
+- **Quick Start**: See `docs/QUICKSTART.md`
+- **Troubleshooting**: See `docs/TROUBLESHOOTING.md`
 - **API Documentation**: See docstrings in individual modules
 - **Theory**: See `ethical_riemann_hypothesis.tex`
 - **Tutorials**: See Jupyter notebooks in `simulation/notebooks/`
+- **Testing**: See `tests/README.md` for notebook testing with Robot Framework
 
 ## Applications to AI Ethics
 
