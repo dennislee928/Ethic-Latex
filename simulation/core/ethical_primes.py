@@ -9,7 +9,7 @@ function and error terms in number theory.
 """
 
 import numpy as np
-from typing import List, Tuple, Literal, Optional
+from typing import List, Tuple, Literal, Optional, Dict
 from scipy.optimize import curve_fit
 from .action_space import Action
 
