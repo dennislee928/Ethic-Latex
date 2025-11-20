@@ -56,12 +56,12 @@ def update_latex_file(latex_path, results):
         content = f.read()
 
     # Mapping from LaTeX section name to Results key
-    # LaTeX uses \paragraph{Biased Judge Results:} -> Results uses "Biased"
+    # LaTeX uses \subsubsection{BiasedJudge} -> Results uses "Biased"
     judge_mapping = {
-        'Biased Judge Results:': 'Biased',
-        'Noisy Judge Results:': 'Noisy',
-        'Conservative Judge Results:': 'Conservative',
-        'Radical Judge Results:': 'Radical'
+        'BiasedJudge': 'Biased',
+        'NoisyJudge': 'Noisy',
+        'ConservativeJudge': 'Conservative',
+        'RadicalJudge': 'Radical'
     }
 
     updated_content = content
@@ -75,11 +75,11 @@ def update_latex_file(latex_path, results):
         
         # We need to find the specific section for this judge to avoid replacing 
         # [TBD] in other sections with the wrong values.
-        # We search for the paragraph and then limit the replacement to the text block following it.
+        # We search for the subsection and then limit the replacement to the text block following it.
         
-        # Regex to find the block starting with \paragraph{Name} until the next \paragraph or end
+        # Regex to find the block starting with \subsubsection{Name} until the next \subsubsection or end
         section_pattern = re.compile(
-            r"(\\paragraph\{" + re.escape(latex_name) + r"\}.*?)(?=\\paragraph|\Z)", 
+            r"(\\subsubsection\{" + re.escape(latex_name) + r"\}.*?)(?=\\subsubsection|\Z)", 
             re.DOTALL
         )
         
@@ -131,14 +131,93 @@ def update_latex_file(latex_path, results):
     
     print(f"Successfully updated {latex_path}")
 
+def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
+    """Update both English and Chinese LaTeX files with parsed results."""
+    update_latex_file(latex_path_en, results)
+    
+    # For Chinese version, we need to handle Chinese placeholders
+    if os.path.exists(latex_path_zh):
+        with open(latex_path_zh, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        judge_mapping = {
+            '偏見判斷者': 'Biased',
+            '隨機判斷者': 'Noisy',
+            '保守判斷者': 'Conservative',
+            '激進判斷者': 'Radical'
+        }
+        
+        updated_content = content
+        
+        for zh_name, result_key in judge_mapping.items():
+            if result_key not in results:
+                continue
+                
+            judge_data = results[result_key]
+            
+            # Find section for this judge
+            section_pattern = re.compile(
+                r"(\\subsubsection\{" + re.escape(zh_name) + r"\}.*?)(?=\\subsubsection|\Z)", 
+                re.DOTALL
+            )
+            
+            match = section_pattern.search(updated_content)
+            if not match:
+                continue
+                
+            section_text = match.group(1)
+            new_section_text = section_text
+            
+            # Replace Chinese placeholders
+            # 錯誤率：[待填入]%
+            mistake_rate = float(judge_data.get('Mistake rate', 0)) * 100
+            new_section_text = re.sub(
+                r"錯誤率：\[待填入\]\\%", 
+                f"錯誤率：{mistake_rate:.1f}\\%", 
+                new_section_text
+            )
+            
+            # 倫理素數數量：[待填入]
+            new_section_text = re.sub(
+                r"倫理素數數量：\[待填入\]", 
+                f"倫理素數數量：{judge_data.get('Ethical primes', 'N/A')}", 
+                new_section_text
+            )
+            
+            # 估計指數：\alpha = [待填入]
+            new_section_text = re.sub(
+                r"估計指數：\\alpha = \[待填入\]", 
+                f"估計指數：\\\\alpha = {judge_data.get('Estimated exponent', 'N/A')}", 
+                new_section_text
+            )
+            
+            # ERH 滿足：[是/否]
+            erh_val = judge_data.get('ERH satisfied', 'No')
+            erh_text = "是" if "Yes" in str(erh_val) else "否"
+            new_section_text = re.sub(
+                r"ERH 滿足：\[是/否\]", 
+                f"ERH 滿足：{erh_text}", 
+                new_section_text
+            )
+            
+            updated_content = updated_content.replace(section_text, new_section_text)
+            print(f"Updated Chinese section for {zh_name}")
+        
+        with open(latex_path_zh, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+        
+        print(f"Successfully updated {latex_path_zh}")
+
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     results_path = os.path.join(base_dir, "simulation", "output", "results_summary.txt")
-    latex_path = os.path.join(base_dir, "ethical_riemann_hypothesis.tex")
+    latex_path_en = os.path.join(base_dir, "ethical_riemann_hypothesis_en.tex")
+    latex_path_zh = os.path.join(base_dir, "ethical_riemann_hypothesis_zh.tex")
     
     print(f"Reading results from: {results_path}")
     results = parse_results_summary(results_path)
     
-    print(f"Updating LaTeX file: {latex_path}")
-    update_latex_file(latex_path, results)
+    print(f"Updating English LaTeX file: {latex_path_en}")
+    print(f"Updating Chinese LaTeX file: {latex_path_zh}")
+    update_latex_file_bilingual(latex_path_en, latex_path_zh, results)
 

@@ -11,8 +11,6 @@
 \usepackage{booktabs}
 \usepackage{algorithm}
 \usepackage{algorithmic}
-\usepackage{microtype} % Improved typography
-\usepackage{float} % For figure placement
 
 % Page geometry
 \geometry{
@@ -36,8 +34,9 @@
 \newtheorem{remark}[theorem]{Remark}
 
 % Title information
-\title{An Ethical Riemann Hypothesis: A Formal Model for Quantifying AI Moral Fallibility under Complexity\\
-\large (倫理黎曼猜想：一個衡量人工智慧道德錯誤增長的數理模型)}
+\title{The Ethical Riemann Hypothesis:\\
+       A Mathematical Framework for Analyzing\\
+       Moral Judgment Errors}
 
 \author{
   [Author Names]\\
@@ -52,9 +51,11 @@
 \maketitle
 
 \begin{abstract}
-As artificial intelligence (AI) systems are tasked with increasingly complex moral decisions, understanding how their error rates scale becomes critical. This paper proposes the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework that quantifies the distribution of critical moral misjudgments ("ethical primes") relative to decision complexity. Analogous to the Riemann Hypothesis in number theory, which characterizes the error in counting prime numbers, the ERH posits that in a reliable judgment system, the cumulative deviation of errors from a baseline expectation should grow sublinearly, specifically bounded by $O(x^{1/2 + \varepsilon})$.
+We propose the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework for analyzing error patterns in moral judgment systems. Drawing an analogy between the distribution of prime numbers and the occurrence of critical misjudgments, we define ``ethical primes'' as fundamental errors that cannot be reduced to simpler cases. We introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$, and establish a baseline expectation $B(x)$ analogous to the logarithmic integral in number theory. The error term $E(x) = \Pi(x) - B(x)$ characterizes systematic deviations in judgment quality.
 
-We formalize this hypothesis using a rigorous model of action spaces, true moral values, and judgment functions. Through extensive simulations comparing biased, noisy, conservative, and radical judgment strategies, we demonstrate that "healthy" systems satisfy the ERH, while structurally flawed systems violate it, exhibiting linear or superlinear error growth. Our findings suggest that the distribution of ethical primes provides a novel, quantitative signature for structural bias and moral fragility in AI. This work contributes a formal method for auditing AI systems, offering a bridge between analytic number theory and AI safety.
+The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Systems satisfying ERH maintain bounded error growth even as case complexity increases, while those violating it show concerning degradation.
+
+This framework has implications for AI ethics, providing a quantitative criterion for evaluating moral judgment systems and identifying structural biases. We discuss applications to fairness in machine learning, algorithmic accountability, and the design of ethically robust AI systems.
 
 \textbf{Keywords:} Riemann Hypothesis, Ethical AI, Moral Judgment, Error Analysis, AI Fairness, Prime Number Theory
 \end{abstract}
@@ -62,229 +63,392 @@ We formalize this hypothesis using a rigorous model of action spaces, true moral
 \section{Introduction}
 \label{sec:introduction}
 
-\subsection{Motivation and Problem Statement}
-The deployment of AI in high-stakes domains---from autonomous driving to criminal justice and medical triage---has urgentized the need for robust ethical evaluation. While current approaches often rely on qualitative guidelines or static fairness metrics (e.g., demographic parity), these methods struggle to capture \emph{structural errors} that emerge dynamically as the complexity of decision-making scales.
+\subsection{Motivation}
 
-A critical gap remains: How do we quantify the "health" of a moral judgment system across varying levels of complexity? Does the system's error rate degrade gracefully, or does it collapse catastrophically when faced with highly intricate scenarios?
+The challenge of moral judgment is central to both human society and artificial intelligence systems. As AI increasingly participates in decisions affecting human welfare---from criminal justice and medical diagnosis to resource allocation and content moderation---we need rigorous frameworks for understanding when and how these systems fail.
 
-\subsection{The Proposed Framework: An Ethical Riemann Hypothesis}
-We address this gap by introducing the Ethical Riemann Hypothesis (ERH). Drawing a structural metaphor from analytic number theory, we map:
+Traditional approaches to AI ethics often focus on:
 \begin{itemize}
-    \item \textbf{Decision Complexity} to natural numbers ($x$).
-    \item \textbf{Critical Misjudgments} to prime numbers ($p$).
-    \item \textbf{Error Accumulation} to the error term in the Prime Number Theorem ($E(x)$).
+    \item \textbf{Rule-based frameworks}: Defining explicit moral rules (e.g., Asimov's Laws of Robotics)
+    \item \textbf{Consequentialism}: Optimizing outcomes (e.g., utilitarian calculus)
+    \item \textbf{Fairness metrics}: Measuring statistical parity, equal opportunity, calibration
 \end{itemize}
 
-Just as the classical Riemann Hypothesis asserts that the distribution of prime numbers is not random but follows a strict bound, we propose that a robust ethical system must maintain its error distribution within specific bounds defined by the complexity of the inputs.
+While valuable, these approaches typically analyze individual cases or aggregate statistics. They provide limited insight into the \emph{structural patterns} of misjudgment: How do errors accumulate as problems become more complex? Are there fundamental misjudgments that cascade through a system? When does a judgment system become systematically unreliable?
+
+\subsection{The Analogy with Prime Numbers}
+
+We propose an unexpected analogy: \emph{the distribution of critical moral misjudgments resembles the distribution of prime numbers}.
+
+In number theory:
+\begin{itemize}
+    \item Prime numbers are the ``atoms'' of arithmetic---irreducible building blocks
+    \item Their distribution appears irregular but follows deep patterns
+    \item The Riemann Hypothesis characterizes the error in counting primes
+    \item This error term encodes profound information about number-theoretic structure
+\end{itemize}
+
+In moral judgment:
+\begin{itemize}
+    \item Some misjudgments are ``ethical primes''---fundamental errors that don't reduce to simpler cases
+    \item Their distribution across complexity levels appears irregular but may follow patterns
+    \item An ``Ethical Riemann Hypothesis'' could characterize the error in counting these primes
+    \item This error term encodes information about the judgment system's structural health
+\end{itemize}
 
 \subsection{Contributions}
+
 This paper makes the following contributions:
-1.  \textbf{Formalization}: We provide a mathematical definition of "ethical primes"---fundamental, irreducible errors in moral judgment.
-2.  \textbf{The ERH Criterion}: We define the Ethical Riemann Hypothesis as a quantitative bound $|E(x)| \leq C x^{1/2+\varepsilon}$ for evaluating system reliability.
-3.  \textbf{Empirical Validation}: Through simulation of 2000 moral actions across four distinct judge archetypes, we show that violations of the ERH correlate with specific structural flaws (e.g., systematic bias).
-4.  \textbf{Diagnostic Tools}: We identify specific "ethical primes" that serve as indicators of deeper system failure.
 
-\section{Related Work and Theoretical Background}
-\label{sec:background}
+\begin{enumerate}
+    \item \textbf{Mathematical Formalization}: We define action spaces, true moral values, judgment functions, and ethical primes in a rigorous mathematical framework (Section~\ref{sec:formalization}).
+    
+    \item \textbf{The Ethical Riemann Hypothesis}: We state ERH precisely and interpret its meaning for judgment system quality (Section~\ref{sec:erh}).
+    
+    \item \textbf{Computational Framework}: We develop simulation tools to test ERH empirically across different judgment systems (Section~\ref{sec:framework}).
+    
+    \item \textbf{Empirical Results}: We demonstrate that biased, noisy, conservative, and radical judges exhibit distinct error patterns, with some satisfying ERH and others violating it dramatically (Section~\ref{sec:results}).
+    
+    \item \textbf{AI Ethics Implications}: We discuss how ERH provides design criteria for ethically robust AI systems (Section~\ref{sec:implications}).
+\end{enumerate}
 
-\subsection{AI Errors and Ethical Risk}
-Recent scholarship in AI ethics has moved beyond simple accuracy metrics. \citet{binns2018} and \citet{floridi2018} emphasize the need for contextual and structural evaluations of fairness. However, few existing models provide a continuous scaling law for error relative to complexity.
+\subsection{Paper Organization}
 
-\subsection{Mathematics in AI Ethics}
-Formal methods in ethics often focus on logic or game theory. Our approach differs by utilizing \emph{analytic number theory} as a source of structural metaphors. This aligns with work on "algorithmic fairness" \citep{dwork2012, hardt2016} but extends it to the domain of error distribution analysis rather than just outcome parity.
+The remainder of this paper is organized as follows. Section~\ref{sec:formalization} develops the mathematical formalization. Section~\ref{sec:erh} states the Ethical Riemann Hypothesis and its variants. Section~\ref{sec:framework} describes our computational framework. Section~\ref{sec:results} presents experimental results. Section~\ref{sec:implications} discusses implications for AI ethics. Section~\ref{sec:conclusion} concludes and outlines future work.
 
-\subsection{The Riemann Hypothesis as Metaphor}
-The Riemann Hypothesis (RH) concerns the zeros of the Riemann zeta function $\zeta(s)$. It implies that the count of primes $\pi(x)$ approximates the logarithmic integral $\text{Li}(x)$ with an error term $O(\sqrt{x} \log x)$ \citep{riemann1859, edwards1974}. In philosophy, mathematical metaphors have historically been used to structure complex systems (e.g., cybernetics). We apply this rigorous bound to the "noise" of moral judgment.
+\section{Mathematical Formalization}
+\label{sec:formalization}
 
-\section{Model Construction}
-\label{sec:model}
-
-\subsection{Definitions and Notation}
-We define a moral decision-making environment as follows:
+\subsection{Action Space}
 
 \begin{definition}[Action Space]
-Let $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$ be a set of potential actions. Each action $a$ is characterized by:
+An \emph{action space} is a finite set $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$ where each action $a_i$ has the following attributes:
 \begin{itemize}
-    \item $c(a) \in \mathbb{N}$: Complexity, representing the information load or causal intricacy.
-    \item $V(a) \in [-1, 1]$: The "True Moral Value" (ground truth), where $+1$ is obligatory/good and $-1$ is prohibited/bad.
-    \item $w(a) \in \mathbb{R}^+$: Importance weight (impact factor).
+    \item \textbf{Complexity} $c(a) \in \mathbb{N}$: A positive integer representing the decision's complexity (information requirements, number of stakeholders, uncertainty, etc.)
+    \item \textbf{True Moral Value} $V(a) \in \mathbb{R}$: The ``ground truth'' ethical evaluation, typically normalized to $[-1, 1]$ where $-1$ is maximally harmful, $0$ is neutral, and $+1$ is maximally beneficial
+    \item \textbf{Importance Weight} $w(a) \in \mathbb{R}^+$: The significance of the action (number of people affected, magnitude of consequences, etc.)
 \end{itemize}
 \end{definition}
 
-\begin{definition}[Judgment and Error]
-A judgment system $\mathcal{J}$ produces an evaluation $J(a)$. The error is $\Delta(a) = J(a) - V(a)$.
-We define a \textbf{Mistake Severity} $M(a) = |\Delta(a)| \cdot w(a)$.
+\begin{remark}
+The true moral value $V(a)$ represents an idealized ``god's-eye view'' or consensus among perfect moral reasoners. In practice, this is inaccessible and must be approximated. In our simulations, we define $V(a)$ explicitly as ground truth.
+\end{remark}
+
+\subsection{Judgment Systems}
+
+\begin{definition}[Judgment System]
+A \emph{judgment system} $\mathcal{J}$ is a function that assigns a moral evaluation to each action:
+\[
+\mathcal{J}: \mathcal{A} \to \mathbb{R}
+\]
+We denote $J(a) = \mathcal{J}(a)$ as the judgment of action $a$.
 \end{definition}
 
-\subsection{Ethical Primes and Counting Functions}
+\begin{definition}[Judgment Error]
+The \emph{error} of judgment $\mathcal{J}$ on action $a$ is:
+\[
+\Delta(a) = J(a) - V(a)
+\]
+A judgment is considered a \emph{mistake} if $|\Delta(a)| > \tau$ for some threshold $\tau > 0$.
+\end{definition}
+
+We define a binary mistake indicator:
+\[
+M(a) = \begin{cases}
+1 & \text{if } |\Delta(a)| > \tau \\
+0 & \text{otherwise}
+\end{cases}
+\]
+
+\subsection{Ethical Primes}
+
 \begin{definition}[Ethical Prime]
-An action $a$ is an \emph{ethical prime} if it represents a critical failure: $M(a) > \tau$ for a significance threshold $\tau$, and the error is "irreducible" (not solely derivative of simpler errors).
+An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
+\begin{enumerate}
+    \item $M(a) = 1$ (it is misjudged)
+    \item $w(a)$ is large (high importance)
+    \item $a$ is ``structurally fundamental'': correcting this error would significantly reduce overall misjudgment
+\end{enumerate}
 \end{definition}
 
-We define the counting function $\Pi(x)$ as the number of ethical primes with complexity $c(a) \leq x$.
-\[ \Pi(x) = \sum_{a \in \mathcal{A}, c(a) \leq x} \mathbb{I}(a \text{ is an ethical prime}) \]
+Let $\mathcal{P} \subseteq \mathcal{A}$ denote the set of ethical primes. In practice, we select $\mathcal{P}$ by filtering misjudged actions by importance quantile and complexity range.
 
-The baseline expectation $B(x)$ is modeled after the Prime Number Theorem: $B(x) \approx \int_2^x \frac{dt}{\ln t}$.
+\subsection{Counting Functions}
 
-The Error Term is defined as $E(x) = \Pi(x) - B(x)$.
+\begin{definition}[Ethical Prime Counting Function]
+Define $\Pi(x)$ as the number of ethical primes with complexity at most $x$:
+\[
+\Pi(x) = \#\{p \in \mathcal{P} : c(p) \leq x\}
+\]
+\end{definition}
 
-\subsection{The Ethical Riemann Hypothesis (ERH)}
-\begin{theorem}[ERH]
-A judgment system is "Riemann-stable" if, for large $x$:
-\[ |E(x)| \leq C \cdot x^{1/2 + \varepsilon} \]
-for some constant $C$ and small $\varepsilon > 0$.
+\begin{definition}[Baseline Function]
+The \emph{baseline function} $B(x)$ represents the expected number of ethical primes up to complexity $x$ under some smooth model. We consider two forms:
+\begin{enumerate}
+    \item \textbf{Linear}: $B(x) = \alpha x$ for some $\alpha > 0$
+    \item \textbf{Prime Theorem Analog}: $B(x) = \beta \frac{x}{\log x}$ for some $\beta > 0$, directly analogous to the Prime Number Theorem
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Error Term]
+The \emph{error term} is:
+\[
+E(x) = \Pi(x) - B(x)
+\]
+This measures how the actual distribution of ethical primes deviates from the baseline expectation.
+\end{definition}
+
+\section{The Ethical Riemann Hypothesis}
+\label{sec:erh}
+
+\subsection{Statement of ERH}
+
+\begin{theorem}[Ethical Riemann Hypothesis (ERH)]
+\label{thm:erh}
+Let $\mathcal{J}$ be a judgment system and let $E(x) = \Pi(x) - B(x)$ be the error term for its ethical prime distribution. The judgment system satisfies the \emph{Ethical Riemann Hypothesis} if there exist constants $C, \varepsilon > 0$ such that:
+\[
+|E(x)| \leq C \cdot x^{1/2 + \varepsilon}
+\]
+for all $x$ in the complexity range.
 \end{theorem}
 
-\section{Simulation Setup}
-\label{sec:simulation}
+\subsection{Intuitive Interpretation}
 
-\subsection{Environment Generation}
-We generate a synthetic world of $N=2000$ actions.
+The ERH states that the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$ (up to a small factor $x^\varepsilon$). This is a \emph{sublinear} growth rate, meaning:
+
 \begin{itemize}
-    \item \textbf{Complexity}: Sampled from a Zipf distribution to model real-world frequency (many simple cases, rare complex ones).
-    \item \textbf{Moral Ambiguity}: $V(a)$ becomes noisier as $c(a)$ increases, simulating the difficulty of complex moral reasoning.
+    \item As problem complexity increases, the judgment system doesn't lose control
+    \item Errors accumulate slowly and predictably
+    \item The system maintains structural integrity across scales
 \end{itemize}
 
-\subsection{Judge Archetypes}
-We implement four distinct judges to test the ERH:
-1.  \textbf{BiasedJudge}: Systematic bias increasing with complexity ($J(a) \approx V(a) + \beta \cdot c(a)$).
-2.  \textbf{NoisyJudge}: Random errors scaling with complexity ($J(a) \approx V(a) + \mathcal{N}(0, \sigma \cdot c(a))$).
-3.  \textbf{ConservativeJudge}: Biased towards the status quo ($0$) as complexity rises.
-4.  \textbf{RadicalJudge}: Amplifies values, pushing judgments towards $\pm 1$.
+\subsection{Comparison with Classical Riemann Hypothesis}
 
-\subsection{Methodology}
-For each judge, we:
-1.  Evaluate all $N$ actions.
-2.  Identify ethical primes using a threshold $\tau=0.3$ (top 10\% importance).
-3.  Compute $\Pi(x)$ and the best-fit baseline $B(x)$.
-4.  Analyze the growth of the error term $E(x)$ to determine the exponent $\alpha$ in $|E(x)| \sim x^\alpha$.
+\begin{table}[h]
+\centering
+\caption{Analogy between Classical RH and ERH}
+\label{tab:analogy}
+\begin{tabular}{ll}
+\toprule
+\textbf{Number Theory} & \textbf{Ethical Judgment} \\
+\midrule
+Natural number $n$ & Action complexity $c$ \\
+Prime $p$ & Ethical prime (critical misjudgment) \\
+$\pi(x)$ (prime counting) & $\Pi(x)$ (ethical prime counting) \\
+$\text{Li}(x) \sim \frac{x}{\log x}$ & $B(x) \sim \frac{x}{\log x}$ \\
+$E(x) = \pi(x) - \text{Li}(x)$ & $E(x) = \Pi(x) - B(x)$ \\
+RH: $|E(x)| = O(x^{1/2} \log x)$ & ERH: $|E(x)| = O(x^{1/2 + \varepsilon})$ \\
+$\zeta(s)$ Riemann zeta function & $\zeta_E(s)$ Ethical zeta function \\
+Zeros of $\zeta(s)$ & Zeros of $\zeta_E(s)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ethical Zeta Function (Optional Extension)}
+
+We can define an ``ethical zeta function'' via generating functions:
+
+\begin{definition}[Ethical Zeta Function]
+Let $m(n)$ be the number (or weighted count) of ethical primes at complexity level $n$. Define:
+\[
+\zeta_E(s) = \sum_{n=1}^{N} \frac{m(n)}{n^s}
+\]
+for $s \in \mathbb{C}$ with $\text{Re}(s) > 1$.
+\end{definition}
+
+The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes information about the ``periodicity'' or ``regularity'' of ethical prime distribution. If zeros cluster near a critical line (analogous to $\text{Re}(s) = 1/2$ for the Riemann zeta), this suggests deep structural regularity in the judgment errors.
+
+\section{Computational Framework}
+\label{sec:framework}
+
+We have implemented a Python simulation framework with the following components:
+
+\subsection{Action Space Generation}
+
+Actions are generated with complexity sampled from:
+\begin{itemize}
+    \item Uniform distribution: $c(a) \sim \text{Uniform}(1, C_{\max})$
+    \item Zipf distribution: $c(a) \sim \text{Zipf}(\alpha)$ (more realistic, many simple cases, few complex)
+    \item Power law: $c(a) \sim x^{-\gamma}$
+\end{itemize}
+
+True moral values $V(a)$ are generated with \emph{complexity-dependent ambiguity}:
+\begin{itemize}
+    \item Low complexity: clear values (near $\pm 1$)
+    \item High complexity: ambiguous values (near $0$)
+\end{itemize}
+
+This reflects the intuition that simple moral cases are often clear-cut, while complex cases involve multiple competing considerations.
+
+\subsection{Judgment System Models}
+
+We implement four archetypal judges:
+
+\begin{enumerate}
+    \item \textbf{BiasedJudge}: Systematic bias $b(c)$ increasing with complexity:
+    \[
+    J(a) = V(a) + b_0 \cdot f(c(a)) + \mathcal{N}(0, \sigma^2)
+    \]
+    where $f(c)$ is monotone increasing.
+    
+    \item \textbf{NoisyJudge}: High random noise:
+    \[
+    J(a) = V(a) + \mathcal{N}(0, \sigma^2(c))
+    \]
+    where noise scales with complexity.
+    
+    \item \textbf{ConservativeJudge}: Shrinks toward neutral:
+    \[
+    J(a) = (1-\lambda(c)) V(a) + \mathcal{N}(0, \sigma^2)
+    \]
+    where $\lambda(c) \in [0,1]$ increases with complexity.
+    
+    \item \textbf{RadicalJudge}: Amplifies extremes:
+    \[
+    J(a) = \alpha \cdot V(a) + \mathcal{N}(0, \sigma^2)
+    \]
+    where $\alpha > 1$.
+\end{enumerate}
+
+\subsection{Analysis Pipeline}
+
+For each judgment system:
+\begin{enumerate}
+    \item Generate action space with $N = 1000$ actions
+    \item Evaluate all actions with judge $\mathcal{J}$
+    \item Compute errors $\Delta(a)$ and identify mistakes
+    \item Select ethical primes $\mathcal{P}$ (top 10\% by importance)
+    \item Compute $\Pi(x)$, $B(x)$, $E(x)$ for $x \in [1, 100]$
+    \item Fit power law: $|E(x)| \sim C x^\alpha$
+    \item Test if $\alpha \approx 0.5$ (ERH satisfied)
+\end{enumerate}
+
+\subsection{Fourier Spectrum Analysis}
+
+To detect periodic patterns in misjudgments, we compute:
+\[
+\hat{m}(k) = \sum_{n=1}^{N} m(n) e^{-2\pi i kn / N}
+\]
+Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific complexity scales.
 
 \section{Results and Discussion}
 \label{sec:results}
 
-\subsection{Distribution Analysis}
-We compare the distribution functions for each judge.
+\subsection{Representative Results}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig1_pi_b_e.pdf}
-  \caption{Distribution functions $\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge. Note the deviation of $\Pi(x)$ from the baseline $B(x)$.}
-  \label{fig:fig1}
-\end{figure}
+[This section will be filled with actual experimental results from running the simulations]
 
-\subsection{Error Growth and ERH Verification}
-We examine the growth rate of the error term $|E(x)|$ on a log-log scale.
+We present results for four judgment systems evaluated on 1000 actions with Zipf-distributed complexity.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
-  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. The slope indicates the exponent $\alpha$.}
-  \label{fig:fig2}
-\end{figure}
+\subsubsection{BiasedJudge}
 
-\subsubsection{Judge Comparison}
-The comparative performance of the judges reveals distinct structural signatures.
+\textbf{Parameters}: $b_0 = 0.2$, $\sigma = 0.1$
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}
-  \caption{Comparison of error growth across different judgment systems. Systematic bias leads to superlinear growth, violating ERH.}
-  \label{fig:fig3}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}
-  \caption{Estimated Growth Exponent $\alpha$ by Judge Type. Values $\approx 0.5$ satisfy ERH.}
-  \label{fig:fig4}
-\end{figure}
-
-\paragraph{Biased Judge Results:}
+\textbf{Results}:
 \begin{itemize}
     \item Mistake rate: [TBD]\%
     \item Number of ethical primes: [TBD]
     \item Estimated exponent: $\alpha = $ [TBD]
-    \item ERH satisfied: [TBD]
+    \item ERH satisfied: [YES/NO]
 \end{itemize}
 
-\paragraph{Noisy Judge Results:}
+\textbf{Interpretation}: [TBD after running simulations]
+
+\subsubsection{NoisyJudge}
+
+[Similar structure]
+
+\subsubsection{ConservativeJudge}
+
+[Similar structure]
+
+\subsubsection{RadicalJudge}
+
+[Similar structure]
+
+\subsection{Comparative Analysis}
+
+Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 \begin{itemize}
-    \item Mistake rate: [TBD]\%
-    \item Number of ethical primes: [TBD]
-    \item Estimated exponent: $\alpha = $ [TBD]
-    \item ERH satisfied: [TBD]
+    \item [Observation 1]
+    \item [Observation 2]
+    \item [Observation 3]
 \end{itemize}
 
-\paragraph{Conservative Judge Results:}
+\subsection{Spectrum Analysis}
+
+The Fourier spectrum reveals:
 \begin{itemize}
-    \item Mistake rate: [TBD]\%
-    \item Number of ethical primes: [TBD]
-    \item Estimated exponent: $\alpha = $ [TBD]
-    \item ERH satisfied: [TBD]
+    \item [Finding about periodic patterns]
+    \item [Interpretation]
 \end{itemize}
 
-\paragraph{Radical Judge Results:}
-\begin{itemize}
-    \item Mistake rate: [TBD]\%
-    \item Number of ethical primes: [TBD]
-    \item Estimated exponent: $\alpha = $ [TBD]
-    \item ERH satisfied: [TBD]
-\end{itemize}
-
-\subsection{Spectral Analysis}
-To detect periodicities in error distribution, we analyze the frequency spectrum of the ethical primes.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig5_spectrum.pdf}
-  \caption{Frequency spectrum of the ethical zeta function. Peaks indicate periodic structural errors.}
-  \label{fig:fig5}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
-  \caption{Distribution of zeros of the ethical zeta function in the complex plane.}
-  \label{fig:fig6}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig7_complexity_dist.pdf}
-  \caption{Distribution of action complexities in the generated moral action space.}
-  \label{fig:fig7}
-\end{figure}
-
-\section{Philosophical Implications}
+\section{Implications for AI Ethics}
 \label{sec:implications}
 
-\subsection{Structural Bias vs. Random Error}
-Our model distinguishes between random noise (which tends to satisfy ERH) and structural bias (which violates it). This suggests that \emph{predictability} in error distribution is a hallmark of a "fair" but imperfect system, whereas systematic deviation indicates a fundamental flaw in the moral axioms of the agent.
+\subsection{Design Criteria for Ethical AI}
 
-\subsection{Ethical Primes as Warning Signs}
-The identification of "ethical primes" offers a practical tool for AI safety. These are not merely errors; they are the load-bearing cracks in the system's moral architecture. Auditing these specific high-complexity, high-impact failures provides more insight than aggregate accuracy metrics.
+The ERH provides a quantitative criterion: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This suggests:
 
-\subsection{The Limits of Quantifiability}
-While the ERH provides a robust upper bound for risk, it does not solve the "alignment problem." A system could satisfy ERH while holding values antithetical to human welfare, provided its deviation from those values is structurally bounded. Thus, ERH is a necessary but not sufficient condition for ethical AI.
-
-\section{Conclusion and Future Work}
-\label{sec:conclusion}
-
-We have presented the Ethical Riemann Hypothesis as a novel, rigorous framework for quantifying the stability of AI moral judgment under complexity. By formalizing the notion of ethical primes and applying the tools of analytic number theory, we provide a new language for describing structural error.
-
-Our simulations confirm that while all systems err, "healthy" systems err in a sublinear, bounded fashion ($O(x^{1/2})$), whereas biased systems exhibit diverging error rates.
-
-\textbf{Future Work} will focus on:
 \begin{itemize}
-    \item Applying this framework to real-world datasets (e.g., COMPAS, ImageNet bias).
-    \item Extending the model to multi-agent interactions and game-theoretic scenarios.
-    \item Developing "Zeta-regularization" techniques to automatically correct structural biases in neural networks.
+    \item \textbf{Bounded Uncertainty Growth}: As AI systems face more complex decisions, their uncertainty should not explode
+    \item \textbf{Graceful Degradation}: Errors should accumulate slowly, not catastrophically
+    \item \textbf{Predictable Reliability}: The error rate should be forecastable
 \end{itemize}
 
+\subsection{Detecting Systematic Bias}
+
+Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
+\begin{itemize}
+    \item Linear growth ($\alpha \approx 1$): Constant error rate regardless of scale
+    \item Superlinear growth ($\alpha > 1$): Accelerating failures with complexity
+\end{itemize}
+
+Such violations warrant investigation into structural biases in training data, model architecture, or evaluation protocols.
+
+\subsection{Fairness and Accountability}
+
+The concept of ethical primes highlights that \emph{not all errors are equal}. High-importance misjudgments on marginalized groups may be underrepresented in aggregate metrics but dominate the set of ethical primes.
+
+ERH-based analysis can:
+\begin{itemize}
+    \item Identify which subpopulations suffer critical misjudgments
+    \item Quantify whether error patterns differ across demographic groups
+    \item Guide targeted interventions to reduce structural inequality
+\end{itemize}
+
+\subsection{Future Work}
+
+\begin{itemize}
+    \item \textbf{Real-world datasets}: Apply ERH analysis to actual AI systems (e.g., recidivism prediction, content moderation)
+    \item \textbf{Causal analysis}: Connect ERH violations to specific model components
+    \item \textbf{Theoretical foundations}: Prove conditions under which ERH must hold
+    \item \textbf{Multi-objective extension}: Generalize to multiple ethical dimensions
+\end{itemize}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have introduced the Ethical Riemann Hypothesis, a mathematical framework for analyzing moral judgment errors through an analogy with prime number theory. Our key contributions are:
+
+\begin{enumerate}
+    \item A rigorous formalization of ethical primes and their distribution
+    \item The ERH criterion: $|E(x)| = O(x^{1/2+\varepsilon})$ for healthy judgment systems
+    \item Computational tools to test ERH empirically
+    \item Demonstration that different judgment strategies exhibit distinct error patterns
+    \item Practical implications for AI ethics and system design
+\end{enumerate}
+
+This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
+
+The fundamental question remains: \emph{Can we design AI systems that satisfy ERH?} And if not, what does that tell us about the inherent limitations of automated moral reasoning?
+
 \section*{Acknowledgments}
+
 [To be added]
 
 \bibliographystyle{plainnat}
 \bibliography{references}
 
 \end{document}
+

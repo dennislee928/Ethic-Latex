@@ -1,72 +1,85 @@
 name: Build Thesis
 
 on:
-    push:
-        branches: ["main", "master"]
-    pull_request:
-        branches: ["main", "master"]
-    workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Set up Python 3.10
-              uses: actions/setup-python@v4
-              with:
-                  python-version: "3.10"
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-            - name: Install dependencies
-              run: |
-                  python -m pip install --upgrade pip
-                  if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-                  pip install papermill ipykernel nbconvert
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install papermill ipykernel nbconvert
 
-            - name: Run Simulation and Generate Figures
-              run: |
-                  # Set PYTHONPATH to include the current directory so simulation module is found
-                  export PYTHONPATH=$PYTHONPATH:$(pwd)
-                  python simulation/generate_all_figures.py
+      - name: Run Simulation and Generate Figures
+        run: |
+          # Set PYTHONPATH to include the current directory so simulation module is found
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python simulation/generate_all_figures.py
 
-            - name: Execute Notebooks
-              run: |
-                  export PYTHONPATH=$PYTHONPATH:$(pwd)
-                  # Install a kernel for the notebooks
-                  python -m ipykernel install --user --name python3
+      - name: Execute Notebooks
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # Install a kernel for the notebooks
+          python -m ipykernel install --user --name python3
 
-                  # Execute notebooks
-                  # We skip 05_generate_paper_figures.ipynb as we ran the script version
-                  papermill simulation/notebooks/01_basic_simulation.ipynb simulation/notebooks/01_out.ipynb
-                  papermill simulation/notebooks/02_judge_comparison.ipynb simulation/notebooks/02_out.ipynb
-                  papermill simulation/notebooks/03_zeta_zeros.ipynb simulation/notebooks/03_out.ipynb
-                  papermill simulation/notebooks/04_parameter_sensitivity.ipynb simulation/notebooks/04_out.ipynb
-                  papermill simulation/notebooks/06_baseline_comparison.ipynb simulation/notebooks/06_out.ipynb
-                  papermill simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb simulation/notebooks/07_out.ipynb
+          # Execute notebooks
+          # We skip 05_generate_paper_figures.ipynb as we ran the script version
+          papermill simulation/notebooks/01_basic_simulation.ipynb simulation/notebooks/01_out.ipynb
+          papermill simulation/notebooks/02_judge_comparison.ipynb simulation/notebooks/02_out.ipynb
+          papermill simulation/notebooks/03_zeta_zeros.ipynb simulation/notebooks/03_out.ipynb
+          papermill simulation/notebooks/04_parameter_sensitivity.ipynb simulation/notebooks/04_out.ipynb
+          papermill simulation/notebooks/06_baseline_comparison.ipynb simulation/notebooks/06_out.ipynb
+          papermill simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb simulation/notebooks/07_out.ipynb
 
-            - name: Update LaTeX Content
-              run: |
-                  python scripts/update_latex.py
+      - name: Prepare Figures for LaTeX
+        run: |
+          mkdir -p figures
+          cp simulation/output/figures/*.pdf figures/
+          # List figures to verify
+          ls -l figures/
 
-            - name: Prepare Figures for LaTeX
-              run: |
-                  mkdir -p figures
-                  cp simulation/output/figures/*.pdf figures/
-                  # List figures to verify
-                  ls -l figures/
+      - name: Integrate Figures into LaTeX
+        run: |
+          python scripts/integrate_figures.py
 
-            - name: Compile LaTeX Document
-              uses: xu-cheng/latex-action@v3
-              with:
-                  root_file: ethical_riemann_hypothesis.tex
-                  # Ensure we install necessary packages if missing, though basic ones are usually included
-                  extra_system_packages: ""
+      - name: Update LaTeX Content with Results
+        run: |
+          python scripts/update_latex.py
 
-            - name: Upload PDF Artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: ethical_riemann_hypothesis_pdf
-                  path: ethical_riemann_hypothesis.pdf
+      - name: Compile English LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ethical_riemann_hypothesis_en.tex
+          compiler: xelatex
+          extra_system_packages: "texlive-lang-chinese"
+
+      - name: Compile Chinese LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ethical_riemann_hypothesis_zh.tex
+          compiler: xelatex
+          extra_system_packages: "texlive-lang-chinese"
+
+      - name: Upload PDF Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ethical_riemann_hypothesis_pdfs
+          path: |
+            ethical_riemann_hypothesis_en.pdf
+            ethical_riemann_hypothesis_zh.pdf
