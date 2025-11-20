@@ -40,6 +40,7 @@ class Action:
     J: Optional[float] = None  # judgment
     delta: Optional[float] = None  # error
     mistake_flag: Optional[int] = None  # misjudgment indicator
+    severity: Optional[float] = None  # fuzzy severity (0-1) for continuous error assessment
     
     def __repr__(self):
         return f"Action(id={self.id}, c={self.c}, V={self.V:.2f}, w={self.w:.2f})"

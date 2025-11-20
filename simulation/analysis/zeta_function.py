@@ -157,7 +157,8 @@ def find_approximate_zeros(
     real_range: Tuple[float, float] = (0.3, 0.7),
     imag_range: Tuple[float, float] = (0, 50),
     grid_size: int = 50,
-    threshold: float = 0.1
+    threshold: float = 0.1,
+    refine: bool = False
 ) -> List[complex]:
     """
     Find approximate zeros of the ethical zeta function by grid search.
@@ -176,6 +177,8 @@ def find_approximate_zeros(
         Number of points per dimension
     threshold : float, default=0.1
         Threshold for considering |ζ_E(s)| ≈ 0
+    refine : bool, default=False
+        If True, refine zeros using Newton-Raphson method
         
     Returns
     -------
@@ -209,6 +212,22 @@ def find_approximate_zeros(
                     zeros.append(s)
             except (OverflowError, RuntimeWarning):
                 continue
+    
+    # Refine zeros if requested
+    if refine and len(zeros) > 0:
+        try:
+            from .zeta_zeros_analysis import refine_zero_newton_raphson
+            refined_zeros = []
+            zeta_func = lambda s: ethical_zeta_sum(m, s)
+            for zero in zeros:
+                refined = refine_zero_newton_raphson(zeta_func, zero)
+                if refined is not None:
+                    refined_zeros.append(refined)
+                else:
+                    refined_zeros.append(zero)  # Keep original if refinement fails
+            zeros = refined_zeros
+        except ImportError:
+            pass  # Refinement not available
     
     return zeros
 

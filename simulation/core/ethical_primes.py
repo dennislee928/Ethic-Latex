@@ -35,11 +35,16 @@ def select_ethical_primes(
     importance_quantile : float, default=0.9
         Keep only top (1 - quantile) by importance
         E.g., 0.9 keeps top 10% most important
-    strategy : {'importance', 'complexity', 'hybrid'}, default='importance'
+    strategy : {'importance', 'complexity', 'hybrid', 'dependency'}, default='importance'
         Selection strategy:
         - 'importance': Select by importance weight only
         - 'complexity': Prefer mid-range complexity
         - 'hybrid': Balance importance and complexity
+        - 'dependency': Use dependency graph analysis (formal definition)
+    impact_threshold : float, default=0.1
+        For 'dependency' strategy: minimum impact required
+    tau : float, default=0.3
+        Error threshold for dependency analysis
     complexity_range : Optional[Tuple[int, int]], default=None
         If specified, only include actions with c in [min_c, max_c]
         If None, automatically set to exclude bottom 10% and top 10%
@@ -108,6 +113,27 @@ def select_ethical_primes(
         cutoff_idx = int(len(mistakes) * (1 - importance_quantile))
         primes = mistakes[:max(cutoff_idx, 1)]
         
+    elif strategy == 'dependency':
+        # Use dependency graph-based selection (formal definition)
+        try:
+            from .prime_dependency_graph import select_primes_by_dependency
+        except ImportError:
+            try:
+                from prime_dependency_graph import select_primes_by_dependency
+            except ImportError:
+                # Fallback to importance if dependency module not available
+                mistakes.sort(key=lambda a: a.w, reverse=True)
+                cutoff_idx = int(len(mistakes) * (1 - importance_quantile))
+                primes = mistakes[:max(cutoff_idx, 1)]
+                return primes
+        
+        primes = select_primes_by_dependency(
+            actions, 
+            impact_threshold=impact_threshold,
+            tau=tau,
+            use_centrality=True
+        )
+        
     elif strategy == 'hybrid':
         # Balance importance and error magnitude
         max_w = max(a.w for a in mistakes)
@@ -130,7 +156,7 @@ def select_ethical_primes(
 def compute_Pi_and_error(
     primes: List[Action],
     X_max: int = 100,
-    baseline: Literal['linear', 'prime_theorem', 'fitted'] = 'prime_theorem',
+    baseline: Literal['linear', 'prime_theorem', 'logarithmic_integral', 'power_law', 'fitted', 'auto'] = 'prime_theorem',
     baseline_params: Optional[dict] = None
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -144,16 +170,22 @@ def compute_Pi_and_error(
         List of ethical primes
     X_max : int, default=100
         Maximum complexity to consider
-    baseline : {'linear', 'prime_theorem', 'fitted'}, default='prime_theorem'
+    baseline : {'linear', 'prime_theorem', 'logarithmic_integral', 'power_law', 'fitted', 'auto'}, default='prime_theorem'
         Type of baseline function B(x):
         - 'linear': B(x) = α * x
-        - 'prime_theorem': B(x) = β * x / log(x), analogous to Li(x)
-        - 'fitted': Fit a smooth curve to Π(x)
+        - 'prime_theorem': B(x) = β * x / log(x), analogous to Prime Number Theorem
+        - 'logarithmic_integral': B(x) = β * Li(x) where Li(x) = ∫₂ˣ dt/log(t)
+        - 'power_law': B(x) = γ * x^δ
+        - 'fitted': Fit a smooth polynomial curve to Π(x)
+        - 'auto': Automatically select best baseline based on AIC
     baseline_params : Optional[dict], default=None
         Parameters for baseline function
         - For 'linear': {'alpha': float}
         - For 'prime_theorem': {'beta': float}
+        - For 'logarithmic_integral': {'beta': float}
+        - For 'power_law': {'gamma': float, 'delta': float}
         - For 'fitted': automatic fitting
+        - For 'auto': parameters will be set automatically
         
     Returns
     -------
@@ -209,6 +241,31 @@ def compute_Pi_and_error(
             else:
                 B_x[i] = 0
                 
+    elif baseline == 'logarithmic_integral':
+        # B(x) = β * Li(x) where Li(x) = ∫₂ˣ dt/log(t)
+        try:
+            from analysis.baseline_comparison import compute_logarithmic_integral_baseline
+        except ImportError:
+            from ..analysis.baseline_comparison import compute_logarithmic_integral_baseline
+        B_x, _ = compute_logarithmic_integral_baseline(x_values, Pi_x, optimize=False)
+        if baseline_params and 'beta' in baseline_params:
+            # Scale by provided beta
+            Li_x = B_x / (baseline_params.get('beta', 1.0) if len(B_x) > 0 and B_x[0] > 0 else 1.0)
+            beta = baseline_params['beta']
+            B_x = beta * Li_x if len(B_x) > 0 and B_x[0] > 0 else B_x
+        
+    elif baseline == 'power_law':
+        # B(x) = γ * x^δ
+        try:
+            from analysis.baseline_comparison import compute_power_law_baseline
+        except ImportError:
+            from ..analysis.baseline_comparison import compute_power_law_baseline
+        B_x, _ = compute_power_law_baseline(x_values, Pi_x, optimize=False)
+        if baseline_params:
+            gamma = baseline_params.get('gamma', 0.1)
+            delta = baseline_params.get('delta', 1.0)
+            B_x = gamma * (x_values ** delta)
+                
     elif baseline == 'fitted':
         # Fit a smooth polynomial to Π(x)
         if len(primes) < 5:
@@ -219,13 +276,102 @@ def compute_Pi_and_error(
             degree = min(3, len(primes) // 2)
             coeffs = np.polyfit(x_values, Pi_x, degree)
             B_x = np.polyval(coeffs, x_values)
+            
+    elif baseline == 'auto':
+        # Automatically select best baseline
+        try:
+            from analysis.baseline_comparison import compare_all_baselines, select_best_baseline
+        except ImportError:
+            from ..analysis.baseline_comparison import compare_all_baselines, select_best_baseline
+        comparison = compare_all_baselines(x_values, Pi_x, optimize_params=True)
+        best_type, B_x, best_params = select_best_baseline(comparison, criterion='aic')
+        # Store selected type in baseline_params for reference
+        if baseline_params is None:
+            baseline_params = {}
+        baseline_params['_selected_type'] = best_type
+        baseline_params.update(best_params)
     else:
-        raise ValueError(f"Unknown baseline type: {baseline}")
+        raise ValueError(f"Unknown baseline type: {baseline}. "
+                        f"Supported: 'linear', 'prime_theorem', 'logarithmic_integral', "
+                        f"'power_law', 'fitted', 'auto'")
     
     # Compute error
     E_x = Pi_x - B_x
     
     return Pi_x, B_x, E_x, x_values
+
+
+def compute_error_correction_impact(
+    actions: List[Action],
+    mistake_indices: List[int],
+    tau: float = 0.3
+) -> Dict[int, float]:
+    """
+    Compute the impact of correcting each mistake on global error rate.
+    
+    This quantifies structural fundamentality: how much does correcting
+    this error reduce the overall error rate?
+    
+    Parameters
+    ----------
+    actions : List[Action]
+        All actions
+    mistake_indices : List[int]
+        Indices of mistakes to evaluate
+    tau : float, default=0.3
+        Error threshold
+        
+    Returns
+    -------
+    dict
+        Mapping from mistake index to impact value
+    """
+    # Baseline error rate
+    total_errors = sum(1 for a in actions if a.mistake_flag == 1)
+    total_actions = len(actions)
+    baseline_error_rate = total_errors / total_actions if total_actions > 0 else 0.0
+    
+    impacts = {}
+    
+    for mistake_idx in mistake_indices:
+        if mistake_idx >= len(actions):
+            continue
+        
+        action = actions[mistake_idx]
+        if not action.mistake_flag:
+            impacts[mistake_idx] = 0.0
+            continue
+        
+        # Impact = (error_rate_before - error_rate_after) / error_rate_before
+        # We estimate error_rate_after by considering:
+        # 1. This mistake is corrected
+        # 2. Similar mistakes might also be reduced (heuristic)
+        
+        error_magnitude = abs(action.delta) if action.delta is not None else 0.0
+        
+        # Count similar mistakes
+        similar_mistakes = 0
+        for other_action in actions:
+            if other_action.mistake_flag and other_action != action:
+                complexity_diff = abs(action.c - other_action.c) / max(action.c, other_action.c, 1)
+                importance_diff = abs(action.w - other_action.w) / max(action.w, other_action.w, 0.001)
+                
+                if complexity_diff < 0.2 and importance_diff < 0.2:
+                    similar_mistakes += 1
+        
+        # Estimate reduction: correcting this + similar ones
+        estimated_reduction = action.w * error_magnitude * (1 + 0.1 * similar_mistakes)
+        
+        if baseline_error_rate > 0:
+            impact = estimated_reduction / (baseline_error_rate * total_actions)
+        else:
+            impact = 0.0
+        
+        # Normalize
+        impact = min(impact, 1.0)
+        impacts[mistake_idx] = impact
+    
+    return impacts
 
 
 def analyze_error_growth(
