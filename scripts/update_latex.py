@@ -56,12 +56,12 @@ def update_latex_file(latex_path, results):
         content = f.read()
 
     # Mapping from LaTeX section name to Results key
-    # LaTeX uses \subsubsection{BiasedJudge} -> Results uses "Biased"
+    # LaTeX uses \paragraph{Biased Judge Results:} -> Results uses "Biased"
     judge_mapping = {
-        'BiasedJudge': 'Biased',
-        'NoisyJudge': 'Noisy',
-        'ConservativeJudge': 'Conservative',
-        'RadicalJudge': 'Radical'
+        'Biased Judge Results:': 'Biased',
+        'Noisy Judge Results:': 'Noisy',
+        'Conservative Judge Results:': 'Conservative',
+        'Radical Judge Results:': 'Radical'
     }
 
     updated_content = content
@@ -75,11 +75,11 @@ def update_latex_file(latex_path, results):
         
         # We need to find the specific section for this judge to avoid replacing 
         # [TBD] in other sections with the wrong values.
-        # We search for the subsection and then limit the replacement to the text block following it.
+        # We search for the paragraph and then limit the replacement to the text block following it.
         
-        # Regex to find the block starting with \subsubsection{Name} until the next \subsubsection or end
+        # Regex to find the block starting with \paragraph{Name} until the next \paragraph or end
         section_pattern = re.compile(
-            r"(\\subsubsection\{" + re.escape(latex_name) + r"\}.*?)(?=\\subsubsection|\Z)", 
+            r"(\\paragraph\{" + re.escape(latex_name) + r"\}.*?)(?=\\paragraph|\Z)", 
             re.DOTALL
         )
         
