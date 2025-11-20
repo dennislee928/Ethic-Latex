@@ -10,18 +10,27 @@ echo "======================================================================"
 echo ""
 
 # Check if Robot Framework is installed
-if ! command -v robot &> /dev/null; then
-    echo "ERROR: Robot Framework not found!"
-    echo ""
-    echo "Install with:"
-    echo "  pip install robotframework robotframework-jupyterlibrary"
-    echo ""
-    echo "Or install all dependencies:"
-    echo "  pip install -r ../requirements.txt"
-    exit 1
+# Try multiple ways to find robot command
+ROBOT_CMD=""
+
+# Check if robot command exists in PATH
+if command -v robot >/dev/null 2>&1; then
+    ROBOT_CMD="robot"
+    echo "Found robot command in PATH"
+elif python -m robot --version >/dev/null 2>&1 || python -m robot --version 2>&1 | grep -q "Robot Framework"; then
+    ROBOT_CMD="python -m robot"
+    echo "Found robot via: python -m robot"
+elif python3 -m robot --version >/dev/null 2>&1 || python3 -m robot --version 2>&1 | grep -q "Robot Framework"; then
+    ROBOT_CMD="python3 -m robot"
+    echo "Found robot via: python3 -m robot"
+else
+    # Last resort: try python -m robot anyway (it might work even if version check fails)
+    echo "WARNING: Could not verify Robot Framework installation"
+    echo "Attempting to use: python -m robot"
+    ROBOT_CMD="python -m robot"
 fi
 
-echo "Found robot: $(which robot)"
+echo "Using robot command: $ROBOT_CMD"
 echo ""
 
 # Create output directory if it doesn't exist
@@ -29,7 +38,7 @@ mkdir -p notebooks/output
 
 # Run tests
 echo "Running notebook tests..."
-robot \
+$ROBOT_CMD \
     --outputdir notebooks/output \
     --log notebooks/output/log.html \
     --report notebooks/output/report.html \

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Notebook Tests" tests="7" errors="0" failures="7" skipped="0" time="3.534" timestamp="2025-11-20T16:49:09.700854">
+<testcase classname="Notebook Tests" name="Test Notebook 01 Basic Simulation" time="0.516">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 02 Judge Comparison" time="0.513">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 03 Zeta Zeros" time="0.412">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 04 Parameter Sensitivity" time="0.512">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 05 Generate Paper Figures" time="0.510">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 06 Baseline Comparison" time="0.513">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<testcase classname="Notebook Tests" name="Test Notebook 07 Zeta Zeros Deep Analysis" time="0.513">
+<failure message="Notebook execution failed with exit code 1. Check d:\GitHub\Ethic-Latex\tests\notebooks\output/notebook_stderr.txt for details.: 1 != 0" type="AssertionError"/>
+</testcase>
+<properties>
+<property name="Documentation" value="Test suite for Jupyter notebooks in the Ethical Riemann Hypothesis project"/>
+</properties>
+</testsuite>

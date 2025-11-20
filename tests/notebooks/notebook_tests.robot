@@ -1,16 +1,16 @@
 *** Settings ***
 Documentation     Test suite for Jupyter notebooks in the Ethical Riemann Hypothesis project
-Library           JupyterLibrary
 Library           Collections
 Library           OperatingSystem
 Library           String
+Library           Process
 Resource          resources/variables.robot
 
 *** Variables ***
-${PROJECT_ROOT}    ${CURDIR}${/}..${/}..
-${NOTEBOOKS_DIR}   ${PROJECT_ROOT}${/}simulation${/}notebooks
-${OUTPUT_DIR}      ${PROJECT_ROOT}${/}simulation${/}output
-${TEST_OUTPUT_DIR} ${CURDIR}${/}output
+${PROJECT_ROOT}     ${CURDIR}${/}..${/}..
+${NOTEBOOKS_DIR}    ${PROJECT_ROOT}${/}simulation${/}notebooks
+${OUTPUT_DIR}       ${PROJECT_ROOT}${/}simulation${/}output
+${TEST_OUTPUT_DIR}  ${CURDIR}${/}output
 
 *** Test Cases ***
 Test Notebook 01 Basic Simulation
@@ -117,16 +117,21 @@ Test Notebook 07 Zeta Zeros Deep Analysis
 *** Keywords ***
 Execute Notebook
     [Arguments]    ${notebook_path}
-    [Documentation]    Execute a notebook and verify it completes without errors
+    [Documentation]    Execute a notebook using Python script and verify it completes without errors
     Log    Executing notebook: ${notebook_path}
     
-    # Start Jupyter server if not running
-    ${server_running}=    Run Keyword And Return Status    Jupyter Server Is Running
-    Run Keyword If    not ${server_running}    Start Jupyter Server
+    # Check if notebook file exists
+    File Should Exist    ${notebook_path}
     
-    # Execute notebook
-    ${result}=    Execute Jupyter Notebook    ${notebook_path}
-    Should Be Equal    ${result}[status]    ok    Notebook execution failed
+    # Execute notebook using Python helper script
+    ${script_path}=    Join Path    ${CURDIR}    execute_notebook.py
+    ${result}=    Run Process    python    ${script_path}    ${notebook_path}
+    ...    timeout=${EXECUTION_TIMEOUT}    on_timeout=continue
+    ...    stdout=${TEST_OUTPUT_DIR}${/}notebook_stdout.txt
+    ...    stderr=${TEST_OUTPUT_DIR}${/}notebook_stderr.txt
+    
+    # Check if execution was successful
+    Should Be Equal As Integers    ${result.rc}    0    Notebook execution failed with exit code ${result.rc}. Check ${TEST_OUTPUT_DIR}/notebook_stderr.txt for details.
     
     Log    Notebook executed successfully
 

@@ -3,5 +3,5 @@
 # This file can be extended with additional test configuration
 
 ${NOTEBOOK_TIMEOUT}    600s
-${EXECUTION_TIMEOUT}    300s
+${EXECUTION_TIMEOUT}    600s
 
