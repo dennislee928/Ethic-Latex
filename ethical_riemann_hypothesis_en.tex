@@ -397,7 +397,34 @@ Let $m(n)$ be the number (or weighted count) of ethical primes at complexity lev
 for $s \in \mathbb{C}$ with $\text{Re}(s) > 1$.
 \end{definition}
 
-The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes information about the ``periodicity'' or ``regularity'' of ethical prime distribution. If zeros cluster near a critical line (analogous to $\text{Re}(s) = 1/2$ for the Riemann zeta), this suggests deep structural regularity in the judgment errors.
+\subsection{Analytic Properties of the Ethical Zeta Function}
+
+Although the ethical zeta function $\zeta_E(s)$ is a finite sum (unlike the infinite series of the classical Riemann zeta function), we can still analyze its basic analytic properties and establish heuristic connections with the error term $E(x)$.
+
+\begin{proposition}[Domain of Convergence and Analyticity]
+\label{prop:zeta_convergence}
+The ethical zeta function $\zeta_E(s)$ is defined for all $s \in \mathbb{C}$ (since it is a finite sum), but it exhibits structural characteristics similar to the classical zeta function in the region $\text{Re}(s) > 1$. If $m(n) = O(n^\delta)$ for some $\delta < 1$, then in the region $\text{Re}(s) > \delta + 1$, the growth of $\zeta_E(s)$ is primarily dominated by low-complexity terms.
+\end{proposition}
+
+\begin{proposition}[Heuristic Connection between Zero Distribution and Error Term]
+\label{prop:zeros_error_heuristic}
+(Heuristic, non-rigorous) If the zeros of the ethical zeta function $\zeta_E(s)$ cluster near some critical line (e.g., $\text{Re}(s) = \sigma_0$), then the growth rate of the error term $E(x)$ may relate to $\sigma_0$:
+\[
+|E(x)| \sim x^{\sigma_0} \quad \text{(heuristic)}
+\]
+Specifically, if zeros cluster near $\text{Re}(s) = 1/2$, this may indicate that $|E(x)| = O(x^{1/2 + \varepsilon})$, consistent with ERH predictions. This is a heuristic analogy rather than a rigorous theorem, as the connection between zeros of the classical zeta function and the error term in prime distribution involves sophisticated analytic number theory techniques (such as Perron's formula and Mellin transforms), which our finite-sum version does not possess to the same degree of theoretical structure.
+\end{proposition}
+
+\begin{remark}[Heuristic Value and Limitations of the Analogy]
+The analogy between the ethical zeta function and the classical Riemann zeta function has heuristic value but important differences:
+\begin{itemize}
+    \item \textbf{Finitude}: $\zeta_E(s)$ is a finite sum, so there is no analytic continuation, functional equation, or critical strip concept, which are key features of the classical zeta function.
+    \item \textbf{Structural differences}: The distribution of ethical primes may not possess the deep number-theoretic structure of prime distribution (such as the prime number theorem in arithmetic progressions).
+    \item \textbf{Heuristic value}: Nevertheless, zero analysis may still reveal periodic patterns in error distribution, and spectral analysis (corresponding to discrete Fourier transform) can identify correlations between complexity levels.
+\end{itemize}
+\end{remark}
+
+The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes information about the ``periodicity'' or ``regularity'' of ethical prime distribution. If zeros cluster near a critical line (analogous to $\text{Re}(s) = 1/2$ for the Riemann zeta), this suggests deep structural regularity in the judgment errors. However, we must recognize this as a heuristic analogy rather than a rigorous number-theoretic correspondence.
 
 % ============================================
 % SECTION 5: SIMULATION SETUP
