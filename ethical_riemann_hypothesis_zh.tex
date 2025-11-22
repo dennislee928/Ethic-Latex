@@ -241,6 +241,59 @@ M(a) = \begin{cases}
 
 讓 $\mathcal{P} \subseteq \mathcal{A}$ 表示倫理素數的集合。在實踐中，我們透過重要性分位數和複雜度範圍過濾誤判行動來選擇 $\mathcal{P}$。
 
+\begin{proposition}[倫理素數集合的穩定性]
+\label{prop:prime_stability}
+給定行動空間 $\mathcal{A}$ 和判斷系統 $\mathcal{J}$，設重要性閾值為 $w_0$，則倫理素數集合 $\mathcal{P}$ 滿足：
+\[
+|\mathcal{P}| \leq \min\left(|\{a \in \mathcal{A} : M(a) = 1\}|, |\{a \in \mathcal{A} : w(a) \geq w_0\}|\right)
+\]
+進一步，若判斷系統滿足一致誤差界 $|\Delta(a)| \leq \delta$ 對於所有 $a \in \mathcal{A}$，且誤差閾值 $\tau > \delta$，則 $\mathcal{P} = \emptyset$。相反，若存在某個複雜度級別 $c_0$ 使得對於所有 $c(a) \geq c_0$ 的行動，誤差 $|\Delta(a)| > \tau$ 且 $w(a) \geq w_0$ 的概率為 $p > 0$，則期望倫理素數數量至少為 $p \cdot |\{a \in \mathcal{A} : c(a) \geq c_0, w(a) \geq w_0\}|$。
+\end{proposition}
+
+\begin{proof}[證明概要]
+第一個不等式直接來自倫理素數的定義：它必須既是錯誤（$M(a) = 1$）又具有高重要性（$w(a) \geq w_0$）。若一致誤差界成立，則對於所有行動 $|\Delta(a)| \leq \delta < \tau$，因此 $M(a) = 0$ 對於所有 $a$，導致 $\mathcal{P} = \emptyset$。最後的期望值來自概率論的基本性質：若每個滿足條件的行動以概率 $p$ 成為倫理素數，則期望數量為概率與數量的乘積。
+\end{proof}
+
+\subsection{判斷者類型的理論區分}
+
+不同類型的判斷系統在誤差結構上表現出不同的理論特徵。我們可以對每種類型建立誤差上界與期望行為：
+
+\begin{proposition}[偏見判斷者的誤差結構]
+\label{prop:biased_error}
+對於偏見判斷者，設偏見函數 $b(c)$ 單調遞增且 $b(0) = 0$，雜訊方差 $\sigma^2$，則期望誤差為：
+\[
+\mathbb{E}[|\Delta(a)|] \geq |b(c(a))| - \sigma \sqrt{\frac{2}{\pi}}
+\]
+若 $b(c) = b_0 \cdot c^\beta$ 對於某些 $b_0 > 0, \beta > 0$，則誤差隨複雜度增長，倫理素數在 $c(a)$ 較大的範圍內更容易出現。
+\end{proposition}
+
+\begin{proposition}[隨機判斷者的誤差結構]
+\label{prop:noisy_error}
+對於隨機判斷者，設雜訊方差 $\sigma^2(c)$ 可能隨複雜度變化，則誤差的方差為：
+\[
+\text{Var}[\Delta(a)] = \sigma^2(c(a))
+\]
+若 $\sigma(c) = \sigma_0 \cdot c^\gamma$ 對於 $\sigma_0 > 0, \gamma \geq 0$，則高複雜度案例的誤差變異性更大。當 $\gamma > 0$ 時，誤差增長指數 $\alpha$ 傾向於接近 $0$，因為誤差主要受隨機性主導而非系統性模式。
+\end{proposition}
+
+\begin{proposition}[保守判斷者的誤差結構]
+\label{prop:conservative_error}
+對於保守判斷者，設收縮因子 $\lambda(c) \in [0,1]$ 隨複雜度單調遞增，則期望誤差為：
+\[
+\mathbb{E}[|\Delta(a)|] \approx |V(a)| \cdot \lambda(c(a))
+\]
+保守策略導致所有判斷向中性收縮，因此低複雜度案例（$|V(a)|$ 接近 $1$）可能出現較大誤差，而高複雜度模糊案例（$|V(a)| \approx 0$）誤差較小。這解釋了保守判斷者為何具有最高的錯誤率但接近零的誤差增長指數。
+\end{proposition}
+
+\begin{proposition}[激進判斷者的誤差結構]
+\label{prop:radical_error}
+對於激進判斷者，設放大因子 $\alpha > 1$，則誤差為：
+\[
+\Delta(a) = (\alpha - 1) \cdot V(a) + \mathcal{N}(0, \sigma^2)
+\]
+當 $|V(a)|$ 較大時，放大導致顯著誤差；當 $|V(a)| \approx 0$ 時，誤差主要由雜訊主導。因此激進判斷者在低複雜度清晰案例中表現較差，但在高複雜度模糊案例中可能提供更清晰的判別信號，導致誤差隨複雜度增加而下降。
+\end{proposition}
+
 \subsection{計數函數}
 
 \begin{definition}[倫理素數計數函數]
