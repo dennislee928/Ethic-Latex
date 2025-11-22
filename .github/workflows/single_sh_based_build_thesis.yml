@@ -32,7 +32,7 @@ jobs:
           args: -file-line-error -halt-on-error -interaction=nonstopmode
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk || true
+            tlmgr install ctex xecjk algorithms subfigure || true
 
       - name: Compile Chinese LaTeX Document
         uses: xu-cheng/latex-action@v3
@@ -42,7 +42,7 @@ jobs:
           args: -file-line-error -halt-on-error -interaction=nonstopmode
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk || true
+            tlmgr install ctex xecjk algorithms subfigure || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4
