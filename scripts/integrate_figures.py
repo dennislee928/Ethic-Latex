@@ -3,7 +3,7 @@
 Integrate generated figures into LaTeX documents.
 
 This script automatically inserts figures into the correct sections
-of both English and Chinese LaTeX files.
+of both English and Chinese LaTeX files.:)
 """
 
 import os
