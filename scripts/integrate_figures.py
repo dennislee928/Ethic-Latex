@@ -9,6 +9,7 @@ of both English and Chinese LaTeX files.
 import os
 import re
 import glob
+import sys
 
 def find_figures(figures_dir):
     """Find all PDF figures in the figures directory."""
