@@ -42,9 +42,9 @@
        A Formal Model for Quantifying AI Moral Fallibility\\
        under Complexity}
 
-\author{Author Name \\
-        Institution \\
-        Email@domain.com}
+\author{[Author Name(s)] \\
+        [Institution Name] \\
+        [Email Address]}
 
 \date{\today}
 
@@ -53,15 +53,15 @@
 \maketitle
 
 \begin{abstract}
-As artificial intelligence systems increasingly participate in moral decision-making, we need rigorous frameworks to understand when and how these systems fail structurally. This paper proposes the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework that quantifies error growth patterns in moral judgment systems through an analogy with prime number distribution in analytic number theory.
+As artificial intelligence systems increasingly participate in moral decision-making, we urgently need rigorous frameworks to understand when and how these systems fail structurally. This paper proposes the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework that quantifies error growth patterns in moral judgment systems through an analogy with prime number distribution in analytic number theory.
 
-We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$.
+We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
 
-The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly. Through computational simulations comparing biased, noisy, conservative, and radical judgment strategies, we demonstrate that different systems exhibit markedly different error growth patterns. Systems satisfying ERH maintain bounded error growth as complexity increases, while violations reveal structural biases requiring intervention.
+Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, although all judges outperform ERH predictions in error growth patterns, the conservative judge's high mistake rate (61.1\%) reminds us that controlling error growth alone is insufficient to ensure overall judgment quality.
 
-This framework provides quantitative criteria for evaluating AI moral judgment systems, identifying structural biases, and designing ethically robust systems. We discuss implications for fairness in machine learning, algorithmic accountability, and the philosophical foundations of automated moral reasoning.
+This framework provides quantitative criteria for evaluating AI moral judgment systems, identifying structural biases, and designing ethically robust systems, while offering new perspectives on fairness in machine learning, algorithmic accountability, and the philosophical foundations of automated moral reasoning.
 
-\textbf{Keywords:} Riemann Hypothesis, Ethical AI, Moral Judgment, Error Analysis, AI Fairness, Prime Number Theory, Structural Bias
+\textbf{Keywords:} Ethical Riemann Hypothesis, AI Ethics, Moral Judgment, Error Analysis, AI Fairness, Prime Number Theory, Structural Bias
 \end{abstract}
 
 % ============================================
@@ -825,41 +825,49 @@ Potential applications include:
 
 \subsection{Summary of Contributions}
 
-We have introduced the Ethical Riemann Hypothesis, a mathematical framework for analyzing moral judgment errors through an analogy with prime number theory. Our key contributions are:
+This paper introduces the Ethical Riemann Hypothesis (ERH), a mathematical framework for analyzing moral judgment errors through an analogy with prime number theory. Our key contributions include:
 
 \begin{enumerate}
-    \item A rigorous formalization of ethical primes and their distribution
-    \item The ERH criterion: $|E(x)| = O(x^{1/2+\varepsilon})$ for healthy judgment systems
-    \item Computational tools to test ERH empirically
-    \item Demonstration that different judgment strategies exhibit distinct error patterns
-    \item Philosophical connections to classical moral theory
-    \item Practical implications for AI ethics and system design
+    \item \textbf{Mathematical formalization}: We establish a rigorous mathematical framework for ethical primes and their distribution, defining action spaces, judgment systems, error terms, and baseline functions, while providing theoretical distinctions among different judge types.
+    \item \textbf{ERH criterion}: We propose a quantitative standard $|E(x)| = O(x^{1/2+\varepsilon})$ for structurally healthy judgment systems, providing actionable criteria for evaluating system health.
+    \item \textbf{Computational tools}: We develop a complete simulation framework and empirical testing tools, including reproducible experimental designs and detailed statistical analysis.
+    \item \textbf{Empirical findings}: Through comparative experiments across four judgment strategies, we demonstrate that different systems exhibit markedly different error patterns, and that outperforming ERH predictions in error growth does not guarantee overall judgment quality.
+    \item \textbf{Philosophical integration}: We establish connections between ERH and classical moral theories (consequentialism, deontology, virtue ethics) and discuss its positioning and limitations in different application contexts.
+    \item \textbf{Practical applications}: We provide quantitative diagnostic tools and prioritization mechanisms for designing, auditing, and improving AI ethics systems.
 \end{enumerate}
 
-This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
+This work opens a new direction in AI ethics: analyzing structural patterns of moral judgment through the lens of analytic number theory. While the analogy with prime numbers is heuristic rather than exact, it provides valuable intuition, quantitative tools, and diagnostic frameworks for evaluating judgment systems at scale.
 
 \subsection{Future Work}
 
-Several directions for future research emerge:
+Based on the findings of this study, several directions merit further exploration:
 
 \begin{itemize}
-    \item \textbf{Real-world datasets}: Apply ERH analysis to actual AI systems (e.g., recidivism prediction, content moderation)
-    \item \textbf{Causal analysis}: Connect ERH violations to specific model components or training procedures
-    \item \textbf{Theoretical foundations}: Prove conditions under which ERH must hold for certain classes of judgment systems
-    \item \textbf{Multi-objective extension}: Generalize to multiple ethical dimensions (fairness, privacy, transparency)
-    \item \textbf{Integration with other metaphors}: Combine ERH with graph-theoretic or Galois-theoretic approaches
-    \item \textbf{Fuzzy and probabilistic extensions}: Incorporate uncertainty in moral values and judgments
+    \item \textbf{Real-world data validation}: Apply ERH analysis to historical data from actual AI systems (e.g., recidivism prediction systems, content moderation platforms, medical diagnosis tools) to validate the framework's effectiveness and applicability in practice.
+    \item \textbf{Causal mechanism exploration}: Conduct in-depth analysis of causal relationships between ERH violations and specific model components, training procedures, or data biases, providing actionable improvement recommendations.
+    \item \textbf{Theoretical deepening}: Explore sufficient or necessary conditions under which certain classes of judgment systems must satisfy ERH, establishing a more rigorous theoretical foundation.
+    \item \textbf{Multi-dimensional extension}: Generalize ERH to multiple ethical dimensions (fairness, privacy, transparency, accountability), developing multi-objective ERH variants.
+    \item \textbf{Cross-disciplinary integration}: Explore integration of ERH with other mathematical frameworks (e.g., graph theory, information theory, game theory), forming a richer toolkit of analytical tools.
+    \item \textbf{Uncertainty handling}: Incorporate fuzziness and probability into moral values and judgments, developing probabilistic versions of the ERH framework.
 \end{itemize}
 
-\subsection{Open Questions}
+\subsection{Open Questions and Reflections}
 
-The fundamental question remains: \emph{Can we design AI systems that satisfy ERH?} And if not, what does that tell us about the inherent limitations of automated moral reasoning?
+This study raises several profound open questions:
 
-We also ask: \emph{What does it mean for a moral judgment system to be ``structurally healthy''?} The ERH provides one answer, but other perspectives may be equally valid.
+First, \emph{Can we design AI systems that satisfy ERH?} Our experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may outperform ERH predictions in error growth patterns, reminding us that ERH provides necessary but not sufficient conditions. If we cannot design systems that simultaneously satisfy ERH and maintain low overall error rates, does this reveal inherent limitations of automated moral reasoning?
+
+Second, \emph{What does ``structural health'' truly mean for a moral judgment system?} ERH provides one answer based on error growth patterns, but in contexts of pluralistic moral values and cultural backgrounds, this definition itself may be contested. Different philosophical positions (consequentialism, deontology, virtue ethics) may have different understandings of ``health,'' and how does the ERH framework provide a common analytical language in this diversity?
+
+Finally, \emph{What is the role positioning of the ERH framework in practical AI ethics decision-making?} Is it a diagnostic tool, a metaphorical framework, or actionable design criteria? Our philosophical analysis suggests that the answer may vary by application context: in standardized decision environments, ERH can provide design criteria; in contexts of value pluralism, it primarily serves as a heuristic analytical framework.
+
+These open questions point not only to specific directions for future research but also reflect the complexity and challenges of AI ethics as an interdisciplinary field.
 
 \section*{Acknowledgments}
 
-We thank [acknowledgments to be added] for valuable discussions and feedback.
+We thank all colleagues who provided valuable suggestions and feedback for this paper. We particularly acknowledge [Advisor/Collaborator Name(s)] for guidance and support during the research process. This study benefited from the open-source software tools and Python ecosystem that provided essential foundations for experimental analysis. All simulation code and experimental data are publicly available to facilitate reproducibility and further development by the research community.
+
+Part of this work was supported by [Funding Agency/Grant Source, if applicable]. All opinions, findings, and conclusions expressed in this paper are those of the authors and do not necessarily reflect the views of the funding agencies.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
