@@ -95,6 +95,11 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
     with open(latex_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
+    # Check if figures are already inserted to avoid duplication
+    if figures and any(f"figures/{fig_file}" in content for fig_file in figures.keys()):
+        print(f"Figures already exist in {latex_path}, skipping insertion to avoid duplication")
+        return
+    
     # Find the results section
     if lang == 'en':
         results_marker = r"% Figures will be inserted here by the figure integration script"
@@ -147,7 +152,9 @@ if __name__ == "__main__":
     figures = find_figures(figures_dir)
     
     if not figures:
-        print("Warning: No figures found!")
+        print("Warning: No figures found - this is expected if simulations haven't run yet")
+        print("Skipping figure integration")
+        sys.exit(0)  # Exit gracefully
     else:
         print(f"Found {len(figures)} figures")
         for fig_file in figures:
