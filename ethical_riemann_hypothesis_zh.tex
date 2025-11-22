@@ -398,7 +398,34 @@ $\zeta(s)$ 的零點 & $\zeta_E(s)$ 的零點 \\
 對於 $s \in \mathbb{C}$，其中 $\text{Re}(s) > 1$。
 \end{definition}
 
-$\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週期性」或「規律性」資訊。如果零點在臨界線附近聚集（類似於黎曼 zeta 的 $\text{Re}(s) = 1/2$），這表明判斷錯誤中的深層結構規律性。
+\subsection{倫理 Zeta 函數的解析性質}
+
+雖然倫理 zeta 函數 $\zeta_E(s)$ 是有限和（與經典黎曼 zeta 函數的無窮級數不同），我們仍可以分析其基本解析性質，並建立與誤差項 $E(x)$ 的啟發式關聯。
+
+\begin{proposition}[收斂域與解析性]
+\label{prop:zeta_convergence}
+倫理 zeta 函數 $\zeta_E(s)$ 在所有 $s \in \mathbb{C}$ 上定義（因為是有限和），但它在 $\text{Re}(s) > 1$ 區域內表現出類似於經典 zeta 函數的結構特性。若 $m(n) = O(n^\delta)$ 對於某個 $\delta < 1$，則在 $\text{Re}(s) > \delta + 1$ 的區域內，$\zeta_E(s)$ 的增長主要由低複雜度項主導。
+\end{proposition}
+
+\begin{proposition}[零點分布與誤差項的啟發式關聯]
+\label{prop:zeros_error_heuristic}
+（啟發性、非嚴格）若倫理 zeta 函數 $\zeta_E(s)$ 的零點集中在某條臨界線附近（例如 $\text{Re}(s) = \sigma_0$），則誤差項 $E(x)$ 的增長率可能與 $\sigma_0$ 相關：
+\[
+|E(x)| \sim x^{\sigma_0} \quad \text{(啟發性)}
+\]
+具體而言，若零點集中在 $\text{Re}(s) = 1/2$ 附近，則可能表明 $|E(x)| = O(x^{1/2 + \varepsilon})$，這與 ERH 的預測一致。這是一個啟發式類比，而非嚴格定理，因為經典 zeta 函數的零點與質數分布誤差項的關聯涉及複雜的解析數論技術（如 Perron 公式與 Mellin 變換），而我們的有限和版本不具備相同程度的理論結構。
+\end{proposition}
+
+\begin{remark}[類比的啟發價值與限制]
+倫理 zeta 函數與經典黎曼 zeta 函數的類比具有啟發價值，但存在重要差異：
+\begin{itemize}
+    \item \textbf{有限性}：$\zeta_E(s)$ 是有限和，因此沒有解析延拓、函數方程或臨界帶的概念，這些是經典 zeta 函數的關鍵特徵。
+    \item \textbf{結構差異}：倫理素數的分布可能不具備質數分布的深層數論結構（如算術級數中的質數定理）。
+    \item \textbf{啟發性價值}：儘管如此，零點分析仍可能揭示誤差分布中的週期性模式，頻譜分析（對應於離散傅立葉變換）可識別複雜度級別之間的相關性。
+\end{itemize}
+\end{remark}
+
+$\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週期性」或「規律性」資訊。如果零點在臨界線附近聚集（類似於黎曼 zeta 的 $\text{Re}(s) = 1/2$），這表明判斷錯誤中的深層結構規律性。然而，我們必須認識到這是一個啟發式類比，而非嚴格的數論對應關係。
 
 % ============================================
 % 第五節：模擬設計與實驗方法
