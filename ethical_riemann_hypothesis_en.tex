@@ -729,17 +729,25 @@ Results indicate differential sensitivity of the error growth exponent $\alpha$ 
 
 The ERH framework provides a novel lens for identifying structural biases in moral judgment systems. Unlike traditional approaches that focus on individual cases or aggregate statistics, ERH reveals how errors accumulate as complexity increases. This structural perspective aligns with Rawlsian concerns about systemic injustice that may not be apparent in individual cases \citep{rawls1971}.
 
+\textbf{Application Context Reflection}: The ERH framework is particularly well-suited for scenarios involving significant complexity variation, such as content moderation systems (from simple spam to complex political speech) or credit approval systems (from standard applications to edge cases). However, for contexts with limited complexity variation or where complexity is difficult to quantify (e.g., pure recommendation systems where complexity mainly reflects user preferences rather than moral complexity), ERH's diagnostic value may be limited. In such contexts, ERH primarily serves as a \emph{diagnostic tool} to help identify whether systems exhibit structural degradation when facing increasingly complex decisions, rather than as a direct design criterion.
+
 \subsection{Moral Ambiguity and Uncertainty}
 
 The concept of ethical primes highlights that not all moral errors are equal. Some misjudgments are ``fundamental'' in the sense that they cannot be reduced to simpler component errors. This resonates with deontological ethics, where certain moral principles are considered irreducible.
+
+\textbf{Application Context Reflection}: The concept of ethical primes is most useful in AI system auditing, such as in recidivism prediction or medical diagnosis systems, where certain critical misjudgments (e.g., high-importance misjudgments on specific demographic groups) can lead to structural inequality even when overall error rates are low. However, in highly context-dependent moral judgments (e.g., autonomous vehicle moral dilemmas), the definition of ``irreducibility'' itself may be contested, as these judgments often involve multiple competing moral principles. In such contexts, the ERH framework primarily provides a \emph{metaphorical framework} to help us think about which misjudgments deserve priority, rather than offering precise mathematical classification.
 
 \subsection{Ethical Primes as Indicators of Critical Failures}
 
 The identification of ethical primes provides a quantitative method for prioritizing which errors to address first. This has practical implications for AI system auditing and improvement, guiding resources toward the most structurally significant failures.
 
+\textbf{Application Context Reflection}: In practical AI system development and maintenance, the ERH framework can serve as a quantitative tool for resource allocation. For instance, in content moderation systems, identifying ``ethical prime'' errors that lead to cascading misjudgments (e.g., systematic misjudgments of content from specific linguistic or cultural backgrounds) can prioritize human and computational resources for correction. However, it should be noted that experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may outperform ERH predictions in error growth patterns. Therefore, ethical prime identification should be combined with overall error level assessment rather than used alone. In this sense, the ERH framework provides a \emph{diagnostic tool} and \emph{prioritization mechanism}, rather than a comprehensive quality assessment standard.
+
 \subsection{ERH as a Criterion for AI Trust}
 
 The ERH provides a quantitative criterion for when an AI judgment system can be considered ``structurally healthy.'' Systems satisfying ERH maintain bounded error growth, suggesting they can be trusted even as they face increasingly complex decisions. This connects to virtue ethics, where the character (structure) of a system matters as much as its individual actions.
+
+\textbf{Application Context Reflection}: The applicability of ERH as a trust criterion depends on specific application contexts. In highly standardized decision environments (e.g., automated credit approval where complexity mainly reflects application material complexity), ERH can provide actionable design criteria: systems should be designed to maintain sublinear error growth as complexity increases. However, in contexts where moral values are highly pluralistic (e.g., cross-cultural content moderation), the definition of ``structural health'' itself may be contested, as different cultural backgrounds may have fundamentally different understandings of ``error.'' In such cases, ERH primarily serves as a \emph{heuristic framework} to help us think about system trustworthiness, rather than providing absolute judgment standards. Moreover, experimental results remind us that satisfying ERH is only a necessary but not sufficient condition: a system with error growth superior to ERH predictions but extremely high overall error rates (such as the conservative judge) remains untrustworthy.
 
 \subsection{Connection to Classical Moral Philosophy}
 
@@ -747,8 +755,10 @@ The ERH framework can be understood through multiple philosophical lenses:
 \begin{itemize}
     \item \textbf{Consequentialism}: ERH bounds the cumulative consequences of errors, resonating with utilitarian concerns about aggregate outcomes \citep{mill1863}
     \item \textbf{Deontology}: Ethical primes represent irreducible moral principles, echoing Kantian ideas about inviolable moral laws \citep{kant1785}
-    \item \textbf{Virtue Ethics}: ERH measures the ``character'' of a judgment system
+    \item \textbf{Virtue Ethics}: ERH measures the ``character'' of a judgment system, i.e., the consistency and stability of the system when facing challenges of different complexity
 \end{itemize}
+
+\textbf{Application Context Reflection}: The philosophical significance of the ERH framework lies in its provision of a trans-theoretical quantitative tool that can simultaneously serve consequentialist, deontological, and virtue ethics goals. In practical applications, this means ERH can be used within different ethical frameworks: consequentialists may focus on how ERH limits overall error accumulation, deontologists may focus on identifying and correcting ethical primes, and virtue ethicists may focus on measuring system ``character.'' However, we must recognize that the ERH framework itself does not resolve fundamental disagreements between these philosophical positions, but rather provides a common quantitative language for discussing systematic ethical issues. In practical applications such as resource allocation or recommendation systems, ERH primarily serves as an \emph{analytical framework} to help decision-makers evaluate system quality from different philosophical perspectives, rather than as a single ethical judgment standard.
 
 \subsection{Limitations and Ethical Considerations}
 
