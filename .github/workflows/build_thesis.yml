@@ -94,11 +94,11 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: ethical_riemann_hypothesis_en.tex
-          compiler: xelatex
-          args: -file-line-error -halt-on-error -interaction=nonstopmode
+          compiler: latexmk
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk algorithms subfigure || true
+            tlmgr install algorithms subfigure || true
 
       - name: Compile Chinese LaTeX Document
         uses: xu-cheng/latex-action@v3
@@ -106,9 +106,10 @@ jobs:
           root_file: ethical_riemann_hypothesis_zh.tex
           compiler: xelatex
           args: -file-line-error -halt-on-error -interaction=nonstopmode
+          latexmk_use_xelatex: true
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk algorithms subfigure || true
+            tlmgr install ctex xecjk fontspec xunicode xeCJK || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4
