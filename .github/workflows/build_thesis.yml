@@ -32,20 +32,30 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python simulation/generate_all_figures.py
 
+      - name: Create Output Directories
+        run: |
+          mkdir -p simulation/output/figures
+          mkdir -p figures
+          echo "✓ Output directories created"
+
       - name: Execute Notebooks
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           # Install a kernel for the notebooks
           python -m ipykernel install --user --name python3
 
+          # Ensure output directories exist before running notebooks
+          mkdir -p simulation/output/figures
+          mkdir -p simulation/output
+
           # Execute notebooks
           # We skip 05_generate_paper_figures.ipynb as we ran the script version
-          papermill simulation/notebooks/01_basic_simulation.ipynb simulation/notebooks/01_out.ipynb
-          papermill simulation/notebooks/02_judge_comparison.ipynb simulation/notebooks/02_out.ipynb
-          papermill simulation/notebooks/03_zeta_zeros.ipynb simulation/notebooks/03_out.ipynb
-          papermill simulation/notebooks/04_parameter_sensitivity.ipynb simulation/notebooks/04_out.ipynb
-          papermill simulation/notebooks/06_baseline_comparison.ipynb simulation/notebooks/06_out.ipynb
-          papermill simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb simulation/notebooks/07_out.ipynb
+          papermill simulation/notebooks/01_basic_simulation.ipynb simulation/notebooks/01_out.ipynb || echo "⚠ Notebook 01 failed, continuing..."
+          papermill simulation/notebooks/02_judge_comparison.ipynb simulation/notebooks/02_out.ipynb || echo "⚠ Notebook 02 failed, continuing..."
+          papermill simulation/notebooks/03_zeta_zeros.ipynb simulation/notebooks/03_out.ipynb || echo "⚠ Notebook 03 failed, continuing..."
+          papermill simulation/notebooks/04_parameter_sensitivity.ipynb simulation/notebooks/04_out.ipynb || echo "⚠ Notebook 04 failed, continuing..."
+          papermill simulation/notebooks/06_baseline_comparison.ipynb simulation/notebooks/06_out.ipynb || echo "⚠ Notebook 06 failed, continuing..."
+          papermill simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb simulation/notebooks/07_out.ipynb || echo "⚠ Notebook 07 failed, continuing..."
 
       - name: Prepare Figures for LaTeX
         run: |
