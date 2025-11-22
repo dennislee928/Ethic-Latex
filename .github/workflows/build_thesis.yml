@@ -95,14 +95,18 @@ jobs:
         with:
           root_file: ethical_riemann_hypothesis_en.tex
           compiler: xelatex
-          extra_system_packages: "texlive-lang-chinese"
+          pre_compile: |
+            tlmgr update --self || true
+            tlmgr install ctex xecjk xeCJK || true
 
       - name: Compile Chinese LaTeX Document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: ethical_riemann_hypothesis_zh.tex
           compiler: xelatex
-          extra_system_packages: "texlive-lang-chinese"
+          pre_compile: |
+            tlmgr update --self || true
+            tlmgr install ctex xecjk xeCJK || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4
