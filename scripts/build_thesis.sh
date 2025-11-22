@@ -44,8 +44,12 @@ echo ""
 
 # Step 4: Run simulation and generate figures
 echo "[4/9] Running simulation and generating figures..."
+cd "$PROJECT_ROOT/simulation"
+# Ensure output directory exists before running
+mkdir -p output/figures
+mkdir -p output
+python generate_all_figures.py
 cd "$PROJECT_ROOT"
-python simulation/generate_all_figures.py
 echo "✓ Figures generated"
 echo ""
 
@@ -65,36 +69,46 @@ mkdir -p simulation/output
 
 # List of notebooks to execute
 NOTEBOOKS=(
-    "simulation/notebooks/01_basic_simulation.ipynb"
-    "simulation/notebooks/02_judge_comparison.ipynb"
-    "simulation/notebooks/03_zeta_zeros.ipynb"
-    "simulation/notebooks/04_parameter_sensitivity.ipynb"
-    "simulation/notebooks/06_baseline_comparison.ipynb"
-    "simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb"
+    "01_basic_simulation.ipynb"
+    "02_judge_comparison.ipynb"
+    "03_zeta_zeros.ipynb"
+    "04_parameter_sensitivity.ipynb"
+    "06_baseline_comparison.ipynb"
+    "07_zeta_zeros_deep_analysis.ipynb"
 )
 
-# Execute each notebook
+# Change to notebooks directory so relative paths work correctly
+cd "$PROJECT_ROOT/simulation/notebooks"
+
+# Execute each notebook from the notebooks directory
 for notebook in "${NOTEBOOKS[@]}"; do
     if [ -f "$notebook" ]; then
         echo "  Executing: $notebook"
         output_notebook="${notebook%.ipynb}_out.ipynb"
-        papermill "$notebook" "$output_notebook" || {
+        # Use -k to explicitly specify kernel, and execute from notebooks directory
+        papermill -k python3 "$notebook" "$output_notebook" || {
             echo "  ⚠ Warning: Notebook $notebook failed, continuing..."
         }
     else
         echo "  ⚠ Warning: Notebook $notebook not found, skipping..."
     fi
 done
+
+# Return to project root
+cd "$PROJECT_ROOT"
 echo "✓ Notebooks executed"
 echo ""
 
 # Step 7: Prepare figures for LaTeX
 echo "[7/9] Preparing figures for LaTeX..."
 mkdir -p figures
-if [ -d "simulation/output/figures" ]; then
+# Copy figures from simulation/output/figures (where generate_all_figures.py saves them)
+if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.pdf 2>/dev/null)" ]; then
     cp simulation/output/figures/*.pdf figures/ 2>/dev/null || true
-    echo "  Copied figures:"
+    echo "  Copied figures from simulation/output/figures:"
     ls -1 figures/*.pdf 2>/dev/null | wc -l | xargs echo "    Total:"
+elif [ -d "simulation/output/figures" ]; then
+    echo "  ⚠ Warning: simulation/output/figures directory exists but is empty"
 else
     echo "  ⚠ Warning: simulation/output/figures directory not found"
 fi

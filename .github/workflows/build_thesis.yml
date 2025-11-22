@@ -30,7 +30,13 @@ jobs:
         run: |
           # Set PYTHONPATH to include the current directory so simulation module is found
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          python simulation/generate_all_figures.py
+          # Ensure output directory exists
+          mkdir -p simulation/output/figures
+          mkdir -p simulation/output
+          # Run from simulation directory so output paths are correct
+          cd simulation
+          python generate_all_figures.py
+          cd ..
 
       - name: Create Output Directories
         run: |
@@ -48,21 +54,33 @@ jobs:
           mkdir -p simulation/output/figures
           mkdir -p simulation/output
 
-          # Execute notebooks
+          # Change to notebooks directory so relative paths work correctly
+          cd simulation/notebooks
+
+          # Execute notebooks from notebooks directory with explicit kernel specification
           # We skip 05_generate_paper_figures.ipynb as we ran the script version
-          papermill simulation/notebooks/01_basic_simulation.ipynb simulation/notebooks/01_out.ipynb || echo "⚠ Notebook 01 failed, continuing..."
-          papermill simulation/notebooks/02_judge_comparison.ipynb simulation/notebooks/02_out.ipynb || echo "⚠ Notebook 02 failed, continuing..."
-          papermill simulation/notebooks/03_zeta_zeros.ipynb simulation/notebooks/03_out.ipynb || echo "⚠ Notebook 03 failed, continuing..."
-          papermill simulation/notebooks/04_parameter_sensitivity.ipynb simulation/notebooks/04_out.ipynb || echo "⚠ Notebook 04 failed, continuing..."
-          papermill simulation/notebooks/06_baseline_comparison.ipynb simulation/notebooks/06_out.ipynb || echo "⚠ Notebook 06 failed, continuing..."
-          papermill simulation/notebooks/07_zeta_zeros_deep_analysis.ipynb simulation/notebooks/07_out.ipynb || echo "⚠ Notebook 07 failed, continuing..."
+          papermill -k python3 01_basic_simulation.ipynb 01_out.ipynb || echo "⚠ Notebook 01 failed, continuing..."
+          papermill -k python3 02_judge_comparison.ipynb 02_out.ipynb || echo "⚠ Notebook 02 failed, continuing..."
+          papermill -k python3 03_zeta_zeros.ipynb 03_out.ipynb || echo "⚠ Notebook 03 failed, continuing..."
+          papermill -k python3 04_parameter_sensitivity.ipynb 04_out.ipynb || echo "⚠ Notebook 04 failed, continuing..."
+          papermill -k python3 06_baseline_comparison.ipynb 06_out.ipynb || echo "⚠ Notebook 06 failed, continuing..."
+          papermill -k python3 07_zeta_zeros_deep_analysis.ipynb 07_out.ipynb || echo "⚠ Notebook 07 failed, continuing..."
+
+          # Return to project root
+          cd ../..
 
       - name: Prepare Figures for LaTeX
         run: |
           mkdir -p figures
-          cp simulation/output/figures/*.pdf figures/
-          # List figures to verify
-          ls -l figures/
+          # Copy figures from simulation/output/figures (where generate_all_figures.py saves them)
+          if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.pdf 2>/dev/null)" ]; then
+            cp simulation/output/figures/*.pdf figures/ 2>/dev/null || true
+            echo "Copied figures from simulation/output/figures:"
+            ls -l figures/ || echo "No figures found"
+          else
+            echo "⚠ Warning: No PDF figures found in simulation/output/figures"
+            ls -la simulation/output/figures/ || echo "Directory does not exist"
+          fi
 
       - name: Integrate Figures into LaTeX
         run: |
