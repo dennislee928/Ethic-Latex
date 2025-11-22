@@ -515,42 +515,42 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig1_pi_b_e.pdf}
-  \caption{Distribution functions $\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge.}
+  \caption{Distribution functions $\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge. The solid line represents the actual ethical prime count $\Pi(x)$, the dashed line shows the baseline expectation $B(x)$ (prime theorem analog), and the error term $E(x) = \Pi(x) - B(x)$ is shown as a dotted line. We observe that $E(x)$ gradually deviates from the baseline as complexity increases, indicating the presence of systematic bias.}
   \label{fig:pi_b_e}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
-  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale.}
+  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$). The negative exponent indicates that error decreases as complexity increases, which is mathematically superior to the ERH prediction bound of $\alpha \approx 0.5$. The dashed line indicates the ERH-predicted growth pattern ($\alpha = 0.5$) for comparison.}
   \label{fig:error_growth}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}
-  \caption{Comparison of error growth across different judgment systems.}
+  \caption{Comparison of error term $E(x)$ growth across different judgment systems. The four judges (Biased, Noisy, Conservative, Radical) exhibit markedly different error patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns. All judges exhibit error growth superior to ERH predictions, though this does not necessarily imply higher overall judgment quality.}
   \label{fig:judge_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}
-  \caption{Estimated growth exponent $\alpha$ by judge type.}
+  \caption{Estimated growth exponent $\alpha$ by judge type. The bar chart compares error growth exponents across the four judges, where negative values indicate decreasing error as complexity increases. The Radical Judge ($\alpha = -0.452$) performs best, followed by the Biased Judge ($\alpha = -0.629$), Noisy Judge ($\alpha = -0.171$), and Conservative Judge ($\alpha = -0.046$). All judges have negative exponents, indicating error growth patterns superior to the ERH-predicted bound of $\alpha \approx 0.5$.}
   \label{fig:exponent_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig5_spectrum.pdf}
-  \caption{Frequency spectrum of the ethical zeta function.}
+  \caption{Fourier spectrum analysis of the ethical zeta function $\zeta_E(s)$. The spectrum exhibits prominent components in the low-frequency region ($k < 10$), indicating that the distribution of ethical primes has long-period structural patterns rather than being completely random. The high-frequency region ($k > 20$) shows low-amplitude noise, indicating relatively random error distribution at fine-grained levels. Peak positions in the spectrum encode periodic information about error distribution, useful for identifying correlations between complexity levels.}
   \label{fig:spectrum}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
-  \caption{Distribution of zeros of the ethical zeta function in the complex plane.}
+  \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. The figure shows approximate zeros found in the region with real part between $0.3$ and $0.7$. The distribution pattern of zeros reflects deep structural regularity in the distribution of ethical primes. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the zeros of the ethical zeta function may exhibit different patterns, potentially revealing unique structural characteristics of moral judgment systems.}
   \label{fig:zeros}
 \end{figure}
 

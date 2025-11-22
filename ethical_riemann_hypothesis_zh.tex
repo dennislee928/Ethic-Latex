@@ -516,42 +516,42 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig1_pi_b_e.pdf}
-  \caption{偏見判斷者的分布函數 $\Pi(x)$、$B(x)$ 和 $E(x)$。}
+  \caption{偏見判斷者的分布函數 $\Pi(x)$、$B(x)$ 和 $E(x)$。實線表示實際倫理素數計數 $\Pi(x)$，虛線表示基準期望 $B(x)$（質數定理類比），誤差項 $E(x) = \Pi(x) - B(x)$ 顯示為點線。觀察到 $E(x)$ 隨複雜度增加而逐漸偏離基準，表明系統性偏見的存在。}
   \label{fig:pi_b_e}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
-  \caption{誤差增長分析，顯示對數-對數尺度下 $|E(x)|$ 與複雜度 $x$ 的關係。}
+  \caption{誤差增長分析，顯示對數-對數尺度下 $|E(x)|$ 與複雜度 $x$ 的關係。通過線性回歸擬合得到誤差增長指數 $\alpha = -0.629$（$R^2 = 0.604$）。負指數表明誤差隨複雜度增加而下降，在數學意義上優於 ERH 預測的 $\alpha \approx 0.5$ 界限。圖中虛線標示 ERH 預測的增長模式（$\alpha = 0.5$）作為對比。}
   \label{fig:error_growth}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}
-  \caption{不同判斷系統間誤差增長的比較。}
+  \caption{不同判斷系統間誤差項 $E(x)$ 增長的比較。四種判斷者（偏見、隨機、保守、激進）展現出截然不同的誤差模式。激進判斷者（$\alpha = -0.452$）和偏見判斷者（$\alpha = -0.629$）顯示快速下降的誤差項，而隨機判斷者（$\alpha = -0.171$）和保守判斷者（$\alpha = -0.046$）則呈現較為平坦的誤差模式。所有判斷者的誤差增長均優於 ERH 預測，但這並不意味著整體判斷品質較高。}
   \label{fig:judge_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}
-  \caption{各判斷者類型的估計增長指數 $\alpha$。}
+  \caption{各判斷者類型的估計增長指數 $\alpha$。橫條圖比較四種判斷者的誤差增長指數，其中負值表示誤差隨複雜度增加而下降。激進判斷者（$\alpha = -0.452$）表現最佳，其次為偏見判斷者（$\alpha = -0.629$）、隨機判斷者（$\alpha = -0.171$）和保守判斷者（$\alpha = -0.046$）。所有判斷者的指數均為負值，表明誤差增長模式優於 ERH 預測的 $\alpha \approx 0.5$ 界限。}
   \label{fig:exponent_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig5_spectrum.pdf}
-  \caption{倫理 zeta 函數的頻譜。}
+  \caption{倫理 zeta 函數 $\zeta_E(s)$ 的傅立葉頻譜分析。頻譜顯示在低頻區域（$k < 10$）存在明顯的主導分量，表明倫理素數的分布具有長週期的結構性模式，而非完全隨機。高頻區域（$k > 20$）呈現低振幅雜訊，顯示細粒度層面的誤差分布較為隨機。頻譜中的峰值位置編碼了誤差分布的週期性資訊，可用於識別複雜度級別之間的相關性。}
   \label{fig:spectrum}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
-  \caption{倫理 zeta 函數在複平面中的零點分布。}
+  \caption{倫理 zeta 函數 $\zeta_E(s)$ 在複平面中的零點分布。圖中顯示在實部介於 $0.3$ 至 $0.7$ 之間的區域內搜尋到的近似零點。零點的分布模式反映了倫理素數分布的深層結構規律性。與經典黎曼 zeta 函數的零點集中在臨界線 $\text{Re}(s) = 1/2$ 附近不同，倫理 zeta 函數的零點分布可能呈現不同的模式，這可能揭示了道德判斷系統的獨特結構特徵。}
   \label{fig:zeros}
 \end{figure}
 
