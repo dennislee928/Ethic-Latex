@@ -240,6 +240,59 @@ An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
 
 Let $\mathcal{P} \subseteq \mathcal{A}$ denote the set of ethical primes. In practice, we select $\mathcal{P}$ by filtering misjudged actions by importance quantile and complexity range.
 
+\begin{proposition}[Stability of Ethical Prime Set]
+\label{prop:prime_stability}
+Given an action space $\mathcal{A}$ and a judgment system $\mathcal{J}$, let the importance threshold be $w_0$. Then the ethical prime set $\mathcal{P}$ satisfies:
+\[
+|\mathcal{P}| \leq \min\left(|\{a \in \mathcal{A} : M(a) = 1\}|, |\{a \in \mathcal{A} : w(a) \geq w_0\}|\right)
+\]
+Furthermore, if the judgment system satisfies a uniform error bound $|\Delta(a)| \leq \delta$ for all $a \in \mathcal{A}$ with error threshold $\tau > \delta$, then $\mathcal{P} = \emptyset$. Conversely, if there exists some complexity level $c_0$ such that for all actions with $c(a) \geq c_0$, the probability that $|\Delta(a)| > \tau$ and $w(a) \geq w_0$ is $p > 0$, then the expected number of ethical primes is at least $p \cdot |\{a \in \mathcal{A} : c(a) \geq c_0, w(a) \geq w_0\}|$.
+\end{proposition}
+
+\begin{proof}[Proof Sketch]
+The first inequality follows directly from the definition of ethical primes: they must be both mistakes ($M(a) = 1$) and high importance ($w(a) \geq w_0$). If the uniform error bound holds, then $|\Delta(a)| \leq \delta < \tau$ for all actions, so $M(a) = 0$ for all $a$, resulting in $\mathcal{P} = \emptyset$. The final expectation follows from basic probability theory: if each qualifying action becomes an ethical prime with probability $p$, the expected count is the product of probability and quantity.
+\end{proof}
+
+\subsection{Theoretical Distinction of Judge Types}
+
+Different types of judgment systems exhibit distinct theoretical characteristics in their error structures. We can establish error bounds and expected behaviors for each type:
+
+\begin{proposition}[Error Structure of Biased Judge]
+\label{prop:biased_error}
+For a biased judge with monotone increasing bias function $b(c)$ and $b(0) = 0$, noise variance $\sigma^2$, the expected error satisfies:
+\[
+\mathbb{E}[|\Delta(a)|] \geq |b(c(a))| - \sigma \sqrt{\frac{2}{\pi}}
+\]
+If $b(c) = b_0 \cdot c^\beta$ for some $b_0 > 0, \beta > 0$, then error grows with complexity, and ethical primes are more likely to occur in higher $c(a)$ ranges.
+\end{proposition}
+
+\begin{proposition}[Error Structure of Noisy Judge]
+\label{prop:noisy_error}
+For a noisy judge with noise variance $\sigma^2(c)$ that may vary with complexity, the variance of error is:
+\[
+\text{Var}[\Delta(a)] = \sigma^2(c(a))
+\]
+If $\sigma(c) = \sigma_0 \cdot c^\gamma$ for $\sigma_0 > 0, \gamma \geq 0$, then high-complexity cases have larger error variability. When $\gamma > 0$, the error growth exponent $\alpha$ tends toward $0$, as error is primarily dominated by randomness rather than systematic patterns.
+\end{proposition}
+
+\begin{proposition}[Error Structure of Conservative Judge]
+\label{prop:conservative_error}
+For a conservative judge with shrinkage factor $\lambda(c) \in [0,1]$ that increases monotonically with complexity, the expected error is approximately:
+\[
+\mathbb{E}[|\Delta(a)|] \approx |V(a)| \cdot \lambda(c(a))
+\]
+The conservative strategy causes all judgments to shrink toward neutral, so low-complexity cases ($|V(a)|$ near $1$) may exhibit large errors, while high-complexity ambiguous cases ($|V(a)| \approx 0$) have small errors. This explains why conservative judges have the highest mistake rate but near-zero error growth exponent.
+\end{proposition}
+
+\begin{proposition}[Error Structure of Radical Judge]
+\label{prop:radical_error}
+For a radical judge with amplification factor $\alpha > 1$, the error is:
+\[
+\Delta(a) = (\alpha - 1) \cdot V(a) + \mathcal{N}(0, \sigma^2)
+\]
+When $|V(a)|$ is large, amplification causes significant errors; when $|V(a)| \approx 0$, error is primarily dominated by noise. Thus radical judges perform poorly on low-complexity clear cases but may provide clearer discriminative signals in high-complexity ambiguous cases, leading to decreasing error as complexity increases.
+\end{proposition}
+
 \subsection{Counting Functions}
 
 \begin{definition}[Ethical Prime Counting Function]
