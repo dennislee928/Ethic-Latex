@@ -29,18 +29,20 @@ jobs:
         with:
           root_file: ethical_riemann_hypothesis_en.tex
           compiler: xelatex
+          args: -file-line-error -halt-on-error -interaction=nonstopmode
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk xeCJK || true
+            tlmgr install ctex xecjk || true
 
       - name: Compile Chinese LaTeX Document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: ethical_riemann_hypothesis_zh.tex
           compiler: xelatex
+          args: -file-line-error -halt-on-error -interaction=nonstopmode
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk xeCJK || true
+            tlmgr install ctex xecjk || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4

@@ -13,8 +13,9 @@ import sys
 def parse_results_summary(file_path):
     """Parse the results summary text file into a structured dictionary."""
     if not os.path.exists(file_path):
-        print(f"Error: Results summary file not found at {file_path}")
-        sys.exit(1)
+        print(f"Warning: Results summary file not found at {file_path}")
+        print("Skipping LaTeX updates - this is expected if simulations haven't run yet")
+        sys.exit(0)  # Exit gracefully, don't break the workflow
 
     with open(file_path, 'r') as f:
         content = f.read()
@@ -49,8 +50,9 @@ def parse_results_summary(file_path):
 def update_latex_file(latex_path, results):
     """Update the LaTeX file with parsed results."""
     if not os.path.exists(latex_path):
-        print(f"Error: LaTeX file not found at {latex_path}")
-        sys.exit(1)
+        print(f"Warning: LaTeX file not found at {latex_path}")
+        print("Skipping this file")
+        return
 
     with open(latex_path, 'r') as f:
         content = f.read()
