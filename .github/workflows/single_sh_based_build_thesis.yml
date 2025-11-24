@@ -1,0 +1,54 @@
+name: Build Thesis (Single Script)
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run Complete Build Script
+        run: |
+          bash scripts/build_thesis.sh
+
+      - name: Compile English LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ethical_riemann_hypothesis_en.tex
+          compiler: latexmk
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
+          pre_compile: |
+            tlmgr update --self || true
+            tlmgr install algorithms subfigure || true
+
+      - name: Compile Chinese LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ethical_riemann_hypothesis_zh.tex
+          compiler: xelatex
+          args: -file-line-error -halt-on-error -interaction=nonstopmode
+          latexmk_use_xelatex: true
+          pre_compile: |
+            tlmgr update --self || true
+            tlmgr install ctex xecjk fontspec xunicode xeCJK || true
+
+      - name: Upload PDF Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ethical_riemann_hypothesis_pdfs
+          path: |
+            ethical_riemann_hypothesis_en.pdf
+            ethical_riemann_hypothesis_zh.pdf
