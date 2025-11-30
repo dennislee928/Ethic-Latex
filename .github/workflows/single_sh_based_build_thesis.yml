@@ -50,9 +50,8 @@ jobs:
           latexmk_shell_escape: false
           latexmk_use_lualatex: false
           pre_compile: |
-            apt-get update && apt-get install -y fonts-noto-cjk
             tlmgr update --self || true
-            tlmgr install ctex xecjk fontspec xunicode || true
+            tlmgr install fandol ctex xecjk fontspec xunicode || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4
