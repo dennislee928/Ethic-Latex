@@ -42,7 +42,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: ethical_riemann_hypothesis_zh.tex
-          compiler: xelatex
+          compiler: latexmk
           args: -file-line-error -halt-on-error -interaction=nonstopmode
           latexmk_use_xelatex: true
           work_in_root_file_dir: false
