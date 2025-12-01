@@ -59,7 +59,12 @@ print(f"\nResults:")
 print(f"  Estimated exponent α: {analysis['estimated_exponent']:.3f}")
 print(f"  Expected (ERH):       0.500")
 print(f"  Deviation:           {abs(analysis['estimated_exponent'] - 0.5):.3f}")
-print(f"  ERH satisfied:       {'Yes [OK]' if analysis['erh_satisfied'] else 'No [FAIL]'}")
+within_bound = analysis['estimated_exponent'] <= 0.5 + 0.15
+print(f"  Within ERH-style bound (α ≲ 0.5)?: {'Yes' if within_bound else 'No'}")
+print(
+    "  Close to ERH-style target (α ≈ 0.5)?: "
+    f"{'Yes' if analysis['erh_satisfied'] else 'No'}"
+)
 print(f"  Growth rate:         {analysis['growth_rate']}")
 print(f"  R^2 (fit quality):    {analysis['r_squared']:.3f}")
 
@@ -68,20 +73,21 @@ print("INTERPRETATION")
 print("=" * 70)
 
 if analysis['erh_satisfied']:
-    print("\n[OK] This judgment system exhibits 'Riemann-healthy' behavior!")
-    print("  Errors grow slowly (~√x), indicating the system maintains")
-    print("  structural integrity even as problem complexity increases.")
+    print("\n[OK] This judgment system is close to the ERH-style √x target (α ≈ 0.5).")
+    print("  Errors grow on the expected √x scale, indicating 'Riemann-healthy'")
+    print("  behavior in the strict sense.")
 else:
     if analysis['estimated_exponent'] < 0.5:
-        print("\n[OK] This system performs BETTER than ERH predicts!")
-        print("  Exceptionally robust error control.")
+        print("\n[OK] This system performs BETTER than the ERH-style bound predicts.")
+        print("  Error growth is strictly below the √x worst-case target, i.e.,")
+        print("  conservative / over-cautious rather than explosive.")
     elif analysis['estimated_exponent'] < 1.0:
         print("\n[WARNING] This system shows moderate error growth.")
-        print("  Worse than ERH but not catastrophic.")
+        print("  Worse than the ERH-inspired bound but not catastrophic.")
     else:
         print("\n[WARNING] This system shows problematic error growth!")
-        print("  Errors grow linearly or faster with complexity.")
-        print("  Indicates systematic degradation.")
+        print("  Errors grow linearly or faster with complexity, indicating")
+        print("  systematic degradation.")
 
 print("\n" + "=" * 70)
 print("\nFor more detailed analysis:")

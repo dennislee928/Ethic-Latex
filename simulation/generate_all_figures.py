@@ -80,10 +80,20 @@ for name, metrics in comparison.items():
         print(f"\n{name}: ERROR - {metrics['error']}")
         continue
     print(f"\n{name}:")
+    alpha = metrics['estimated_exponent']
+    within_bound = alpha <= 0.5 + 0.15
     print(f"  Mistake rate: {metrics['mistake_rate']:.3f}")
     print(f"  Num primes: {metrics['num_primes']}")
-    print(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}")
-    print(f"  ERH satisfied: {'Yes [OK]' if metrics['erh_satisfied'] else 'No [FAIL]'}")
+    print(f"  Estimated exponent α: {alpha:.3f}")
+    print(
+        "  Within ERH-style bound (α ≲ 0.5)? "
+        f"{'Yes' if within_bound else 'No'}"
+    )
+    # analysis['erh_satisfied'] still encodes \"close to α ≈ 0.5\"
+    print(
+        "  Close to ERH-style target (α ≈ 0.5)? "
+        f"{'Yes [target-like]' if metrics['erh_satisfied'] else 'No'}"
+    )
     print(f"  Growth rate: {metrics['growth_rate']}")
 
 print("\n" + "=" * 70)
@@ -232,8 +242,13 @@ with open(results_summary_path, 'w') as f:
         f.write(f"  Mistake rate: {metrics['mistake_rate']:.3f}\n")
         f.write(f"  MAE: {metrics['mae']:.3f}\n")
         f.write(f"  RMSE: {metrics['rmse']:.3f}\n")
-        f.write(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}\n")
-        f.write(f"  ERH satisfied: {'Yes' if metrics['erh_satisfied'] else 'No'}\n")
+        alpha = metrics['estimated_exponent']
+        within_bound = alpha <= 0.5 + 0.15
+        f.write(f"  Estimated exponent: {alpha:.3f}\n")
+        f.write(
+            "  Within ERH-style bound (α ≲ 0.5)?: "
+            f"{'Yes' if within_bound else 'No'}\n"
+        )
         f.write(f"  Growth rate: {metrics['growth_rate']}\n")
         f.write(f"  R^2 (fit quality): {metrics['r_squared']:.3f}\n")
         f.write("\n")
