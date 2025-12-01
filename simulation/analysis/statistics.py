@@ -340,13 +340,13 @@ def generate_report(
         
         lines.append("## Summary Table")
         lines.append("")
-        # We distinguish between \"within ERH-style bound\" and \"close to the √x target\"
+        # We distinguish between "within ERH-style bound" and "close to the √x target"
         lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | Within ERH Bound? | Growth Rate |")
         lines.append("|-------|---------|--------|--------------|-----|----------|-------------------|-------------|")
         
         for name, metrics in comparison.items():
             if 'error' in metrics:
-                lines.append(f\"| {name} | - | - | - | - | - | ERROR | - |\")
+                lines.append(f"| {name} | - | - | - | - | - | ERROR | - |")
                 continue
             
             alpha = metrics.get('estimated_exponent', float('nan'))
@@ -354,11 +354,11 @@ def generate_report(
             within_bound = not np.isnan(alpha) and alpha <= 0.5 + 0.15
                 
             lines.append(
-                f\"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | \"
-                f\"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | \"
-                f\"{metrics['estimated_exponent']:.3f} | \"
-                f\"{'Yes' if within_bound else 'No'} | \"
-                f\"{metrics['growth_rate']} |\"
+                f"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | "
+                f"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | "
+                f"{metrics['estimated_exponent']:.3f} | "
+                f"{'Yes' if within_bound else 'No'} | "
+                f"{metrics['growth_rate']} |"
             )
         
         lines.append("")
@@ -379,10 +379,10 @@ def generate_report(
             lines.append(f"- **Mistake Rate:** {metrics['mistake_rate']:.3f}")
             lines.append(f"- **Mean Absolute Error:** {metrics['mae']:.3f}")
             lines.append(f"- **RMSE:** {metrics['rmse']:.3f}")
-            lines.append(f\"- **Estimated Growth Exponent:** {metrics['estimated_exponent']:.3f}\")
+            lines.append(f"- **Estimated Growth Exponent:** {metrics['estimated_exponent']:.3f}")
             # Within-bound flag as described above
             within_bound = metrics['estimated_exponent'] <= 0.5 + 0.15
-            lines.append(f\"- **Within ERH-style bound (α ≲ 0.5)?** {'Yes' if within_bound else 'No'}\")
+            lines.append(f"- **Within ERH-style bound (α ≲ 0.5)?** {'Yes' if within_bound else 'No'}")
             lines.append(f"- **Growth Rate Category:** {metrics['growth_rate']}")
             lines.append(f"- **R² (fit quality):** {metrics['r_squared']:.3f}")
             lines.append("")
