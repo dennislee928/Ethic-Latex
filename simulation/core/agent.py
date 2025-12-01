@@ -362,3 +362,4 @@ class AgentPopulation:
     def __iter__(self):
         return iter(self.agents)
 
+

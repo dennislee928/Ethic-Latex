@@ -180,6 +180,31 @@ Error Growth Model & None & Sublinear bound \\
 \end{tabular}
 \end{table}
 
+% --------------------------------------------
+\subsection{Comparison to Reliability, Calibration, and Fairness Metrics}
+\label{subsec:comparison_calibration}
+
+Our ERH framework is closely related to, but conceptually distinct from, existing reliability and fairness metrics in machine learning.
+Classical \emph{reliability} measures such as the Brier score and expected calibration error (ECE) evaluate how well predicted probabilities align with empirical frequencies on a fixed prediction task.
+They are fundamentally \emph{pointwise or distributional} diagnostics: given a pool of predictions and labels, they assess whether a model is well-calibrated overall, without explicitly tracking how errors accumulate as the problem becomes more complex.
+
+By contrast, ERH is explicitly \emph{complexity-aware}.
+Instead of asking whether predictions are calibrated at a single level of difficulty, we ask how the count of fundamental misjudgments---ethical primes---grows as we move along a complexity axis.
+The error term $E(x) = \Pi(x) - B(x)$ and its conjectured bound $|E(x)| \leq C x^{1/2+\varepsilon}$ provide a global constraint on how quickly structural failure can accumulate across complexity buckets.
+This makes ERH particularly sensitive to long-tail, high-complexity regimes where standard calibration scores may remain acceptable while rare but catastrophic errors proliferate.
+
+Similarly, many \emph{fairness} metrics (e.g., demographic parity, equal opportunity, calibration within groups) are defined on protected subpopulations but remain largely agnostic to how error patterns evolve with task complexity.
+They tell us whether a system is fair \emph{on average} for each group, but not whether it exhibits structural degradation concentrated in high-stakes, high-complexity regions of the action space.
+ERH complements these metrics by providing:
+\begin{itemize}
+    \item a \textbf{structural view} of misjudgment that tracks how ethical primes accumulate as complexity increases;
+    \item a \textbf{growth-exponent} perspective that distinguishes systems with benign error scaling from those whose error structures explode in the tail;
+    \item a \textbf{macro-level diagnostic} that can be used to compare different judgment systems---or different mitigation strategies---even when they have similar average accuracy or fairness scores.
+\end{itemize}
+
+In short, existing reliability and fairness measures characterize how a system behaves at a fixed level of difficulty or across demographic groups, whereas ERH characterizes how its \emph{structural error landscape} evolves along the complexity axis.
+This distinction underlies the role of ERH as a complementary auditing tool rather than a replacement for standard metrics.
+
 % ============================================
 % SECTION 3: MODEL CONSTRUCTION
 % ============================================

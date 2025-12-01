@@ -377,3 +377,4 @@ class SocialNetwork:
         except ImportError:
             print("matplotlib not available for visualization")
 
+

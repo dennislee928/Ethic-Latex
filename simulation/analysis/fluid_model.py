@@ -371,3 +371,4 @@ def compute_steady_state(
     
     return u_steady, x_grid
 
+
