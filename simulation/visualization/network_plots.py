@@ -11,8 +11,15 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import networkx as nx
 from typing import Optional, List, Dict, Tuple
-from ..core.social_network import SocialNetwork
-from ..core.agent import EthicalAgent
+
+# Handle relative imports for different execution contexts
+try:
+    from ..core.social_network import SocialNetwork
+    from ..core.agent import EthicalAgent
+except ImportError:
+    # Fallback for test environments or direct execution
+    from core.social_network import SocialNetwork
+    from core.agent import EthicalAgent
 
 
 def plot_network_topology(
@@ -432,5 +439,3 @@ def plot_centrality_comparison(
         plt.show()
     
     return fig
-
-

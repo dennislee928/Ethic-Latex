@@ -15,10 +15,13 @@ import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 
-# Add parent directory to path to allow imports
+# Add simulation directory and project root to path to allow imports
 script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)  # Parent of simulation directory
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from core.action_space import generate_world
 from core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate

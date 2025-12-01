@@ -28,15 +28,13 @@ jobs:
 
       - name: Run Simulation and Generate Figures
         run: |
-          # Set PYTHONPATH to include the current directory so simulation module is found
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # Set PYTHONPATH to include the current directory and simulation directory
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
           # Ensure output directory exists
           mkdir -p simulation/output/figures
           mkdir -p simulation/output
-          # Run from simulation directory so output paths are correct
-          cd simulation
-          python generate_all_figures.py
-          cd ..
+          # Run from project root with explicit path to script
+          python simulation/generate_all_figures.py
 
       - name: Run Real-Data Case Study (optional)
         run: |

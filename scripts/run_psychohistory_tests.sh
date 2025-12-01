@@ -23,13 +23,26 @@ else
 fi
 echo ""
 
-# Step 1: Install dependencies
+# Step 1: Install dependencies (best-effort, do not fail on pyarrow build issues)
 echo "[1/4] Checking dependencies..."
+set +e
 python -m pip install --upgrade pip --quiet
+PIP_UPGRADE_EXIT=$?
 if [ -f requirements.txt ]; then
     pip install -r requirements.txt --quiet
+    REQS_EXIT=$?
+else
+    REQS_EXIT=0
 fi
-echo "✓ Dependencies checked"
+set -e
+
+if [ $PIP_UPGRADE_EXIT -ne 0 ] || [ $REQS_EXIT -ne 0 ]; then
+    echo "⚠ Warning: Some dependencies could not be installed (this is non-fatal)."
+    echo "  - Common cause: pyarrow failing to build on local machines."
+    echo "  - You can manually install missing packages later if needed."
+else
+    echo "✓ Dependencies checked"
+fi
 echo ""
 
 # Step 2: Set up environment
@@ -66,7 +79,7 @@ if [ $EXIT_CODE -eq 0 ]; then
     echo "  - Text Summary: simulation/output/psychohistory_tests/test_summary.txt"
 else
     echo "=========================================="
-echo "FAILURE: Some tests failed"
-echo "=========================================="
+    echo "FAILURE: Some tests failed"
+    echo "=========================================="
 fi
 exit $EXIT_CODE
