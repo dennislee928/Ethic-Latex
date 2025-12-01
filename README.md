@@ -1,5 +1,7 @@
 # Ethical Riemann Hypothesis
 
+[![Binder](https://gesis.mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/v2/gh/dennislee928/Ethic-Latex/HEAD)
+
 A mathematical framework for analyzing moral judgment errors through an analogy with the Riemann Hypothesis in number theory.
 
 ## Project Overview
