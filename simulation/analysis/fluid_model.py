@@ -17,7 +17,7 @@ where:
 """
 
 import numpy as np
-from typing import Tuple, Optional, Dict, Callable
+from typing import Tuple, Optional, Dict, Callable, List
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
 try:
@@ -365,10 +365,7 @@ def compute_steady_state(
     # Solve
     try:
         u_steady = spsolve(A, b)
-    except:
+    except Exception:
         # Fallback: simple approximation
         u_steady = np.array([S(x) / alpha for x in x_grid])
-    
     return u_steady, x_grid
-
-

@@ -66,10 +66,7 @@ if [ $EXIT_CODE -eq 0 ]; then
     echo "  - Text Summary: simulation/output/psychohistory_tests/test_summary.txt"
 else
     echo "=========================================="
-    echo "FAILURE: Some tests failed"
-    echo "=========================================="
+echo "FAILURE: Some tests failed"
+echo "=========================================="
 fi
-
 exit $EXIT_CODE
-
-

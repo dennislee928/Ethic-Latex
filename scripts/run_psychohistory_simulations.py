@@ -116,7 +116,7 @@ class PsychohistoryTestRunner:
                         
                         self.results.append(result)
                         passed += 1
-                        print(f"  ✓ PASSED ({elapsed:.2f}s)")
+                        print(f"  [OK] PASSED ({elapsed:.2f}s)")
                         
                     except Exception as e:
                         failed += 1
@@ -127,7 +127,7 @@ class PsychohistoryTestRunner:
                             'timestamp': datetime.now().isoformat()
                         }
                         self.results.append(result)
-                        print(f"  ✗ FAILED: {e}")
+                        print(f"  [FAIL] FAILED: {e}")
         
         print(f"\nParameter Sweep Summary: {passed} passed, {failed} failed out of {test_count} tests")
         return passed, failed
@@ -186,7 +186,7 @@ class PsychohistoryTestRunner:
                 
                 self.results.append(result)
                 passed += 1
-                print(f"  ✓ PASSED ({elapsed:.2f}s, stable={stable})")
+                print(f"  [OK] PASSED ({elapsed:.2f}s, stable={stable})")
                 
             except Exception as e:
                 failed += 1
@@ -197,7 +197,7 @@ class PsychohistoryTestRunner:
                     'timestamp': datetime.now().isoformat()
                 }
                 self.results.append(result)
-                print(f"  ✗ FAILED: {e}")
+                print(f"  [FAIL] FAILED: {e}")
         
         print(f"\nLong-term Simulation Summary: {passed} passed, {failed} failed out of {test_count} tests")
         return passed, failed
@@ -253,7 +253,7 @@ class PsychohistoryTestRunner:
                 
                 self.results.append(result)
                 passed += 1
-                print(f"  ✓ PASSED ({elapsed:.2f}s)")
+                print(f"  [OK] PASSED ({elapsed:.2f}s)")
                 
             except Exception as e:
                 failed += 1
@@ -264,7 +264,7 @@ class PsychohistoryTestRunner:
                     'timestamp': datetime.now().isoformat()
                 }
                 self.results.append(result)
-                print(f"  ✗ FAILED: {e}")
+                print(f"  [FAIL] FAILED: {e}")
         
         print(f"\nStress Test Summary: {passed} passed, {failed} failed out of {test_count} tests")
         return passed, failed
@@ -322,7 +322,7 @@ class PsychohistoryTestRunner:
                 
                 self.results.append(result)
                 passed += 1
-                print(f"  ✓ PASSED ({elapsed:.2f}s)")
+                print(f"  [OK] PASSED ({elapsed:.2f}s)")
                 
             except Exception as e:
                 failed += 1
@@ -333,7 +333,7 @@ class PsychohistoryTestRunner:
                     'timestamp': datetime.now().isoformat()
                 }
                 self.results.append(result)
-                print(f"  ✗ FAILED: {e}")
+                print(f"  [FAIL] FAILED: {e}")
         
         print(f"\nBoundary Test Summary: {passed} passed, {failed} failed out of {test_count} tests")
         return passed, failed

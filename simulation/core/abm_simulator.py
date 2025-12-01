@@ -169,8 +169,8 @@ class ABMSimulator:
                         'analysis': {'erh_satisfied': False}
                     })
             
-            # Agent interactions
-            self.network.schedule_interactions(
+            # Agent interactions (scheduled via population, weighted by network)
+            self.population.schedule_interactions(
                 interaction_rule=lambda a1, a2: self.network.get_influence_strength(a1, a2),
                 interaction_probability=interaction_probability
             )
