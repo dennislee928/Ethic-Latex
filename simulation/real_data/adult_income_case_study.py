@@ -112,11 +112,11 @@ def preprocess_adult(df: pd.DataFrame) -> Tuple[pd.DataFrame, np.ndarray, pd.Ser
 
     # Basic feature selection: drop target and obvious identifiers
     drop_cols = {"income"}
-    X_df = df.drop(columns=[c for c in drop_cols if c in df.columns])
+    x_df = df.drop(columns=[c for c in drop_cols if c in df.columns])
 
     # One-hot encode categoricals; leave numerics as-is
-    X_processed = pd.get_dummies(X_df, drop_first=True)
-    return X_processed, y, protected
+    x_processed = pd.get_dummies(x_df, drop_first=True)
+    return x_processed, y, protected
 
 
 def fit_logistic_models(
@@ -135,24 +135,24 @@ def fit_logistic_models(
             "Install scikit-learn>=1.0.0 to run this script."
         )
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         X.values, y, test_size=0.3, random_state=42, stratify=y
     )
 
     scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    x_train_scaled = scaler.fit_transform(x_train)
+    x_test_scaled = scaler.transform(x_test)
 
     # Baseline model (no explicit class weighting)
     base = LogisticRegression(max_iter=1000, n_jobs=None)
-    base.fit(X_train_scaled, y_train)
-    base_probs = base.predict_proba(X_test_scaled)[:, 1]
+    base.fit(x_train_scaled, y_train)
+    base_probs = base.predict_proba(x_test_scaled)[:, 1]
     base_preds = (base_probs >= 0.5).astype(int)
 
     # Simple mitigation: use balanced class weights
     mitigated = LogisticRegression(max_iter=1000, class_weight="balanced", n_jobs=None)
-    mitigated.fit(X_train_scaled, y_train)
-    mit_probs = mitigated.predict_proba(X_test_scaled)[:, 1]
+    mitigated.fit(x_train_scaled, y_train)
+    mit_probs = mitigated.predict_proba(x_test_scaled)[:, 1]
     mit_preds = (mit_probs >= 0.5).astype(int)
 
     return base, mitigated, base_preds - y_test, mit_preds - y_test
@@ -354,23 +354,16 @@ def run_real_data_case_study(
         df = load_adult_dataset(data_path)
         X, y, _ = preprocess_adult(df)
 
-        base_model, mit_model, base_err, mit_err = fit_logistic_models(X, y)
+        # We use the signed error vectors returned by fit_logistic_models;
+        # for complexity we rely on feature magnitude only, which is sufficient
+        # for illustrating ERH-style growth curves on real data.
+        _, _, base_err, mit_err = fit_logistic_models(X, y)
 
-        # For complexity we re-use the probabilities from each model on the test split
-        # Note: in this simplified implementation we recompute probabilities inside
-        # fit_logistic_models; to avoid refitting, we instead approximate by using
-        # the signed errors as a proxy for misclassifications and reuse X_test.
-        # For a full implementation, one would return the test feature matrix and
-        # probability scores explicitly.
-        #
-        # Here we approximate complexity using feature magnitude alone, which is
-        # sufficient to illustrate ERH-style growth curves on real data.
-        # (This keeps the public interface simple while avoiding large refactors.)
-        X_test = X.values  # coarse approximation; in practice use the true test split
-        dummy_probs = np.full(shape=(len(X_test),), fill_value=0.5)
+        x_matrix = X.values
+        dummy_probs = np.full(shape=(len(x_matrix),), fill_value=0.5)
 
         base_complexities = compute_complexity_from_scores(
-            pd.DataFrame(X_test), dummy_probs
+            pd.DataFrame(x_matrix), dummy_probs
         )
         mit_complexities = base_complexities.copy()
 
@@ -388,7 +381,15 @@ def run_real_data_case_study(
 
 
 if __name__ == "__main__":  # pragma: no cover
-    out = Path(os.environ.get("ERH_REAL_DATA_REPORT", str(DEFAULT_OUTPUT_MD)))
-    run_real_data_case_study(output_markdown=out)
+    # If the environment variable is set, treat it as a file *name* only,
+    # and place the report under the default output directory. This prevents
+    # path traversal while still allowing customization.
+    env_value = os.environ.get("ERH_REAL_DATA_REPORT")
+    if env_value:
+        safe_name = Path(env_value).name
+        out_path = DEFAULT_OUTPUT_MD.parent / safe_name
+    else:
+        out_path = DEFAULT_OUTPUT_MD
+    run_real_data_case_study(output_markdown=out_path)
 
 

@@ -38,6 +38,12 @@ jobs:
           python generate_all_figures.py
           cd ..
 
+      - name: Run Real-Data Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # This step is safe if the dataset is missing; the script will exit gracefully.
+          python -m simulation.real_data.adult_income_case_study || echo "Real-data case study skipped."
+
       - name: Create Output Directories
         run: |
           mkdir -p simulation/output/figures
@@ -107,6 +113,18 @@ jobs:
       - name: Update LaTeX Content with Results
         run: |
           python scripts/update_latex.py
+
+      - name: Generate Markdown Experiment Reports
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python scripts/generate_md_reports.py
+
+      - name: Upload Markdown Experiment Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: experiment_markdown_reports
+          path: |
+            docs/EXPERIMENT_REPORTS.md
 
       - name: Compile English LaTeX Document
         uses: xu-cheng/latex-action@v3

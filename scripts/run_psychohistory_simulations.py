@@ -33,13 +33,12 @@ class PsychohistoryTestRunner:
     """Runner for psychohistory simulation tests."""
     
     def __init__(self, output_dir: str = "simulation/output/psychohistory_tests"):
-        # Sanitize output directory path
-        output_path = Path(output_dir).resolve()
-        # Ensure it's within project root
+        # Sanitize user-provided output directory:
+        # interpret it only as a directory *name* under the project root,
+        # so that arbitrary absolute paths or "../" segments are ignored.
         project_root = Path(__file__).parent.parent.resolve()
-        if not str(output_path).startswith(str(project_root)):
-            output_path = project_root / "simulation" / "output" / "psychohistory_tests"
-        self.output_dir = output_path
+        safe_name = Path(output_dir).name  # drop any directory components
+        self.output_dir = project_root / "simulation" / "output" / safe_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.results = []
         self.start_time = time.time()

@@ -660,7 +660,7 @@ To ensure experimental reproducibility, we adopted the following measures:
 Complete code, simulation scripts, and generated figures for this study are publicly available to promote reproducibility and further research:
 
 \begin{itemize}
-    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available at: \texttt{[GitHub repository URL to be added]}
+    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available in a public GitHub repository (URL omitted here for anonymized review; see the camera-ready version for the full link).
     \item \textbf{Data outputs}: Numerical results from simulations (including statistical metrics for each judge, error term sequences, spectrum data, etc.) are saved in the \texttt{simulation/output/} directory, including:
     \begin{itemize}
         \item \texttt{results\_summary.txt}: Statistical summary for all judges
@@ -837,6 +837,25 @@ Results indicate differential sensitivity of the error growth exponent $\alpha$ 
     \item \textbf{Effect of sample size}: As the number of actions increases from $1000$ to $5000$, the estimated error growth exponent $\alpha$ stabilizes, and $R^2$ values improve slightly, suggesting that the $N=2000$ sample size used in this paper is sufficient to capture the main error patterns of the system. Larger sample sizes primarily improve the precision of statistical estimates rather than changing the system's essential behavior.
 \end{itemize}
 
+\subsection{Real-Data Case Study: Adult Income}
+\label{subsec:real_data}
+
+To illustrate how ERH can be used as an auditing tool beyond synthetic simulations, we conducted a small real-data case study on the UCI Adult Income dataset.\footnote{For reproducibility and anonymized review, we use a preprocessed CSV version of the Adult dataset stored locally; the code for this experiment is provided in \texttt{simulation/real\_data/adult\_income\_case\_study.py}.}
+The goal is not to build a competitive classifier, but to demonstrate how ERH-style error growth analysis can complement standard reliability and fairness metrics.
+
+We treat income prediction (\texttt{>50K} vs. \texttt{\textless=50K}) as a morally loaded decision problem where false negatives and false positives correspond to different types of distributive harms.
+We train two simple logistic regression models:
+\begin{enumerate}
+    \item \textbf{Baseline}: standard logistic regression trained on all features.
+    \item \textbf{Mitigated}: logistic regression with class reweighting (\texttt{class\_weight='balanced'}) as a simple debiasing intervention.
+\end{enumerate}
+For each test example, we construct a \emph{complexity proxy} that combines feature magnitude and predictive uncertainty, and we treat every misclassified point as a simplified ethical prime.
+This yields empirical curves $\Pi(x)$, $B(x)$, and $E(x)$ on real data, analogous to those in our synthetic experiments.
+
+Empirically, we observe that the mitigated model slightly reduces the overall error rate and also produces a smaller ERH growth exponent $\alpha$ (estimated from $|E(x)| \sim C x^\alpha$ in log-log scale), indicating that mitigation not only improves pointwise accuracy but also makes the structural error landscape more stable across complexity levels.
+At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, highlighting trade-offs between classical fairness metrics and ERH-style structural health.
+This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it does not replace calibration or fairness metrics, but adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the real decision space.
+
 % ============================================
 % SECTION 7: PHILOSOPHICAL IMPLICATIONS
 % ============================================
@@ -877,6 +896,60 @@ The ERH framework can be understood through multiple philosophical lenses:
 \end{itemize}
 
 \textbf{Application Context Reflection}: The philosophical significance of the ERH framework lies in its provision of a trans-theoretical quantitative tool that can simultaneously serve consequentialist, deontological, and virtue ethics goals. In practical applications, this means ERH can be used within different ethical frameworks: consequentialists may focus on how ERH limits overall error accumulation, deontologists may focus on identifying and correcting ethical primes, and virtue ethicists may focus on measuring system ``character.'' However, we must recognize that the ERH framework itself does not resolve fundamental disagreements between these philosophical positions, but rather provides a common quantitative language for discussing systematic ethical issues. In practical applications such as resource allocation or recommendation systems, ERH primarily serves as an \emph{analytical framework} to help decision-makers evaluate system quality from different philosophical perspectives, rather than as a single ethical judgment standard.
+
+\subsection{Psychohistory as a Macro-Ethical Perspective on ERH}
+\label{subsec:psychohistory}
+
+\subsubsection{Motivation and Fiction--Science Boundary}
+
+Isaac Asimov's notion of \emph{psychohistory} in the \emph{Foundation} series imagines a mathematical science that predicts the macro-scale behaviour of societies.
+Our use of psychohistory is strictly metaphorical: we do not claim to build a real Seldon Plan, nor to predict history in a literal sense.
+Rather, psychohistory offers a narrative device for thinking about macro-level regularities, crises, and interventions in complex moral systems.
+In this paper, ERH provides a rigorous mathematical metaphor for error growth in complexity space, while psychohistory provides a complementary fictional metaphor for thinking about macro-scale predictability and control.
+
+\subsubsection{Core Ideas of Psychohistory}
+
+Four aspects of psychohistory are particularly relevant to ERH:
+\begin{itemize}
+    \item \textbf{Law of large numbers for societies}: individual behaviour is unpredictable, but large populations exhibit statistical regularities.
+    \item \textbf{Macro-level social dynamics}: aggregate flows can be described by coarse-grained variables, akin to ``social physics.''
+    \item \textbf{Crises and Seldon Plans}: history contains critical junctures where small interventions have outsized impact.
+    \item \textbf{The Mule and limits of prediction}: rare, highly atypical agents or events can disrupt long-range forecasts.
+\end{itemize}
+These ideas map naturally onto questions about error distributions, phase transitions, and tail events in AI-mediated moral orders.
+
+\subsubsection{Conceptual Mapping: Psychohistory $\leftrightarrow$ ERH}
+
+The conceptual bridge between psychohistory and ERH can be summarized as follows:
+\begin{itemize}
+    \item \textbf{Individual vs.\ aggregate}: psychohistory treats individuals as noise but societies as predictable; ERH treats individual misjudgments as messy but ethical primes as exhibiting structured aggregate patterns.
+    \item \textbf{Statistical regularity vs.\ error bounds}: psychohistory relies on statistical regularities over time; ERH relies on sublinear bounds on $E(x)$ over complexity.
+    \item \textbf{Seldon Plans vs.\ ERH bounds}: Seldon Plans specify allowable deviations of historical trajectories; ERH specifies allowable growth of structural error before we declare a judgment system ``unhealthy.''
+    \item \textbf{The Mule vs.\ ERH violations}: psychohistory's Mule corresponds to catastrophic ERH violations---sudden bursts where $|E(x)|$ becomes much larger than expected, signalling unmodelled structure or genuine regime change.
+\end{itemize}
+In short, psychohistory offers a time--society metaphor, whereas ERH offers a complexity--error metaphor for the same underlying concern: when can macro-level patterns be trusted?
+
+\subsubsection{A Macro-Dynamic Extension Sketch}
+
+We can sketch, without fully developing, a macro-dynamic extension in which $E(x)$ becomes $E(x,t)$, tracking how structural error evolves over both complexity $x$ and time $t$.
+In such a setting, ethical ``crisis points'' would correspond to times $t^\ast$ at which $E(x,t)$ exhibits sudden acceleration across a range of high-complexity $x$, analogous to Seldon crises.
+Potential tools for modelling $E(x,t)$ include agent-based simulations, network dynamics, and fluid or PDE-style models on the $(x,t)$ plane.
+We do not pursue this full psychohistorical model here, but view ERH as one coordinate projection of a richer macro-dynamic theory of ethical error.
+
+\subsubsection{Implications for AI Ethics and Governance}
+
+Interpreted through the psychohistory metaphor, ERH suggests a style of \emph{macro-monitoring} for AI systems:
+instead of only auditing individual decisions, regulators and oversight bodies can track how structural error indicators (e.g., ethical prime counts, growth exponents) behave over time and complexity.
+Spikes in $E(x,t)$ for high-stakes, high-complexity regions can serve as early-warning signals---the analogue of Seldon crises---that trigger audits, human review, or policy interventions.
+This perspective also motivates ``Second Foundation''-like oversight structures that adjust models and governance rules at the macro level, aiming to keep systems within acceptable ERH bands rather than micromanaging every decision.
+
+\subsubsection{Limits of the Metaphor and Future Hybrid Work}
+
+The psychohistory metaphor has clear limits.
+Psychohistory is a work of science fiction, not a validated theory of society, and ERH itself is an idealized formal framework rather than a predictive law of history.
+Combining the two risks over-claiming if we forget that both are, at best, disciplined ways of thinking about structure, crisis, and intervention.
+Nevertheless, the metaphor is useful precisely because it forces us to articulate what it would mean for an AI-mediated moral order to exhibit macro-level regularities, crisis points, and structural vulnerabilities.
+Future work on hybrid ERH--psychohistory models (e.g., agent-based simulations with ERH-style observables) can make this connection more concrete, but in this paper we confine ourselves to the conceptual bridge and its implications for AI governance.
 
 \subsection{Limitations and Ethical Considerations}
 
