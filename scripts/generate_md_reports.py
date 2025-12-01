@@ -44,6 +44,8 @@ def generate_markdown_report(output_path: Path = OUTPUT_MD) -> None:
         SIM_OUTPUT / "judge_comparison_report.md",
         SIM_OUTPUT / "results_summary.txt",
         SIM_OUTPUT / "real_data_case_study_report.md",
+        SIM_OUTPUT / "exam_cheating_case_study_report.md",
+        SIM_OUTPUT / "sexual_abuse_case_study_report.md",
         PSYCH_OUTPUT / "test_summary.txt",
         TESTS_DIR / "PSYCHOHISTORY_TESTS_README.md",
     ]

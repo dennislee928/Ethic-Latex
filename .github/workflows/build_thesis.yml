@@ -44,6 +44,16 @@ jobs:
           # This step is safe if the dataset is missing; the script will exit gracefully.
           python -m simulation.real_data.adult_income_case_study || echo "Real-data case study skipped."
 
+      - name: Run Exam Cheating Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python -m simulation.real_data.exam_cheating_case_study || echo "Exam cheating case study skipped."
+
+      - name: Run Sexual Abuse Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python -m simulation.real_data.sexual_abuse_case_study || echo "Sexual abuse case study skipped."
+
       - name: Create Output Directories
         run: |
           mkdir -p simulation/output/figures

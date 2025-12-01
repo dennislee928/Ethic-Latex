@@ -856,6 +856,9 @@ Empirically, we observe that the mitigated model slightly reduces the overall er
 At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, highlighting trade-offs between classical fairness metrics and ERH-style structural health.
 This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it does not replace calibration or fairness metrics, but adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the real decision space.
 
+In addition to Adult Income, we have implemented two further methodological case studies: one on \emph{university entrance exam cheating} (modeling integrity risks in high-stakes testing) and one on \emph{sexual abuse reporting} (modeling under-reporting and structural vulnerabilities in sensitive domains).\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
+In both settings, ERH-style analysis provides a complementary perspective to standard accuracy and fairness metrics: instead of only asking \emph{how many} cases are misclassified, we also ask \emph{how the most critical errors accumulate as scenarios become more complex}, which is particularly important for global exam integrity and abuse-related decision support.
+
 % ============================================
 % SECTION 7: PHILOSOPHICAL IMPLICATIONS
 % ============================================
