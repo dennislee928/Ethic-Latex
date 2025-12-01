@@ -543,15 +543,15 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週�
 本研究的完整程式碼、模擬腳本與生成圖表已公開提供，以促進可重現性與進一步研究：
 
 \begin{itemize}
-    \item \textbf{程式碼倉庫}：所有模擬程式碼、分析腳本與視覺化工具均已放置於公開的 GitHub 倉庫中（為配合匿名審查，本稿省略具體連結；最終定稿版本將提供完整 URL）。
-    \item \textbf{資料產出}：模擬產生的數值結果（包括各判斷者的統計指標、誤差項序列、頻譜數據等）保存在 \texttt{simulation/output/} 目錄中，包括：
+    \item \textbf{程式碼倉庫}：所有模擬程式碼、分析腳本與視覺化工具均已放置於公開的 GitHub 倉庫中：\url{https://github.com/dennislee928/Ethic-Latex}。其中，彙整實驗結果的 \texttt{docs/EXPERIMENT\_REPORTS.md} 提供了主要數值結果與對應輸出檔案的索引。
+    \item \textbf{資料產出}：模擬產生的數值結果（包括各判斷者的統計指標、誤差項序列、頻譜數據、跨隨機種子的 $\alpha$ 穩定性表格等）保存在 \texttt{simulation/output/} 目錄中，包括：
     \begin{itemize}
         \item \texttt{results\_summary.txt}：所有判斷者的統計摘要
         \item \texttt{judge\_comparison\_report.md}：詳細比較報告
         \item \texttt{spectrum\_data.json} 與 \texttt{zeros\_data.json}：頻譜與零點分析數據
         \item \texttt{*.csv}：參數敏感度分析結果
     \end{itemize}
-    \item \textbf{圖表生成}：所有論文圖表由 \texttt{simulation/generate\_all\_figures.py} 腳本自動生成，執行該腳本可完全重現所有圖表。圖表以 PDF 格式保存在 \texttt{simulation/output/figures/} 目錄。
+    \item \textbf{圖表生成}：所有論文圖表由 \texttt{simulation/generate\_all\_figures.py} 腳本自動生成，執行該腳本可完全重現所有圖表。圖表以 PDF 格式保存在 \texttt{simulation/output/figures/} 目錄，並複製至 \texttt{figures/} 目錄供 \LaTeX 使用。
     \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
@@ -575,6 +575,26 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 % ============================================
 \section{實驗結果與分析}
 \label{sec:results}
+
+\subsection{誤差行為總覽表}
+
+在進入各個判斷者的詳細敘述之前，表~\ref{tab:summary_judges_zh} 統整了每種類型在主要指標上的表現。
+
+\begin{table}[h]
+\centering
+\caption{各判斷者類型的誤差行為總覽。錯誤率與平均 $|\Delta(a)|$ 皆在 $N = 2000$ 個行動上計算。「是否在 ERH 式界限內？」表示估計增長指數 $\alpha$ 是否不超過 ERH 風格的最壞情況目標（約 $\alpha \approx 0.5$）。}
+\label{tab:summary_judges_zh}
+\begin{tabular}{lccccp{6.5cm}}
+\toprule
+\textbf{判斷者類型} & \textbf{錯誤率} & \textbf{平均 $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{是否在 ERH 式界限內？} & \textbf{質性評估} \\
+\midrule
+偏見判斷者       & 0.132 & 0.185 & $-0.629$ & 是 & 結構上非常安全（$|E(x)|$ 隨複雜度快速下降），但在某些區域仍呈現系統性偏見。 \\
+隨機判斷者       & 0.256 & 0.209 & $-0.171$ & 是 & 誤差增長緩慢，但整體錯誤率與倫理素數數量偏高，顯示中等複雜度區域受雜訊主導。 \\
+保守判斷者       & 0.611 & 0.342 & $-0.046$ & 是 & 誤差增長幾乎為零（沒有結構性爆炸），但整體錯誤水準極高，在道德上難以接受。 \\
+激進判斷者       & 0.149 & 0.183 & $-0.452$ & 是 & 誤差增長相當溫和且錯誤率較低，但在簡單案例上的極端行為仍可能帶來倫理風險。 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{代表性結果}
 
@@ -773,14 +793,15 @@ ERH 框架可以透過多個哲學透鏡理解：
 
 \textbf{應用情境反思}：ERH 框架的哲學意義在於它提供了一個跨理論的定量工具，可以同時服務於結果主義、義務論與美德倫理學的目標。在實際應用中，這意味著 ERH 可以在不同倫理框架下使用：結果主義者可能關注 ERH 如何限制整體誤差累積，義務論者可能關注倫理素數的識別與修正，而美德倫理學的支持者可能關注系統「品格」的測量。然而，我們必須認識到 ERH 框架本身並不解決這些哲學立場之間的根本分歧，而是提供一種共同的定量語言來討論系統性倫理問題。在資源分配或推薦系統等實際應用中，ERH 主要作為一種\emph{分析框架}，幫助決策者從不同哲學角度評估系統品質，而非作為單一的倫理判斷標準。
 
-\subsection{限制與倫理考量}
+\subsection{限制與效度威脅}
 
-我們承認幾個限制：
+我們承認幾個限制與對效度的潛在威脅：
 \begin{itemize}
-    \item 與質數的類比是啟發性的，不是精確的
-    \item 真實道德值 $V(a)$ 是理想化的，在實踐中可能不存在
-    \item 框架假設複雜度可以量化，這可能受到質疑
-    \item ERH 為倫理系統提供必要但非充分條件
+    \item \textbf{高度理想化的模型}：我們使用合成行動、風格化的判斷者與明確給定的真實值 $V(a)$ 來建構框架，這些設定在真實世界中往往無法完全滿足。
+    \item \textbf{與質數的類比是啟發性的而非精確對應}：倫理素數僅在結構層面借用了質數的語言，並不主張道德錯誤真的服從與數論相同的定理。
+    \item \textbf{複雜度與倫理素數定義具主觀性}：框架假設複雜度可以量化，且倫理素數的選取依賴設計好的重要性分位數與結構性判準，這些選擇在哲學與實務上都具有爭議空間。
+    \item \textbf{ERH 僅為必要條件}：ERH 類型的結構性誤差上界最多只能視為倫理系統的必要條件，而非道德可接受性的充分條件；如高錯誤率的保守判斷者即便在誤差增長上優於 ERH 界限，仍在實務上不可接受。
+    \item \textbf{心理史學整合的層級限制}：心理史學的使用僅停留在概念與模擬層級，是一種幫助思考宏觀誤差結構與危機動力學的隱喻，而非對真實社會歷程的可驗證預測理論。
 \end{itemize}
 
 % ============================================
@@ -830,6 +851,8 @@ ERH 的違反（例如，$\alpha > 1$）表明\emph{系統性失敗模式}：
     \item \textbf{資源分配}：評估演算法資源分配中的公平性
 \end{itemize}
 
+為了支援上述應用，本研究所使用的模擬腳本、設定檔、詳細日誌與生成報告皆已公開於 \url{https://github.com/dennislee928/Ethic-Latex}，其中彙整實驗結果的 \texttt{docs/EXPERIMENT\_REPORTS.md} 與 \texttt{simulation/output/} 目錄可作為主要的補充材料來源。
+
 % ============================================
 % 第九節：結論
 % ============================================
@@ -878,9 +901,7 @@ ERH 的違反（例如，$\alpha > 1$）表明\emph{系統性失敗模式}：
 
 \section*{致謝}
 
-本研究感謝所有為本文提供寶貴建議與反饋的同行。我們特別感謝 [指導老師/合作者姓名] 在研究過程中提供的指導與支持。本研究使用的開源軟體工具與 Python 生態系統為實驗分析提供了重要基礎。所有模擬程式碼與實驗數據均已公開，以便於研究社群的重現與進一步發展。
-
-本研究的部分工作獲得 [資助機構/經費來源，若有] 的支持。文責由作者自負。
+本研究感謝所有為本文提供寶貴建議與反饋的同行。特別感謝 胡君毅先生 在研究過程中提供的指導與支持。本研究使用的開源軟體工具與 Python 生態系統為實驗分析提供了重要基礎。所有模擬程式碼與實驗數據均已公開至https://github.com/dennislee928/Ethic-Latex，以便於研究社群的重現與進一步發展。
 
 \bibliographystyle{plainnat}
 \bibliography{references}
