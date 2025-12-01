@@ -44,12 +44,12 @@ echo ""
 
 # Step 4: Run simulation and generate figures
 echo "[4/9] Running simulation and generating figures..."
-cd "$PROJECT_ROOT/simulation"
 # Ensure output directory exists before running
-mkdir -p output/figures
-mkdir -p output
-python generate_all_figures.py
-cd "$PROJECT_ROOT"
+mkdir -p simulation/output/figures
+mkdir -p simulation/output
+# Run from project root with explicit path to script
+export PYTHONPATH="$PYTHONPATH:$PROJECT_ROOT:$PROJECT_ROOT/simulation"
+python "$PROJECT_ROOT/simulation/generate_all_figures.py"
 echo "✓ Figures generated"
 echo ""
 
