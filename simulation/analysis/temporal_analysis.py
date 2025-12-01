@@ -205,8 +205,10 @@ def detect_anomalies(
                         severity = 'medium'
             
             # Check ERH violation
+            violation_ratio = None
             if method in ['erh_bound', 'combined']:
                 erh_bound = erh_bounds[x_idx]
+                violation_ratio = error_mag / (erh_bound + 1e-10)  # Avoid division by zero
                 if error_mag > erh_bound * 1.5:  # 50% above bound
                     erh_violation = True
                     if not is_anomaly:
@@ -227,7 +229,7 @@ def detect_anomalies(
                     severity = 'high'
             
             if is_anomaly:
-                anomalies.append({
+                anomaly_dict = {
                     'time': t,
                     'complexity': x,
                     'error_value': error_value,
@@ -235,7 +237,10 @@ def detect_anomalies(
                     'z_score': z_score,
                     'erh_violation': erh_violation,
                     'severity': severity
-                })
+                }
+                if violation_ratio is not None:
+                    anomaly_dict['violation_ratio'] = violation_ratio
+                anomalies.append(anomaly_dict)
     
     # Sort by severity and magnitude
     severity_order = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}
