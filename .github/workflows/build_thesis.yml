@@ -65,9 +65,27 @@ jobs:
           papermill -k python3 04_parameter_sensitivity.ipynb 04_out.ipynb || echo "⚠ Notebook 04 failed, continuing..."
           papermill -k python3 06_baseline_comparison.ipynb 06_out.ipynb || echo "⚠ Notebook 06 failed, continuing..."
           papermill -k python3 07_zeta_zeros_deep_analysis.ipynb 07_out.ipynb || echo "⚠ Notebook 07 failed, continuing..."
+          papermill -k python3 08_psychohistory_integration.ipynb 08_out.ipynb || echo "⚠ Notebook 08 failed, continuing..."
 
           # Return to project root
           cd ../..
+
+      - name: Run Unit Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          # Run unit tests for psychohistory modules
+          pytest tests/test_temporal_erh.py tests/test_agent_framework.py tests/test_social_network.py \
+                 tests/test_meta_monitor.py tests/test_hybrid_model.py tests/test_psychohistory_integration.py \
+                 -v --tb=short || echo "⚠ Some unit tests failed, continuing..."
+
+      - name: Run Psychohistory Simulation Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          mkdir -p simulation/output/psychohistory_tests
+          # Run quick tests in CI to save time
+          python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
 
       - name: Prepare Figures for LaTeX
         run: |

@@ -75,6 +75,7 @@ NOTEBOOKS=(
     "04_parameter_sensitivity.ipynb"
     "06_baseline_comparison.ipynb"
     "07_zeta_zeros_deep_analysis.ipynb"
+    "08_psychohistory_integration.ipynb"
 )
 
 # Change to notebooks directory so relative paths work correctly
@@ -99,8 +100,18 @@ cd "$PROJECT_ROOT"
 echo "✓ Notebooks executed"
 echo ""
 
+# Step 6.5: Run psychohistory tests (optional, can be skipped if time is limited)
+echo "[6.5/10] Running psychohistory simulation tests (quick mode)..."
+cd "$PROJECT_ROOT"
+mkdir -p simulation/output/psychohistory_tests
+python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || {
+    echo "  ⚠ Warning: Psychohistory tests failed, continuing..."
+}
+echo "✓ Psychohistory tests completed"
+echo ""
+
 # Step 7: Prepare figures for LaTeX
-echo "[7/9] Preparing figures for LaTeX..."
+echo "[7/10] Preparing figures for LaTeX..."
 mkdir -p figures
 # Copy figures from simulation/output/figures (where generate_all_figures.py saves them)
 if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.pdf 2>/dev/null)" ]; then
@@ -116,14 +127,14 @@ echo "✓ Figures prepared"
 echo ""
 
 # Step 8: Integrate figures and update LaTeX content
-echo "[8/9] Integrating figures and updating LaTeX content..."
+echo "[8/10] Integrating figures and updating LaTeX content..."
 python scripts/integrate_figures.py
 python scripts/update_latex.py
 echo "✓ LaTeX content updated"
 echo ""
 
 # Step 9: Compile LaTeX documents
-echo "[9/9] Compiling LaTeX documents..."
+echo "[9/10] Compiling LaTeX documents..."
 
 # Check if xelatex is available
 if command -v xelatex &> /dev/null; then

@@ -20,9 +20,17 @@ from .social_network import SocialNetwork
 from .agent import AgentPopulation
 from .action_space import Action, generate_world
 from .judgement_system import BaseJudge
-from ..analysis.opinion_dynamics import degroot_model, hegselmann_krause_model, aggregate_beliefs
-from ..analysis.fluid_model import solve_error_density_pde, fit_fluid_parameters, detect_critical_phenomena
-from ..analysis.temporal_analysis import analyze_temporal_trends, detect_anomalies, forecast_error_growth
+
+# Handle relative imports for both package and test environments
+try:
+    from ..analysis.opinion_dynamics import degroot_model, hegselmann_krause_model, aggregate_beliefs
+    from ..analysis.fluid_model import solve_error_density_pde, fit_fluid_parameters, detect_critical_phenomena
+    from ..analysis.temporal_analysis import analyze_temporal_trends, detect_anomalies, forecast_error_growth
+except ImportError:
+    # Fallback for test environments or direct execution
+    from analysis.opinion_dynamics import degroot_model, hegselmann_krause_model, aggregate_beliefs
+    from analysis.fluid_model import solve_error_density_pde, fit_fluid_parameters, detect_critical_phenomena
+    from analysis.temporal_analysis import analyze_temporal_trends, detect_anomalies, forecast_error_growth
 
 
 class HybridPsychohistoryModel:

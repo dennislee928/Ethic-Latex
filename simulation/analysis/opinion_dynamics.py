@@ -13,8 +13,15 @@ Models implemented:
 
 import numpy as np
 from typing import List, Dict, Optional, Callable, Tuple
-from ..core.social_network import SocialNetwork
-from ..core.agent import EthicalAgent
+
+# Handle relative imports for both package and test environments
+try:
+    from ..core.social_network import SocialNetwork
+    from ..core.agent import EthicalAgent
+except ImportError:
+    # Fallback for test environments or direct execution
+    from core.social_network import SocialNetwork
+    from core.agent import EthicalAgent
 
 
 def degroot_model(

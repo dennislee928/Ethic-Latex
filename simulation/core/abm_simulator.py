@@ -277,7 +277,10 @@ class ABMSimulator:
         E_xt = compute_E_temporal(Pi_xt, B_xt, time_steps, X_max)
         
         # ERH satisfaction
-        from ..analysis.temporal_analysis import compute_temporal_erh_satisfaction
+        try:
+            from ..analysis.temporal_analysis import compute_temporal_erh_satisfaction
+        except ImportError:
+            from analysis.temporal_analysis import compute_temporal_erh_satisfaction
         erh_satisfaction = compute_temporal_erh_satisfaction(E_xt, X_max=X_max)
         
         return {
