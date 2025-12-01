@@ -43,8 +43,9 @@ print("ETHICAL RIEMANN HYPOTHESIS - FIGURE GENERATION")
 print("=" * 70)
 print()
 
-# Ensure output directory exists
-os.makedirs('output/figures', exist_ok=True)
+# Ensure output directory exists (relative to script directory)
+output_dir = os.path.join(script_dir, 'output', 'figures')
+os.makedirs(output_dir, exist_ok=True)
 
 print("[1/10] Generating action space (N=2000)...")
 actions = generate_world(
@@ -96,7 +97,7 @@ Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes_biased, X_max=100, baseline
 plot_Pi_B_E(
     x_vals, Pi_x, B_x, E_x,
     title="Ethical Prime Distribution (Biased Judge)",
-    save_path='output/figures/paper_fig1_pi_b_e.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig1_pi_b_e.pdf")
@@ -107,7 +108,7 @@ analysis = analyze_error_growth(E_x, x_vals)
 plot_error_growth(
     x_vals, E_x, analysis,
     title="Error Growth Analysis (Biased Judge)",
-    save_path='output/figures/paper_fig2_error_growth.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig2_error_growth.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig2_error_growth.pdf")
@@ -117,7 +118,7 @@ print("\n[6/10] Figure 3: Multi-judge error comparison...")
 error_comparison = compare_error_distributions(results, X_max=100)
 plot_multi_judge_errors(
     error_comparison,
-    save_path='output/figures/paper_fig3_judge_comparison.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig3_judge_comparison.pdf")
@@ -128,7 +129,7 @@ plot_judge_comparison(
     comparison,
     metric='estimated_exponent',
     title='Estimated Growth Exponent α by Judge Type',
-    save_path='output/figures/paper_fig4_exponent_comparison.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig4_exponent_comparison.pdf")
@@ -141,7 +142,7 @@ peaks = analyze_spectrum_peaks(freqs, amps, num_peaks=5)
 plot_spectrum(
     freqs, amps, peaks,
     title="Frequency Spectrum of Ethical Primes (Biased Judge)",
-    save_path='output/figures/paper_fig5_spectrum.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig5_spectrum.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig5_spectrum.pdf")
@@ -158,7 +159,7 @@ zeros = find_approximate_zeros(
 plot_zero_distribution(
     zeros,
     title="Ethical Zeta Function Zeros in Complex Plane",
-    save_path='output/figures/paper_fig6_zeros.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig6_zeros.pdf'),
     show=False
 )
 print(f"      Found {len(zeros)} approximate zeros")
@@ -169,7 +170,7 @@ print("\n[10/10] Figure 7: Complexity distribution...")
 plot_complexity_distribution(
     actions,
     title="Action Complexity Distribution (Zipf)",
-    save_path='output/figures/paper_fig7_complexity_dist.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf'),
     show=False
 )
 print("      Saved: output/figures/paper_fig7_complexity_dist.pdf")
