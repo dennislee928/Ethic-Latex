@@ -350,8 +350,17 @@ class MetaMonitor:
         if len(E_xt_history) == 0:
             return self.erh_params
         
+        # Normalize all errors to 2D arrays (time_steps, X_max)
+        normalized_history = []
+        for E_xt in E_xt_history:
+            E_xt = np.asarray(E_xt)
+            if E_xt.ndim == 1:
+                # Reshape 1D array to (1, X_max)
+                E_xt = E_xt.reshape(1, -1)
+            normalized_history.append(E_xt)
+        
         # Aggregate all historical errors
-        all_errors = np.concatenate(E_xt_history, axis=0)
+        all_errors = np.concatenate(normalized_history, axis=0)
         time_steps_total = all_errors.shape[0]
         X_max = all_errors.shape[1]
         x_values = np.arange(1, X_max + 1)
@@ -432,5 +441,3 @@ class MetaMonitor:
     def disable_monitoring(self):
         """Disable monitoring."""
         self.monitoring_active = False
-
-

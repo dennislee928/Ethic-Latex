@@ -41,10 +41,10 @@ class TestMetaMonitor:
         """Test adaptive parameter adjustment."""
         monitor = MetaMonitor()
         
-        # Create error history
+        # Create error history (2D array: time_steps x X_max)
         E_xt_history = []
         for t in range(5):
-            E_xt = np.random.rand(10) * 0.5  # Small errors
+            E_xt = np.random.rand(1, 10) * 0.5  # Shape: (1, 10) for each time step
             E_xt_history.append(E_xt)
         
         new_params = monitor.adaptive_erh_parameters(E_xt_history, target_exponent=0.5)
@@ -71,5 +71,3 @@ class TestMetaMonitor:
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
-
-
