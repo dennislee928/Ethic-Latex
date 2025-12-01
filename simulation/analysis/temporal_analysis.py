@@ -449,5 +449,3 @@ def compute_temporal_erh_satisfaction(
         'time_steps_total': time_steps,
         'satisfaction_rate': time_steps_satisfied / time_steps if time_steps > 0 else 0.0
     }
-
-

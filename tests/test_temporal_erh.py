@@ -118,14 +118,16 @@ class TestTemporalERH:
         # ERH bound at x=5: C * x^(0.5 + epsilon) = 1.0 * 5^(0.5 + 0.1) ≈ 1.0 * 5^0.6 ≈ 2.6
         # Threshold = bound * 1.5 ≈ 3.9, so we need error > 3.9
         E_xt = np.zeros((3, 10))
+        # E_xt[t, x_idx] where x_idx = complexity - 1
+        # So E_xt[1, 4] corresponds to t=1, complexity=5
         E_xt[1, 4] = 10.0  # Large violation at complexity 5 (index 4)
         
         anomalies = detect_mule_anomalies(E_xt, C=1.0, epsilon=0.1, X_max=10, threshold_multiplier=1.5)
         
-        assert len(anomalies) > 0
+        assert len(anomalies) > 0, f"No anomalies detected, but expected one at t=1, x=5"
         # Check that the violation at t=1, x=5 is detected
-        assert any(a['time'] == 1 and a['complexity'] == 5 for a in anomalies), \
-            f"Expected anomaly at t=1, x=5, but got: {anomalies}"
+        found = any(a['time'] == 1 and a['complexity'] == 5 for a in anomalies)
+        assert found, f"Expected anomaly at t=1, x=5, but got: {anomalies}"
 
 
 if __name__ == '__main__':
