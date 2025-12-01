@@ -388,6 +388,99 @@ The ERH states that the cumulative error in predicting critical misjudgments gro
     \item The system maintains structural integrity across scales
 \end{itemize}
 
+\subsection{Probabilistic Setting}
+\label{subsec:prob_setting}
+
+To connect ERH with a probabilistic view of judgment systems, we model ethical prime generation as a random process over complexity levels.
+For each integer complexity level $c \in \{1,2,\dots\}$, let $N(c)$ denote the (possibly random) number of actions with complexity exactly $c$, and let
+\[
+X_c = \#\{a \in \mathcal{A} : c(a)=c,\ a \text{ is an ethical prime}\}
+\]
+be the random number of ethical primes at complexity $c$.
+Then the cumulative prime count and baseline can be written as
+\[
+\Pi(x) = \sum_{c \le x} X_c,
+\qquad
+B(x) = \sum_{c \le x} \mu_c,
+\]
+where $\mu_c = \mathbb{E}[X_c]$ is the expected number of ethical primes at level $c$ under some smooth generative model.
+The error term becomes
+\[
+E(x) = \sum_{c \le x} (X_c - \mu_c).
+\]
+
+We make the following assumptions:
+\begin{itemize}
+    \item[(A1)] (\emph{Controlled growth of candidate actions}) There exist constants $C_0,d > 0$ such that almost surely
+    \[
+    0 \le X_c \le N(c) \le C_0 c^d
+    \quad \text{for all } c \ge 1.
+    \]
+    \item[(A2)] (\emph{Decaying prime rate}) There exist constants $C_1,\beta > 0$ such that
+    \[
+    \mu_c = \mathbb{E}[X_c] \le C_1 c^{-\beta} N(c)
+    \quad \text{for all sufficiently large } c.
+    \]
+    Intuitively, the probability that a high-complexity action becomes an ethical prime decays as a power of $c$.
+    \item[(A3)] (\emph{Approximate independence}) Conditional on $N(c)$, the variables $X_c$ are independent across complexities, and each $X_c$ can be viewed as a sum of at most $N(c)$ bounded contributions (e.g., Bernoulli indicators for each action).
+\end{itemize}
+
+Assumptions (A1)--(A3) capture the idea that while there may be many high-complexity actions, ethical primes become increasingly rare, and prime occurrences at different complexity levels do not exhibit pathological long-range dependence.
+
+\subsection{A Non-trivial Probabilistic Theorem}
+\label{subsec:prob_theorem}
+
+Under the probabilistic setting above, we can show that ERH-type bounds arise naturally when ethical primes become sufficiently rare at high complexity.
+
+\begin{theorem}[Probabilistic ERH Bound under Decaying Prime Rate]
+\label{thm:prob_erh}
+Suppose (A1)--(A3) hold with parameters $C_0,d,C_1,\beta>0$.
+Assume moreover that $\beta > 1$ and that for some $\varepsilon \in (0, \tfrac{\beta-1}{2})$ the following variance bound holds:
+\[
+\operatorname{Var}(X_c) \le C_2 c^{d-\beta}
+\quad \text{for all sufficiently large } c
+\]
+for a constant $C_2>0$.
+Then there exists a constant $C>0$ (depending on $C_0,C_1,C_2,d,\beta,\varepsilon$) such that with probability at least $1 - O(x^{-\varepsilon})$ we have
+\[
+|E(x)| \le C\, x^{1/2+\varepsilon}
+\quad \text{for all sufficiently large } x.
+\]
+In particular, under these assumptions the judgment system satisfies an ERH-type sublinear growth bound for the error term with high probability.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+Write $Y_c = X_c - \mu_c$, so that $E(x) = \sum_{c \le x} Y_c$ and $\mathbb{E}[Y_c]=0$.
+By (A1) and (A2), $|Y_c| \le X_c + \mu_c \le 2 C_0 c^d$ for all large $c$, and by the variance assumption we have
+\[
+\sum_{c \le x} \operatorname{Var}(Y_c)
+ = \sum_{c \le x} \operatorname{Var}(X_c)
+ \le C_2 \sum_{c \le x} c^{d-\beta}
+ = O(x^{d-\beta+1}).
+\]
+Since $\beta>1$, the exponent $d-\beta+1$ is strictly less than $d$.
+
+Using Bernstein's inequality (or another standard concentration inequality for sums of independent, bounded random variables), for any $t>0$ we obtain
+\[
+\mathbb{P}\big(|E(x)| \ge t\big)
+\le 2 \exp\left(
+ - \frac{t^2/2}{\sum_{c \le x} \operatorname{Var}(Y_c) + M t}
+\right),
+\]
+where $M$ is a bound on $|Y_c|$.
+Substituting the bounds above and choosing $t = K x^{1/2+\varepsilon}$ for a suitable constant $K>0$, the exponent becomes polynomially small in $x$ provided $\varepsilon < (\beta-1)/2$.
+Thus we obtain
+\[
+\mathbb{P}\big(|E(x)| \ge K x^{1/2+\varepsilon}\big)
+ = O(x^{-\varepsilon})
+\]
+for large $x$.
+Applying a union bound over dyadic scales of $x$ yields the claimed high-probability bound for all sufficiently large $x$ simultaneously.
+\end{proof}
+
+This theorem is intentionally modest in scope: it does not claim that all reasonable judgment systems must satisfy ERH, but rather that \emph{under explicit probabilistic assumptions about how ethical primes thin out at high complexity}, an ERH-type bound on $E(x)$ follows from standard concentration arguments.
+In this sense, ERH can be understood as a mathematically natural regularity condition for judgment systems whose structural failures do not explode in the tail.
+
 \subsection{Comparison with Classical Riemann Hypothesis}
 
 \begin{table}[h]
