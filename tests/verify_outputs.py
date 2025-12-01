@@ -17,6 +17,10 @@ expected_files = [
     "figures/paper_fig5_spectrum.pdf",
     "figures/paper_fig6_zeros.pdf",
     "figures/paper_fig7_complexity_dist.pdf",
+    "figures/08_3d_error_surface.pdf",
+    "figures/08_anomaly_timeline.pdf",
+    "figures/08_forecast_comparison.pdf",
+    "figures/08_network_topology.pdf",
     "judge_comparison_report.md",
     "results_summary.txt"
 ]

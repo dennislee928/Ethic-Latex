@@ -114,6 +114,21 @@ Test Notebook 07 Zeta Zeros Deep Analysis
     Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}07_critical_line_analysis.pdf    1000
     Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}07_zero_correlation.pdf    1000
 
+Test Notebook 08 Psychohistory Integration
+    [Documentation]    Test that 08_psychohistory_integration.ipynb executes successfully with all psychohistory components
+    [Tags]    notebook    psychohistory    integration
+    ${notebook}=    Set Variable    08_psychohistory_integration.ipynb
+    ${notebook_path}=    Join Path    ${NOTEBOOKS_DIR}    ${notebook}
+    
+    # Execute notebook
+    Execute Notebook    ${notebook_path}
+    
+    # Verify expected output files
+    Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}08_3d_error_surface.pdf    1000
+    Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}08_anomaly_timeline.pdf    1000
+    Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}08_forecast_comparison.pdf    1000
+    Verify Output File Exists    ${OUTPUT_DIR}${/}figures${/}08_network_topology.pdf    1000
+
 *** Keywords ***
 Execute Notebook
     [Arguments]    ${notebook_path}
