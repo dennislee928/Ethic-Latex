@@ -1,0 +1,188 @@
+======================================================================
+PSYCHOHISTORY SIMULATION TEST REPORT
+======================================================================
+
+Total Tests: 43
+Passed: 0
+Failed: 43
+Success Rate: 0.0%
+Total Time: 13.64s
+
+Timestamp: 2025-12-01T16:43:37.950567
+
+======================================================================
+DETAILED RESULTS
+======================================================================
+
+Test: param_sweep_agents10_toporandom_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toporandom_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toporandom_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposmall_world_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposmall_world_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposmall_world_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposcale_free_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposcale_free_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents10_toposcale_free_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toporandom_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toporandom_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toporandom_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposmall_world_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposmall_world_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposmall_world_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposcale_free_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposcale_free_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents50_toposcale_free_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toporandom_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toporandom_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toporandom_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposmall_world_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposmall_world_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposmall_world_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposcale_free_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposcale_free_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents100_toposcale_free_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toporandom_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toporandom_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toporandom_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposmall_world_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposmall_world_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposmall_world_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposcale_free_steps5
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposcale_free_steps10
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: param_sweep_agents200_toposcale_free_steps20
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: long_term_steps50
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: long_term_steps100
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: stress_agents200
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: stress_agents500
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: boundary_minimal
+  Status: FAILED
+  Error: k>n, choose smaller k or larger n
+
+Test: boundary_small
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
+Test: boundary_large_agents
+  Status: FAILED
+  Error: 'SocialNetwork' object has no attribute 'schedule_interactions'
+
