@@ -378,6 +378,11 @@ Let $\mathcal{J}$ be a judgment system and let $E(x) = \Pi(x) - B(x)$ be the err
 for all $x$ in the complexity range.
 \end{theorem}
 
+\begin{remark}[ERH as a Necessary but Not Sufficient Condition]
+\label{rem:erh_necessary}
+The ERH-style bound $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ provides a \emph{necessary condition} for structural health of a judgment system: it ensures that error growth remains sublinear and bounded. However, satisfying this bound alone is \emph{not sufficient} to guarantee that a system is morally acceptable. A judgment system must also maintain low overall error rates and avoid systematic biases. As demonstrated in our experimental results (Section~\ref{sec:results}), a system can satisfy the ERH-style bound while still exhibiting unacceptably high mistake rates (e.g., the Conservative Judge with 61.1\% mistake rate). Therefore, the ERH-style bound should be evaluated alongside other metrics such as overall accuracy, fairness measures, and domain-specific quality criteria.
+\end{remark}
+
 \subsection{Intuitive Interpretation}
 
 The ERH states that the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$ (up to a small factor $x^\varepsilon$). This is a \emph{sublinear} growth rate, meaning:
@@ -988,7 +993,7 @@ We acknowledge several limitations and threats to validity:
     \item \textbf{Model idealization}: Our simulations use synthetic actions, stylized judgment systems, and explicitly specified ``true'' moral values $V(a)$. In real-world settings, $V(a)$ is inaccessible, and both complexity and importance are noisy, contested constructs.
     \item \textbf{Heuristic analogy to prime numbers}: The analogy with prime numbers is heuristic rather than exact. Ethical primes borrow the language of prime distributions without claiming that moral errors literally obey theorems from analytic number theory.
     \item \textbf{Subjective design choices}: The framework assumes that complexity can be quantified and that ethical primes can be selected via importance quantiles and structural criteria. These design choices are philosophically and practically debatable, and alternative operationalizations may yield different prime sets.
-    \item \textbf{ERH as a necessary but not sufficient condition}: The ERH-style structural bound is, at best, a necessary condition for a morally acceptable system, not a sufficient one. As the Conservative Judge illustrates, a system can have error growth well below the ERH-style worst-case bound while still exhibiting an unacceptably high overall mistake rate.
+    \item \textbf{ERH as a necessary but not sufficient condition}: The ERH-style structural bound is, at best, a necessary condition for a morally acceptable system, not a sufficient one. As the Conservative Judge illustrates, a system can have error growth well below the ERH-style worst-case bound while still exhibiting an unacceptably high overall mistake rate. This aligns with the formal statement in Section~\ref{rem:erh_necessary}: satisfying the ERH-style bound ensures structural health in terms of error growth patterns, but must be complemented by low overall error rates and absence of systematic biases to constitute an acceptable moral judgment system.
     \item \textbf{Psychohistory integration at conceptual level}: The psychohistory layer is used only at the level of conceptual modelling and simulation. It is not a validated theory of society or history, and we do not claim real-world predictive power; its role is to structure thinking about macro-level error patterns and crises.
 \end{itemize}
 
