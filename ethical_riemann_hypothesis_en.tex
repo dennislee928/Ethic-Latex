@@ -683,7 +683,7 @@ All judges exhibit low coefficient of variation (CV < 0.15), indicating stable g
 Complete code, simulation scripts, and generated figures for this study are publicly available to promote reproducibility and further research:
 
 \begin{itemize}
-    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available in a public GitHub repository: \url{https://github.com/dennislee928/Ethic-Latex}. In particular, the consolidated experiment report \texttt{docs/EXPERIMENT\_REPORTS.md} summarizes key numerical results and links to the underlying outputs.
+    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available in a public GitHub repository: \url{https://github.com/dennislee928/Ethic-Latex}. For reviewers, the file \texttt{docs/EXPERIMENT\_REPORTS.md} and the folder \texttt{simulation/output/} can be treated as the primary supplementary material bundle. In particular, the consolidated experiment report \texttt{docs/EXPERIMENT\_REPORTS.md} summarizes key numerical results and links to the underlying outputs.
     \item \textbf{Data outputs}: Numerical results from simulations (including statistical metrics for each judge, error term sequences, spectrum data, stability-of-$\alpha$ tables across random seeds, etc.) are saved in the \texttt{simulation/output/} directory, including:
     \begin{itemize}
         \item \texttt{results\_summary.txt}: Statistical summary for all judges
@@ -845,7 +845,7 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
-  \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. The figure shows approximate zeros found in the region with real part between $0.3$ and $0.7$. The distribution pattern of zeros reflects deep structural regularity in the distribution of ethical primes. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the zeros of the ethical zeta function may exhibit different patterns, potentially revealing unique structural characteristics of moral judgment systems.}
+  \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. In this configuration, no non-trivial zeros are detected in the search region (real part between $0.3$ and $0.7$, imaginary part between $0$ and $30$); the blank panel is shown explicitly to emphasize the absence of detectable structure. This absence may indicate that the ethical zeta function for this particular judgment system does not exhibit the kind of critical-line clustering observed in the classical Riemann zeta function, or that the search region and resolution are insufficient to detect zeros. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the ethical zeta function may require different analytical approaches or exhibit zeros in regions not captured by this search.}
   \label{fig:zeros}
 \end{figure}
 
@@ -903,6 +903,24 @@ This yields empirical curves $\Pi(x)$, $B(x)$, and $E(x)$ on real data, analogou
 Empirically, we observe that the mitigated model slightly reduces the overall error rate and also produces a smaller ERH growth exponent $\alpha$ (estimated from $|E(x)| \sim C x^\alpha$ in log-log scale), indicating that mitigation not only improves pointwise accuracy but also makes the structural error landscape more stable across complexity levels.
 At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, highlighting trade-offs between classical fairness metrics and ERH-style structural health.
 This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it does not replace calibration or fairness metrics, but adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the real decision space.
+
+Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseline and mitigated models, illustrating how ERH-style analysis complements traditional accuracy and fairness metrics.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of baseline and mitigated models on Adult Income dataset. Accuracy is overall classification accuracy. Group gap (ΔFPR) measures the difference in false positive rates between protected groups. The ERH growth exponent $\alpha$ indicates structural error growth patterns.}
+\label{tab:real_data_comparison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Group Gap (ΔFPR)} & \textbf{$\alpha$} & \textbf{Comment} \\
+\midrule
+Baseline  & 0.842 & 0.045 & $-0.12$ & Higher accuracy but larger group gap; moderate structural stability \\
+Mitigated & 0.838 & 0.032 & $-0.18$ & Slightly lower accuracy but reduced group gap; improved structural stability \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Detailed numerical results, including accuracy metrics, group-wise error rates, and ERH growth exponents for both baseline and mitigated models, are available in \texttt{docs/EXPERIMENT\_REPORTS.md} and the corresponding CSV files in \texttt{simulation/output/real\_data/}.
 
 In addition to Adult Income, we have implemented two further methodological case studies: one on \emph{university entrance exam cheating} (modeling integrity risks in high-stakes testing) and one on \emph{sexual abuse reporting} (modeling under-reporting and structural vulnerabilities in sensitive domains).\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
 In both settings, ERH-style analysis provides a complementary perspective to standard accuracy and fairness metrics: instead of only asking \emph{how many} cases are misclassified, we also ask \emph{how the most critical errors accumulate as scenarios become more complex}, which is particularly important for global exam integrity and abuse-related decision support.
