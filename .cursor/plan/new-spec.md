@@ -395,3 +395,163 @@ E(x), α，畫出 1–2 張圖；
 𝑎
 )
 a,c(a),V(a),w(a) 重定義到安全事件上，再接一個 PoC log source，就可以開始產生真正有用的 security insight。
+___
+# ERH-on-Security Application Implementation Plan
+
+## Project Structure
+
+Create a new repository `erh-security-app/` with the following structure:
+
+```
+erh-security-app/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI app entry point
+│   │   ├── config.py            # Configuration from .env
+│   │   ├── deps.py              # Dependency injection
+│   │   ├── routers/
+│   │   │   ├── health.py        # Health check endpoint
+│   │   │   ├── analysis.py      # ERH analysis endpoints
+│   │   │   └── ingestion.py     # GitLab ingestion endpoint
+│   │   ├── core/
+│   │   │   ├── models.py        # SQLAlchemy ORM models
+│   │   │   ├── schemas.py       # Pydantic request/response models
+│   │   │   └── db.py            # Database session management
+│   │   ├── erh_security/
+│   │   │   ├── mapping.py       # Security data → ERH variables
+│   │   │   ├── metrics.py       # ERH metrics computation
+│   │   │   └── plots.py         # Optional figure generation
+│   │   └── ingestion/
+│   │       ├── gitlab_client.py # GitLab API client
+│   │       ├── gitlab_ingest.py # Ingestion orchestration
+│   │       └── mock_data.py     # Mock GitLab data generator
+│   └── tests/
+│       ├── test_mapping.py
+│       ├── test_metrics.py
+│       └── test_api.py
+├── frontend/
+│   ├── package.json
+│   ├── next.config.js
+│   ├── tsconfig.json
+│   └── src/
+│       ├── pages/
+│       │   └── index.tsx        # Main dashboard page
+│       ├── components/
+│       │   ├── Layout.tsx
+│       │   ├── ErrorSummaryCard.tsx
+│       │   ├── ErhCurveChart.tsx
+│       │   └── ComplexityHeatmap.tsx
+│       └── lib/
+│           └── api.ts           # API client
+├── docs/
+│   ├── ERH_ON_SECURITY_POC.md
+│   └── API_SPEC.md
+├── .env.example
+├── requirements.txt
+├── pyproject.toml
+└── README.md
+```
+
+## Implementation Milestones
+
+### M1: Backend Skeleton & Configuration
+
+**Files to create:**
+- `backend/app/main.py`: FastAPI app with CORS, root router
+- `backend/app/config.py`: Settings from environment variables
+- `backend/app/deps.py`: Database dependency injection
+- `backend/app/routers/health.py`: `/health` endpoint
+- `.env.example`: Template with GitLab URL, token, DB URL
+- `requirements.txt`: FastAPI, uvicorn, python-dotenv, sqlalchemy, etc.
+
+**Key implementation:**
+- FastAPI app with `/health` returning `{"status": "ok"}`
+- Config loads: `GITLAB_BASE_URL`, `GITLAB_TOKEN`, `DATABASE_URL` (default: `sqlite:///./erh_security.db`)
+- Basic logging setup
+
+### M2: Data Model & Database Schema
+
+**Files to create:**
+- `backend/app/core/models.py`: SQLAlchemy models
+- `backend/app/core/db.py`: Database session factory
+- `backend/app/core/schemas.py`: Pydantic models for API
+
+**SQLAlchemy models:**
+- `Action`: MR metadata (id, project_id, mr_iid, title, lines_changed, files_changed, services_touched, created_at)
+- `Judgment`: Security scan results (id, action_id, judge_type, pipeline_status, human_review_status, findings_json, created_at)
+- `GroundTruth`: True security state (id, action_id, unresolved_high_count, post_incident_flag, incident_severity)
+- `Importance`: Asset criticality (id, action_id, asset_criticality, internet_exposed, service_name)
+- `DerivedMetrics`: Cached ERH metrics (id, action_id, complexity, ground_truth_value, weight, judgment_value, delta, is_mistake, is_prime)
+
+**Database initialization:**
+- Create tables on app startup (SQLite for PoC)
+- Optional: Alembic migrations setup
+
+### M3: GitLab Ingestion
+
+**Files to create:**
+- `backend/app/ingestion/gitlab_client.py`: GitLab API wrapper
+- `backend/app/ingestion/gitlab_ingest.py`: Ingestion orchestration
+- `backend/app/ingestion/mock_data.py`: Mock data generator
+- `backend/app/routers/ingestion.py`: `/ingestion/run` endpoint
+
+**GitLab client functions:**
+- `list_projects()`: Get project list
+- `list_merge_requests(project_id, since_date)`: Get MRs in time range
+- `get_pipeline(project_id, mr_iid)`: Get pipeline for MR
+- `get_security_reports(project_id, pipeline_id)`: Fetch security scan artifacts
+
+**Ingestion logic:**
+- Parse MRs → Action records
+- Parse pipelines/security reports → Judgment records
+- Compute GroundTruth proxies (unresolved_high from findings, post_incident from incident tracker if available)
+- Compute Importance proxies (asset_criticality from service metadata, internet_exposed from deployment config)
+- Idempotent upsert (check by project_id + mr_iid)
+
+**Mock data:**
+- Generate synthetic MRs, pipelines, security findings
+- Support configurable time ranges and project counts
+
+### M4: ERH Security Mapping
+
+**Files to create:**
+- `backend/app/erh_security/mapping.py`: Security → ERH variable mapping
+- `backend/tests/test_mapping.py`: Unit tests
+
+**Mapping functions:**
+- `compute_complexity(action: Action) -> float`: 
+  - Combine `lines_changed`, `files_changed`, `services_touched`
+  - Formula: `c = min(100, 1 + (lines_changed/1000 + files_changed/10 + services_touched*5))`
+  - Normalize to [1, 100]
+  
+- `compute_ground_truth(gt: GroundTruth) -> float`:
+  - Map to V(a) ∈ [-1, 1]
+  - Formula: `V = -1.0 if post_incident_flag else -0.5 * min(1.0, unresolved_high_count/5)`
+  
+- `compute_weight(importance: Importance) -> float`:
+  - Log-normal-like weight
+  - Formula: `w = exp(2 + asset_criticality*0.5 + (1 if internet_exposed else 0))`
+  
+- `compute_judgment(judgment: Judgment, judge_type: str) -> float`:
+  - PIPELINE: `J = -1.0 if pipeline_status == "failed" else 0.0 if "warning" else 1.0`
+  - HUMAN: `J = -1.0 if human_review_status == "rejected" else 1.0 if "approved" else 0.0`
+  - COMBINED: Weighted average of pipeline and human
+  
+- `build_erh_dataset(judge_type: str) -> List[ErhSample]`:
+  - Query DB for Actions with complete data
+  - Apply mapping functions
+  - Return list of `ErhSample(c, V, w, J, action_id)`
+
+### M5: ERH Metrics & Curves
+
+**Files to create:**
+- `backend/app/erh_security/metrics.py`: ERH metrics computation
+- `backend/tests/test_metrics.py`: Unit tests
+
+**Reuse existing ERH code:**
+- Import from `simulation/core/ethical_primes.py`: `select_ethical_primes`, `compute_Pi_and_error`, `analyze_error_growth`
+- Create adapter functions that work with `ErhSample` objects
+
+**Metrics functions:**
+- `compute_delta(sample: ErhSample) -> float`: Return `J - V`
+- `is_mistake(sample: ErhSample, tau: float
