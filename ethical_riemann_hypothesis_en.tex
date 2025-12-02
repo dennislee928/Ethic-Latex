@@ -759,11 +759,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 61.1\%
     \item Number of ethical primes: 110
     \item Estimated exponent: $\alpha = -0.046$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.046 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.507
 \end{itemize}
 
-\textbf{Interpretation}: The Conservative Judge exhibits an error growth exponent close to zero ($\alpha = -0.046$), indicating that errors remain nearly constant across complexity levels, showing an approximately flat error pattern. However, it has an extremely high mistake rate (61.1\%) and the highest number of ethical primes (110), suggesting that while the strategy of shrinking toward neutral avoids accumulation of extreme errors, it results in numerous misjudgments. The $R^2 = 0.507$ suggests moderate fit quality, possibly because the error pattern does not fully conform to the power-law assumption.
+\textbf{Interpretation}: The Conservative Judge exhibits an error growth exponent close to zero ($\alpha = -0.046$), indicating that errors remain nearly constant across complexity levels, showing an approximately flat error pattern. ERH-style bound: satisfied ($\alpha = -0.046 < 0.5$); however, the system is far from the ``critical'' ERH regime and the overall mistake rate is unacceptably high. However, it has an extremely high mistake rate (61.1\%) and the highest number of ethical primes (110), suggesting that while the strategy of shrinking toward neutral avoids accumulation of extreme errors, it results in numerous misjudgments. The $R^2 = 0.507$ suggests moderate fit quality, possibly because the error pattern does not fully conform to the power-law assumption.
 
 \subsubsection{RadicalJudge}
 
@@ -774,11 +775,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 14.9\%
     \item Number of ethical primes: 26
     \item Estimated exponent: $\alpha = -0.452$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.452 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.691
 \end{itemize}
 
-\textbf{Interpretation}: The Radical Judge displays an error growth exponent of $-0.452$, showing rapid decrease in error as complexity increases, which is the best performance mathematically. It maintains a relatively low mistake rate (14.9\%) with a moderate number of ethical primes (26), and $R^2 = 0.691$ indicates good fit quality. The strategy of amplifying extreme values produces noticeable errors in low-complexity cases, but as complexity increases, the deviation from true values decreases, possibly because the amplification effect provides clearer discriminative signals in ambiguous cases.
+\textbf{Interpretation}: The Radical Judge displays an error growth exponent of $-0.452$, showing rapid decrease in error as complexity increases, which is the best performance mathematically. ERH-style bound: satisfied ($\alpha = -0.452 < 0.5$); however, the system is far from the ``critical'' ERH regime. It maintains a relatively low mistake rate (14.9\%) with a moderate number of ethical primes (26), and $R^2 = 0.691$ indicates good fit quality. The strategy of amplifying extreme values produces noticeable errors in low-complexity cases, but as complexity increases, the deviation from true values decreases, possibly because the amplification effect provides clearer discriminative signals in ambiguous cases.
 
 % Figures will be inserted here by the figure integration script
 
