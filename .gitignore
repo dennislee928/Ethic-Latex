@@ -98,3 +98,4 @@ figures/*.png
 basement.md
 /.ignore_ref
 .cursor/cursor-rules-cli/.plan1.md
+/.cursor/plan
