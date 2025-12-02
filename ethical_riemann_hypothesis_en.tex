@@ -727,11 +727,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 13.2\%
     \item Number of ethical primes: 23
     \item Estimated exponent: $\alpha = -0.629$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.629 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.604
 \end{itemize}
 
-\textbf{Interpretation}: The Biased Judge exhibits a negative error growth exponent ($\alpha = -0.629$), indicating that the error term $|E(x)|$ decreases as complexity increases, which is mathematically superior to the ERH prediction bound. However, its $R^2 = 0.604$ suggests moderate quality of the power-law fit. The judge maintains a relatively low mistake rate (13.2\%), yet the presence of 23 ethical primes indicates that some high-importance errors persist. The mechanism of systematic bias increasing with complexity leads to clustering of ethical primes in higher complexity ranges.
+\textbf{Interpretation}: The Biased Judge exhibits a negative error growth exponent ($\alpha = -0.629$), indicating that the error term $|E(x)|$ decreases as complexity increases, which is mathematically superior to the ERH-style worst-case bound. ERH-style bound: satisfied ($\alpha = -0.629 < 0.5$); however, the system is far from the ``critical'' ERH regime and remains structurally conservative. However, its $R^2 = 0.604$ suggests moderate quality of the power-law fit. The judge maintains a relatively low mistake rate (13.2\%), yet the presence of 23 ethical primes indicates that some high-importance errors persist. The mechanism of systematic bias increasing with complexity leads to clustering of ethical primes in higher complexity ranges.
 
 \subsubsection{NoisyJudge}
 
@@ -742,11 +743,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 25.6\%
     \item Number of ethical primes: 46
     \item Estimated exponent: $\alpha = -0.171$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.171 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.780
 \end{itemize}
 
-\textbf{Interpretation}: The Noisy Judge shows an error growth exponent of $-0.171$, close to zero but slightly negative, indicating very slow error growth. Its $R^2 = 0.780$ demonstrates good power-law fit quality. This judge has the highest mistake rate (25.6\%) and the highest number of ethical primes (46), reflecting the negative impact of high random noise on judgment quality for complex cases. Although the error growth pattern exceeds ERH expectations, the overall error level is too high, indicating that randomness leads to judgment instability.
+\textbf{Interpretation}: The Noisy Judge shows an error growth exponent of $-0.171$, close to zero but slightly negative, indicating very slow error growth. ERH-style bound: satisfied ($\alpha = -0.171 < 0.5$); however, the system is far from the ``critical'' ERH regime. Its $R^2 = 0.780$ demonstrates good power-law fit quality. This judge has the highest mistake rate (25.6\%) and the highest number of ethical primes (46), reflecting the negative impact of high random noise on judgment quality for complex cases. Although the error growth pattern exceeds ERH expectations, the overall error level is too high, indicating that randomness leads to judgment instability.
 
 \subsubsection{ConservativeJudge}
 
