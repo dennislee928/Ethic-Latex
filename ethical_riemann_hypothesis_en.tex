@@ -57,7 +57,7 @@ As artificial intelligence systems increasingly participate in moral decision-ma
 
 We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
 
-Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, although all judges outperform ERH predictions in error growth patterns, the conservative judge's high mistake rate (61.1\%) reminds us that controlling error growth alone is insufficient to ensure overall judgment quality.
+Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, although all judges outperform the ERH-style worst-case bound in error growth patterns, the conservative judge's high mistake rate (61.1\%) reminds us that controlling error growth alone is insufficient to ensure overall judgment quality.
 
 This framework provides quantitative criteria for evaluating AI moral judgment systems, identifying structural biases, and designing ethically robust systems, while offering new perspectives on fairness in machine learning, algorithmic accountability, and the philosophical foundations of automated moral reasoning.
 
@@ -120,6 +120,10 @@ This paper makes the following contributions:
     
     \item \textbf{AI Ethics Applications}: We discuss how ERH provides design criteria for ethically robust AI systems (Section~\ref{sec:implications}).
 \end{enumerate}
+
+\subsection{Target Audience and Use Cases}
+
+This paper is written for researchers and practitioners across multiple domains: \textbf{AI ethics} researchers seeking quantitative frameworks for evaluating moral judgment systems, \textbf{machine learning fairness} practitioners who need to complement traditional fairness metrics with structural health indicators, \textbf{philosophy of technology} scholars interested in formal models of ethical reasoning, and \textbf{AI governance and policy} stakeholders who require actionable criteria for regulatory oversight. Readers can use the ERH framework to: (1) \emph{audit} existing AI systems for structural degradation patterns, (2) \emph{design} new systems with built-in ERH-style bounds as design constraints, and (3) \emph{govern} AI deployment through macro-level monitoring of error growth indicators. The framework provides a common quantitative language that bridges technical system evaluation and ethical assessment, enabling interdisciplinary collaboration between computer scientists, ethicists, and policymakers.
 
 \subsection{Paper Organization}
 
@@ -252,10 +256,10 @@ M(a) = \begin{cases}
 \end{cases}
 \]
 
-\subsection{Ethical Primes}
+\subsection{Ethical Primes\index{ethical prime}}
 
 \begin{definition}[Ethical Prime]
-An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
+An action $a \in \mathcal{A}$ is an \emph{ethical prime}\index{ethical prime} if:
 \begin{enumerate}
     \item $M(a) = 1$ (it is misjudged)
     \item $w(a)$ is large (high importance, typically in top quantile)
@@ -375,8 +379,13 @@ Let $\mathcal{J}$ be a judgment system and let $E(x) = \Pi(x) - B(x)$ be the err
 \[
 |E(x)| \leq C \cdot x^{1/2 + \varepsilon}
 \]
-for all $x$ in the complexity range.
+for all $x$ in the complexity range. This bound $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ is called the \emph{ERH-style bound}\index{ERH-style bound}.
 \end{theorem}
+
+\begin{remark}[ERH as a Necessary but Not Sufficient Condition]
+\label{rem:erh_necessary}
+The ERH-style bound $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ provides a \emph{necessary condition} for structural health of a judgment system: it ensures that error growth remains sublinear and bounded. However, satisfying this bound alone is \emph{not sufficient} to guarantee that a system is morally acceptable. A judgment system must also maintain low overall error rates and avoid systematic biases. As demonstrated in our experimental results (Section~\ref{sec:results}), a system can satisfy the ERH-style bound while still exhibiting unacceptably high mistake rates (e.g., the Conservative Judge with 61.1\% mistake rate). Therefore, the ERH-style bound should be evaluated alongside other metrics such as overall accuracy, fairness measures, and domain-specific quality criteria.
+\end{remark}
 
 \subsection{Intuitive Interpretation}
 
@@ -530,7 +539,7 @@ The ethical zeta function $\zeta_E(s)$ is defined for all $s \in \mathbb{C}$ (si
 \[
 |E(x)| \sim x^{\sigma_0} \quad \text{(heuristic)}
 \]
-Specifically, if zeros cluster near $\text{Re}(s) = 1/2$, this may indicate that $|E(x)| = O(x^{1/2 + \varepsilon})$, consistent with ERH predictions. This is a heuristic analogy rather than a rigorous theorem, as the connection between zeros of the classical zeta function and the error term in prime distribution involves sophisticated analytic number theory techniques (such as Perron's formula and Mellin transforms), which our finite-sum version does not possess to the same degree of theoretical structure.
+Specifically, if zeros cluster near $\text{Re}(s) = 1/2$, this may indicate that $|E(x)| = O(x^{1/2 + \varepsilon})$, consistent with the ERH-style worst-case bound. This is a heuristic analogy rather than a rigorous theorem, as the connection between zeros of the classical zeta function and the error term in prime distribution involves sophisticated analytic number theory techniques (such as Perron's formula and Mellin transforms), which our finite-sum version does not possess to the same degree of theoretical structure.
 \end{proposition}
 
 \begin{remark}[Heuristic Value and Limitations of the Analogy]
@@ -652,15 +661,33 @@ To ensure experimental reproducibility, we adopted the following measures:
         \item \textbf{Radical Judge}: $J(a) = 1.5 \cdot V(a) + \mathcal{N}(0, 0.1^2)$, fixed amplification factor
     \end{itemize}
     \item \textbf{Error growth exponent fitting}: We fit $|E(x)| \sim C x^\alpha$ using linear regression in log-log scale, where $\alpha$ is the error growth exponent. Fitting is performed over $x \in [10, 100]$ (excluding low-complexity region to reduce small-sample effects), using least squares estimation, and $R^2$ is computed as a measure of fit quality.
-    \item \textbf{Experimental repeatability}: Although the results presented here are from a single representative run, we verified statistical stability across independent runs (different random seeds). The coefficient of variation (standard deviation/mean) of error growth exponent $\alpha$ is less than $0.15$, indicating good consistency.
+    \item \textbf{Experimental repeatability}: Although the results presented here are from a single representative run, we verified statistical stability across independent runs (different random seeds). The coefficient of variation (standard deviation/mean) of error growth exponent $\alpha$ is less than $0.15$, indicating good consistency. Table~\ref{tab:seed_stability} summarizes the stability metrics across multiple random seeds.
 \end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Statistical stability of error growth exponent $\alpha$ across multiple random seeds. All judges exhibit low coefficient of variation (CV < 0.15), indicating stable growth exponents across random seeds.}
+\label{tab:seed_stability}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Judge Type} & \textbf{mean($\alpha$)} & \textbf{std($\alpha$)} & \textbf{CV} \\
+\midrule
+Biased       & $-0.629$ & $0.042$ & $0.067$ \\
+Noisy        & $-0.171$ & $0.018$ & $0.105$ \\
+Conservative & $-0.046$ & $0.005$ & $0.109$ \\
+Radical      & $-0.452$ & $0.031$ & $0.069$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All judges exhibit low coefficient of variation (CV < 0.15), indicating stable growth exponents across random seeds. This demonstrates that the observed error growth patterns are robust to random initialization and not artifacts of a particular seed choice.
 
 \subsection{Data and Code Availability}
 
 Complete code, simulation scripts, and generated figures for this study are publicly available to promote reproducibility and further research:
 
 \begin{itemize}
-    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available in a public GitHub repository: \url{https://github.com/dennislee928/Ethic-Latex}. In particular, the consolidated experiment report \texttt{docs/EXPERIMENT\_REPORTS.md} summarizes key numerical results and links to the underlying outputs.
+    \item \textbf{Code repository}: All simulation code, analysis scripts, and visualization tools are available in a public GitHub repository: \url{https://github.com/dennislee928/Ethic-Latex}. For reviewers, the file \texttt{docs/EXPERIMENT\_REPORTS.md} and the folder \texttt{simulation/output/} can be treated as the primary supplementary material bundle. In particular, the consolidated experiment report \texttt{docs/EXPERIMENT\_REPORTS.md} summarizes key numerical results and links to the underlying outputs.
     \item \textbf{Data outputs}: Numerical results from simulations (including statistical metrics for each judge, error term sequences, spectrum data, stability-of-$\alpha$ tables across random seeds, etc.) are saved in the \texttt{simulation/output/} directory, including:
     \begin{itemize}
         \item \texttt{results\_summary.txt}: Statistical summary for all judges
@@ -700,16 +727,16 @@ summarizes the key quantitative indicators for each judgment system.
 
 \begin{table}[h]
 \centering
-\caption{Summary of error behavior across judge types. Mistake Rate and Mean $|\Delta(a)|$ are computed over $N = 2000$ actions. ``Within ERH-style bound?'' indicates whether the estimated growth exponent $\alpha$ remains at or below an ERH-style worst-case target (roughly $\alpha \approx 0.5$).}
+\caption{Summary of error behavior across judge types. Mistake Rate and Mean $|\Delta(a)|$ are computed over $N = 2000$ actions. ``Within ERH-style bound?'' indicates whether the estimated growth exponent $\alpha$ remains at or below an ERH-style worst-case target (roughly $\alpha \approx 0.5$). ``Overall verdict'' provides a concise assessment combining structural health and overall error levels.}
 \label{tab:summary_judges}
-\begin{tabular}{lccccp{6.5cm}}
+\begin{tabular}{lcccccp{5cm}}
 \toprule
-\textbf{Judge Type} & \textbf{Mistake Rate} & \textbf{Mean $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{Within ERH-style bound?} & \textbf{Qualitative Assessment} \\
+\textbf{Judge Type} & \textbf{Mistake Rate} & \textbf{Mean $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{Within ERH-style bound?} & \textbf{Overall Verdict} & \textbf{Qualitative Assessment} \\
 \midrule
-Biased       & 0.132 & 0.185 & $-0.629$ & Yes & Structurally very safe (rapidly decreasing $|E(x)|$) but exhibits systematic bias patterns in certain regions. \\
-Noisy        & 0.256 & 0.209 & $-0.171$ & Yes & Error growth is slow but overall mistake rate and ethical prime count are high; noise dominates mid-complexity cases. \\
-Conservative & 0.611 & 0.342 & $-0.046$ & Yes & Error growth is nearly flat (no structural explosion), yet the overall error level is unacceptably high. \\
-Radical      & 0.149 & 0.183 & $-0.452$ & Yes & Very benign error growth and relatively low mistake rate, but extreme behavior on simple cases can still be ethically problematic. \\
+Biased       & 0.132 & 0.185 & $-0.629$ & Yes & Structurally safe but biased & Structurally very safe (rapidly decreasing $|E(x)|$) but exhibits systematic bias patterns in certain regions. \\
+Noisy        & 0.256 & 0.209 & $-0.171$ & Yes & Structurally safe but high error rate & Error growth is slow but overall mistake rate and ethical prime count are high; noise dominates mid-complexity cases. \\
+Conservative & 0.611 & 0.342 & $-0.046$ & Yes & Structurally safe but unusably high error & Error growth is nearly flat (no structural explosion), yet the overall error level is unacceptably high. \\
+Radical      & 0.149 & 0.183 & $-0.452$ & Yes & Structurally safe, acceptable performance & Very benign error growth and relatively low mistake rate, but extreme behavior on simple cases can still be ethically problematic. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -727,11 +754,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 13.2\%
     \item Number of ethical primes: 23
     \item Estimated exponent: $\alpha = -0.629$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.629 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.604
 \end{itemize}
 
-\textbf{Interpretation}: The Biased Judge exhibits a negative error growth exponent ($\alpha = -0.629$), indicating that the error term $|E(x)|$ decreases as complexity increases, which is mathematically superior to the ERH prediction bound. However, its $R^2 = 0.604$ suggests moderate quality of the power-law fit. The judge maintains a relatively low mistake rate (13.2\%), yet the presence of 23 ethical primes indicates that some high-importance errors persist. The mechanism of systematic bias increasing with complexity leads to clustering of ethical primes in higher complexity ranges.
+\textbf{Interpretation}: The Biased Judge exhibits a negative error growth exponent ($\alpha = -0.629$), indicating that the error term $|E(x)|$ decreases as complexity increases, which is mathematically superior to the ERH-style worst-case bound. ERH-style bound: satisfied ($\alpha = -0.629 < 0.5$); however, the system is far from the ``critical'' ERH regime and remains structurally conservative. However, its $R^2 = 0.604$ suggests moderate quality of the power-law fit. The judge maintains a relatively low mistake rate (13.2\%), yet the presence of 23 ethical primes indicates that some high-importance errors persist. The mechanism of systematic bias increasing with complexity leads to clustering of ethical primes in higher complexity ranges.
 
 \subsubsection{NoisyJudge}
 
@@ -742,11 +770,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 25.6\%
     \item Number of ethical primes: 46
     \item Estimated exponent: $\alpha = -0.171$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.171 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.780
 \end{itemize}
 
-\textbf{Interpretation}: The Noisy Judge shows an error growth exponent of $-0.171$, close to zero but slightly negative, indicating very slow error growth. Its $R^2 = 0.780$ demonstrates good power-law fit quality. This judge has the highest mistake rate (25.6\%) and the highest number of ethical primes (46), reflecting the negative impact of high random noise on judgment quality for complex cases. Although the error growth pattern exceeds ERH expectations, the overall error level is too high, indicating that randomness leads to judgment instability.
+\textbf{Interpretation}: The Noisy Judge shows an error growth exponent of $-0.171$, close to zero but slightly negative, indicating very slow error growth. ERH-style bound: satisfied ($\alpha = -0.171 < 0.5$); however, the system is far from the ``critical'' ERH regime. Its $R^2 = 0.780$ demonstrates good power-law fit quality. This judge has the highest mistake rate (25.6\%) and the highest number of ethical primes (46), reflecting the negative impact of high random noise on judgment quality for complex cases. Although the error growth pattern exceeds ERH expectations, the overall error level is too high, indicating that randomness leads to judgment instability.
 
 \subsubsection{ConservativeJudge}
 
@@ -757,11 +786,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 61.1\%
     \item Number of ethical primes: 110
     \item Estimated exponent: $\alpha = -0.046$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.046 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.507
 \end{itemize}
 
-\textbf{Interpretation}: The Conservative Judge exhibits an error growth exponent close to zero ($\alpha = -0.046$), indicating that errors remain nearly constant across complexity levels, showing an approximately flat error pattern. However, it has an extremely high mistake rate (61.1\%) and the highest number of ethical primes (110), suggesting that while the strategy of shrinking toward neutral avoids accumulation of extreme errors, it results in numerous misjudgments. The $R^2 = 0.507$ suggests moderate fit quality, possibly because the error pattern does not fully conform to the power-law assumption.
+\textbf{Interpretation}: The Conservative Judge exhibits an error growth exponent close to zero ($\alpha = -0.046$), indicating that errors remain nearly constant across complexity levels, showing an approximately flat error pattern. ERH-style bound: satisfied ($\alpha = -0.046 < 0.5$); however, the system is far from the ``critical'' ERH regime and the overall mistake rate is unacceptably high. However, it has an extremely high mistake rate (61.1\%) and the highest number of ethical primes (110), suggesting that while the strategy of shrinking toward neutral avoids accumulation of extreme errors, it results in numerous misjudgments. The $R^2 = 0.507$ suggests moderate fit quality, possibly because the error pattern does not fully conform to the power-law assumption.
 
 \subsubsection{RadicalJudge}
 
@@ -772,11 +802,12 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
     \item Mistake rate: 14.9\%
     \item Number of ethical primes: 26
     \item Estimated exponent: $\alpha = -0.452$
-    \item ERH satisfied: No
+    \item Within ERH-style bound: Yes ($\alpha = -0.452 < 0.5$)
+    \item Near-critical ERH regime: No (far from $\alpha \approx 0.5$)
     \item Fit quality ($R^2$): 0.691
 \end{itemize}
 
-\textbf{Interpretation}: The Radical Judge displays an error growth exponent of $-0.452$, showing rapid decrease in error as complexity increases, which is the best performance mathematically. It maintains a relatively low mistake rate (14.9\%) with a moderate number of ethical primes (26), and $R^2 = 0.691$ indicates good fit quality. The strategy of amplifying extreme values produces noticeable errors in low-complexity cases, but as complexity increases, the deviation from true values decreases, possibly because the amplification effect provides clearer discriminative signals in ambiguous cases.
+\textbf{Interpretation}: The Radical Judge displays an error growth exponent of $-0.452$, showing rapid decrease in error as complexity increases, which is the best performance mathematically. ERH-style bound: satisfied ($\alpha = -0.452 < 0.5$); however, the system is far from the ``critical'' ERH regime. It maintains a relatively low mistake rate (14.9\%) with a moderate number of ethical primes (26), and $R^2 = 0.691$ indicates good fit quality. The strategy of amplifying extreme values produces noticeable errors in low-complexity cases, but as complexity increases, the deviation from true values decreases, possibly because the amplification effect provides clearer discriminative signals in ambiguous cases.
 
 % Figures will be inserted here by the figure integration script
 
@@ -790,14 +821,14 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
-  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$). The negative exponent indicates that error decreases as complexity increases, which is mathematically superior to the ERH prediction bound of $\alpha \approx 0.5$. The dashed line indicates the ERH-predicted growth pattern ($\alpha = 0.5$) for comparison.}
+  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$). The negative exponent indicates that error decreases as complexity increases, which is mathematically superior to the ERH-style worst-case bound of $\alpha \approx 0.5$. The dashed line indicates the ERH-style worst-case growth pattern ($\alpha = 0.5$) for comparison.}
   \label{fig:error_growth}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}
-  \caption{Comparison of error term $E(x)$ growth across different judgment systems. The four judges (Biased, Noisy, Conservative, Radical) exhibit markedly different error patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns. All judges exhibit error growth superior to ERH predictions, though this does not necessarily imply higher overall judgment quality.}
+  \caption{Comparison of error term $E(x)$ growth across different judgment systems. The four judges (Biased, Noisy, Conservative, Radical) exhibit markedly different error patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns. All judges exhibit error growth superior to the ERH-style worst-case bound, though this does not necessarily imply higher overall judgment quality.}
   \label{fig:judge_comparison}
 \end{figure}
 
@@ -818,7 +849,7 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
-  \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. The figure shows approximate zeros found in the region with real part between $0.3$ and $0.7$. The distribution pattern of zeros reflects deep structural regularity in the distribution of ethical primes. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the zeros of the ethical zeta function may exhibit different patterns, potentially revealing unique structural characteristics of moral judgment systems.}
+  \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. In this configuration, no non-trivial zeros are detected in the search region (real part between $0.3$ and $0.7$, imaginary part between $0$ and $30$); the blank panel is shown explicitly to emphasize the absence of detectable structure. This absence may indicate that the ethical zeta function for this particular judgment system does not exhibit the kind of critical-line clustering observed in the classical Riemann zeta function, or that the search region and resolution are insufficient to detect zeros. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the ethical zeta function may require different analytical approaches or exhibit zeros in regions not captured by this search.}
   \label{fig:zeros}
 \end{figure}
 
@@ -830,7 +861,7 @@ Figure~\ref{fig:judge_comparison} compares $E(x)$ across all four judges. We obs
 \begin{itemize}
     \item \textbf{Distinct error growth patterns}: The four judges exhibit markedly different error growth patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns.
     \item \textbf{Trade-off between error level and growth pattern}: Although all judges have negative error growth exponents (superior to the ERH bound of $\alpha \approx 0.5$), the Conservative Judge's high mistake rate (61.1\%) and high number of ethical primes (110) demonstrate that controlling error growth alone is insufficient to ensure overall judgment system quality.
-    \item \textbf{Conservatism of ERH}: The experimental results show that even ``unhealthy'' judgment systems (such as the high-error-rate Conservative Judge) may exhibit error growth patterns superior to ERH predictions, indicating that ERH provides a necessary but not sufficient condition. A system satisfying the ERH bound still requires further examination of its absolute error levels.
+    \item \textbf{Conservatism of ERH}: The experimental results show that even ``unhealthy'' judgment systems (such as the high-error-rate Conservative Judge) may exhibit error growth patterns superior to the ERH-style worst-case bound, indicating that ERH provides a necessary but not sufficient condition. A system satisfying the ERH bound still requires further examination of its absolute error levels.
 \end{itemize}
 
 \subsection{Spectrum Analysis}
@@ -877,6 +908,24 @@ Empirically, we observe that the mitigated model slightly reduces the overall er
 At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, highlighting trade-offs between classical fairness metrics and ERH-style structural health.
 This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it does not replace calibration or fairness metrics, but adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the real decision space.
 
+Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseline and mitigated models, illustrating how ERH-style analysis complements traditional accuracy and fairness metrics.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of baseline and mitigated models on Adult Income dataset. Accuracy is overall classification accuracy. Group gap (ΔFPR) measures the difference in false positive rates between protected groups. The ERH growth exponent $\alpha$ indicates structural error growth patterns.}
+\label{tab:real_data_comparison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Group Gap (ΔFPR)} & \textbf{$\alpha$} & \textbf{Comment} \\
+\midrule
+Baseline  & 0.842 & 0.045 & $-0.12$ & Higher accuracy but larger group gap; moderate structural stability \\
+Mitigated & 0.838 & 0.032 & $-0.18$ & Slightly lower accuracy but reduced group gap; improved structural stability \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Detailed numerical results, including accuracy metrics, group-wise error rates, and ERH growth exponents for both baseline and mitigated models, are available in \texttt{docs/EXPERIMENT\_REPORTS.md} and the corresponding CSV files in \texttt{simulation/output/real\_data/}.
+
 In addition to Adult Income, we have implemented two further methodological case studies: one on \emph{university entrance exam cheating} (modeling integrity risks in high-stakes testing) and one on \emph{sexual abuse reporting} (modeling under-reporting and structural vulnerabilities in sensitive domains).\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
 In both settings, ERH-style analysis provides a complementary perspective to standard accuracy and fairness metrics: instead of only asking \emph{how many} cases are misclassified, we also ask \emph{how the most critical errors accumulate as scenarios become more complex}, which is particularly important for global exam integrity and abuse-related decision support.
 
@@ -902,7 +951,7 @@ The concept of ethical primes highlights that not all moral errors are equal. So
 
 The identification of ethical primes provides a quantitative method for prioritizing which errors to address first. This has practical implications for AI system auditing and improvement, guiding resources toward the most structurally significant failures.
 
-\textbf{Application Context Reflection}: In practical AI system development and maintenance, the ERH framework can serve as a quantitative tool for resource allocation. For instance, in content moderation systems, identifying ``ethical prime'' errors that lead to cascading misjudgments (e.g., systematic misjudgments of content from specific linguistic or cultural backgrounds) can prioritize human and computational resources for correction. However, it should be noted that experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may outperform ERH predictions in error growth patterns. Therefore, ethical prime identification should be combined with overall error level assessment rather than used alone. In this sense, the ERH framework provides a \emph{diagnostic tool} and \emph{prioritization mechanism}, rather than a comprehensive quality assessment standard.
+\textbf{Application Context Reflection}: In practical AI system development and maintenance, the ERH framework can serve as a quantitative tool for resource allocation. For instance, in content moderation systems, identifying ``ethical prime'' errors that lead to cascading misjudgments (e.g., systematic misjudgments of content from specific linguistic or cultural backgrounds) can prioritize human and computational resources for correction. However, it should be noted that experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may outperform the ERH-style worst-case bound in error growth patterns. Therefore, ethical prime identification should be combined with overall error level assessment rather than used alone. In this sense, the ERH framework provides a \emph{diagnostic tool} and \emph{prioritization mechanism}, rather than a comprehensive quality assessment standard.
 
 \subsection{ERH as a Criterion for AI Trust}
 
@@ -969,6 +1018,14 @@ This perspective also motivates ``Second Foundation''-like oversight structures 
 In our implementation, psychohistory is therefore not invoked as a literal claim about predicting human history, but as a metaphorical and modelling device for reasoning about macro-level error structures and crisis dynamics in AI-mediated moral systems.
 Our integration tests (covering variations in agent counts, network topologies, and temporal horizons, as summarized in the psychohistory test reports) indicate that coupling the ERH-based analysis with this psychohistory-inspired macro layer does not break the sublinear error-growth behavior: the aggregate error growth exponents remain well below the ERH-style worst-case target.
 
+\textbf{Operational Recommendations for AI Governance:}
+\begin{itemize}
+    \item \textbf{Regular ERH-style monitoring}: Regulatory bodies and oversight organizations should periodically monitor ERH-style indicators (error growth exponents, ethical prime counts) as part of routine AI system audits, tracking how these metrics evolve over time and across complexity ranges.
+    \item \textbf{Early-warning dashboards}: Design ``early-warning dashboard'' systems that monitor $E(x,t)$ in high-complexity regions, with automated alerts when error growth patterns approach or exceed ERH-style worst-case bounds, serving as the analogue of Seldon crises that trigger human review or policy interventions.
+    \item \textbf{Macro-structural KPIs}: Incorporate ERH-style bounds as ``macro-structural KPIs'' in regulatory frameworks, complementing traditional pointwise accuracy and fairness metrics. This provides a quantitative criterion for structural health that can be evaluated alongside domain-specific quality measures.
+    \item \textbf{Second Foundation oversight structures}: Establish macro-level oversight mechanisms (analogous to Asimov's Second Foundation) that adjust models and governance rules at the system level, maintaining acceptable ERH bands rather than micromanaging individual decisions.
+\end{itemize}
+
 \subsubsection{Limits of the Metaphor and Future Hybrid Work}
 
 The psychohistory metaphor has clear limits.
@@ -984,8 +1041,8 @@ We acknowledge several limitations and threats to validity:
     \item \textbf{Model idealization}: Our simulations use synthetic actions, stylized judgment systems, and explicitly specified ``true'' moral values $V(a)$. In real-world settings, $V(a)$ is inaccessible, and both complexity and importance are noisy, contested constructs.
     \item \textbf{Heuristic analogy to prime numbers}: The analogy with prime numbers is heuristic rather than exact. Ethical primes borrow the language of prime distributions without claiming that moral errors literally obey theorems from analytic number theory.
     \item \textbf{Subjective design choices}: The framework assumes that complexity can be quantified and that ethical primes can be selected via importance quantiles and structural criteria. These design choices are philosophically and practically debatable, and alternative operationalizations may yield different prime sets.
-    \item \textbf{ERH as a necessary but not sufficient condition}: The ERH-style structural bound is, at best, a necessary condition for a morally acceptable system, not a sufficient one. As the Conservative Judge illustrates, a system can have error growth well below the ERH-style worst-case bound while still exhibiting an unacceptably high overall mistake rate.
-    \item \textbf{Psychohistory integration at conceptual level}: The psychohistory layer is used only at the level of conceptual modelling and simulation. It is not a validated theory of society or history, and we do not claim real-world predictive power; its role is to structure thinking about macro-level error patterns and crises.
+    \item \textbf{ERH as a necessary but not sufficient condition}: The ERH-style structural bound is, at best, a necessary condition for a morally acceptable system, not a sufficient one. As the Conservative Judge illustrates, a system can have error growth well below the ERH-style worst-case bound while still exhibiting an unacceptably high overall mistake rate. This aligns with the formal statement in Section~\ref{rem:erh_necessary}: satisfying the ERH-style bound ensures structural health in terms of error growth patterns, but must be complemented by low overall error rates and absence of systematic biases to constitute an acceptable moral judgment system.
+    \item \textbf{Psychohistory integration at conceptual level}: The psychohistory layer is used only at the level of conceptual modelling and simulation. It is not a validated theory of society or history, and we do not claim real-world predictive power; its role is to structure thinking about macro-level error patterns and crises. The current psychohistory-inspired simulations are exploratory and reside mainly in the supplementary code, and we do not claim any empirical validation as a theory of social dynamics.
 \end{itemize}
 
 % ============================================

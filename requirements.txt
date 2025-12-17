@@ -32,3 +32,7 @@ robotframework>=6.0.0
 robotframework-jupyterlibrary>=0.5.0
 robotframework-pythonlibcore>=2.1.0
 
+# API
+fastapi>=0.100.0
+uvicorn>=0.23.0
+

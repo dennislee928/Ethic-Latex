@@ -14,12 +14,12 @@ This document aggregates selected reports produced by the ERH simulation framewo
 
 ## Summary Table
 
-| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | ERH Satisfied | Growth Rate |
-|-------|---------|--------|--------------|-----|----------|---------------|-------------|
-| Biased | 1000 | 11 | 0.129 | 0.178 | 0.049 | [FAIL] | sublinear_slow |
-| Noisy | 1000 | 22 | 0.252 | 0.210 | -0.782 | [FAIL] | sublinear_slow |
-| Conservative | 1000 | 55 | 0.607 | 0.341 | -0.136 | [FAIL] | sublinear_slow |
-| Radical | 1000 | 12 | 0.142 | 0.177 | -0.152 | [FAIL] | sublinear_slow |
+| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | Within ERH-style bound? | Growth Rate |
+|-------|---------|--------|--------------|-----|----------|------------------------|-------------|
+| Biased | 1000 | 11 | 0.129 | 0.178 | 0.049 | Yes | sublinear_slow |
+| Noisy | 1000 | 22 | 0.252 | 0.210 | -0.782 | Yes | sublinear_slow |
+| Conservative | 1000 | 55 | 0.607 | 0.341 | -0.136 | Yes | sublinear_slow |
+| Radical | 1000 | 12 | 0.142 | 0.177 | -0.152 | Yes | sublinear_slow |
 
 ## Detailed Analysis
 
@@ -31,7 +31,8 @@ This document aggregates selected reports produced by the ERH simulation framewo
 - **Mean Absolute Error:** 0.178
 - **RMSE:** 0.205
 - **Estimated Growth Exponent:** 0.049
-- **ERH Satisfied:** No [FAIL]
+- **Within ERH-style bound?** Yes ($\alpha = 0.049 < 0.5$)
+- **Near-critical ERH regime?** No (far from $\alpha \approx 0.5$)
 - **Growth Rate Category:** sublinear_slow
 - **R² (fit quality):** 0.002
 
@@ -45,7 +46,8 @@ This document aggregates selected reports produced by the ERH simulation framewo
 - **Mean Absolute Error:** 0.210
 - **RMSE:** 0.271
 - **Estimated Growth Exponent:** -0.782
-- **ERH Satisfied:** No [FAIL]
+- **Within ERH-style bound?** Yes ($\alpha = -0.782 < 0.5$)
+- **Near-critical ERH regime?** No (far from $\alpha \approx 0.5$)
 - **Growth Rate Category:** sublinear_slow
 - **R² (fit quality):** 0.547
 
@@ -59,7 +61,8 @@ This document aggregates selected reports produced by the ERH simulation framewo
 - **Mean Absolute Error:** 0.341
 - **RMSE:** 0.375
 - **Estimated Growth Exponent:** -0.136
-- **ERH Satisfied:** No [FAIL]
+- **Within ERH-style bound?** Yes ($\alpha = -0.136 < 0.5$)
+- **Near-critical ERH regime?** No (far from $\alpha \approx 0.5$)
 - **Growth Rate Category:** sublinear_slow
 - **R² (fit quality):** 0.794
 
@@ -73,7 +76,8 @@ This document aggregates selected reports produced by the ERH simulation framewo
 - **Mean Absolute Error:** 0.177
 - **RMSE:** 0.208
 - **Estimated Growth Exponent:** -0.152
-- **ERH Satisfied:** No [FAIL]
+- **Within ERH-style bound?** Yes ($\alpha = -0.152 < 0.5$)
+- **Near-critical ERH regime?** No (far from $\alpha \approx 0.5$)
 - **Growth Rate Category:** sublinear_slow
 - **R² (fit quality):** 0.016
 
@@ -95,7 +99,8 @@ Biased Judge:
   MAE: 0.185
   RMSE: 0.210
   Estimated exponent: -0.629
-  ERH satisfied: No
+  Within ERH-style bound: Yes (α = -0.629 < 0.5)
+  Near-critical ERH regime: No (far from α ≈ 0.5)
   Growth rate: sublinear_slow
   R^2 (fit quality): 0.604
 
@@ -106,7 +111,8 @@ Noisy Judge:
   MAE: 0.209
   RMSE: 0.270
   Estimated exponent: -0.171
-  ERH satisfied: No
+  Within ERH-style bound: Yes (α = -0.171 < 0.5)
+  Near-critical ERH regime: No (far from α ≈ 0.5)
   Growth rate: sublinear_slow
   R^2 (fit quality): 0.780
 
@@ -117,7 +123,8 @@ Conservative Judge:
   MAE: 0.342
   RMSE: 0.376
   Estimated exponent: -0.046
-  ERH satisfied: No
+  Within ERH-style bound: Yes (α = -0.046 < 0.5)
+  Near-critical ERH regime: No (far from α ≈ 0.5)
   Growth rate: sublinear_slow
   R^2 (fit quality): 0.507
 
@@ -128,7 +135,8 @@ Radical Judge:
   MAE: 0.183
   RMSE: 0.211
   Estimated exponent: -0.452
-  ERH satisfied: No
+  Within ERH-style bound: Yes (α = -0.452 < 0.5)
+  Near-critical ERH regime: No (far from α ≈ 0.5)
   Growth rate: sublinear_slow
   R^2 (fit quality): 0.691
 

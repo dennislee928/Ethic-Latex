@@ -20,6 +20,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Git ignore folder
+.gitignore-folder
+
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints
@@ -97,3 +100,5 @@ figures/*.png
 .cursor/rules/snyk_rules.mdc
 basement.md
 /.ignore_ref
+.cursor/cursor-rules-cli/.plan1.md
+/.cursor/plan
