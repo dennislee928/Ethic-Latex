@@ -40,3 +40,4 @@ The short version removes or compresses:
 - Core experimental results must be included
 - Psychohistory section can be reduced to 1-2 paragraphs
 
+

@@ -35,3 +35,4 @@ echo 2. Create a GitHub release tag: git tag -a %VERSION% -m "Pre-submission ver
 echo 3. Push the tag: git push origin %VERSION%
 echo 4. Create a GitHub release and upload files
 
+
