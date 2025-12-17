@@ -20,9 +20,10 @@ jobs:
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
-    - run: npm ci
+    - run: npm install
     - run: npm run build
     - run: npm test
+    - run: npm audit --audit-level=high
 
   publish:
     needs: test
@@ -38,7 +39,7 @@ jobs:
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
-    - run: npm ci
+    - run: npm install
     - run: npm run build
     - run: npm publish
       env:
