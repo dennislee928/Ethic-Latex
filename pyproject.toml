@@ -25,6 +25,13 @@ dependencies = [
     "httpx>=0.24.0",    # HTTP client
 ]
 
+[project.optional-dependencies]
+ml = [
+    "adversarial-robustness-toolbox>=1.14.0",
+    "aif360>=0.5.0",
+    "scikit-learn>=1.0.0"
+]
+
 [project.urls]
 "Homepage" = "https://github.com/dennislee928/Ethic-Latex"
 "Bug Tracker" = "https://github.com/dennislee928/Ethic-Latex/issues"
