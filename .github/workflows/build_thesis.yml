@@ -134,6 +134,13 @@ jobs:
           path: |
             docs/EXPERIMENT_REPORTS.md
 
+      - name: Upload Raw Simulation Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation_output_raw
+          path: simulation/output/
+          retention-days: 14
+
       - name: Compile English LaTeX Document
         uses: xu-cheng/latex-action@v3
         with:

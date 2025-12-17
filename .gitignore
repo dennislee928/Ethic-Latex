@@ -20,6 +20,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Git ignore folder
+.gitignore-folder
+
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints
