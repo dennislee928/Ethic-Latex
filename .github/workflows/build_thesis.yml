@@ -147,20 +147,28 @@ jobs:
           root_file: ethical_riemann_hypothesis_en.tex
           compiler: latexmk
           args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
+          work_in_root_file_dir: false
+          continue_on_error: false
+          latexmk_shell_escape: false
+          latexmk_use_lualatex: false
           pre_compile: |
-            tlmgr update --self || true
+            tlmgr update --self || true;
             tlmgr install algorithms subfigure || true
 
       - name: Compile Chinese LaTeX Document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: ethical_riemann_hypothesis_zh.tex
-          compiler: xelatex
+          compiler: latexmk
           args: -file-line-error -halt-on-error -interaction=nonstopmode
           latexmk_use_xelatex: true
+          work_in_root_file_dir: false
+          continue_on_error: false
+          latexmk_shell_escape: false
+          latexmk_use_lualatex: false
           pre_compile: |
             tlmgr update --self || true
-            tlmgr install ctex xecjk fontspec xunicode xeCJK || true
+            tlmgr install fandol ctex xecjk fontspec xunicode || true
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4
