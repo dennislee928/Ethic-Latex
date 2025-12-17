@@ -39,4 +39,61 @@ jobs:
       with:
         name: simulation-results-${{ matrix.complexity_dist }}
         path: results/
-        retention-days: 30
+        retention-days: 5
+
+  report:
+    needs: simulate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          
+      - name: Install dependencies
+        run: |
+          pip install pandas matplotlib seaborn tabulate
+          
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: all_results
+          
+      - name: Consolidate Results
+        run: |
+          mkdir -p combined_results
+          # Move all JSONs to one folder
+          find all_results -name "*.json" -exec cp {} combined_results/ \;
+          
+      - name: Generate Report
+        run: |
+          python scripts/generate_comprehensive_report.py \
+            --input-dir combined_results \
+            --output-dir final_report
+            
+      - name: Verify with R (Optional)
+        if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
+        run: |
+          if command -v Rscript &> /dev/null; then
+            Rscript scripts/verify_analysis.R combined_results final_report/r_verification
+          else
+            echo "Rscript not found, skipping R verification."
+          fi
+          
+      - name: Upload Final Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-report
+          path: final_report/
+          retention-days: 30
+
+      - name: Deploy Report to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: final_report
+          destination_dir: reports
+          keep_files: true
