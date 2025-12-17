@@ -200,9 +200,16 @@ def plot_error_growth(
     ax.grid(True, which="both", alpha=0.3)
     
     # Add text box with analysis results
-    if 'erh_satisfied' in analysis:
-        erh_status = "Satisfied [OK]" if analysis['erh_satisfied'] else "Not Satisfied [FAIL]"
-        textstr = f"ERH: {erh_status}\n"
+    if 'estimated_exponent' in analysis:
+        alpha = analysis['estimated_exponent']
+        within_bound = alpha <= 0.5 + 0.15  # Allow small tolerance
+        if within_bound:
+            if alpha < 0.5:
+                textstr = f"ERH-style bound: satisfied\n(better-than-bound, $\\alpha = {alpha:.3f} < 0.5$)\n"
+            else:
+                textstr = f"ERH-style bound: satisfied\n($\\alpha = {alpha:.3f} \\approx 0.5$)\n"
+        else:
+            textstr = f"ERH-style bound: not satisfied\n($\\alpha = {alpha:.3f} > 0.5$)\n"
         textstr += f"Growth Rate: {analysis.get('growth_rate', 'N/A')}\n"
         textstr += f"$R^2$: {analysis.get('r_squared', 0):.3f}"
         

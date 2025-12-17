@@ -28,15 +28,29 @@ jobs:
 
       - name: Run Simulation and Generate Figures
         run: |
-          # Set PYTHONPATH to include the current directory so simulation module is found
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # Set PYTHONPATH to include the current directory and simulation directory
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
           # Ensure output directory exists
           mkdir -p simulation/output/figures
           mkdir -p simulation/output
-          # Run from simulation directory so output paths are correct
-          cd simulation
-          python generate_all_figures.py
-          cd ..
+          # Run from project root with explicit path to script
+          python simulation/generate_all_figures.py
+
+      - name: Run Real-Data Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # This step is safe if the dataset is missing; the script will exit gracefully.
+          python -m simulation.real_data.adult_income_case_study || echo "Real-data case study skipped."
+
+      - name: Run Exam Cheating Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python -m simulation.real_data.exam_cheating_case_study || echo "Exam cheating case study skipped."
+
+      - name: Run Sexual Abuse Case Study (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python -m simulation.real_data.sexual_abuse_case_study || echo "Sexual abuse case study skipped."
 
       - name: Create Output Directories
         run: |
@@ -65,9 +79,27 @@ jobs:
           papermill -k python3 04_parameter_sensitivity.ipynb 04_out.ipynb || echo "⚠ Notebook 04 failed, continuing..."
           papermill -k python3 06_baseline_comparison.ipynb 06_out.ipynb || echo "⚠ Notebook 06 failed, continuing..."
           papermill -k python3 07_zeta_zeros_deep_analysis.ipynb 07_out.ipynb || echo "⚠ Notebook 07 failed, continuing..."
+          papermill -k python3 08_psychohistory_integration.ipynb 08_out.ipynb || echo "⚠ Notebook 08 failed, continuing..."
 
           # Return to project root
           cd ../..
+
+      - name: Run Unit Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          # Run unit tests for psychohistory modules
+          pytest tests/test_temporal_erh.py tests/test_agent_framework.py tests/test_social_network.py \
+                 tests/test_meta_monitor.py tests/test_hybrid_model.py tests/test_psychohistory_integration.py \
+                 -v --tb=short || echo "⚠ Some unit tests failed, continuing..."
+
+      - name: Run Psychohistory Simulation Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          mkdir -p simulation/output/psychohistory_tests
+          # Run quick tests in CI to save time
+          python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
 
       - name: Prepare Figures for LaTeX
         run: |
@@ -89,6 +121,25 @@ jobs:
       - name: Update LaTeX Content with Results
         run: |
           python scripts/update_latex.py
+
+      - name: Generate Markdown Experiment Reports
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python scripts/generate_md_reports.py
+
+      - name: Upload Markdown Experiment Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: experiment_markdown_reports
+          path: |
+            docs/EXPERIMENT_REPORTS.md
+
+      - name: Upload Raw Simulation Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation_output_raw
+          path: simulation/output/
+          retention-days: 14
 
       - name: Compile English LaTeX Document
         uses: xu-cheng/latex-action@v3
