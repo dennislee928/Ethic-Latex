@@ -1,0 +1,16 @@
+site_name: Ethical Riemann Hypothesis SDK
+site_description: Documentation for the ERH Framework
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Python SDK:
+    - Overview: python/overview.md
+    - Client: python/client.md
+  - Node.js SDK:
+    - Overview: node/overview.md
+  - Examples: examples.md
+
+plugins:
+  - search
