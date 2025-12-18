@@ -27,3 +27,8 @@
 07_zeta_zeros_deep_analysis|simulation/output/figures/07_critical_line_analysis.pdf|1000|Critical line analysis plot
 07_zeta_zeros_deep_analysis|simulation/output/figures/07_zero_correlation.pdf|1000|Zero correlation analysis plot
 
+08_psychohistory_integration|simulation/output/figures/08_3d_error_surface.pdf|1000|3D error surface plot
+08_psychohistory_integration|simulation/output/figures/08_anomaly_timeline.pdf|1000|Anomaly timeline plot
+08_psychohistory_integration|simulation/output/figures/08_forecast_comparison.pdf|1000|Forecast comparison plot
+08_psychohistory_integration|simulation/output/figures/08_network_topology.pdf|1000|Network topology visualization
+

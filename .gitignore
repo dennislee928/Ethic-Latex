@@ -20,6 +20,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Git ignore folder
+.gitignore-folder
+
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb_checkpoints
@@ -92,3 +95,11 @@ figures/*.png
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .cursor\rules\snyk_rules.mdc
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor/rules/snyk_rules.mdc
+basement.md
+/.ignore_ref
+.cursor/cursor-rules-cli/.plan1.md
+/.cursor/plan
+/Error_Log

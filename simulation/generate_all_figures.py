@@ -15,10 +15,13 @@ import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 
-# Add parent directory to path to allow imports
+# Add simulation directory and project root to path to allow imports
 script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)  # Parent of simulation directory
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from core.action_space import generate_world
 from core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
@@ -40,8 +43,9 @@ print("ETHICAL RIEMANN HYPOTHESIS - FIGURE GENERATION")
 print("=" * 70)
 print()
 
-# Ensure output directory exists
-os.makedirs('output/figures', exist_ok=True)
+# Ensure output directory exists (relative to script directory)
+output_dir = os.path.join(script_dir, 'output', 'figures')
+os.makedirs(output_dir, exist_ok=True)
 
 print("[1/10] Generating action space (N=2000)...")
 actions = generate_world(
@@ -76,10 +80,20 @@ for name, metrics in comparison.items():
         print(f"\n{name}: ERROR - {metrics['error']}")
         continue
     print(f"\n{name}:")
+    alpha = metrics['estimated_exponent']
+    within_bound = alpha <= 0.5 + 0.15
     print(f"  Mistake rate: {metrics['mistake_rate']:.3f}")
     print(f"  Num primes: {metrics['num_primes']}")
-    print(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}")
-    print(f"  ERH satisfied: {'Yes [OK]' if metrics['erh_satisfied'] else 'No [FAIL]'}")
+    print(f"  Estimated exponent α: {alpha:.3f}")
+    print(
+        "  Within ERH-style bound (α ≲ 0.5)? "
+        f"{'Yes' if within_bound else 'No'}"
+    )
+    # analysis['erh_satisfied'] still encodes \"close to α ≈ 0.5\"
+    print(
+        "  Close to ERH-style target (α ≈ 0.5)? "
+        f"{'Yes [target-like]' if metrics['erh_satisfied'] else 'No'}"
+    )
     print(f"  Growth rate: {metrics['growth_rate']}")
 
 print("\n" + "=" * 70)
@@ -93,10 +107,10 @@ Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes_biased, X_max=100, baseline
 plot_Pi_B_E(
     x_vals, Pi_x, B_x, E_x,
     title="Ethical Prime Distribution (Biased Judge)",
-    save_path='output/figures/paper_fig1_pi_b_e.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig1_pi_b_e.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf')}")
 
 # Figure 2: Error growth analysis
 print("\n[5/10] Figure 2: Error growth in log-log scale...")
@@ -104,20 +118,20 @@ analysis = analyze_error_growth(E_x, x_vals)
 plot_error_growth(
     x_vals, E_x, analysis,
     title="Error Growth Analysis (Biased Judge)",
-    save_path='output/figures/paper_fig2_error_growth.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig2_error_growth.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig2_error_growth.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig2_error_growth.pdf')}")
 
 # Figure 3: Multi-judge comparison
 print("\n[6/10] Figure 3: Multi-judge error comparison...")
 error_comparison = compare_error_distributions(results, X_max=100)
 plot_multi_judge_errors(
     error_comparison,
-    save_path='output/figures/paper_fig3_judge_comparison.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig3_judge_comparison.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
 
 # Figure 4: Judge metric comparison (bar chart)
 print("\n[7/10] Figure 4: Judge exponent comparison...")
@@ -125,10 +139,10 @@ plot_judge_comparison(
     comparison,
     metric='estimated_exponent',
     title='Estimated Growth Exponent α by Judge Type',
-    save_path='output/figures/paper_fig4_exponent_comparison.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig4_exponent_comparison.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 
 # Figure 5: Spectrum analysis
 print("\n[8/10] Figure 5: Frequency spectrum...")
@@ -138,10 +152,10 @@ peaks = analyze_spectrum_peaks(freqs, amps, num_peaks=5)
 plot_spectrum(
     freqs, amps, peaks,
     title="Frequency Spectrum of Ethical Primes (Biased Judge)",
-    save_path='output/figures/paper_fig5_spectrum.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig5_spectrum.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig5_spectrum.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 
 # Figure 6: Zero distribution
 print("\n[9/10] Figure 6: Ethical zeta function zeros...")
@@ -155,28 +169,31 @@ zeros = find_approximate_zeros(
 plot_zero_distribution(
     zeros,
     title="Ethical Zeta Function Zeros in Complex Plane",
-    save_path='output/figures/paper_fig6_zeros.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig6_zeros.pdf'),
     show=False
 )
 print(f"      Found {len(zeros)} approximate zeros")
-print("      Saved: output/figures/paper_fig6_zeros.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
 
 # Figure 7: Complexity distribution
 print("\n[10/10] Figure 7: Complexity distribution...")
 plot_complexity_distribution(
     actions,
     title="Action Complexity Distribution (Zipf)",
-    save_path='output/figures/paper_fig7_complexity_dist.pdf',
+    save_path=os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf'),
     show=False
 )
-print("      Saved: output/figures/paper_fig7_complexity_dist.pdf")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
 
 # Generate detailed report
 print("\n" + "=" * 70)
 print("GENERATING REPORT")
 print("=" * 70)
-report = generate_report(results, output_path='output/judge_comparison_report.md', format='markdown')
-print("\nReport saved to: output/judge_comparison_report.md")
+output_base = os.path.join(script_dir, 'output')
+os.makedirs(output_base, exist_ok=True)
+report_path = os.path.join(output_base, 'judge_comparison_report.md')
+report = generate_report(results, output_path=report_path, format='markdown')
+print(f"\nReport saved to: {report_path}")
 print("\nReport preview:")
 print("-" * 70)
 # Handle encoding for Windows console
@@ -194,14 +211,14 @@ print("SUMMARY")
 print("=" * 70)
 print("\nAll figures generated successfully!")
 print("\nGenerated files:")
-print("  - output/figures/paper_fig1_pi_b_e.pdf")
-print("  - output/figures/paper_fig2_error_growth.pdf")
-print("  - output/figures/paper_fig3_judge_comparison.pdf")
-print("  - output/figures/paper_fig4_exponent_comparison.pdf")
-print("  - output/figures/paper_fig5_spectrum.pdf")
-print("  - output/figures/paper_fig6_zeros.pdf")
-print("  - output/figures/paper_fig7_complexity_dist.pdf")
-print("  - output/judge_comparison_report.md")
+print(f"  - {os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig2_error_growth.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+print(f"  - {report_path}")
 print("\nNext steps:")
 print("  1. Review generated figures")
 print("  2. Copy figures to ../figures/ for LaTeX inclusion")
@@ -210,7 +227,8 @@ print("  4. Compile LaTeX paper: pdflatex ethical_riemann_hypothesis.tex")
 print("\n" + "=" * 70)
 
 # Save results to a summary file for LaTeX integration
-with open('output/results_summary.txt', 'w') as f:
+results_summary_path = os.path.join(output_base, 'results_summary.txt')
+with open(results_summary_path, 'w') as f:
     f.write("ETHICAL RIEMANN HYPOTHESIS - NUMERICAL RESULTS\n")
     f.write("=" * 70 + "\n\n")
     
@@ -224,12 +242,17 @@ with open('output/results_summary.txt', 'w') as f:
         f.write(f"  Mistake rate: {metrics['mistake_rate']:.3f}\n")
         f.write(f"  MAE: {metrics['mae']:.3f}\n")
         f.write(f"  RMSE: {metrics['rmse']:.3f}\n")
-        f.write(f"  Estimated exponent: {metrics['estimated_exponent']:.3f}\n")
-        f.write(f"  ERH satisfied: {'Yes' if metrics['erh_satisfied'] else 'No'}\n")
+        alpha = metrics['estimated_exponent']
+        within_bound = alpha <= 0.5 + 0.15
+        f.write(f"  Estimated exponent: {alpha:.3f}\n")
+        f.write(
+            "  Within ERH-style bound (α ≲ 0.5)?: "
+            f"{'Yes' if within_bound else 'No'}\n"
+        )
         f.write(f"  Growth rate: {metrics['growth_rate']}\n")
         f.write(f"  R^2 (fit quality): {metrics['r_squared']:.3f}\n")
         f.write("\n")
 
-print("\nNumerical results saved to: output/results_summary.txt")
+print(f"\nNumerical results saved to: {results_summary_path}")
 print("\nDone!")
 

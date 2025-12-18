@@ -1,20 +1,32 @@
 # Testing Documentation
 
-This directory contains test files for the Ethical Riemann Hypothesis project.
+This directory contains test files for the Ethical Riemann Hypothesis project, including tests for the psychohistory integration.
 
 ## Structure
 
 ```
 tests/
-├── notebooks/              # Notebook tests (Robot Framework)
-│   ├── notebook_tests.robot    # Main test suite
-│   ├── resources/              # Test resources
-│   ├── output/                 # Test output (logs, reports)
-│   ├── expected_outputs.txt    # List of expected output files
-│   └── utils.py                # Python utility functions
-├── test_streamlit_app.py   # Streamlit app import test
-├── verify_outputs.py       # Output file verification
-└── README.md              # This file
+├── notebooks/                      # Notebook tests (Robot Framework)
+│   ├── notebook_tests.robot        # Main test suite
+│   ├── resources/                  # Test resources
+│   ├── output/                     # Test output (logs, reports)
+│   ├── expected_outputs.txt        # List of expected output files
+│   └── utils.py                    # Python utility functions
+├── test_temporal_erh.py            # Temporal ERH unit tests
+├── test_agent_framework.py         # Agent framework unit tests
+├── test_social_network.py          # Social network unit tests
+├── test_meta_monitor.py            # Meta-monitor unit tests
+├── test_hybrid_model.py            # Hybrid model integration tests
+├── test_psychohistory_integration.py  # Full integration tests
+├── run_unit_tests.sh               # Unit test runner (Linux/macOS)
+├── run_unit_tests.bat              # Unit test runner (Windows)
+├── run_all_tests.sh                # All tests runner (Linux/macOS)
+├── run_all_tests.bat               # All tests runner (Windows)
+├── verify_tests.py                 # Test file verification
+├── test_streamlit_app.py           # Streamlit app import test
+├── verify_outputs.py               # Output file verification
+├── test_summary.md                 # Test summary document
+└── README.md                       # This file
 ```
 
 ## Notebook Testing with Robot Framework
@@ -74,6 +86,7 @@ The following notebooks are tested:
 - `05_generate_paper_figures.ipynb` - Paper figure generation
 - `06_baseline_comparison.ipynb` - Baseline function comparison
 - `07_zeta_zeros_deep_analysis.ipynb` - Deep zeta zero analysis
+- `08_psychohistory_integration.ipynb` - Psychohistory integration with ERH
 
 ### Test Output
 
@@ -93,6 +106,53 @@ The `expected_outputs.txt` file lists all expected output files for each noteboo
 - Text summaries
 
 Each output file has a minimum size requirement to ensure it's not empty.
+
+## Unit Tests
+
+Unit tests for psychohistory integration modules:
+
+**Linux/macOS:**
+```bash
+cd tests
+bash run_unit_tests.sh
+```
+
+**Windows:**
+```cmd
+cd tests
+run_unit_tests.bat
+```
+
+**Direct pytest command:**
+```bash
+pytest tests/test_*.py -v
+```
+
+### Test Coverage
+
+Unit tests cover:
+- `test_temporal_erh.py` - Temporal ERH functions
+- `test_agent_framework.py` - Agent and population classes
+- `test_social_network.py` - Social network structures
+- `test_meta_monitor.py` - Meta-monitoring system
+- `test_hybrid_model.py` - Hybrid psychohistory model
+- `test_psychohistory_integration.py` - Integration tests
+
+## Running All Tests
+
+Run both unit tests and notebook tests:
+
+**Linux/macOS:**
+```bash
+cd tests
+bash run_all_tests.sh
+```
+
+**Windows:**
+```cmd
+cd tests
+run_all_tests.bat
+```
 
 ## Other Tests
 

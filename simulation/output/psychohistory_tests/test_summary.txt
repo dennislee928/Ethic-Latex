@@ -1,0 +1,188 @@
+======================================================================
+PSYCHOHISTORY SIMULATION TEST REPORT
+======================================================================
+
+Total Tests: 43
+Passed: 40
+Failed: 1
+Success Rate: 93.0%
+Total Time: 144.89s
+
+Timestamp: 2025-12-01T17:02:57.552629
+
+======================================================================
+DETAILED RESULTS
+======================================================================
+
+Test: param_sweep_agents10_toporandom_steps5
+  Status: PASSED
+  Time: 0.18s
+
+Test: param_sweep_agents10_toporandom_steps10
+  Status: PASSED
+  Time: 0.25s
+
+Test: param_sweep_agents10_toporandom_steps20
+  Status: PASSED
+  Time: 0.43s
+
+Test: param_sweep_agents10_toposmall_world_steps5
+  Status: PASSED
+  Time: 0.14s
+
+Test: param_sweep_agents10_toposmall_world_steps10
+  Status: PASSED
+  Time: 0.25s
+
+Test: param_sweep_agents10_toposmall_world_steps20
+  Status: PASSED
+  Time: 0.56s
+
+Test: param_sweep_agents10_toposcale_free_steps5
+  Status: PASSED
+  Time: 0.19s
+
+Test: param_sweep_agents10_toposcale_free_steps10
+  Status: PASSED
+  Time: 0.27s
+
+Test: param_sweep_agents10_toposcale_free_steps20
+  Status: PASSED
+  Time: 0.52s
+
+Test: param_sweep_agents50_toporandom_steps5
+  Status: PASSED
+  Time: 0.65s
+
+Test: param_sweep_agents50_toporandom_steps10
+  Status: PASSED
+  Time: 0.80s
+
+Test: param_sweep_agents50_toporandom_steps20
+  Status: PASSED
+  Time: 2.20s
+
+Test: param_sweep_agents50_toposmall_world_steps5
+  Status: PASSED
+  Time: 0.51s
+
+Test: param_sweep_agents50_toposmall_world_steps10
+  Status: PASSED
+  Time: 1.36s
+
+Test: param_sweep_agents50_toposmall_world_steps20
+  Status: PASSED
+  Time: 2.92s
+
+Test: param_sweep_agents50_toposcale_free_steps5
+  Status: PASSED
+  Time: 0.79s
+
+Test: param_sweep_agents50_toposcale_free_steps10
+  Status: PASSED
+  Time: 1.28s
+
+Test: param_sweep_agents50_toposcale_free_steps20
+  Status: PASSED
+  Time: 2.23s
+
+Test: param_sweep_agents100_toporandom_steps5
+  Status: PASSED
+  Time: 0.96s
+
+Test: param_sweep_agents100_toporandom_steps10
+  Status: PASSED
+  Time: 1.43s
+
+Test: param_sweep_agents100_toporandom_steps20
+  Status: PASSED
+  Time: 3.33s
+
+Test: param_sweep_agents100_toposmall_world_steps5
+  Status: PASSED
+  Time: 0.92s
+
+Test: param_sweep_agents100_toposmall_world_steps10
+  Status: PASSED
+  Time: 1.41s
+
+Test: param_sweep_agents100_toposmall_world_steps20
+  Status: PASSED
+  Time: 3.62s
+
+Test: param_sweep_agents100_toposcale_free_steps5
+  Status: PASSED
+  Time: 1.53s
+
+Test: param_sweep_agents100_toposcale_free_steps10
+  Status: PASSED
+  Time: 3.07s
+
+Test: param_sweep_agents100_toposcale_free_steps20
+  Status: PASSED
+  Time: 4.78s
+
+Test: param_sweep_agents200_toporandom_steps5
+  Status: PASSED
+  Time: 1.69s
+
+Test: param_sweep_agents200_toporandom_steps10
+  Status: PASSED
+  Time: 4.77s
+
+Test: param_sweep_agents200_toporandom_steps20
+  Status: PASSED
+  Time: 8.49s
+
+Test: param_sweep_agents200_toposmall_world_steps5
+  Status: PASSED
+  Time: 1.90s
+
+Test: param_sweep_agents200_toposmall_world_steps10
+  Status: PASSED
+  Time: 4.58s
+
+Test: param_sweep_agents200_toposmall_world_steps20
+  Status: PASSED
+  Time: 12.73s
+
+Test: param_sweep_agents200_toposcale_free_steps5
+  Status: PASSED
+  Time: 2.17s
+
+Test: param_sweep_agents200_toposcale_free_steps10
+  Status: PASSED
+  Time: 5.75s
+
+Test: param_sweep_agents200_toposcale_free_steps20
+  Status: PASSED
+  Time: 8.83s
+
+Test: long_term_steps50
+  Status: UNSTABLE
+  Time: 6.15s
+
+Test: long_term_steps100
+  Status: UNSTABLE
+  Time: 10.51s
+
+Test: stress_agents200
+  Status: PASSED
+  Time: 8.70s
+
+Test: stress_agents500
+  Status: PASSED
+  Time: 24.56s
+
+Test: boundary_minimal
+  Status: FAILED
+  Error: k>n, choose smaller k or larger n
+
+Test: boundary_small
+  Status: PASSED
+  Time: 0.05s
+
+Test: boundary_large_agents
+  Status: PASSED
+  Time: 7.19s
+

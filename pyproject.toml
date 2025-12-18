@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "erh"
+version = "0.1.0"
+description = "Ethical Riemann Hypothesis (ERH) Simulation SDK"
+authors = [
+  { name = "Ethical AI Research Team", email = "contact@ethical-ai.org" },
+]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "pandas>=1.3.0",
+    "matplotlib>=3.4.0",
+    "fastapi>=0.95.0",  # For API client features
+    "httpx>=0.24.0",    # HTTP client
+    "requests>=2.28.0", # Synchronous HTTP client
+]
+
+[project.optional-dependencies]
+ml = [
+    "adversarial-robustness-toolbox>=1.14.0",
+    "aif360>=0.5.0",
+    "scikit-learn>=1.0.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/dennislee928/Ethic-Latex"
+"Bug Tracker" = "https://github.com/dennislee928/Ethic-Latex/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["erh*"]
+namespaces = false
