@@ -36,3 +36,4 @@ echo 3. Push the tag: git push origin %VERSION%
 echo 4. Create a GitHub release and upload files
 
 
+
