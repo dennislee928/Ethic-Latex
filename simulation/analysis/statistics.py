@@ -573,3 +573,54 @@ def compute_judge_rankings(
     
     return rankings
 
+
+def summarize_fairness_and_erh(
+    results_dict: Dict[str, List],
+    X_max: int = 100,
+    group_attr: str = "group",
+) -> Dict[str, Dict]:
+    """
+    Build a joined summary of ERH-style metrics and simple fairness diagnostics
+    (group error gaps + calibration) for each judge.
+
+    This is mainly intended for notebooks/tables that directly contrast what
+    ERH adds beyond standard fairness metrics.
+    """
+    try:
+        from ..analysis.fairness_metrics import (
+            compute_group_error_gaps,
+            compute_calibration_by_bins,
+        )
+    except ImportError:
+        from .fairness_metrics import (
+            compute_group_error_gaps,
+            compute_calibration_by_bins,
+        )
+
+    comparison = compare_judges(results_dict, X_max=X_max)
+    summary: Dict[str, Dict] = {}
+
+    for name, actions in results_dict.items():
+        metrics = comparison.get(name, {})
+        # Fairness diagnostics
+        group_stats = compute_group_error_gaps(actions, group_attr=group_attr)
+        calib = compute_calibration_by_bins(actions, num_bins=10, use_complexity=True)
+
+        summary[name] = {
+            # ERH / growth side
+            "erh_satisfied": metrics.get("erh_satisfied"),
+            "estimated_exponent": metrics.get("estimated_exponent"),
+            "alpha_ci_low": metrics.get("alpha_ci_low"),
+            "alpha_ci_high": metrics.get("alpha_ci_high"),
+            "growth_rate": metrics.get("growth_rate"),
+            # Fairness side
+            "max_mistake_gap": group_stats.get("max_mistake_gap"),
+            "max_mae_gap": group_stats.get("max_mae_gap"),
+            "groups": group_stats.get("groups"),
+            "mistake_rate_by_group": group_stats.get("mistake_rate_by_group"),
+            "mae_by_group": group_stats.get("mae_by_group"),
+            "calibration_error": calib.get("calibration_error"),
+        }
+
+    return summary
+
