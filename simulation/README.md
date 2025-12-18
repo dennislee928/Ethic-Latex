@@ -21,11 +21,25 @@ This project explores the analogy between the distribution of prime numbers and 
 
 ### Ethical Riemann Hypothesis (ERH)
 
-**Statement**: There exist constants C, ε > 0 such that for all x:
+**Statement (theoretical form)**: There exist constants C, ε > 0 such that for all x:
 
 |E(x)| ≤ C · x^(1/2 + ε)
 
-**Interpretation**: The cumulative deviation in critical misjudgments grows at most like √x, indicating a "healthy" judgment system where errors don't spiral out of control as complexity increases.
+**Operational test in this codebase**: In simulations we work with a discrete error
+profile E(x) on x = 1,…,X_max and say that a judge **satisfies the ERH-style bound**
+iff, for some fixed (C, ε) and small slack parameters:
+
+- At most a small fraction of x (e.g. ≤ 5%) has |E(x)| strictly above C · x^(1/2 + ε); and
+- No point exceeds a relaxed practical bound of 1.5 · C · x^(1/2 + ε).
+
+This logic is implemented centrally in `simulation.analysis.erh_checks.check_erh_bound`
+and is reused by all higher-level reports (CSV tables, Markdown summaries, notebooks),
+so that the `erh_satisfied` flag and the “ERH Satisfied” column are always computed
+in the same way.
+
+**Interpretation**: The cumulative deviation in critical misjudgments grows at most like √x
+(up to the allowed slack), indicating a "healthy" judgment system where errors don't
+spiral out of control as complexity increases.
 
 ## Installation
 

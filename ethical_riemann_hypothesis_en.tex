@@ -821,7 +821,7 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
-  \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$). The negative exponent indicates that error decreases as complexity increases, which is mathematically superior to the ERH-style worst-case bound of $\alpha \approx 0.5$. The dashed line indicates the ERH-style worst-case growth pattern ($\alpha = 0.5$) for comparison.}
+\caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$) with a bootstrap confidence interval (not shown) strictly below the ERH-style worst-case exponent of $0.5$. In our normalization, a negative exponent does not mean that the number of errors becomes negative; instead it indicates that, after dividing by the ERH-style baseline $x^{1/2+\varepsilon}$, the residual error term decays as complexity increases---intuitively, the judge is ``better than ERH'' at high $x$. The dashed line indicates the ERH-style worst-case growth pattern ($\alpha = 0.5$) for comparison.}
   \label{fig:error_growth}
 \end{figure}
 
@@ -835,7 +835,7 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}
-  \caption{Estimated growth exponent $\alpha$ by judge type. The bar chart compares error growth exponents across the four judges, where negative values indicate decreasing error as complexity increases. The Radical Judge ($\alpha = -0.452$) performs best, followed by the Biased Judge ($\alpha = -0.629$), Noisy Judge ($\alpha = -0.171$), and Conservative Judge ($\alpha = -0.046$). All judges have negative exponents, indicating error growth patterns superior to the ERH-predicted bound of $\alpha \approx 0.5$.}
+\caption{Estimated growth exponent $\alpha$ by judge type. The bar chart compares error growth exponents across the four judges, with bootstrap confidence intervals (not shown) obtained from resampling the $(x,|E(x)|)$ pairs. Negative values here should be read under our chosen normalization $|E(x)| / x^{1/2+\varepsilon}$: they indicate that the normalized error term decays with complexity, i.e., that long-run error growth is strictly better than the ERH-style worst-case bound of $\alpha \approx 0.5$. The Radical Judge ($\alpha = -0.452$) performs best, followed by the Biased Judge ($\alpha = -0.629$), Noisy Judge ($\alpha = -0.171$), and Conservative Judge ($\alpha = -0.046$).}
   \label{fig:exponent_comparison}
 \end{figure}
 

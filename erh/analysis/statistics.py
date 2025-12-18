@@ -340,24 +340,20 @@ def generate_report(
         
         lines.append("## Summary Table")
         lines.append("")
-        # We distinguish between "within ERH-style bound" and "close to the √x target"
-        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | Within ERH Bound? | Growth Rate |")
-        lines.append("|-------|---------|--------|--------------|-----|----------|-------------------|-------------|")
+        # Summary uses the canonical ERH decision from the centralized bound check.
+        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | ERH Satisfied | Growth Rate |")
+        lines.append("|-------|---------|--------|--------------|-----|----------|---------------|-------------|")
         
         for name, metrics in comparison.items():
             if 'error' in metrics:
                 lines.append(f"| {name} | - | - | - | - | - | ERROR | - |")
                 continue
             
-            alpha = metrics.get('estimated_exponent', float('nan'))
-            # Within-bound = exponent at or below ERH-style worst-case target (≈ 0.5 + ϵ)
-            within_bound = not np.isnan(alpha) and alpha <= 0.5 + 0.15
-                
             lines.append(
                 f"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | "
                 f"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | "
                 f"{metrics['estimated_exponent']:.3f} | "
-                f"{'Yes' if within_bound else 'No'} | "
+                f"{'Yes' if metrics.get('erh_satisfied', False) else 'No'} | "
                 f"{metrics['growth_rate']} |"
             )
         
@@ -380,36 +376,39 @@ def generate_report(
             lines.append(f"- **Mean Absolute Error:** {metrics['mae']:.3f}")
             lines.append(f"- **RMSE:** {metrics['rmse']:.3f}")
             lines.append(f"- **Estimated Growth Exponent:** {metrics['estimated_exponent']:.3f}")
-            # Within-bound flag as described above
-            within_bound = metrics['estimated_exponent'] <= 0.5 + 0.15
-            lines.append(f"- **Within ERH-style bound (α ≲ 0.5)?** {'Yes' if within_bound else 'No'}")
+            # Canonical bound-based ERH decision
+            lines.append(
+                f"- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** "
+                f"{'Yes' if metrics.get('erh_satisfied', False) else 'No'}"
+            )
             lines.append(f"- **Growth Rate Category:** {metrics['growth_rate']}")
             lines.append(f"- **R² (fit quality):** {metrics['r_squared']:.3f}")
             lines.append("")
             
-            # Interpretation
-            if metrics['erh_satisfied']:
+            # Interpretation – now keyed to bound satisfaction, with α as a side diagnostic.
+            if metrics.get('erh_satisfied', False):
                 lines.append(
-                    "**Interpretation:** This judge is close to the ERH-style √x target "
-                    "(α ≈ 0.5), exhibiting 'Riemann-healthy' behavior in the strict sense."
+                    "**Interpretation:** This judge's cumulative error stays within the ERH-style "
+                    "bound (up to the allowed slack), indicating 'Riemann-healthy' behavior. "
+                    "The exponent α is reported as an auxiliary diagnostic, not the primary test."
                 )
             else:
                 if metrics['growth_rate'] == 'superlinear':
                     lines.append(
                         "**Interpretation:** ⚠️ This judge shows problematic error growth. "
-                        "Errors grow faster than linearly, indicating severe degradation "
-                        "with increasing complexity."
+                        "Errors frequently exceed the ERH-style bound and grow faster than "
+                        "linearly with complexity."
                     )
                 elif metrics['growth_rate'] in ['linear', 'sublinear_fast']:
                     lines.append(
-                        "**Interpretation:** This judge shows moderate error growth, "
-                        "worse than the ERH-inspired bound but not catastrophic."
+                        "**Interpretation:** This judge exhibits moderate error growth: the ERH-style "
+                        "bound is not strictly satisfied, but errors do not explode catastrophically."
                     )
                 else:
                     lines.append(
-                        "**Interpretation:** This judge's error grows even more slowly than the "
-                        "worst-case ERH-style bound (i.e., it is conservative/over-cautious), "
-                        "so 'not close to α ≈ 0.5' here does *not* mean an explosion."
+                        "**Interpretation:** Although the bound test flags some violations, the fitted "
+                        "exponent α is below the √x target, suggesting a conservative or over-cautious "
+                        "system whose long-run errors grow slower than the ERH worst case."
                     )
             
             lines.append("")
