@@ -452,9 +452,18 @@ def analyze_error_growth(
     ss_tot = np.sum((log_E - np.mean(log_E)) ** 2)
     r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
 
-    # ERH-style bound check and bootstrap CI using centralized logic
-    from ..analysis.erh_checks import check_erh_bound
-    from ..analysis.statistics import bootstrap_exponent_ci
+    # ERH-style bound check and bootstrap CI using centralized logic.
+    # Use robust absolute imports so this works both in package and script modes.
+    try:
+        from erh.analysis.erh_checks import check_erh_bound
+        from erh.analysis.statistics import bootstrap_exponent_ci
+    except ImportError:
+        try:
+            from simulation.analysis.erh_checks import check_erh_bound  # type: ignore
+            from simulation.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+        except ImportError:
+            from analysis.erh_checks import check_erh_bound  # type: ignore
+            from analysis.statistics import bootstrap_exponent_ci  # type: ignore
 
     bound_stats = check_erh_bound(E_x, x_values)
     ci_stats = bootstrap_exponent_ci(E_x, x_values)
