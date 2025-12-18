@@ -80,3 +80,32 @@ class DerivedMetricsRead(BaseModel):
         orm_mode = True
 
 
+class AnalysisSummary(BaseModel):
+    judge_type: str
+    num_samples: int
+    num_primes: int
+    estimated_alpha: float | None = None
+    r_squared: float | None = None
+
+
+class CurvePoint(BaseModel):
+    x: float
+    y: float
+
+
+class AnalysisCurves(BaseModel):
+    pi_curve: list[CurvePoint]
+    error_curve: list[CurvePoint]
+
+
+class HeatmapCell(BaseModel):
+    complexity_bin: float
+    delta_mean: float
+    count: int
+
+
+class HeatmapResponse(BaseModel):
+    judge_type: str
+    cells: list[HeatmapCell]
+
+

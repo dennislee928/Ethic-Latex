@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[ml] pytest pylint
+        pip install .[ml] pytest pylint networkx
     - name: Test
       run: |
         pytest tests/test_sdk.py

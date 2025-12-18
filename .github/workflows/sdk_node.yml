@@ -10,6 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: ${{ hashFiles('js-sdk/package.json') != '' }}
     defaults:
       run:
         working-directory: js-sdk
@@ -29,6 +30,7 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    if: ${{ hashFiles('js-sdk/package.json') != '' }}
     defaults:
       run:
         working-directory: js-sdk

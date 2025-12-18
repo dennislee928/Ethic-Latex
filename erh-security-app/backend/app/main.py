@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .core.db import Base, engine
-from .routers import health, ingestion
+from .routers import analysis, health, ingestion
 
 
 def create_app() -> FastAPI:
@@ -36,6 +36,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(health.router, prefix="/health", tags=["health"])
     app.include_router(ingestion.router, prefix="/ingestion", tags=["ingestion"])
+    app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 
     return app
 
