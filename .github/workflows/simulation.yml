@@ -88,12 +88,12 @@ jobs:
           name: comprehensive-report
           path: final_report/
           retention-days: 30
-
-      - name: Deploy Report to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: final_report
-          destination_dir: reports
-          keep_files: true
+# temp disabled due to issues with peaceiris/actions-gh-pages@v4
+     # - name: Deploy Report to GitHub Pages
+     #   if: github.ref == 'refs/heads/main'
+     #   uses: peaceiris/actions-gh-pages@v4
+     #   with:
+      #    github_token: ${{ secrets.GITHUB_TOKEN }}
+      #    publish_dir: final_report
+      #    destination_dir: reports
+      #    keep_files: true
