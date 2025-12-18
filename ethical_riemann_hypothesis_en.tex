@@ -912,11 +912,11 @@ Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseli
 
 \begin{table}[h]
 \centering
-\caption{Comparison of baseline and mitigated models on Adult Income dataset. Accuracy is overall classification accuracy. Group gap (ΔFPR) measures the difference in false positive rates between protected groups. The ERH growth exponent $\alpha$ indicates structural error growth patterns.}
+\caption{Comparison of baseline and mitigated models on Adult Income dataset. Accuracy is overall classification accuracy. Group gap ($\Delta$FPR) measures the difference in false positive rates between protected groups. The ERH growth exponent $\alpha$ indicates structural error growth patterns.}
 \label{tab:real_data_comparison}
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Model} & \textbf{Accuracy} & \textbf{Group Gap (ΔFPR)} & \textbf{$\alpha$} & \textbf{Comment} \\
+\textbf{Model} & \textbf{Accuracy} & \textbf{Group Gap ($\Delta$FPR)} & \textbf{$\alpha$} & \textbf{Comment} \\
 \midrule
 Baseline  & 0.842 & 0.045 & $-0.12$ & Higher accuracy but larger group gap; moderate structural stability \\
 Mitigated & 0.838 & 0.032 & $-0.18$ & Slightly lower accuracy but reduced group gap; improved structural stability \\
