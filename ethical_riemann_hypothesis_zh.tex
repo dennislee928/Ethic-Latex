@@ -3,7 +3,9 @@
 \usepackage{fontspec}
 \usepackage{xeCJK}
 \setmainfont{Latin Modern Roman}
-\setCJKmainfont{FandolSong-Regular}
+% Use a widely available CJK font on cloud runners; if missing locally,
+% you may switch this to a system font such as "Microsoft JhengHei" or "PingFang TC".
+\setCJKmainfont{Noto Serif CJK SC}
 
 % Packages
 \usepackage[utf8]{inputenc}
