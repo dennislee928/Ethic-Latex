@@ -112,7 +112,12 @@ results = batch_evaluate(actions, judges)
 comparison = compare_judges(results)
 
 for name, metrics in comparison.items():
-    print(f"{name}: α={metrics['estimated_exponent']:.3f}, ERH={metrics['erh_satisfied']}")
+    alpha = metrics['estimated_exponent']
+    ci_low = metrics.get('alpha_ci_low', float('nan'))
+    ci_high = metrics.get('alpha_ci_high', float('nan'))
+    print(f"{name}: α={alpha:.3f} "
+          f"(CI [{ci_low:.3f}, {ci_high:.3f}]), "
+          f"ERH_bound={metrics['erh_satisfied']}")
 ```
 
 ### Analyze Your Own Judgment Function
