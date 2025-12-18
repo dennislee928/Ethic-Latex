@@ -141,7 +141,7 @@ Interactive Jupyter notebooks for exploration:
 2. **02_judge_comparison.ipynb**: Comparing different judgment systems
 3. **03_zeta_zeros.ipynb**: Exploring the ethical zeta function zeros
 4. **04_parameter_sensitivity.ipynb**: Parameter sensitivity analysis
-5. **05_generate_paper_figures.ipynb**: Generate all paper figures
+5. **05_generate_paper_figures.ipynb**: Generate all paper figures used in the ERH paper; this notebook, together with the surrounding `simulation/` code, serves as the main reproducibility entrypoint for the experimental results.
 
 ## API Documentation
 
