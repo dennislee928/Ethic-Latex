@@ -34,8 +34,7 @@ export const dashboardApi = {
 
   // Get dashboard stats (placeholder - implement when backend endpoint is ready)
   getStats: async (): Promise<DashboardStats> => {
-    // For now, return mock data or call existing endpoints to compute
-    const summary = await dashboardApi.getSummary('COMBINED')
+    // For now, return mock data
     return {
       total_rules: 0,
       active_rules: 0,

@@ -7,10 +7,10 @@ import SplitPane from '@/components/editor/SplitPane'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Save, Play, FileText } from 'lucide-react'
+import { Save, Play } from 'lucide-react'
 import { rulesApi } from '@/api/rules'
 import { verifyApi } from '@/api/verify'
-import type { LatexRule, ValidationResult } from '@/types/latex'
+import type { LatexRule } from '@/types/latex'
 
 export default function Editor() {
   const [content, setContent] = useState('')
@@ -58,9 +58,7 @@ export default function Editor() {
     setTitle(rule.title)
     setContent(rule.content)
     setSelectedRuleId(rule.id)
-    verifyApi.verifyRule(rule.id).then((result) => {
       verifyMutation.mutate(rule.content)
-    })
   }
 
   return (
