@@ -68,8 +68,13 @@ def select_ethical_primes(
     - Not all misjudgments are "primes" - only the structurally important ones
     - Primes represent fundamental errors that can't be reduced to simpler cases
     - Their distribution tells us about the "health" of the judgment system
+    
+    Reference: Paper Section 3 (The Ethical Riemann Hypothesis Analogy),
+    Definition 3.1 (Ethical Primes)
     """
     # Filter to only misjudgments
+    # Reference: Paper Section 3, where ethical primes are defined as
+    # structurally critical misjudgments that cannot be decomposed
     mistakes = [a for a in actions if a.mistake_flag == 1]
     
     if len(mistakes) == 0:
@@ -215,31 +220,38 @@ def compute_Pi_and_error(
     
     This function computes E(x) so we can test whether this bound holds.
     """
+    # Reference: Paper Section 4 (Formalization), Definition of Π(x), B(x), and E(x)
+    # E(x) = Π(x) - B(x) where Π(x) counts ethical primes up to complexity x
     x_values = np.arange(1, X_max + 1)
     Pi_x = np.zeros(X_max, dtype=float)
     
     # Compute Π(x): count of primes up to complexity x
-    prime_complexities = [p.c for p in primes if p.c <= X_max]
+    # Reference: Paper Section 4, Definition 4.1 (Ethical Prime Counting Function)
+    # Optimized: Use NumPy vectorized operations instead of Python loops
+    prime_complexities = np.array([p.c for p in primes if p.c <= X_max], dtype=float)
     
-    for i, x in enumerate(x_values):
-        Pi_x[i] = sum(1 for c in prime_complexities if c <= x)
+    if len(prime_complexities) > 0:
+        # Vectorized computation: for each x, count primes with c <= x
+        # Using broadcasting: (x_values[:, None] >= prime_complexities[None, :])
+        Pi_x = np.sum(x_values[:, None] >= prime_complexities[None, :], axis=1)
+    else:
+        Pi_x = np.zeros(X_max, dtype=float)
     
     # Compute baseline B(x)
+    # Reference: Paper Section 5 (Baseline Models), various baseline functions
     if baseline == 'linear':
         alpha = baseline_params.get('alpha', 0.1) if baseline_params else 0.1
         B_x = alpha * x_values
         
     elif baseline == 'prime_theorem':
         # B(x) = β * x / log(x), analogous to Prime Number Theorem
+        # Optimized: Use NumPy vectorized operations
         beta = baseline_params.get('beta', 1.0) if baseline_params else 1.0
         
-        # Avoid log(1) = 0
+        # Vectorized computation: avoid log(1) = 0
+        mask = x_values > 1
         B_x = np.zeros_like(x_values, dtype=float)
-        for i, x in enumerate(x_values):
-            if x > 1:
-                B_x[i] = beta * x / np.log(x)
-            else:
-                B_x[i] = 0
+        B_x[mask] = beta * x_values[mask] / np.log(x_values[mask])
                 
     elif baseline == 'logarithmic_integral':
         # B(x) = β * Li(x) where Li(x) = ∫₂ˣ dt/log(t)
@@ -438,10 +450,13 @@ def analyze_error_growth(
 
     # Fit |E(x)| = C * x^α using log-log regression
     # log|E(x)| = log(C) + α * log(x)
+    # This corresponds to Section 6 (Error Growth Analysis) of the paper,
+    # where we estimate the growth exponent α to test the ERH bound |E(x)| ≤ C·x^(1/2+ε)
     log_x = np.log(x_valid)
     log_E = np.log(E_valid)
 
     # Linear regression in log space
+    # Reference: Paper Section 6, Equation for exponent estimation
     coeffs = np.polyfit(log_x, log_E, 1)
     alpha = coeffs[0]  # slope = exponent
     log_C = coeffs[1]  # intercept = log(C)

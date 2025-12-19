@@ -83,7 +83,10 @@ jobs:
         if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
         run: |
           if command -v Rscript &> /dev/null; then
-            Rscript -e "install.packages('jsonlite', repos='https://cran.rstudio.com/', quiet=TRUE)"
+            # Create user library directory if it doesn't exist
+            mkdir -p ~/R/library
+            # Install to user library (no sudo required)
+            Rscript -e ".libPaths(c('~/R/library', .libPaths())); install.packages('jsonlite', repos='https://cran.rstudio.com/', lib='~/R/library', quiet=TRUE)"
           else
             echo "Rscript not found, skipping R package installation."
           fi
@@ -92,7 +95,8 @@ jobs:
         if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
         run: |
           if command -v Rscript &> /dev/null; then
-            Rscript scripts/verify_analysis.R combined_results final_report/r_verification
+            # Use user library path for R script execution
+            R_LIBS_USER=~/R/library Rscript scripts/verify_analysis.R combined_results final_report/r_verification
           else
             echo "Rscript not found, skipping R verification."
           fi
@@ -102,6 +106,14 @@ jobs:
         with:
           name: comprehensive-report
           path: final_report/
+          retention-days: 30
+
+      - name: Upload Figures for Thesis
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-figures
+          path: final_report/*.png
           retention-days: 30
 # temp disabled due to issues with peaceiris/actions-gh-pages@v4
      # - name: Deploy Report to GitHub Pages

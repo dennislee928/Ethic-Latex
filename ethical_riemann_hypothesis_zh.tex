@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{fontspec}
 \usepackage{xeCJK}
+\usepackage{microtype}
 \setmainfont{Latin Modern Roman}
 % Use a widely available CJK font on cloud runners; if missing locally,
 % you may switch this to a system font such as "Microsoft JhengHei" or "PingFang TC".
@@ -168,7 +169,7 @@
 
 我們的 ERH 框架透過提供結構性、複雜度感知、形式嚴謹和預測性的倫理錯誤模式模型來解決這些缺口。
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{現有方法與 ERH 框架的比較}
 \label{tab:comparison}
@@ -375,7 +376,7 @@ ERH 指出，預測關鍵誤判時的累積誤差最多以 $\sqrt{x}$ 的速度�
 
 \subsection{與經典黎曼猜想的比較}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{經典 RH 與 ERH 的類比}
 \label{tab:analogy}
@@ -504,7 +505,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週�
 
 \subsection{參數設定}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{模擬參數}
 \label{tab:parameters}
@@ -589,7 +590,7 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 
 在進入各個判斷者的詳細敘述之前，表~\ref{tab:summary_judges_zh} 統整了每種類型在主要指標上的表現。
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{各判斷者類型的誤差行為總覽。錯誤率與平均 $|\Delta(a)|$ 皆在 $N = 2000$ 個行動上計算。「是否在 ERH 式界限內？」表示估計增長指數 $\alpha$ 是否不超過 ERH 風格的最壞情況目標（約 $\alpha \approx 0.5$）。「整體評估」提供結合結構健康與整體錯誤水準的簡潔評估。}
 \label{tab:summary_judges_zh}

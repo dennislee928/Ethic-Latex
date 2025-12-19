@@ -3,6 +3,7 @@
 % Packages
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{microtype}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -167,7 +168,7 @@ Current approaches to AI ethics suffer from several limitations:
 
 Our ERH framework addresses these gaps by providing a structural, complexity-aware, formally rigorous, and predictive model of ethical error patterns.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Comparison of Existing Methods with ERH Framework}
 \label{tab:comparison}
@@ -497,7 +498,7 @@ In this sense, ERH can be understood as a mathematically natural regularity cond
 
 \subsection{Comparison with Classical Riemann Hypothesis}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Analogy between Classical RH and ERH}
 \label{tab:analogy}
@@ -626,7 +627,7 @@ For each judgment system:
 
 \subsection{Parameter Settings}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Simulation Parameters}
 \label{tab:parameters}
@@ -669,7 +670,7 @@ To ensure experimental reproducibility, we adopted the following measures:
     \item \textbf{Experimental repeatability}: Although the figures in the main text are based on a single representative run, we verified statistical stability across independent runs with $200$ different random seeds. For each judge, we re-estimate the growth exponent $\alpha$ across all seeds and compute mean, standard deviation, coefficient of variation (CV), and empirical 95\% confidence intervals. The CV of $\alpha$ remains below $0.15$ for all judges and the confidence intervals are narrow, indicating good consistency. Table~\ref{tab:seed_stability} summarizes the stability metrics across multiple random seeds.
 \end{itemize}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Statistical stability of error growth exponent $\alpha$ across multiple random seeds. All judges exhibit low coefficient of variation (CV < 0.15), indicating stable growth exponents across random seeds.}
 \label{tab:seed_stability}
@@ -740,7 +741,7 @@ Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific compl
 Before turning to detailed per-judge narratives, Table~\ref{tab:summary_judges}
 summarizes the key quantitative indicators for each judgment system.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Summary of error behavior across judge types. Mistake Rate and Mean $|\Delta(a)|$ are computed over $N = 2000$ actions. ``Within ERH-style bound?'' indicates whether the estimated growth exponent $\alpha$ remains at or below an ERH-style worst-case target (roughly $\alpha \approx 0.5$). ``Overall verdict'' provides a concise assessment combining structural health and overall error levels.}
 \label{tab:summary_judges}
@@ -925,7 +926,7 @@ This case study demonstrates how ERH can be layered onto standard evaluation pip
 
 Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseline and mitigated models, illustrating how ERH-style analysis complements traditional accuracy and fairness metrics.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Comparison of baseline and mitigated models on Adult Income dataset. Accuracy is overall classification accuracy. Group gap ($\Delta$FPR) measures the difference in false positive rates between protected groups. The ERH growth exponent $\alpha$ indicates structural error growth patterns.}
 \label{tab:real_data_comparison}
