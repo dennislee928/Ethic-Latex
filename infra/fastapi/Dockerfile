@@ -1,5 +1,8 @@
 # Multi-stage Dockerfile for FastAPI Backend
-# Build context should be from repository root
+# IMPORTANT: Build context MUST be set to repository root (.)
+# 
+# For Render: Set Root Directory to "." (repository root)
+# Dockerfile Path: infra/fastapi/Dockerfile
 
 FROM python:3.11-slim as base
 
@@ -14,11 +17,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
+# Path is relative to repository root (build context)
 COPY erh-security-app/backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy backend application code
+# Copy backend application code and dependencies
+# All paths are relative to repository root (build context)
 COPY erh-security-app/backend/ ./erh-security-app/backend/
 COPY erh_core/ ./erh_core/
 COPY simulation/ ./simulation/
