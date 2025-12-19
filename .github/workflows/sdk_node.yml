@@ -13,12 +13,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Ensure js-sdk directory exists
+      run: |
+        if [ ! -d js-sdk ]; then
+          echo "Creating js-sdk directory..."
+          mkdir -p js-sdk
+        fi
+        if [ ! -f js-sdk/package.json ]; then
+          echo "Creating minimal package.json..."
+          cat > js-sdk/package.json << 'EOF'
+        {
+          "name": "erh-js-sdk",
+          "version": "0.0.0",
+          "description": "Ethical Riemann Hypothesis JavaScript SDK",
+          "private": true
+        }
+        EOF
+        fi
+
     - name: Check js-sdk presence
       id: check_sdk
       run: |
         if [ ! -f js-sdk/package.json ]; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
           echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK tests."
+          echo "This is expected if the js-sdk directory does not exist in this repository."
+        elif grep -q '"version": "0.0.0"' js-sdk/package.json && grep -q '"private": true' js-sdk/package.json; then
+          echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
+          echo "⚠️ js-sdk/package.json is a placeholder, skipping Node.js SDK tests."
           echo "This is expected if the js-sdk directory does not exist in this repository."
         else
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
@@ -59,12 +81,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Ensure js-sdk directory exists
+      run: |
+        if [ ! -d js-sdk ]; then
+          echo "Creating js-sdk directory..."
+          mkdir -p js-sdk
+        fi
+        if [ ! -f js-sdk/package.json ]; then
+          echo "Creating minimal package.json..."
+          cat > js-sdk/package.json << 'EOF'
+        {
+          "name": "erh-js-sdk",
+          "version": "0.0.0",
+          "description": "Ethical Riemann Hypothesis JavaScript SDK",
+          "private": true
+        }
+        EOF
+        fi
+
     - name: Check js-sdk presence for publish
       id: check_sdk_publish
       run: |
         if [ ! -f js-sdk/package.json ]; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
           echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK publish."
+          echo "This is expected if the js-sdk directory does not exist in this repository."
+        elif grep -q '"version": "0.0.0"' js-sdk/package.json && grep -q '"private": true' js-sdk/package.json; then
+          echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
+          echo "⚠️ js-sdk/package.json is a placeholder, skipping Node.js SDK publish."
           echo "This is expected if the js-sdk directory does not exist in this repository."
         else
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
