@@ -485,3 +485,91 @@ def compute_judge_rankings(
     
     return rankings
 
+
+def bootstrap_exponent_ci(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    n_bootstrap: int = 500,
+    ci: float = 0.95,
+) -> Dict[str, float]:
+    """
+    Estimate uncertainty for the growth exponent α via bootstrap.
+
+    We reuse the same log–log regression protocol as `fit_error_growth`,
+    but repeatedly resample the (x, |E(x)|) pairs with replacement and
+    refit α to obtain an empirical distribution.
+
+    Parameters
+    ----------
+    E_x : np.ndarray
+        Error values E(x).
+    x_values : np.ndarray
+        Corresponding complexity values x.
+    n_bootstrap : int, default=500
+        Number of bootstrap resamples.
+    ci : float, default=0.95
+        Confidence level for the interval.
+
+    Returns
+    -------
+    dict
+        - 'alpha_hat': point estimate from the full data
+        - 'alpha_ci_low': lower confidence bound
+        - 'alpha_ci_high': upper confidence bound
+        - 'num_samples': number of valid points used
+    """
+    abs_E = np.abs(E_x)
+    valid_mask = (abs_E > 0) & (x_values > 1)
+
+    if np.sum(valid_mask) < 5:
+        return {
+            "alpha_hat": float("nan"),
+            "alpha_ci_low": float("nan"),
+            "alpha_ci_high": float("nan"),
+            "num_samples": int(np.sum(valid_mask)),
+        }
+
+    x = x_values[valid_mask]
+    y = abs_E[valid_mask]
+
+    log_x = np.log(x)
+    log_y = np.log(y)
+
+    # Point estimate from full data
+    coeffs = np.polyfit(log_x, log_y, 1)
+    alpha_hat = float(coeffs[0])
+
+    # Bootstrap distribution
+    n = len(log_x)
+    alphas = []
+    rng = np.random.default_rng()
+
+    for _ in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        bx = log_x[idx]
+        by = log_y[idx]
+        # Guard against degenerate resamples
+        if np.std(bx) == 0 or np.std(by) == 0:
+            continue
+        bcoeffs = np.polyfit(bx, by, 1)
+        alphas.append(bcoeffs[0])
+
+    if not alphas:
+        return {
+            "alpha_hat": alpha_hat,
+            "alpha_ci_low": float("nan"),
+            "alpha_ci_high": float("nan"),
+            "num_samples": n,
+        }
+
+    alphas_arr = np.asarray(alphas)
+    lower = float(np.quantile(alphas_arr, (1 - ci) / 2))
+    upper = float(np.quantile(alphas_arr, 1 - (1 - ci) / 2))
+
+    return {
+        "alpha_hat": alpha_hat,
+        "alpha_ci_low": lower,
+        "alpha_ci_high": upper,
+        "num_samples": n,
+    }
+
