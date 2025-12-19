@@ -109,12 +109,12 @@ jobs:
           retention-days: 30
 
       - name: Upload Figures for Thesis
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: simulation-figures
           path: final_report/*.png
           retention-days: 30
-          if-no-files-found: ignore
 # temp disabled due to issues with peaceiris/actions-gh-pages@v4
      # - name: Deploy Report to GitHub Pages
      #   if: github.ref == 'refs/heads/main'

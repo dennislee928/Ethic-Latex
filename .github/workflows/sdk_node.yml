@@ -36,12 +36,12 @@ jobs:
       run: |
         if [ ! -f js-sdk/package.json ]; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
-          echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK tests."
+          echo "ℹ️ js-sdk/package.json not found, skipping Node.js SDK tests."
           echo "This is expected if the js-sdk directory does not exist in this repository."
         elif grep -q '"version": "0.0.0"' js-sdk/package.json && grep -q '"private": true' js-sdk/package.json; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
-          echo "⚠️ js-sdk/package.json is a placeholder, skipping Node.js SDK tests."
-          echo "This is expected if the js-sdk directory does not exist in this repository."
+          echo "ℹ️ js-sdk/package.json is a placeholder (version 0.0.0, private), skipping Node.js SDK tests."
+          echo "This is expected behavior. The placeholder was created to prevent workflow errors."
         else
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
           echo "✓ js-sdk/package.json found, proceeding with Node.js SDK tests."
@@ -104,12 +104,12 @@ jobs:
       run: |
         if [ ! -f js-sdk/package.json ]; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
-          echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK publish."
+          echo "ℹ️ js-sdk/package.json not found, skipping Node.js SDK publish."
           echo "This is expected if the js-sdk directory does not exist in this repository."
         elif grep -q '"version": "0.0.0"' js-sdk/package.json && grep -q '"private": true' js-sdk/package.json; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
-          echo "⚠️ js-sdk/package.json is a placeholder, skipping Node.js SDK publish."
-          echo "This is expected if the js-sdk directory does not exist in this repository."
+          echo "ℹ️ js-sdk/package.json is a placeholder (version 0.0.0, private), skipping Node.js SDK publish."
+          echo "This is expected behavior. The placeholder was created to prevent workflow errors."
         else
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
           echo "✓ js-sdk/package.json found, proceeding with Node.js SDK publish."

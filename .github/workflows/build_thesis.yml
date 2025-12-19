@@ -107,12 +107,11 @@ jobs:
           python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
 
       - name: Download Simulation Figures (if available)
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: simulation-figures
           path: figures/simulation/
-          if-no-files-found: ignore
-          continue-on-error: true
 
       - name: Prepare Figures for LaTeX
         run: |
