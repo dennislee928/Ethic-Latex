@@ -65,7 +65,7 @@ jobs:
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
           echo "✓ js-sdk/package.json found, proceeding with Node.js SDK publish."
         fi
-    
+
     - name: Use Node.js
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
       uses: actions/setup-node@v4
