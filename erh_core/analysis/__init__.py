@@ -35,10 +35,14 @@ except ImportError:
         build_m_sequence, ethical_zeta_product, find_approximate_zeros, compute_spectrum
     )
 
+# zeta_zeros_analysis may have different function names
 try:
-    from erh_core.analysis.zeta_zeros_analysis import find_zeta_zeros
+    from erh_core.analysis.zeta_zeros_analysis import *
 except ImportError:
-    from .zeta_zeros_analysis import find_zeta_zeros
+    try:
+        from .zeta_zeros_analysis import *
+    except ImportError:
+        pass
 
 try:
     from erh_core.analysis.temporal_analysis import (
@@ -77,7 +81,6 @@ __all__ = [
     "generate_report", "bootstrap_exponent_ci",
     "generate_baseline_comparison_report",
     "build_m_sequence", "ethical_zeta_product", "find_approximate_zeros", "compute_spectrum",
-    "find_zeta_zeros",
     "analyze_temporal_trends", "detect_anomalies", "forecast_error_growth",
     "solve_error_density_pde", "fit_fluid_parameters", "detect_critical_phenomena",
     "degroot_model", "hegselmann_krause_model", "aggregate_beliefs",
