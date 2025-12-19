@@ -8,8 +8,12 @@ logical completeness and consistency.
 import numpy as np
 from typing import List, Dict, Optional
 from .action_space import Action
-from ..core.ethical_primes import compute_Pi_and_error, analyze_error_growth
-from ..core.judgement_system import BaseJudge
+try:
+    from erh_core.core.ethical_primes import compute_Pi_and_error, analyze_error_growth
+    from erh_core.core.judgement_system import BaseJudge
+except ImportError:
+    from ..core.ethical_primes import compute_Pi_and_error, analyze_error_growth
+    from ..core.judgement_system import BaseJudge
 
 
 class PerfectJudge(BaseJudge):

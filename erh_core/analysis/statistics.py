@@ -239,14 +239,21 @@ def compare_judges(
     """
     # Handle both relative and absolute imports
     try:
-        from ..core.ethical_primes import (
+        from erh_core.core.ethical_primes import (
             select_ethical_primes,
             compute_Pi_and_error,
             analyze_error_growth
         )
     except ImportError:
-        # Fallback for direct script execution
-        from core.ethical_primes import (
+        try:
+            from ..core.ethical_primes import (
+                select_ethical_primes,
+                compute_Pi_and_error,
+                analyze_error_growth
+            )
+        except ImportError:
+            # Fallback for direct script execution
+            from core.ethical_primes import (
             select_ethical_primes,
             compute_Pi_and_error,
             analyze_error_growth

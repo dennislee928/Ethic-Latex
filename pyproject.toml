@@ -39,5 +39,5 @@ ml = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["erh*"]
+include = ["erh*", "erh_core*"]
 namespaces = false
