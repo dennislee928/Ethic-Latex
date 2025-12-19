@@ -79,6 +79,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y r-base
       
+      - name: Install R packages
+        if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
+        run: |
+          if command -v Rscript &> /dev/null; then
+            Rscript -e "install.packages('jsonlite', repos='https://cran.rstudio.com/', quiet=TRUE)"
+          else
+            echo "Rscript not found, skipping R package installation."
+          fi
+
       - name: Verify with R (Optional)
         if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
         run: |
