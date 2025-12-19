@@ -70,6 +70,12 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
+  {/* sdk */}
+<a href="https://pypi.org/project/erh/0.1.0/" target="_blank">Python SDK</a>
+<br />
+<a href="https://www.npmjs.com/package/erh-js-sdk" target="_blank">node.js SDK</a>
+
+
         {/* Summary Stats */}
         <Card>
           <CardHeader>
