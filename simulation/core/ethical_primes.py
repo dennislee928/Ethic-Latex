@@ -68,8 +68,13 @@ def select_ethical_primes(
     - Not all misjudgments are "primes" - only the structurally important ones
     - Primes represent fundamental errors that can't be reduced to simpler cases
     - Their distribution tells us about the "health" of the judgment system
+    
+    Reference: Paper Section 3 (The Ethical Riemann Hypothesis Analogy),
+    Definition 3.1 (Ethical Primes)
     """
     # Filter to only misjudgments
+    # Reference: Paper Section 3, where ethical primes are defined as
+    # structurally critical misjudgments that cannot be decomposed
     mistakes = [a for a in actions if a.mistake_flag == 1]
     
     if len(mistakes) == 0:
@@ -215,31 +220,38 @@ def compute_Pi_and_error(
     
     This function computes E(x) so we can test whether this bound holds.
     """
+    # Reference: Paper Section 4 (Formalization), Definition of Π(x), B(x), and E(x)
+    # E(x) = Π(x) - B(x) where Π(x) counts ethical primes up to complexity x
     x_values = np.arange(1, X_max + 1)
     Pi_x = np.zeros(X_max, dtype=float)
     
     # Compute Π(x): count of primes up to complexity x
-    prime_complexities = [p.c for p in primes if p.c <= X_max]
+    # Reference: Paper Section 4, Definition 4.1 (Ethical Prime Counting Function)
+    # Optimized: Use NumPy vectorized operations instead of Python loops
+    prime_complexities = np.array([p.c for p in primes if p.c <= X_max], dtype=float)
     
-    for i, x in enumerate(x_values):
-        Pi_x[i] = sum(1 for c in prime_complexities if c <= x)
+    if len(prime_complexities) > 0:
+        # Vectorized computation: for each x, count primes with c <= x
+        # Using broadcasting: (x_values[:, None] >= prime_complexities[None, :])
+        Pi_x = np.sum(x_values[:, None] >= prime_complexities[None, :], axis=1)
+    else:
+        Pi_x = np.zeros(X_max, dtype=float)
     
     # Compute baseline B(x)
+    # Reference: Paper Section 5 (Baseline Models), various baseline functions
     if baseline == 'linear':
         alpha = baseline_params.get('alpha', 0.1) if baseline_params else 0.1
         B_x = alpha * x_values
         
     elif baseline == 'prime_theorem':
         # B(x) = β * x / log(x), analogous to Prime Number Theorem
+        # Optimized: Use NumPy vectorized operations
         beta = baseline_params.get('beta', 1.0) if baseline_params else 1.0
         
-        # Avoid log(1) = 0
+        # Vectorized computation: avoid log(1) = 0
+        mask = x_values > 1
         B_x = np.zeros_like(x_values, dtype=float)
-        for i, x in enumerate(x_values):
-            if x > 1:
-                B_x[i] = beta * x / np.log(x)
-            else:
-                B_x[i] = 0
+        B_x[mask] = beta * x_values[mask] / np.log(x_values[mask])
                 
     elif baseline == 'logarithmic_integral':
         # B(x) = β * Li(x) where Li(x) = ∫₂ˣ dt/log(t)
@@ -410,42 +422,73 @@ def analyze_error_growth(
     >>> print(f"Estimated exponent: {analysis['estimated_exponent']:.3f}")
     >>> print(f"ERH satisfied: {analysis['erh_satisfied']}")
     """
-    # Filter out zeros and take absolute value
+    # Filter out zeros and take absolute value for exponent fitting
     abs_E = np.abs(E_x)
     valid_mask = (abs_E > 0) & (x_values > 1)
-    
+
+    # Default structure if we do not have enough data
     if np.sum(valid_mask) < 5:
+        from ..analysis.erh_checks import check_erh_bound
+
+        bound_stats = check_erh_bound(E_x, x_values)
+
         return {
             'estimated_exponent': np.nan,
-            'erh_satisfied': False,
+            'constant_C': np.nan,
+            'erh_satisfied': bound_stats['erh_satisfied'],
             'r_squared': 0.0,
-            'max_absolute_error': np.max(abs_E) if len(abs_E) > 0 else 0,
-            'growth_rate': 'insufficient_data'
+            'max_absolute_error': float(np.max(abs_E) if len(abs_E) > 0 else 0),
+            'mean_absolute_error': float(np.mean(abs_E) if len(abs_E) > 0 else 0),
+            'growth_rate': 'insufficient_data',
+            'deviation_from_erh': float('nan'),
+            'erh_max_ratio': bound_stats['max_ratio'],
+            'erh_violation_rate': bound_stats['violation_rate'],
         }
-    
+
     x_valid = x_values[valid_mask]
     E_valid = abs_E[valid_mask]
-    
+
     # Fit |E(x)| = C * x^α using log-log regression
     # log|E(x)| = log(C) + α * log(x)
+    # This corresponds to Section 6 (Error Growth Analysis) of the paper,
+    # where we estimate the growth exponent α to test the ERH bound |E(x)| ≤ C·x^(1/2+ε)
     log_x = np.log(x_valid)
     log_E = np.log(E_valid)
-    
+
     # Linear regression in log space
+    # Reference: Paper Section 6, Equation for exponent estimation
     coeffs = np.polyfit(log_x, log_E, 1)
     alpha = coeffs[0]  # slope = exponent
     log_C = coeffs[1]  # intercept = log(C)
-    
-    # Compute R² for goodness of fit
+
+    # Compute R² for goodness of fit in log space
     log_E_pred = np.polyval(coeffs, log_x)
-    ss_res = np.sum((log_E - log_E_pred)**2)
-    ss_tot = np.sum((log_E - np.mean(log_E))**2)
-    r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
-    
-    # Check if ERH is satisfied
-    erh_satisfied = abs(alpha - expected_exponent) < 0.15
-    
-    # Classify growth rate
+    ss_res = np.sum((log_E - log_E_pred) ** 2)
+    ss_tot = np.sum((log_E - np.mean(log_E)) ** 2)
+    r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+
+    # ERH-style bound check and bootstrap CI using centralized logic.
+    # We avoid fragile relative imports so that this module works both
+    # when `simulation` is a package and when files are executed as scripts.
+    try:
+        from simulation.analysis.erh_checks import check_erh_bound
+        from simulation.analysis.statistics import bootstrap_exponent_ci
+    except ImportError:
+        try:
+            from erh.analysis.erh_checks import check_erh_bound  # type: ignore
+            from erh.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+        except ImportError:
+            from analysis.erh_checks import check_erh_bound  # type: ignore
+            from analysis.statistics import bootstrap_exponent_ci  # type: ignore
+
+    bound_stats = check_erh_bound(E_x, x_values)
+    ci_stats = bootstrap_exponent_ci(E_x, x_values)
+
+    # We still keep exponent-based deviation as a diagnostic,
+    # but the canonical ERH decision now comes from the bound check.
+    deviation = abs(alpha - expected_exponent)
+
+    # Classify growth rate by exponent (qualitative descriptor)
     if alpha < 0.4:
         growth_rate = 'sublinear_slow'  # Better than ERH!
     elif 0.4 <= alpha < 0.6:
@@ -456,16 +499,22 @@ def analyze_error_growth(
         growth_rate = 'linear'
     else:
         growth_rate = 'superlinear'  # Problematic!
-    
+
     return {
-        'estimated_exponent': alpha,
-        'constant_C': np.exp(log_C),
-        'erh_satisfied': erh_satisfied,
-        'r_squared': r_squared,
-        'max_absolute_error': np.max(abs_E),
-        'mean_absolute_error': np.mean(abs_E),
+        'estimated_exponent': float(alpha),
+        'alpha_ci_low': float(ci_stats.get('alpha_ci_low', float('nan'))),
+        'alpha_ci_high': float(ci_stats.get('alpha_ci_high', float('nan'))),
+        'constant_C': float(np.exp(log_C)),
+        # Canonical ERH decision: bound-based
+        'erh_satisfied': bool(bound_stats['erh_satisfied']),
+        'r_squared': float(r_squared),
+        'max_absolute_error': float(np.max(abs_E)),
+        'mean_absolute_error': float(np.mean(abs_E)),
         'growth_rate': growth_rate,
-        'deviation_from_erh': abs(alpha - expected_exponent)
+        'deviation_from_erh': float(deviation),
+        # Additional diagnostics for the bound itself
+        'erh_max_ratio': float(bound_stats['max_ratio']),
+        'erh_violation_rate': float(bound_stats['violation_rate']),
     }
 
 

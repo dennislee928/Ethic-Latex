@@ -506,11 +506,18 @@ def generate_baseline_comparison_report(
     best_rmse = select_best_baseline(comparison_results, 'rmse')[0]
     
     lines.append("")
-    lines.append("Best Baseline by Criterion:")
-    lines.append(f"  R²:   {best_r2}")
-    lines.append(f"  AIC:  {best_aic}")
-    lines.append(f"  BIC:  {best_bic}")
-    lines.append(f"  RMSE: {best_rmse}")
+    lines.append("Best Baseline by Criterion (main text focuses on AIC/BIC/RMSE; R² is diagnostic only):")
+    lines.append(f"  R² (diagnostic): {best_r2}")
+    lines.append(f"  AIC:             {best_aic}")
+    lines.append(f"  BIC:             {best_bic}")
+    lines.append(f"  RMSE:            {best_rmse}")
+    lines.append("")
+    lines.append(
+        "Note: R² is computed in the usual way and may take large negative values when a baseline "
+        "family is severely misspecified. In such cases, the model performs worse than a constant-"
+        "mean reference; therefore, we rely primarily on AIC, BIC, and RMSE when comparing baselines "
+        "in the main text, and treat R² as a supplementary fit-quality diagnostic."
+    )
     lines.append("")
     lines.append("=" * 80)
     

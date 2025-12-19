@@ -41,3 +41,4 @@ The short version removes or compresses:
 - Psychohistory section can be reduced to 1-2 paragraphs
 
 
+

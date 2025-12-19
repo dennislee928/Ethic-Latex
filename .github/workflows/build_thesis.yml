@@ -93,6 +93,11 @@ jobs:
                  tests/test_meta_monitor.py tests/test_hybrid_model.py tests/test_psychohistory_integration.py \
                  -v --tb=short || echo "⚠ Some unit tests failed, continuing..."
 
+      - name: Install CJK fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+
       - name: Run Psychohistory Simulation Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
@@ -100,6 +105,14 @@ jobs:
           mkdir -p simulation/output/psychohistory_tests
           # Run quick tests in CI to save time
           python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
+
+      - name: Download Simulation Figures (if available)
+        uses: actions/download-artifact@v4
+        with:
+          name: simulation-figures
+          path: figures/simulation/
+          if-no-files-found: ignore
+          continue-on-error: true
 
       - name: Prepare Figures for LaTeX
         run: |
@@ -112,6 +125,12 @@ jobs:
           else
             echo "⚠ Warning: No PDF figures found in simulation/output/figures"
             ls -la simulation/output/figures/ || echo "Directory does not exist"
+          fi
+          # Copy PNG figures from simulation workflow if available
+          if [ -d "figures/simulation" ] && [ "$(ls -A figures/simulation/*.png 2>/dev/null)" ]; then
+            cp figures/simulation/*.png figures/ 2>/dev/null || true
+            echo "Copied PNG figures from simulation workflow:"
+            ls -l figures/*.png || echo "No PNG figures found"
           fi
 
       - name: Integrate Figures into LaTeX
@@ -140,35 +159,18 @@ jobs:
           name: simulation_output_raw
           path: simulation/output/
           retention-days: 14
+      - name: Install TeX Live
+        run: |
+          # Install a reasonably complete TeX Live and latexmk
+          sudo apt-get install -y texlive-full latexmk
 
       - name: Compile English LaTeX Document
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: ethical_riemann_hypothesis_en.tex
-          compiler: latexmk
-          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
-          work_in_root_file_dir: false
-          continue_on_error: false
-          latexmk_shell_escape: false
-          latexmk_use_lualatex: false
-          pre_compile: |
-            tlmgr update --self || true;
-            tlmgr install algorithms subfigure || true
+        run: |
+          latexmk -pdf -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_en.tex
 
       - name: Compile Chinese LaTeX Document
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: ethical_riemann_hypothesis_zh.tex
-          compiler: latexmk
-          args: -file-line-error -halt-on-error -interaction=nonstopmode
-          latexmk_use_xelatex: true
-          work_in_root_file_dir: false
-          continue_on_error: false
-          latexmk_shell_escape: false
-          latexmk_use_lualatex: false
-          pre_compile: |
-            tlmgr update --self || true
-            tlmgr install fandol ctex xecjk fontspec xunicode || true
+        run: |
+          latexmk -xelatex -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_zh.tex
 
       - name: Upload PDF Artifacts
         uses: actions/upload-artifact@v4

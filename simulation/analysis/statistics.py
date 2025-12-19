@@ -119,6 +119,94 @@ def fit_error_growth(
     return result
 
 
+def bootstrap_exponent_ci(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    n_bootstrap: int = 500,
+    ci: float = 0.95,
+) -> Dict[str, float]:
+    """
+    Estimate uncertainty for the growth exponent α via bootstrap.
+
+    We reuse the same log–log regression protocol as `fit_error_growth`,
+    but repeatedly resample the (x, |E(x)|) pairs with replacement and
+    refit α to obtain an empirical distribution.
+
+    Parameters
+    ----------
+    E_x : np.ndarray
+        Error values E(x).
+    x_values : np.ndarray
+        Corresponding complexity values x.
+    n_bootstrap : int, default=500
+        Number of bootstrap resamples.
+    ci : float, default=0.95
+        Confidence level for the interval.
+
+    Returns
+    -------
+    dict
+        - 'alpha_hat': point estimate from the full data
+        - 'alpha_ci_low': lower confidence bound
+        - 'alpha_ci_high': upper confidence bound
+        - 'num_samples': number of valid points used
+    """
+    abs_E = np.abs(E_x)
+    valid_mask = (abs_E > 0) & (x_values > 1)
+
+    if np.sum(valid_mask) < 5:
+        return {
+            "alpha_hat": float("nan"),
+            "alpha_ci_low": float("nan"),
+            "alpha_ci_high": float("nan"),
+            "num_samples": int(np.sum(valid_mask)),
+        }
+
+    x = x_values[valid_mask]
+    y = abs_E[valid_mask]
+
+    log_x = np.log(x)
+    log_y = np.log(y)
+
+    # Point estimate from full data
+    coeffs = np.polyfit(log_x, log_y, 1)
+    alpha_hat = float(coeffs[0])
+
+    # Bootstrap distribution
+    n = len(log_x)
+    alphas = []
+    rng = np.random.default_rng()
+
+    for _ in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        bx = log_x[idx]
+        by = log_y[idx]
+        # Guard against degenerate resamples
+        if np.std(bx) == 0 or np.std(by) == 0:
+            continue
+        bcoeffs = np.polyfit(bx, by, 1)
+        alphas.append(bcoeffs[0])
+
+    if not alphas:
+        return {
+            "alpha_hat": alpha_hat,
+            "alpha_ci_low": float("nan"),
+            "alpha_ci_high": float("nan"),
+            "num_samples": n,
+        }
+
+    alphas_arr = np.asarray(alphas)
+    lower = float(np.quantile(alphas_arr, (1 - ci) / 2))
+    upper = float(np.quantile(alphas_arr, 1 - (1 - ci) / 2))
+
+    return {
+        "alpha_hat": alpha_hat,
+        "alpha_ci_low": lower,
+        "alpha_ci_high": upper,
+        "num_samples": n,
+    }
+
+
 def compare_judges(
     results_dict: Dict[str, List],
     X_max: int = 100,
@@ -340,24 +428,20 @@ def generate_report(
         
         lines.append("## Summary Table")
         lines.append("")
-        # We distinguish between "within ERH-style bound" and "close to the √x target"
-        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | Within ERH Bound? | Growth Rate |")
-        lines.append("|-------|---------|--------|--------------|-----|----------|-------------------|-------------|")
+        # Summary uses the canonical ERH decision from the centralized bound check.
+        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | ERH Satisfied | Growth Rate |")
+        lines.append("|-------|---------|--------|--------------|-----|----------|---------------|-------------|")
         
         for name, metrics in comparison.items():
             if 'error' in metrics:
                 lines.append(f"| {name} | - | - | - | - | - | ERROR | - |")
                 continue
             
-            alpha = metrics.get('estimated_exponent', float('nan'))
-            # Within-bound = exponent at or below ERH-style worst-case target (≈ 0.5 + ϵ)
-            within_bound = not np.isnan(alpha) and alpha <= 0.5 + 0.15
-                
             lines.append(
                 f"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | "
                 f"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | "
                 f"{metrics['estimated_exponent']:.3f} | "
-                f"{'Yes' if within_bound else 'No'} | "
+                f"{'Yes' if metrics.get('erh_satisfied', False) else 'No'} | "
                 f"{metrics['growth_rate']} |"
             )
         
@@ -380,36 +464,39 @@ def generate_report(
             lines.append(f"- **Mean Absolute Error:** {metrics['mae']:.3f}")
             lines.append(f"- **RMSE:** {metrics['rmse']:.3f}")
             lines.append(f"- **Estimated Growth Exponent:** {metrics['estimated_exponent']:.3f}")
-            # Within-bound flag as described above
-            within_bound = metrics['estimated_exponent'] <= 0.5 + 0.15
-            lines.append(f"- **Within ERH-style bound (α ≲ 0.5)?** {'Yes' if within_bound else 'No'}")
+            # Canonical bound-based ERH decision
+            lines.append(
+                f"- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** "
+                f"{'Yes' if metrics.get('erh_satisfied', False) else 'No'}"
+            )
             lines.append(f"- **Growth Rate Category:** {metrics['growth_rate']}")
             lines.append(f"- **R² (fit quality):** {metrics['r_squared']:.3f}")
             lines.append("")
             
-            # Interpretation
-            if metrics['erh_satisfied']:
+            # Interpretation – now keyed to bound satisfaction, with α as a side diagnostic.
+            if metrics.get('erh_satisfied', False):
                 lines.append(
-                    "**Interpretation:** This judge is close to the ERH-style √x target "
-                    "(α ≈ 0.5), exhibiting 'Riemann-healthy' behavior in the strict sense."
+                    "**Interpretation:** This judge's cumulative error stays within the ERH-style "
+                    "bound (up to the allowed slack), indicating 'Riemann-healthy' behavior. "
+                    "The exponent α is reported as an auxiliary diagnostic, not the primary test."
                 )
             else:
                 if metrics['growth_rate'] == 'superlinear':
                     lines.append(
                         "**Interpretation:** ⚠️ This judge shows problematic error growth. "
-                        "Errors grow faster than linearly, indicating severe degradation "
-                        "with increasing complexity."
+                        "Errors frequently exceed the ERH-style bound and grow faster than "
+                        "linearly with complexity."
                     )
                 elif metrics['growth_rate'] in ['linear', 'sublinear_fast']:
                     lines.append(
-                        "**Interpretation:** This judge shows moderate error growth, "
-                        "worse than the ERH-inspired bound but not catastrophic."
+                        "**Interpretation:** This judge exhibits moderate error growth: the ERH-style "
+                        "bound is not strictly satisfied, but errors do not explode catastrophically."
                     )
                 else:
                     lines.append(
-                        "**Interpretation:** This judge's error grows even more slowly than the "
-                        "worst-case ERH-style bound (i.e., it is conservative/over-cautious), "
-                        "so 'not close to α ≈ 0.5' here does *not* mean an explosion."
+                        "**Interpretation:** Although the bound test flags some violations, the fitted "
+                        "exponent α is below the √x target, suggesting a conservative or over-cautious "
+                        "system whose long-run errors grow slower than the ERH worst case."
                     )
             
             lines.append("")
@@ -485,4 +572,55 @@ def compute_judge_rankings(
         rankings[metric] = [name for name, _ in values]
     
     return rankings
+
+
+def summarize_fairness_and_erh(
+    results_dict: Dict[str, List],
+    X_max: int = 100,
+    group_attr: str = "group",
+) -> Dict[str, Dict]:
+    """
+    Build a joined summary of ERH-style metrics and simple fairness diagnostics
+    (group error gaps + calibration) for each judge.
+
+    This is mainly intended for notebooks/tables that directly contrast what
+    ERH adds beyond standard fairness metrics.
+    """
+    try:
+        from ..analysis.fairness_metrics import (
+            compute_group_error_gaps,
+            compute_calibration_by_bins,
+        )
+    except ImportError:
+        from .fairness_metrics import (
+            compute_group_error_gaps,
+            compute_calibration_by_bins,
+        )
+
+    comparison = compare_judges(results_dict, X_max=X_max)
+    summary: Dict[str, Dict] = {}
+
+    for name, actions in results_dict.items():
+        metrics = comparison.get(name, {})
+        # Fairness diagnostics
+        group_stats = compute_group_error_gaps(actions, group_attr=group_attr)
+        calib = compute_calibration_by_bins(actions, num_bins=10, use_complexity=True)
+
+        summary[name] = {
+            # ERH / growth side
+            "erh_satisfied": metrics.get("erh_satisfied"),
+            "estimated_exponent": metrics.get("estimated_exponent"),
+            "alpha_ci_low": metrics.get("alpha_ci_low"),
+            "alpha_ci_high": metrics.get("alpha_ci_high"),
+            "growth_rate": metrics.get("growth_rate"),
+            # Fairness side
+            "max_mistake_gap": group_stats.get("max_mistake_gap"),
+            "max_mae_gap": group_stats.get("max_mae_gap"),
+            "groups": group_stats.get("groups"),
+            "mistake_rate_by_group": group_stats.get("mistake_rate_by_group"),
+            "mae_by_group": group_stats.get("mae_by_group"),
+            "calibration_error": calib.get("calibration_error"),
+        }
+
+    return summary
 

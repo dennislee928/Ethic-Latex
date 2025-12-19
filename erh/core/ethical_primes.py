@@ -410,42 +410,69 @@ def analyze_error_growth(
     >>> print(f"Estimated exponent: {analysis['estimated_exponent']:.3f}")
     >>> print(f"ERH satisfied: {analysis['erh_satisfied']}")
     """
-    # Filter out zeros and take absolute value
+    # Filter out zeros and take absolute value for exponent fitting
     abs_E = np.abs(E_x)
     valid_mask = (abs_E > 0) & (x_values > 1)
-    
+
+    # Default structure if we do not have enough data
     if np.sum(valid_mask) < 5:
+        from ..analysis.erh_checks import check_erh_bound
+
+        bound_stats = check_erh_bound(E_x, x_values)
+
         return {
             'estimated_exponent': np.nan,
-            'erh_satisfied': False,
+            'constant_C': np.nan,
+            'erh_satisfied': bound_stats['erh_satisfied'],
             'r_squared': 0.0,
-            'max_absolute_error': np.max(abs_E) if len(abs_E) > 0 else 0,
-            'growth_rate': 'insufficient_data'
+            'max_absolute_error': float(np.max(abs_E) if len(abs_E) > 0 else 0),
+            'mean_absolute_error': float(np.mean(abs_E) if len(abs_E) > 0 else 0),
+            'growth_rate': 'insufficient_data',
+            'deviation_from_erh': float('nan'),
+            'erh_max_ratio': bound_stats['max_ratio'],
+            'erh_violation_rate': bound_stats['violation_rate'],
         }
-    
+
     x_valid = x_values[valid_mask]
     E_valid = abs_E[valid_mask]
-    
+
     # Fit |E(x)| = C * x^α using log-log regression
     # log|E(x)| = log(C) + α * log(x)
     log_x = np.log(x_valid)
     log_E = np.log(E_valid)
-    
+
     # Linear regression in log space
     coeffs = np.polyfit(log_x, log_E, 1)
     alpha = coeffs[0]  # slope = exponent
     log_C = coeffs[1]  # intercept = log(C)
-    
-    # Compute R² for goodness of fit
+
+    # Compute R² for goodness of fit in log space
     log_E_pred = np.polyval(coeffs, log_x)
-    ss_res = np.sum((log_E - log_E_pred)**2)
-    ss_tot = np.sum((log_E - np.mean(log_E))**2)
-    r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
-    
-    # Check if ERH is satisfied
-    erh_satisfied = abs(alpha - expected_exponent) < 0.15
-    
-    # Classify growth rate
+    ss_res = np.sum((log_E - log_E_pred) ** 2)
+    ss_tot = np.sum((log_E - np.mean(log_E)) ** 2)
+    r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+
+    # ERH-style bound check and bootstrap CI using centralized logic.
+    # Use robust absolute imports so this works both in package and script modes.
+    try:
+        from erh.analysis.erh_checks import check_erh_bound
+        from erh.analysis.statistics import bootstrap_exponent_ci
+    except ImportError:
+        try:
+            from simulation.analysis.erh_checks import check_erh_bound  # type: ignore
+            from simulation.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+        except ImportError:
+            from analysis.erh_checks import check_erh_bound  # type: ignore
+            from analysis.statistics import bootstrap_exponent_ci  # type: ignore
+
+    bound_stats = check_erh_bound(E_x, x_values)
+    ci_stats = bootstrap_exponent_ci(E_x, x_values)
+
+    # We still keep exponent-based deviation as a diagnostic,
+    # but the canonical ERH decision now comes from the bound check.
+    deviation = abs(alpha - expected_exponent)
+
+    # Classify growth rate by exponent (qualitative descriptor)
     if alpha < 0.4:
         growth_rate = 'sublinear_slow'  # Better than ERH!
     elif 0.4 <= alpha < 0.6:
@@ -456,16 +483,22 @@ def analyze_error_growth(
         growth_rate = 'linear'
     else:
         growth_rate = 'superlinear'  # Problematic!
-    
+
     return {
-        'estimated_exponent': alpha,
-        'constant_C': np.exp(log_C),
-        'erh_satisfied': erh_satisfied,
-        'r_squared': r_squared,
-        'max_absolute_error': np.max(abs_E),
-        'mean_absolute_error': np.mean(abs_E),
+        'estimated_exponent': float(alpha),
+        'alpha_ci_low': float(ci_stats.get('alpha_ci_low', float('nan'))),
+        'alpha_ci_high': float(ci_stats.get('alpha_ci_high', float('nan'))),
+        'constant_C': float(np.exp(log_C)),
+        # Canonical ERH decision: bound-based
+        'erh_satisfied': bool(bound_stats['erh_satisfied']),
+        'r_squared': float(r_squared),
+        'max_absolute_error': float(np.max(abs_E)),
+        'mean_absolute_error': float(np.mean(abs_E)),
         'growth_rate': growth_rate,
-        'deviation_from_erh': abs(alpha - expected_exponent)
+        'deviation_from_erh': float(deviation),
+        # Additional diagnostics for the bound itself
+        'erh_max_ratio': float(bound_stats['max_ratio']),
+        'erh_violation_rate': float(bound_stats['violation_rate']),
     }
 
 

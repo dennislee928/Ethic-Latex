@@ -57,7 +57,7 @@ jobs:
           pip install pandas matplotlib seaborn tabulate
           
       - name: Download All Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: all_results
           
@@ -73,11 +73,30 @@ jobs:
             --input-dir combined_results \
             --output-dir final_report
             
+      - name: Install R
+        if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y r-base
+      
+      - name: Install R packages
+        if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
+        run: |
+          if command -v Rscript &> /dev/null; then
+            # Create user library directory if it doesn't exist
+            mkdir -p ~/R/library
+            # Install to user library (no sudo required)
+            Rscript -e ".libPaths(c('~/R/library', .libPaths())); install.packages('jsonlite', repos='https://cran.rstudio.com/', lib='~/R/library', quiet=TRUE)"
+          else
+            echo "Rscript not found, skipping R package installation."
+          fi
+
       - name: Verify with R (Optional)
         if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
         run: |
           if command -v Rscript &> /dev/null; then
-            Rscript scripts/verify_analysis.R combined_results final_report/r_verification
+            # Use user library path for R script execution
+            R_LIBS_USER=~/R/library Rscript scripts/verify_analysis.R combined_results final_report/r_verification
           else
             echo "Rscript not found, skipping R verification."
           fi
@@ -89,11 +108,19 @@ jobs:
           path: final_report/
           retention-days: 30
 
-      - name: Deploy Report to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Figures for Thesis
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: final_report
-          destination_dir: reports
-          keep_files: true
+          name: simulation-figures
+          path: final_report/*.png
+          retention-days: 30
+          if-no-files-found: ignore
+# temp disabled due to issues with peaceiris/actions-gh-pages@v4
+     # - name: Deploy Report to GitHub Pages
+     #   if: github.ref == 'refs/heads/main'
+     #   uses: peaceiris/actions-gh-pages@v4
+     #   with:
+      #    github_token: ${{ secrets.GITHUB_TOKEN }}
+      #    publish_dir: final_report
+      #    destination_dir: reports
+      #    keep_files: true
