@@ -45,7 +45,12 @@ jobs:
       - name: Run Complete Build Script
         run: |
           bash scripts/build_thesis.sh
-      
+
+      - name: Install CJK fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+
       - name: Install TeX Live
         run: |
           sudo apt-get update
