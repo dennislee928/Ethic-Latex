@@ -192,6 +192,26 @@ def plot_error_growth(
         y_ref = (y_fit[0] / (x_fit[0]**0.5)) * (x_fit ** 0.5)
         ax.loglog(x_fit, y_ref, ':', label=r'Reference: $x^{0.5}$ (ERH)', 
                  linewidth=2, color='gray')
+        
+        # Add annotation highlighting key observation
+        if alpha < 0.5:
+            # Better than ERH bound
+            mid_idx = len(x_fit) // 2
+            ax.annotate(f'Better than ERH\n($\\alpha={alpha:.3f}<0.5$)', 
+                       xy=(x_fit[mid_idx], y_fit[mid_idx]),
+                       xytext=(x_fit[mid_idx]*1.5, y_fit[mid_idx]*0.5),
+                       arrowprops=dict(arrowstyle='->', color='green', lw=1.5),
+                       fontsize=10, color='green', weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgreen', alpha=0.7))
+        elif alpha > 0.6:
+            # Violates ERH bound
+            mid_idx = len(x_fit) // 2
+            ax.annotate(f'ERH violation\n($\\alpha={alpha:.3f}>0.5$)', 
+                       xy=(x_fit[mid_idx], y_fit[mid_idx]),
+                       xytext=(x_fit[mid_idx]*1.5, y_fit[mid_idx]*1.5),
+                       arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
+                       fontsize=10, color='red', weight='bold',
+                       bbox=dict(boxstyle='round,pad=0.5', facecolor='lightcoral', alpha=0.7))
     
     ax.set_xlabel('Complexity $x$', fontsize=12)
     ax.set_ylabel(r'Absolute Error $|E(x)|$', fontsize=12)
@@ -270,7 +290,6 @@ def plot_spectrum(
     if peaks:
         for peak in peaks[:5]:  # Show top 5 peaks
             freq = peak['frequency']
-            amp = peak['amplitude']
             period = peak['period']
             
             # Find closest frequency in array
@@ -427,7 +446,7 @@ def plot_judge_comparison(
     
     # Create bar chart
     colors = ['green' if metric == 'erh_satisfied' and v else 'C0' for v in values]
-    bars = ax.bar(names, values, color=colors, alpha=0.7, edgecolor='black')
+    ax.bar(names, values, color=colors, alpha=0.7, edgecolor='black')
     
     # Add reference line for ERH exponent
     if metric == 'estimated_exponent':
@@ -466,6 +485,9 @@ def plot_multi_judge_errors(
     """
     Plot E(x) curves for multiple judges on the same axes.
     
+    Uses colorblind-friendly palette and different line styles/markers
+    for accessibility.
+    
     Parameters
     ----------
     comparison : dict
@@ -479,17 +501,37 @@ def plot_multi_judge_errors(
     -------
     plt.Figure
     """
+    # Colorblind-friendly palette (Okabe-Ito palette)
+    colors = ['#E69F00', '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
+    # Different line styles for additional distinction
+    linestyles = ['-', '--', '-.', ':', '-', '--', '-.']
+    # Different markers for even more distinction
+    markers = ['o', 's', '^', 'D', 'v', 'p', '*']
+    
+    # Get sample x_vals length for marker spacing (use first valid data)
+    sample_length = 100  # Default
+    for data in comparison.values():
+        if 'error' not in data and 'x_values' in data:
+            sample_length = len(data['x_values'])
+            break
+    marker_styles = [{'marker': m, 'markevery': max(1, sample_length//20)} for m in markers]
+    
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
     
     # Plot E(x)
-    for name, data in comparison.items():
+    for idx, (name, data) in enumerate(comparison.items()):
         if 'error' in data:
             continue
         
         x_vals = data['x_values']
         E_x = data['E_x']
         
-        axes[0].plot(x_vals, E_x, label=name, linewidth=2, alpha=0.7)
+        color = colors[idx % len(colors)]
+        linestyle = linestyles[idx % len(linestyles)]
+        marker_style = marker_styles[idx % len(marker_styles)]
+        
+        axes[0].plot(x_vals, E_x, label=name, linewidth=2, alpha=0.8,
+                    color=color, linestyle=linestyle, **marker_style)
     
     axes[0].axhline(y=0, color='k', linestyle='-', linewidth=0.8, alpha=0.3)
     axes[0].set_xlabel('Complexity $x$', fontsize=12)
@@ -499,14 +541,19 @@ def plot_multi_judge_errors(
     axes[0].grid(True, alpha=0.3)
     
     # Plot |E(x)|
-    for name, data in comparison.items():
+    for idx, (name, data) in enumerate(comparison.items()):
         if 'error' in data:
             continue
         
         x_vals = data['x_values']
         E_x = data['E_x']
         
-        axes[1].plot(x_vals, np.abs(E_x), label=name, linewidth=2, alpha=0.7)
+        color = colors[idx % len(colors)]
+        linestyle = linestyles[idx % len(linestyles)]
+        marker_style = marker_styles[idx % len(marker_styles)]
+        
+        axes[1].plot(x_vals, np.abs(E_x), label=name, linewidth=2, alpha=0.8,
+                    color=color, linestyle=linestyle, **marker_style)
     
     # Add reference √x
     if len(comparison) > 0:
@@ -521,6 +568,36 @@ def plot_multi_judge_errors(
     axes[1].set_title('Absolute Error Comparison', fontsize=14)
     axes[1].legend()
     axes[1].grid(True, alpha=0.3)
+    
+    # Add annotation for fastest/slowest decay
+    if len(comparison) > 1:
+        # Find judge with fastest decay (lowest error at max x)
+        valid_data = [(name, data) for name, data in comparison.items() if 'error' not in data]
+        if len(valid_data) > 0:
+            max_x_idx = -1
+            fastest_judge = None
+            min_error = float('inf')
+            
+            for name, data in valid_data:
+                x_vals = data['x_values']
+                abs_E = np.abs(data['E_x'])
+                if len(abs_E) > 0:
+                    final_error = abs_E[max_x_idx]
+                    if final_error < min_error:
+                        min_error = final_error
+                        fastest_judge = (name, data, x_vals[max_x_idx])
+            
+            # Annotate fastest decay
+            if fastest_judge:
+                name, data, x_val = fastest_judge
+                abs_E = np.abs(data['E_x'])
+                y_val = abs_E[max_x_idx]
+                axes[1].annotate(f'Fastest decay:\n{name}', 
+                               xy=(x_val, y_val),
+                               xytext=(x_val*1.3, y_val*2),
+                               arrowprops=dict(arrowstyle='->', color='green', lw=1.5),
+                               fontsize=9, color='green', weight='bold',
+                               bbox=dict(boxstyle='round,pad=0.3', facecolor='lightgreen', alpha=0.6))
     
     plt.tight_layout()
     
