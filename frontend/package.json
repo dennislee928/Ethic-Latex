@@ -1,0 +1,44 @@
+{
+  "name": "ethic-latex-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@tanstack/react-query": "^5.51.1",
+    "axios": "^1.6.7",
+    "@monaco-editor/react": "^4.6.0",
+    "react-katex": "^3.0.1",
+    "katex": "^0.16.11",
+    "recharts": "^2.12.1",
+    "zustand": "^4.5.1",
+    "lucide-react": "^0.344.0",
+    "react-router-dom": "^6.22.3",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/katex": "^0.16.7",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.35",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6"
+  }
+}
+
