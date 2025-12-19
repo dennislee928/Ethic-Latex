@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-12-17T10:18:29.327066",
+  "config": {
+    "num_actions": 100,
+    "complexity_dist": "zipf",
+    "seed": 42
+  },
+  "metrics": {
+    "duration_seconds": 0.012154817581176758,
+    "total_actions": 100,
+    "mistakes_count": 14,
+    "mistake_rate": 0.14,
+    "ethical_primes_count": 1,
+    "erh_satisfied": false,
+    "estimated_exponent": 0.7089407952875478
+  }
+}

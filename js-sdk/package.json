@@ -1,0 +1,28 @@
+{
+  "name": "erh-js-sdk",
+  "version": "0.1.0",
+  "description": "JavaScript SDK for the Ethical Riemann Hypothesis Framework",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "erh-cli": "./bin/erh-cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc --noEmit && echo \"Compilation check passed\""
+  },
+  "keywords": [
+    "erh",
+    "ethics",
+    "ai",
+    "sdk"
+  ],
+  "author": "Ethical AI Research",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

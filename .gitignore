@@ -84,9 +84,9 @@ figures/*.png
 
 # Data
 *.csv
-*.json
 *.pkl
 *.h5
+
 
 # Temporary files
 *.tmp
