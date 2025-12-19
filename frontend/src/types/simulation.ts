@@ -15,6 +15,12 @@ export interface SimulationConfig {
   tau?: number
 }
 
+export interface SimulationCreate {
+  num_actions?: number
+  complexity_dist?: 'zipf' | 'uniform' | 'power_law'
+  tau?: number
+}
+
 export interface SimulationResult {
   mistake_rate: number
   ethical_primes_count: number

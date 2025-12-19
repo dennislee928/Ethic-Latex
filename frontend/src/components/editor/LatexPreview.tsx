@@ -16,37 +16,6 @@ export default function LatexPreview({ content }: LatexPreviewProps) {
 
   // Try to render as block math, fallback to inline or text
   try {
-    // Extract math blocks (between $$ or \[ \])
-    const blockMathRegex = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g
-    const inlineMathRegex = /\$([^$]+)\$|\\\(([^\)]+)\\\)/g
-
-    let processedContent = content
-    const parts: JSX.Element[] = []
-    let lastIndex = 0
-
-    // Process block math
-    let match
-    const blockMatches: Array<{ start: number; end: number; content: string }> = []
-    
-    while ((match = blockMathRegex.exec(content)) !== null) {
-      blockMatches.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        content: match[1] || match[2],
-      })
-    }
-
-    // Process inline math
-    const inlineMatches: Array<{ start: number; end: number; content: string }> = []
-    inlineMathRegex.lastIndex = 0
-    while ((match = inlineMathRegex.exec(content)) !== null) {
-      inlineMatches.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        content: match[1] || match[2],
-      })
-    }
-
     // For simplicity, just try to render the whole thing as block math
     // In production, you'd want more sophisticated parsing
     return (

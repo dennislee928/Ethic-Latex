@@ -123,9 +123,9 @@ export default function ValidationPanel({ validation, isLoading }: ValidationPan
           <div>
             <h4 className="text-sm font-semibold mb-2">Warnings ({validation.warnings.length})</h4>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              {validation.warnings.map((warning, index) => (
-                <li key={index}>{warning}</li>
-              ))}
+            {validation.warnings.map((warning: string, index: number) => (
+              <li key={index}>{warning}</li>
+            ))}
             </ul>
           </div>
         )}

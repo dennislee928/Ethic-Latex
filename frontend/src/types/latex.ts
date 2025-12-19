@@ -24,6 +24,8 @@ export interface ValidationResult {
   risk_score: number
   violations: Violation[]
   verified_at: string
+  is_valid: boolean
+  warnings: string[]
 }
 
 export interface Violation {
