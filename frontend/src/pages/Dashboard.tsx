@@ -6,6 +6,7 @@ import ActivityFeed from '@/components/dashboard/ActivityFeed'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { dashboardApi } from '@/api/dashboard'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import type { CurvePoint } from '@/types/dashboard'
 
 export default function Dashboard() {
   const { data: summary, isLoading: summaryLoading } = useQuery({
@@ -24,7 +25,6 @@ export default function Dashboard() {
   })
 
   // Transform curves data for Recharts
-  import type { CurvePoint } from '@/types/dashboard'
   const chartData = curves
     ? curves.pi_curve.map((point: CurvePoint, index: number) => ({
         x: point.x,
