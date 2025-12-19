@@ -24,8 +24,9 @@ export default function Dashboard() {
   })
 
   // Transform curves data for Recharts
+  import type { CurvePoint } from '@/types/dashboard'
   const chartData = curves
-    ? curves.pi_curve.map((point: { x: number; y: number }, index: number) => ({
+    ? curves.pi_curve.map((point: CurvePoint, index: number) => ({
         x: point.x,
         pi: point.y,
         error: curves.error_curve[index]?.y || 0,
