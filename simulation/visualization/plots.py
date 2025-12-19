@@ -508,7 +508,14 @@ def plot_multi_judge_errors(
     linestyles = ['-', '--', '-.', ':', '-', '--', '-.']
     # Different markers for even more distinction
     markers = ['o', 's', '^', 'D', 'v', 'p', '*']
-    marker_styles = [{'marker': m, 'markevery': max(1, len(x_vals)//20)} for m in markers]
+    
+    # Get sample x_vals length for marker spacing (use first valid data)
+    sample_length = 100  # Default
+    for data in comparison.values():
+        if 'error' not in data and 'x_values' in data:
+            sample_length = len(data['x_values'])
+            break
+    marker_styles = [{'marker': m, 'markevery': max(1, sample_length//20)} for m in markers]
     
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
     
@@ -570,9 +577,7 @@ def plot_multi_judge_errors(
         if len(valid_data) > 0:
             max_x_idx = -1
             fastest_judge = None
-            slowest_judge = None
             min_error = float('inf')
-            max_error = float('-inf')
             
             for name, data in valid_data:
                 x_vals = data['x_values']
@@ -582,9 +587,6 @@ def plot_multi_judge_errors(
                     if final_error < min_error:
                         min_error = final_error
                         fastest_judge = (name, data, x_vals[max_x_idx])
-                    if final_error > max_error:
-                        max_error = final_error
-                        slowest_judge = (name, data, x_vals[max_x_idx])
             
             # Annotate fastest decay
             if fastest_judge:

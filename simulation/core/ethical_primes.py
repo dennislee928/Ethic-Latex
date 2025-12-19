@@ -227,10 +227,15 @@ def compute_Pi_and_error(
     
     # Compute Π(x): count of primes up to complexity x
     # Reference: Paper Section 4, Definition 4.1 (Ethical Prime Counting Function)
-    prime_complexities = [p.c for p in primes if p.c <= X_max]
+    # Optimized: Use NumPy vectorized operations instead of Python loops
+    prime_complexities = np.array([p.c for p in primes if p.c <= X_max], dtype=float)
     
-    for i, x in enumerate(x_values):
-        Pi_x[i] = sum(1 for c in prime_complexities if c <= x)
+    if len(prime_complexities) > 0:
+        # Vectorized computation: for each x, count primes with c <= x
+        # Using broadcasting: (x_values[:, None] >= prime_complexities[None, :])
+        Pi_x = np.sum(x_values[:, None] >= prime_complexities[None, :], axis=1)
+    else:
+        Pi_x = np.zeros(X_max, dtype=float)
     
     # Compute baseline B(x)
     # Reference: Paper Section 5 (Baseline Models), various baseline functions
@@ -240,15 +245,13 @@ def compute_Pi_and_error(
         
     elif baseline == 'prime_theorem':
         # B(x) = β * x / log(x), analogous to Prime Number Theorem
+        # Optimized: Use NumPy vectorized operations
         beta = baseline_params.get('beta', 1.0) if baseline_params else 1.0
         
-        # Avoid log(1) = 0
+        # Vectorized computation: avoid log(1) = 0
+        mask = x_values > 1
         B_x = np.zeros_like(x_values, dtype=float)
-        for i, x in enumerate(x_values):
-            if x > 1:
-                B_x[i] = beta * x / np.log(x)
-            else:
-                B_x[i] = 0
+        B_x[mask] = beta * x_values[mask] / np.log(x_values[mask])
                 
     elif baseline == 'logarithmic_integral':
         # B(x) = β * Li(x) where Li(x) = ∫₂ˣ dt/log(t)
