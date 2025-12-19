@@ -109,3 +109,137 @@ class HeatmapResponse(BaseModel):
     cells: list[HeatmapCell]
 
 
+# LaTeX Rules Schemas
+class LatexRuleBase(BaseModel):
+    title: str
+    content: str
+    is_active: bool = True
+
+
+class LatexRuleCreate(LatexRuleBase):
+    pass
+
+
+class LatexRuleUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class LatexRuleRead(LatexRuleBase):
+    id: int
+    owner_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Verification Schemas
+class Violation(BaseModel):
+    type: str
+    severity: str
+    message: str
+    line: Optional[int] = None
+    column: Optional[int] = None
+
+
+class ValidationResult(BaseModel):
+    rule_id: int
+    risk_score: float
+    violations: list[Violation]
+    verified_at: datetime
+    is_valid: bool
+    warnings: list[str] = []
+
+
+# Simulation Schemas
+class SimulationConfig(BaseModel):
+    num_actions: int = 1000
+    complexity_dist: str = "zipf"
+    tau: float = 0.3
+
+
+class SimulationAnalysis(BaseModel):
+    estimated_exponent: float
+    alpha_ci_low: float
+    alpha_ci_high: float
+    erh_satisfied: bool
+    r_squared: float
+    growth_rate: str
+
+
+class SimulationResult(BaseModel):
+    mistake_rate: float
+    ethical_primes_count: int
+    analysis: SimulationAnalysis
+    config: SimulationConfig
+
+
+class SimulationCreate(BaseModel):
+    num_actions: int = 1000
+    complexity_dist: str = "zipf"
+    tau: float = 0.3
+
+
+class SimulationRead(BaseModel):
+    id: int
+    status: str
+    result_path: Optional[str] = None
+    config: dict
+    created_at: datetime
+    completed_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Security Report Schemas
+class SecurityReportRead(BaseModel):
+    id: int
+    rule_id: int
+    risk_score: float
+    violations: Optional[dict] = None
+    verified_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Settings Schemas
+class UserPreferences(BaseModel):
+    theme: str = "light"
+    default_judge_type: str = "COMBINED"
+    auto_save: bool = True
+    api_base_url: Optional[str] = None
+
+
+class UserSettingsRead(BaseModel):
+    id: int
+    user_id: int
+    preferences: dict
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Dashboard Schemas
+class DashboardStats(BaseModel):
+    total_rules: int
+    active_rules: int
+    pass_rate: float
+    total_violations: int
+    critical_violations: int
+
+
+class ActivityLog(BaseModel):
+    id: int
+    timestamp: datetime
+    type: str
+    message: str
+    severity: str
+
+

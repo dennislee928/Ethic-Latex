@@ -1,8 +1,15 @@
 from typing import List, Optional, Dict, Any
 import requests
-from erh.core.action_space import generate_world
-from erh.core.judgement_system import BiasedJudge, evaluate_judgement
-from erh.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
+# Import from shared core (erh_core) or fallback to erh.core
+try:
+    from erh_core.core.action_space import generate_world
+    from erh_core.core.judgement_system import BiasedJudge, evaluate_judgement
+    from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
+except ImportError:
+    # Fallback to erh.core for backward compatibility
+    from erh.core.action_space import generate_world
+    from erh.core.judgement_system import BiasedJudge, evaluate_judgement
+    from erh.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
 
 class ERHLocalClient:
     """

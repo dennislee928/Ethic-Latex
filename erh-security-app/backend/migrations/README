@@ -1,0 +1,4 @@
+Generic single-database configuration with an async dbapi.
+
+This is a generic migration environment suitable for use with a single database. It is used by Alembic to generate and run migrations.
+

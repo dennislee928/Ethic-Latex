@@ -1,6 +1,12 @@
 from typing import Dict, Any, List
-from erh.core.action_space import generate_world, Action
-from erh.core.judgement_system import BiasedJudge, evaluate_judgement
+# Import from shared core (erh_core) or fallback to erh.core
+try:
+    from erh_core.core.action_space import generate_world, Action
+    from erh_core.core.judgement_system import BiasedJudge, evaluate_judgement
+except ImportError:
+    # Fallback to erh.core for backward compatibility
+    from erh.core.action_space import generate_world, Action
+    from erh.core.judgement_system import BiasedJudge, evaluate_judgement
 from erh.tools.art_adapter import ARTAdapter
 from erh.tools.aif360_adapter import AIF360Adapter
 

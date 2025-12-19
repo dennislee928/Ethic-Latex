@@ -8,6 +8,16 @@ A Python SDK for simulating and analyzing ethical decision-making systems using 
 pip install erh
 ```
 
+## Code Structure
+
+The `erh/` package is a Python SDK that re-exports core functionality from the shared 
+`erh_core/` module. This ensures consistency with the `simulation/` research framework 
+while providing a clean SDK interface for distribution.
+
+**Note**: The actual implementation lives in `erh_core/` to follow DRY principles and 
+avoid code duplication between `simulation/` and `erh/` packages. Both `simulation/` and 
+`erh/` maintain backward compatibility by re-exporting from `erh_core/`.
+
 ## Usage
 
 ### Local Simulation

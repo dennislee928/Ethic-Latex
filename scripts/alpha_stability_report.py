@@ -26,10 +26,15 @@ REPORT_PATH = OUTPUT_DIR / "alpha_stability_report.md"
 
 
 def _setup_paths() -> None:
-    """Ensure simulation package is importable."""
+    """Ensure simulation package and erh_core are importable."""
     sim_path = str(SIM_DIR)
     if sim_path not in sys.path:
         sys.path.insert(0, sim_path)
+    
+    # Also add erh_core if it exists
+    erh_core_path = SIM_DIR.parent / "erh_core"
+    if erh_core_path.exists() and str(erh_core_path) not in sys.path:
+        sys.path.insert(0, str(erh_core_path))
 
 
 def _run_single_seed(seed: int) -> Dict[str, Dict[str, float]]:

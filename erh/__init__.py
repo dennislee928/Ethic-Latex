@@ -13,6 +13,14 @@ Modules:
 
 __version__ = "0.1.0"
 
+# Ensure erh_core is in the path
+import sys
+from pathlib import Path
+
+erh_core_path = Path(__file__).parent.parent / "erh_core"
+if erh_core_path.exists() and str(erh_core_path) not in sys.path:
+    sys.path.insert(0, str(erh_core_path))
+
 # Lazy imports to avoid heavy dependencies on init if desired
 # but for SDK usability, we often expose main classes here.
 
