@@ -73,6 +73,12 @@ jobs:
             --input-dir combined_results \
             --output-dir final_report
             
+      - name: Install R
+        if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y r-base
+      
       - name: Verify with R (Optional)
         if: ${{ hashFiles('scripts/verify_analysis.R') != '' }}
         run: |
