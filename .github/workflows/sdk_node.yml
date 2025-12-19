@@ -10,9 +10,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: js-sdk
     steps:
     - uses: actions/checkout@v4
 
@@ -35,25 +32,33 @@ jobs:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
 
-    - run: npm install
+    - name: Install dependencies
       if: steps.check_sdk.outputs.js_sdk_present == 'true'
-    - run: npm run build
+      working-directory: js-sdk
+      run: npm install
+
+    - name: Build
       if: steps.check_sdk.outputs.js_sdk_present == 'true'
-    - run: npm test
+      working-directory: js-sdk
+      run: npm run build
+
+    - name: Test
       if: steps.check_sdk.outputs.js_sdk_present == 'true'
-    - run: npm audit --audit-level=high
+      working-directory: js-sdk
+      run: npm test
+
+    - name: Security audit
       if: steps.check_sdk.outputs.js_sdk_present == 'true'
+      working-directory: js-sdk
+      run: npm audit --audit-level=high
 
   publish:
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: js-sdk
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Check js-sdk presence for publish
       id: check_sdk_publish
       run: |
@@ -72,11 +77,20 @@ jobs:
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
-    - run: npm install
+
+    - name: Install dependencies
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
-    - run: npm run build
+      working-directory: js-sdk
+      run: npm install
+
+    - name: Build
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
-    - run: npm publish
+      working-directory: js-sdk
+      run: npm run build
+
+    - name: Publish to npm
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
+      working-directory: js-sdk
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npm publish
