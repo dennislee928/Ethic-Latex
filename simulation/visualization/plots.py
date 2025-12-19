@@ -290,7 +290,6 @@ def plot_spectrum(
     if peaks:
         for peak in peaks[:5]:  # Show top 5 peaks
             freq = peak['frequency']
-            amp = peak['amplitude']
             period = peak['period']
             
             # Find closest frequency in array
@@ -447,7 +446,7 @@ def plot_judge_comparison(
     
     # Create bar chart
     colors = ['green' if metric == 'erh_satisfied' and v else 'C0' for v in values]
-    bars = ax.bar(names, values, color=colors, alpha=0.7, edgecolor='black')
+    ax.bar(names, values, color=colors, alpha=0.7, edgecolor='black')
     
     # Add reference line for ERH exponent
     if metric == 'estimated_exponent':
