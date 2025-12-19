@@ -21,9 +21,11 @@ jobs:
       run: |
         if [ ! -f js-sdk/package.json ]; then
           echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
-          echo "js-sdk/package.json not found, skipping Node.js SDK tests."
+          echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK tests."
+          echo "This is expected if the js-sdk directory does not exist in this repository."
         else
           echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
+          echo "✓ js-sdk/package.json found, proceeding with Node.js SDK tests."
         fi
 
     - name: Use Node.js
@@ -51,13 +53,30 @@ jobs:
         working-directory: js-sdk
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Check js-sdk presence for publish
+      id: check_sdk_publish
+      run: |
+        if [ ! -f js-sdk/package.json ]; then
+          echo "js_sdk_present=false" >> "$GITHUB_OUTPUT"
+          echo "⚠️ js-sdk/package.json not found, skipping Node.js SDK publish."
+          echo "This is expected if the js-sdk directory does not exist in this repository."
+        else
+          echo "js_sdk_present=true" >> "$GITHUB_OUTPUT"
+          echo "✓ js-sdk/package.json found, proceeding with Node.js SDK publish."
+        fi
+
     - name: Use Node.js
+      if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
       uses: actions/setup-node@v4
       with:
         node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
+      if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
     - run: npm run build
+      if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
     - run: npm publish
+      if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

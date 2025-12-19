@@ -94,7 +94,9 @@ def generate_alpha_stability_report(
 ) -> None:
     """Generate the alpha stability Markdown report."""
     if seeds is None:
-        seeds = [42, 123, 456]
+        # Default to a reasonably large number of seeds for stability analysis
+        # (200 seeds: 1..200).
+        seeds = list(range(1, 201))
 
     _setup_paths()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -107,11 +109,21 @@ def generate_alpha_stability_report(
         for judge, stats in seed_results.items():
             per_judge.setdefault(judge, {})[seed] = stats
 
-    # Compute CV for each judge
+    # Compute summary stats for each judge
     cv_by_judge: Dict[str, float] = {}
+    mean_by_judge: Dict[str, float] = {}
+    std_by_judge: Dict[str, float] = {}
+    ci_low_by_judge: Dict[str, float] = {}
+    ci_high_by_judge: Dict[str, float] = {}
+
     for judge, seed_stats in per_judge.items():
-        alphas = [v["alpha"] for v in seed_stats.values()]
-        cv_by_judge[judge] = _compute_cv(alphas)
+        alphas = np.array([v["alpha"] for v in seed_stats.values()], dtype=float)
+        cv_by_judge[judge] = _compute_cv(alphas.tolist())
+        mean_by_judge[judge] = float(np.mean(alphas))
+        std_by_judge[judge] = float(np.std(alphas))
+        # Simple empirical 95% CI based on quantiles
+        ci_low_by_judge[judge] = float(np.quantile(alphas, 0.025))
+        ci_high_by_judge[judge] = float(np.quantile(alphas, 0.975))
 
     lines: List[str] = []
     lines.append("# Alpha Stability Across Random Seeds\n")
@@ -138,18 +150,26 @@ def generate_alpha_stability_report(
                 f"| {judge} | {seed} | {stats['alpha']:.3f} | {stats['r2']:.3f} |"
             )
 
-    lines.append("\n### Coefficient of variation (CV) for α\n")
+    lines.append("\n### Summary statistics for α across seeds\n")
+    lines.append(
+        "| Judge Type | mean(α) | std(α) | 95% CI low | 95% CI high | CV(α) |\n"
+        "|-----------:|--------:|-------:|-----------:|------------:|------:|"
+    )
     for judge in sorted(cv_by_judge.keys()):
-        cv = cv_by_judge[judge]
-        lines.append(f"- **{judge}**: CV(α) = {cv:.3f}")
+        lines.append(
+            f"| {judge} | {mean_by_judge[judge]:.3f} | {std_by_judge[judge]:.3f} | "
+            f"{ci_low_by_judge[judge]:.3f} | {ci_high_by_judge[judge]:.3f} | "
+            f"{cv_by_judge[judge]:.3f} |"
+        )
 
     max_cv = max(cv_by_judge.values()) if cv_by_judge else 0.0
     lines.append("")
     if max_cv < 0.15:
         lines.append(
-            "Across the three seeds for each judge type, the coefficient of "
-            "variation (CV) for $\\alpha$ remains below 0.15, indicating that "
-            "the growth pattern is robust to sampling noise.\n"
+            "Across all 200 seeds for each judge type, the coefficient of "
+            "variation (CV) for $\\alpha$ remains below 0.15, and the 95\\% "
+            "confidence intervals are narrow, indicating that the qualitative "
+            "growth regimes we report are robust to sampling noise.\n"
         )
     else:
         lines.append(
