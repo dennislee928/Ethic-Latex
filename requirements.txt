@@ -35,4 +35,3 @@ robotframework-pythonlibcore>=2.1.0
 # API
 fastapi>=0.100.0
 uvicorn>=0.23.0
-

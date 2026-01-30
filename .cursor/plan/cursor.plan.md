@@ -1,1 +1,98 @@
-Cursor Execution Plan: ERH Framework Upgrade🎯 目標 (Objectives)實證升級：將 LLM 實際測試數據整合進論文，取代純模擬數據。理論深化：從類比轉向解析數論形式化，定義「道德 Zeta 函數」的解析性質。應用落地：開發 Web3 診斷工具與 PoA 共識機制原型。🏗️ 階段一：LLM 實證與數據分析 (Quick Win)目標： 利用 erh 套件對真實模型（GPT-4o, Llama 3）進行壓力測試。[ ] 1.1 數據採集腳本使用 erh_core/core/action_space.py 生成 10,000 個不同複雜度的道德情境（基於 ETHICS Dataset 結構）。撰寫 scripts/llm_stress_test.py，串接 OpenAI/Anthropic API 獲取判斷結果。[ ] 1.2 道德質數提取定義 EthicalPrimalityTest：判斷模型在該複雜度 $x$ 下的錯誤是否具備不可簡化性。[ ] 1.3 圖表生成與 PDF 更新繪製真實模型的 $\Pi(x)$ 與 $E(x)$ 分佈。比較不同模型的 $\alpha$ 係數（從 0.1 版本提升至 0.2 版本的數據深度）。📐 階段二：數學模型形式化 (Hard Core)目標： 將論文中的 $s$ 域分析從視覺類比提升到解析性質討論。[ ] 2.1 解析續拓與 Zeta 函數在 erh_core/analysis/zeta_function.py 中引入 mpmath 庫。繪製道德 Zeta 函數的相圖（Phase Portraits），定義 $\sigma = 1/2$ 臨界線在道德系統中的「最大不確定性」物理意義。[ ] 2.2 蒙哥馬利對偶相關性分析計算道德質數間隔（Pair Correlation），分析其是否符合 GUE 分佈，連結統計力學與隨機矩陣理論。[ ] 2.3 道德熵 (Ethical Entropy) 推導建立公式：$H_{\text{eth}} \propto \int \Pi(x) dx$，計算系統維持 ERH 邊界所需的最小計算代價。⛓️ 階段三：Web3 協議與共識原型 (Funding Ready)目標： 創造能讓 Gitcoin/da0 資助的「落地應用」。[ ] 3.1 ERH-PoA (Proof of Alignment) 合約原型撰寫 contracts/ERH_Consensus.sol (Solidity)。實現簡單的 Slashing 邏輯：若節點提交的 $E(x)$ 超過 $\sqrt{x}$ 門檻，則自動罰沒保證金。[ ] 3.2 ZK-ERH 概念證明使用 Circom 或 SnarkyJS 撰寫電路：證明 |E(x)| <= C * x^(1/2) 而不洩露具體錯誤內容。[ ] 3.3 視覺化診斷儀 (Dashboard)使用 Streamlit 建立 dashboard/app.py。功能：上傳 Log -> 自動計算 Zeta-Score -> 產出符合學術規範的診斷報告。📝 階段四：論文與文檔優化 (Academic Polish)目標： 提升 LaTeX 論文的發表等級。[ ] 4.1 符號與術語對齊全面替換符號，符合解析數論標準慣例（如 $L(x, \chi)$ 用於討論不同倫理框架下的 L-functions）。[ ] 4.2 局限性討論章節增加「道德空間多維性」與「主觀性偏移」的數學防禦性討論。[ ] 4.3 引用與參考文獻加入 Montgomery (1973), Lee-Yang Zeros, 以及 AI Safety 領域的最新論文（2025/2026）。📅 優先級總結 (Priority List)P0 (Immediate): 跑通 llm_stress_test.py 並更新 PDF 中的實驗數據。P1 (Grant Ready): 完成 Streamlit Dashboard，這是申請資助的「門面」。P2 (Deep Research): 完成 Zeta 函數零點分佈與蒙哥馬利對偶的數學證明。
+# Cursor Execution Plan: ERH Framework Upgrade
+
+## 🎯 目標 (Objectives)
+
+- **實證升級**：將 LLM 實際測試數據整合進論文，取代純模擬數據。
+- **理論深化**：從類比轉向解析數論形式化，定義「道德 Zeta 函數」的解析性質。
+- **應用落地**：開發 Web3 診斷工具與 PoA 共識機制原型。
+
+---
+
+## 🏗️ 階段一：LLM 實證與數據分析 (Quick Win)
+
+**目標**：利用 erh 套件對真實模型（GPT-4o, Llama 3）進行壓力測試。
+
+### 1.1 數據採集腳本
+
+- [ ] 使用 `erh_core/core/action_space.py` 生成 10,000 個不同複雜度的道德情境（基於 ETHICS Dataset 結構）
+- [ ] 撰寫 `scripts/llm_stress_test.py`，串接 OpenAI/Anthropic API 獲取判斷結果
+
+### 1.2 道德質數提取
+
+- [ ] 定義 `EthicalPrimalityTest`：判斷模型在該複雜度 `x` 下的錯誤是否具備不可簡化性
+
+### 1.3 圖表生成與 PDF 更新
+
+- [ ] 繪製真實模型的 `Π(x)` 與 `E(x)` 分佈
+- [ ] 比較不同模型的 `α` 係數（從 0.1 版本提升至 0.2 版本的數據深度）
+
+---
+
+## 📐 階段二：數學模型形式化 (Hard Core)
+
+**目標**：將論文中的 `s` 域分析從視覺類比提升到解析性質討論。
+
+### 2.1 解析續拓與 Zeta 函數
+
+- [ ] 在 `erh_core/analysis/zeta_function.py` 中引入 `mpmath` 庫
+- [ ] 繪製道德 Zeta 函數的相圖（Phase Portraits）
+- [ ] 定義 `σ = 1/2` 臨界線在道德系統中的「最大不確定性」物理意義
+
+### 2.2 蒙哥馬利對偶相關性分析
+
+- [ ] 計算道德質數間隔（Pair Correlation）
+- [ ] 分析其是否符合 GUE 分佈，連結統計力學與隨機矩陣理論
+
+### 2.3 道德熵 (Ethical Entropy) 推導
+
+- [ ] 建立公式：`H_eth ∝ ∫ Π(x) dx`
+- [ ] 計算系統維持 ERH 邊界所需的最小計算代價
+
+---
+
+## ⛓️ 階段三：Web3 協議與共識原型 (Funding Ready)
+
+**目標**：創造能讓 Gitcoin/da0 資助的「落地應用」。
+
+### 3.1 ERH-PoA (Proof of Alignment) 合約原型
+
+- [ ] 撰寫 `contracts/ERH_Consensus.sol` (Solidity)
+- [ ] 實現簡單的 Slashing 邏輯：若節點提交的 `E(x)` 超過 `√x` 門檻，則自動罰沒保證金
+
+### 3.2 ZK-ERH 概念證明
+
+- [ ] 使用 Circom 或 SnarkyJS 撰寫電路
+- [ ] 證明 `|E(x)| <= C * x^(1/2)` 而不洩露具體錯誤內容
+
+### 3.3 視覺化診斷儀 (Dashboard)
+
+- [ ] 使用 Streamlit 建立 `dashboard/app.py`
+- [ ] 功能：上傳 Log → 自動計算 Zeta-Score → 產出符合學術規範的診斷報告
+
+---
+
+## 📝 階段四：論文與文檔優化 (Academic Polish)
+
+**目標**：提升 LaTeX 論文的發表等級。
+
+### 4.1 符號與術語對齊
+
+- [ ] 全面替換符號，符合解析數論標準慣例
+- [ ] 例如：`L(x, χ)` 用於討論不同倫理框架下的 L-functions
+
+### 4.2 局限性討論章節
+
+- [ ] 增加「道德空間多維性」與「主觀性偏移」的數學防禦性討論
+
+### 4.3 引用與參考文獻
+
+- [ ] 加入 Montgomery (1973), Lee-Yang Zeros
+- [ ] 加入 AI Safety 領域的最新論文（2025/2026）
+
+---
+
+## 📅 優先級總結 (Priority List)
+
+- **P0 (Immediate)**：跑通 `llm_stress_test.py` 並更新 PDF 中的實驗數據
+- **P1 (Grant Ready)**：完成 Streamlit Dashboard，這是申請資助的「門面」
+- **P2 (Deep Research)**：完成 Zeta 函數零點分佈與蒙哥馬利對偶的數學證明
