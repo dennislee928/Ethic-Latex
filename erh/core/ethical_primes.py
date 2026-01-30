@@ -502,6 +502,68 @@ def analyze_error_growth(
     }
 
 
+def ethical_primality_test(
+    x: int,
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    threshold_std: float = 1.0,
+    min_history: int = 3,
+) -> bool:
+    """
+    Ethical Primality Test: 判斷在複雜度 x 下的錯誤是否具備不可簡化性。
+
+    若 E(x) 無法由較低複雜度 E(1), ..., E(x-1) 預測（殘差超過門檻），
+    則視為「道德質數」：該複雜度下的錯誤具不可簡化性。
+
+    Parameters
+    ----------
+    x : int
+        要檢驗的複雜度
+    E_x : np.ndarray
+        誤差序列 E(x)，與 x_values 對應
+    x_values : np.ndarray
+        複雜度序列（通常 1..X_max）
+    threshold_std : float, default=1.0
+        殘差超過此倍數的 E 標準差即判為不可簡化（True）
+    min_history : int, default=3
+        至少需要多少個歷史點才做迴歸
+
+    Returns
+    -------
+    bool
+        True 表示在 x 處的錯誤具不可簡化性（ethical prime at x）
+    """
+    E_x = np.asarray(E_x, dtype=float)
+    x_values = np.asarray(x_values, dtype=float)
+    if E_x.size != x_values.size or E_x.size == 0:
+        return True  # 資料不足時保守視為不可簡化
+
+    # 找到複雜度 x 的索引
+    idx = np.where(x_values == x)[0]
+    if idx.size == 0:
+        return True
+    i = int(idx[0])
+    if i < min_history:
+        return True  # 歷史點不足，視為不可簡化
+
+    # 用 E(1)..E(x-1) 預測 E(x)：簡單線性迴歸 E(x) ~ E(x-1), E(x-2), ...
+    n_hist = min(i, 10)  # 最多用 10 個歷史點
+    X = np.array([[E_x[i - k - 1] for k in range(n_hist)]], dtype=float)  # (1, n_hist)
+    y = np.array([E_x[i]], dtype=float)  # (1,)
+    if np.all(np.isfinite(X)) and np.all(np.isfinite(y)):
+        try:
+            coeffs, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
+            pred = (X @ coeffs).item()
+            residual = abs(float(y.item() - pred))
+            std_e = float(np.nanstd(E_x[: i + 1]))
+            if std_e == 0 or not np.isfinite(std_e):
+                return True
+            return bool(residual > threshold_std * std_e)
+        except Exception:
+            return True
+    return True
+
+
 def compare_error_distributions(
     results: dict,
     X_max: int = 100

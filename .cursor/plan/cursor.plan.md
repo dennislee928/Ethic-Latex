@@ -14,17 +14,17 @@
 
 ### 1.1 數據採集腳本
 
-- [ ] 使用 `erh_core/core/action_space.py` 生成 10,000 個不同複雜度的道德情境（基於 ETHICS Dataset 結構）
-- [ ] 撰寫 `scripts/llm_stress_test.py`，串接 OpenAI/Anthropic API 獲取判斷結果
+- [x] 使用 `erh/core/action_space.py` 生成 10,000 個不同複雜度的道德情境（基於 ETHICS Dataset 結構）
+- [x] 撰寫 `scripts/llm_stress_test.py`，串接 OpenAI/Anthropic API 獲取判斷結果
 
 ### 1.2 道德質數提取
 
-- [ ] 定義 `EthicalPrimalityTest`：判斷模型在該複雜度 `x` 下的錯誤是否具備不可簡化性
+- [x] 定義 `ethical_primality_test`（EthicalPrimalityTest）：判斷模型在該複雜度 `x` 下的錯誤是否具備不可簡化性（`erh/core/ethical_primes.py`）
 
 ### 1.3 圖表生成與 PDF 更新
 
-- [ ] 繪製真實模型的 `Π(x)` 與 `E(x)` 分佈
-- [ ] 比較不同模型的 `α` 係數（從 0.1 版本提升至 0.2 版本的數據深度）
+- [x] 繪製真實模型的 `Π(x)` 與 `E(x)` 分佈（`llm_stress_test.py` 執行後產出 `llm_stress_test_Pi_E.png`）
+- [ ] 比較不同模型的 `α` 係數（可多次執行 `llm_stress_test.py --provider openai` / `--provider anthropic`，彙總 `llm_stress_test_summary.json` 中的 `estimated_exponent` 後繪圖或更新 PDF）
 
 ---
 

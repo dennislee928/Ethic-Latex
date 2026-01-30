@@ -26,6 +26,25 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install papermill ipykernel nbconvert
 
+      - name: Run LLM stress test (ERH)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          pip install requests
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "Running small-scale LLM stress test (100 actions, OpenAI or Anthropic)..."
+            if [ -n "$OPENAI_API_KEY" ]; then
+              python scripts/llm_stress_test.py --num-actions 100 --provider openai --output-dir llm_stress_test_results
+            else
+              python scripts/llm_stress_test.py --num-actions 100 --provider anthropic --output-dir llm_stress_test_results
+            fi
+          else
+            echo "No API key set; running dry-run (no API calls)."
+            python scripts/llm_stress_test.py --num-actions 20 --dry-run --output-dir llm_stress_test_results
+          fi
+
       - name: Run Simulation and Generate Figures
         run: |
           # Set PYTHONPATH to include the current directory and simulation directory
@@ -125,6 +144,11 @@ jobs:
             echo "⚠ Warning: No PDF figures found in simulation/output/figures"
             ls -la simulation/output/figures/ || echo "Directory does not exist"
           fi
+          # Copy LLM stress test figure (Π(x), E(x)) if available
+          if [ -f "llm_stress_test_results/llm_stress_test_Pi_E.png" ]; then
+            cp llm_stress_test_results/llm_stress_test_Pi_E.png figures/
+            echo "Copied llm_stress_test_Pi_E.png to figures/"
+          fi
           # Copy PNG figures from simulation workflow if available
           if [ -d "figures/simulation" ] && [ "$(ls -A figures/simulation/*.png 2>/dev/null)" ]; then
             cp figures/simulation/*.png figures/ 2>/dev/null || true
@@ -158,6 +182,15 @@ jobs:
           name: simulation_output_raw
           path: simulation/output/
           retention-days: 14
+
+      - name: Upload LLM stress test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: llm_stress_test_results
+          path: llm_stress_test_results/
+          retention-days: 14
+          if-no-files-found: ignore
       - name: Install TeX Live
         run: |
           # Install a reasonably complete TeX Live and latexmk
