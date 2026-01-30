@@ -129,9 +129,3 @@ def build_erh_dataset(db: Session, judge_type: str = "COMBINED") -> List[ErhSamp
     return samples
 
 
-
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes
