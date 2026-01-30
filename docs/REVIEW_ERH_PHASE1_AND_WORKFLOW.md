@@ -37,21 +37,33 @@
 
 ## 3. Verification (evidence before claims)
 
-**Verification-before-completion:** Run these locally and confirm output before relying on “done”:
+**Verification-before-completion:** Run these locally and confirm output before relying on “done”.
+
+**Option A – Single script (recommended if terminal is slow or you can’t run multiple commands):**
 
 ```bash
-# 1) Imports and ethical_primality_test
 cd D:\GitHub\Ethic-Latex
+python scripts/run_verification_phase1.py
+```
+
+This runs all three checks in one process (imports + ethical_primality_test, dry-run, pytest). Exit code 0 = all passed.
+
+**Option B – Three separate commands:**
+
+```bash
+cd D:\GitHub\Ethic-Latex
+
+# 1) Imports and ethical_primality_test
 python -c "from erh.core import ethical_primality_test, actions_to_prompts; from erh.core.action_space import generate_world; w=generate_world(10,random_seed=42); p=actions_to_prompts(w); assert len(p)==10; import numpy as np; E=np.array([0.1,0.2,0.5,0.3,0.2]); x=np.array([1,2,3,4,5]); assert isinstance(ethical_primality_test(5,E,x), bool); print('OK')"
 
 # 2) Dry-run (no API)
 python scripts/llm_stress_test.py --num-actions 5 --dry-run --output-dir llm_stress_test_results
 
 # 3) Unit tests for Phase 1
-pytest tests/test_erh_phase1.py -v
+python -m pytest tests/test_erh_phase1.py -v
 ```
 
-**Note:** If the environment times out in automation, run the same commands locally and confirm 0 failures / expected output before merging.
+**Note:** If your terminal can’t be operated manually or automation times out, run Option A (or B) from another environment (e.g. VS Code terminal, WSL, or CI) and confirm 0 failures / “All three verifications passed” before merging.
 
 ---
 
