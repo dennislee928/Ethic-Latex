@@ -539,7 +539,7 @@ def ethical_primality_test(
         return True  # 資料不足時保守視為不可簡化
 
     # 找到複雜度 x 的索引
-    idx = np.where(x_values == x)[0]
+    idx = np.flatnonzero(x_values == x)
     if idx.size == 0:
         return True
     i = int(idx[0])

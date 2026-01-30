@@ -1,0 +1,172 @@
+/**
+ * Complete Color Palette Template
+ * Tailwind v4 @theme syntax
+ *
+ * Replace PRIMARY_* values with your generated shade scale.
+ * This template includes:
+ * - 11-shade primary scale (50-950)
+ * - Semantic tokens for light mode
+ * - Dark mode overrides
+ * - Destructive (error) color
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ========================================
+     PRIMARY COLOR SCALE
+     Replace these with your generated shades
+     ======================================== */
+
+  --color-primary-50: #F0FDFA;   /* Lightest - 97% */
+  --color-primary-100: #CCFBF1;  /* 94% */
+  --color-primary-200: #99F6E4;  /* 87% */
+  --color-primary-300: #5EEAD4;  /* 75% */
+  --color-primary-400: #2DD4BF;  /* 62% */
+  --color-primary-500: #14B8A6;  /* 48% - Brand baseline */
+  --color-primary-600: #0D9488;  /* 40% - Brand color (light mode primary) */
+  --color-primary-700: #0F766E;  /* 33% */
+  --color-primary-800: #115E59;  /* 27% */
+  --color-primary-900: #134E4A;  /* 20% */
+  --color-primary-950: #042F2E;  /* Darkest - 10% */
+
+  /* ========================================
+     LIGHT MODE SEMANTIC TOKENS
+     ======================================== */
+
+  /* Page/App Background & Text */
+  --color-background: #FFFFFF;
+  --color-foreground: var(--color-primary-950);
+
+  /* Cards & Elevated Surfaces */
+  --color-card: #FFFFFF;
+  --color-card-foreground: var(--color-primary-900);
+
+  /* Popovers, Tooltips, Dropdowns */
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: var(--color-primary-950);
+
+  /* Primary Actions (Buttons, Links, CTAs) */
+  --color-primary: var(--color-primary-600);
+  --color-primary-foreground: #FFFFFF;
+
+  /* Secondary Actions (Less Prominent) */
+  --color-secondary: var(--color-primary-100);
+  --color-secondary-foreground: var(--color-primary-900);
+
+  /* Muted/Subtle Content */
+  --color-muted: var(--color-primary-50);
+  --color-muted-foreground: var(--color-primary-600);
+
+  /* Accent/Highlight Areas */
+  --color-accent: var(--color-primary-100);
+  --color-accent-foreground: var(--color-primary-900);
+
+  /* Destructive Actions (Delete, Error) */
+  --color-destructive: #DC2626;  /* red-600 */
+  --color-destructive-foreground: #FFFFFF;
+
+  /* Borders, Dividers, Input Borders */
+  --color-border: var(--color-primary-200);
+  --color-input: var(--color-primary-200);
+
+  /* Focus Rings (Keyboard Navigation) */
+  --color-ring: var(--color-primary-600);
+
+  /* Border Radius (Optional) */
+  --radius: 0.5rem;
+}
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+
+.dark {
+  /* Page/App Background & Text */
+  --color-background: var(--color-primary-950);
+  --color-foreground: var(--color-primary-50);
+
+  /* Cards & Elevated Surfaces */
+  --color-card: var(--color-primary-900);
+  --color-card-foreground: var(--color-primary-50);
+
+  /* Popovers, Tooltips, Dropdowns */
+  --color-popover: var(--color-primary-900);
+  --color-popover-foreground: var(--color-primary-50);
+
+  /* Primary Actions (Brighter for Visibility) */
+  --color-primary: var(--color-primary-500);
+  --color-primary-foreground: #FFFFFF;
+
+  /* Secondary Actions */
+  --color-secondary: var(--color-primary-800);
+  --color-secondary-foreground: var(--color-primary-50);
+
+  /* Muted/Subtle Content */
+  --color-muted: var(--color-primary-800);
+  --color-muted-foreground: var(--color-primary-400);
+
+  /* Accent/Highlight Areas */
+  --color-accent: var(--color-primary-800);
+  --color-accent-foreground: var(--color-primary-50);
+
+  /* Destructive Actions (Brighter) */
+  --color-destructive: #EF4444;  /* red-500 */
+  --color-destructive-foreground: #FFFFFF;
+
+  /* Borders, Dividers, Input Borders */
+  --color-border: var(--color-primary-800);
+  --color-input: var(--color-primary-800);
+
+  /* Focus Rings */
+  --color-ring: var(--color-primary-500);
+}
+
+/* ========================================
+   USAGE EXAMPLES
+   ======================================== */
+
+/*
+// Primary Button
+<button className="bg-primary text-primary-foreground hover:bg-primary/90">
+  Click Me
+</button>
+
+// Card
+<div className="bg-card text-card-foreground border-border">
+  <h2>Card Title</h2>
+  <p className="text-muted-foreground">Card description</p>
+</div>
+
+// Input
+<input
+  className="bg-background text-foreground border-input focus:ring-ring"
+  placeholder="Enter text"
+/>
+
+// Destructive Button
+<button className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+  Delete
+</button>
+*/
+
+/* ========================================
+   NOTES
+   ======================================== */
+
+/*
+1. Replace PRIMARY_* shades with your generated colors
+2. Verify contrast ratios (4.5:1 for text, 3:1 for UI)
+3. Test in both light and dark modes
+4. Adjust primary shade in dark mode if too dark (use 500 instead of 600)
+5. Check that all foreground tokens pair with their backgrounds
+
+Tools:
+- https://webaim.org/resources/contrastchecker/
+- https://coolors.co/contrast-checker
+- Browser DevTools color picker (shows contrast)
+
+Reference:
+- See skills/color-palette/references/ for generation formulas
+- See skills/color-palette/rules/ for common mistakes
+*/

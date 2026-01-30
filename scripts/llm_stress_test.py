@@ -31,7 +31,6 @@ import numpy as np
 # ERH package (erh, not simulation)
 from erh.core.action_space import generate_world
 from erh.core.scenario_generator import actions_to_prompts
-from erh.core.judgement_system import evaluate_judgement
 from erh.core.ethical_primes import (
     select_ethical_primes,
     compute_Pi_and_error,

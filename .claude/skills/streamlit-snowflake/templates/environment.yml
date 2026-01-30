@@ -1,0 +1,39 @@
+# Snowflake Streamlit Environment Configuration
+# Documentation: https://docs.snowflake.com/en/developer-guide/streamlit/create-streamlit-sql
+
+# IMPORTANT: Both 'name' and 'channels' are REQUIRED
+# Only the 'snowflake' channel is supported - external channels will fail
+
+name: sf_env
+
+channels:
+  - snowflake  # REQUIRED - only supported channel (no conda-forge)
+
+dependencies:
+  # Streamlit - ALWAYS set explicit version
+  # Default is 1.22.0 which lacks many features
+  - streamlit=1.35.0
+
+  # Snowpark for data access
+  - snowflake-snowpark-python
+
+  # Data processing
+  - pandas
+  - numpy
+
+  # Visualization (choose based on needs)
+  - plotly          # Interactive charts
+  - altair=4.0      # Declarative viz (version 4.0 supported)
+  # - matplotlib    # Static charts
+
+  # Optional: ML packages (uncomment as needed)
+  # - scikit-learn
+  # - xgboost
+
+  # Optional: Additional utilities
+  # - scipy
+  # - pillow
+
+# Note: Check package availability before adding:
+# SQL: SELECT * FROM information_schema.packages WHERE language = 'python';
+# Web: https://snowpark-python-packages.streamlit.app/
