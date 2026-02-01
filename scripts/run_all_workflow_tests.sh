@@ -5,6 +5,10 @@
 #
 # Sections map to: sdk_python, multi_platform_test, simulation, quantum_tests,
 # build_thesis / single_sh, erh_security_app, docs, sdk_node.
+#
+# Note: Steps that use "2>/dev/null" or "|| true" must run via bash -c '...'
+# so the shell interprets redirection and short-circuit; otherwise they are
+# passed as literal arguments to the command and the step can fail.
 
 set +e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,6 +18,10 @@ PY="${PY:-python}"
 PIP="${PIP:-pip}"
 FAILED=()
 PASSED=()
+
+# Optional bootstrap: install deps so more steps pass when run without a venv
+run_step_allow_fail "bootstrap: pip install -r requirements.txt" bash -c "\"$PIP\" install -r requirements.txt -q"
+run_step_allow_fail "bootstrap: pip install pytest" bash -c "\"$PIP\" install pytest -q"
 
 run_step() {
   local name="$1"
@@ -86,7 +94,7 @@ print('erh_core OK')
 run_step_allow_fail "erh_core: run_example quick" $PY simulation/run_example.py 2>/dev/null | head -20
 
 # --- 5. build_thesis: LLM stress, figures, scripts ---
-run_step "build_thesis: llm_stress_test dry-run" $PY scripts/llm_stress_test.py --num-actions 20 --dry-run --output-dir llm_stress_test_results 2>/dev/null || true
+run_step "build_thesis: llm_stress_test dry-run" bash -c "\"$PY\" scripts/llm_stress_test.py --num-actions 20 --dry-run --output-dir llm_stress_test_results 2>/dev/null || true"
 run_step_allow_fail "build_thesis: generate_all_figures" $PY simulation/generate_all_figures.py 2>/dev/null || true
 run_step_allow_fail "build_thesis: real_data adult_income" $PY -m simulation.real_data.adult_income_case_study 2>/dev/null || true
 run_step_allow_fail "build_thesis: real_data exam_cheating" $PY -m simulation.real_data.exam_cheating_case_study 2>/dev/null || true
