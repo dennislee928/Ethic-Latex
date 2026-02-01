@@ -12,14 +12,11 @@ import pytest
 
 def _check_streamlit_imports():
     """Try imports required for simulation Streamlit app. Returns (True, None) or (False, error)."""
-    sim_dir = os.path.join(os.path.dirname(__file__), "..", "simulation")
-    if sim_dir not in sys.path:
-        sys.path.insert(0, sim_dir)
     try:
-        from core.action_space import generate_world  # noqa: F401
-        from core.judgement_system import BiasedJudge  # noqa: F401
-        from core.ethical_primes import select_ethical_primes  # noqa: F401
-        from analysis.zeta_function import build_m_sequence  # noqa: F401
+        from erh_core.core.action_space import generate_world  # noqa: F401
+        from erh_core.core.judgement_system import BiasedJudge  # noqa: F401
+        from erh_core.core.ethical_primes import select_ethical_primes  # noqa: F401
+        from erh_core.analysis.zeta_function import build_m_sequence  # noqa: F401
         import streamlit  # noqa: F401
         return True, None
     except ImportError as e:
