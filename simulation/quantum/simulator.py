@@ -147,23 +147,17 @@ class LocalQuantumJudge(QuantumOracle):
         float
             Judgment J ∈ [-1, 1] (expectation over measurements)
         """
-        shots = shots or self.shots
+        n = shots or self.shots
+        if not self._use_qiskit:
+            return _numpy_judge_action(difficulty, n, self.seed)
         theta = max(0.0, min(1.0, difficulty)) * np.pi
-
         qc = QuantumCircuit(1, 1)
         qc.rx(theta, 0)
         qc.measure(0, 0)
-
-        result = self._simulator.run(
-            qc,
-            shots=shots,
-            seed_simulator=self.seed,
-        ).result()
-
+        result = self._simulator.run(qc, shots=n, seed_simulator=self.seed).result()
         counts = result.get_counts()
-        p0 = counts.get("0", 0) / shots
-        p1 = counts.get("1", 0) / shots
-        return float(2 * p0 - 1)  # map 0→+1, 1→-1
+        p0 = counts.get("0", 0) / n
+        return float(2 * p0 - 1)
 
     def entangled_judgment(
         self,
@@ -176,32 +170,30 @@ class LocalQuantumJudge(QuantumOracle):
         Apply local Rx(θ_a) and Rx(θ_b) based on biases, then measure.
         Outcomes are correlated (both 0 or both 1 when no rotation).
         """
+        if not self._use_qiskit:
+            return _numpy_entangled_simple(
+                agent_a_bias, agent_b_bias, self.shots, self.seed
+            )
         theta_a = np.clip(agent_a_bias, -1, 1) * np.pi / 2
         theta_b = np.clip(agent_b_bias, -1, 1) * np.pi / 2
-
         qc = QuantumCircuit(2, 2)
         qc.h(0)
         qc.cx(0, 1)
         qc.rx(theta_a, 0)
         qc.rx(theta_b, 1)
         qc.measure([0, 1], [0, 1])
-
         result = self._simulator.run(
-            qc,
-            shots=self.shots,
-            seed_simulator=self.seed,
+            qc, shots=self.shots, seed_simulator=self.seed
         ).result()
-
         counts = result.get_counts()
-        J_a_vals = []
-        J_b_vals = []
+        J_a_vals, J_b_vals = [], []
         for outcome, count in counts.items():
             a_val = 1 if outcome[0] == "0" else -1
             b_val = 1 if outcome[1] == "0" else -1
             for _ in range(count):
                 J_a_vals.append(a_val)
                 J_b_vals.append(b_val)
-
-        J_a = float(np.mean(J_a_vals)) if J_a_vals else 0.0
-        J_b = float(np.mean(J_b_vals)) if J_b_vals else 0.0
-        return (J_a, J_b)
+        return (
+            float(np.mean(J_a_vals)) if J_a_vals else 0.0,
+            float(np.mean(J_b_vals)) if J_b_vals else 0.0,
+        )
