@@ -1,7 +1,17 @@
 """
 Cloud Quantum Judge using IBM Quantum Runtime.
 
-Requires IBM_QUANTUM_TOKEN in environment. Implements batching for 100+ agents.
+Uses the Qiskit Runtime REST API (see https://quantum.cloud.ibm.com/docs/en/api/qiskit-runtime-rest).
+Implements batching for 100+ agents.
+
+Environment variables:
+- IBM_QUANTUM_TOKEN (required): IBM Cloud API key from the Dashboard. The REST API uses it to
+  obtain an IAM bearer token for each request. Create at https://quantum.cloud.ibm.com/
+  (Dashboard → Create API key). Must be the 44-character API key; legacy quantum.ibm.com
+  tokens are no longer supported.
+- IBM_QUANTUM_INSTANCE (recommended): Instance Cloud Resource Name (CRN). Many REST API calls
+  require the Service-CRN header; see Instances page on the platform for your CRN.
+- IBM_QUANTUM_REGION (optional): "us-east" (default) or "eu-de" for EU region endpoints.
 """
 
 import os
@@ -54,9 +64,16 @@ class CloudQuantumJudge(QuantumOracle):
         token = _get_ibm_token()
         if not token:
             raise ValueError(
-                "IBM_QUANTUM_TOKEN not set. Get a free token at https://quantum.ibm.com/"
+                "IBM_QUANTUM_TOKEN not set. Create an API key at https://quantum.cloud.ibm.com/ (Dashboard → Create API key)."
             )
-        self._service = QiskitRuntimeService(channel="ibm_quantum_platform", token=token)
+        instance = os.environ.get("IBM_QUANTUM_INSTANCE")
+        region = os.environ.get("IBM_QUANTUM_REGION")
+        service_kw: dict = {"channel": "ibm_quantum_platform", "token": token}
+        if instance:
+            service_kw["instance"] = instance
+        if region:
+            service_kw["region"] = region
+        self._service = QiskitRuntimeService(**service_kw)
         self._backend_name = backend_name
         self.batch_size = batch_size
 
