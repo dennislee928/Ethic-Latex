@@ -48,47 +48,42 @@ This plan outlines the steps to refactor the existing codebase, enhance the theo
 
 ### 3.1 Dependencies & Configuration
 
-- [ ] Add `qiskit`, `qiskit-aer`, and `qiskit-ibm-runtime` to `requirements.txt`.
-- [ ] Setup `.env` handling for `IBM_QUANTUM_TOKEN`.
+- [x] Add `qiskit`, `qiskit-aer`, and `qiskit-ibm-runtime` to optional deps (pyproject.toml `[quantum]`).
+- [x] Setup `.env.example` for `IBM_QUANTUM_TOKEN`.
 
-### 3.2 Core Architecture (`erh_core/quantum/`)
+### 3.2 Core Architecture (`simulation/quantum/`)
 
-- [ ] **Interface Definition**
-    - [ ] Create `erh_core/quantum/__init__.py`.
-    - [ ] Create `erh_core/quantum/interface.py`: Define abstract base class `QuantumOracle` with methods:
-        - [ ] `collapse_wavefunction(complexity_amplitudes)`
-        - [ ] `entangled_judgment(agent_a_bias, agent_b_bias)`
+- [x] **Interface Definition**
+    - [x] Create `simulation/quantum/__init__.py`.
+    - [x] Create `simulation/quantum/interface.py`: `QuantumOracle` with `collapse_wavefunction`, `entangled_judgment`.
 
-- [ ] **Local Simulator**
-    - [ ] Create `erh_core/quantum/simulator.py`.
-    - [ ] Implement `LocalQuantumJudge` using `AerSimulator`.
-    - [ ] Implement `rx` rotation mapping: $\theta = \text{difficulty} \times \pi$.
+- [x] **Local Simulator**
+    - [x] Create `simulation/quantum/simulator.py`.
+    - [x] Implement `LocalQuantumJudge` using `AerSimulator`.
+    - [x] Implement `rx` rotation: θ = difficulty × π.
 
-- [ ] **Cloud Backend (IBM Q)**
-    - [ ] Create `erh_core/quantum/cloud.py`.
-    - [ ] Implement `CloudQuantumJudge` using `QiskitRuntimeService`.
-    - [ ] **Critical:** Implement batching logic to send aggregated circuits (100+ agents) in a single Job to avoid queue latency.
+- [x] **Cloud Backend (IBM Q)**
+    - [x] Create `simulation/quantum/cloud.py`.
+    - [x] Implement `CloudQuantumJudge` using `QiskitRuntimeService`.
+    - [x] Implement `batch_judge` for 100+ agents.
 
 ### 3.3 Integration
 
-- [ ] Update `erh_core/core/judgement_system.py` to accept an optional `QuantumOracle`.
-- [ ] Implement `evaluate_action_quantum` logic where judgments are measurements of a superposition state: $|\psi\rangle = \alpha|\text{Ethical}\rangle + \beta|\text{Unethical}\rangle$.
+- [x] Add `QuantumJudge` and `evaluate_action_quantum` in `simulation/core/judgement_system.py`.
 
 ### 3.4 Verification
 
-- [ ] Create `tests/test_quantum_entanglement.py`.
-- [ ] **Test Case:** Simulate a "Prisoner's Dilemma" scenario. Verify that measuring Agent A's decision statistically correlates with Agent B's decision without classical data exchange (validating the entanglement implementation).
+- [x] Create `tests/test_quantum_entanglement.py` (Prisoner's Dilemma correlation test).
 
 ## Phase 4: Application & Visualization
 
 **Goal:** Make the theory visible and interactive.
 
-- [ ] **Interactive Dashboard**
-    - [ ] Enhance `erh-security-app/frontend`.
-    - [ ] Create a "Health Monitor" page:
-        - [ ] Live plot of $E(x)$ (Error Term) vs $x^{1/2}$ (Riemann Bound).
-        - [ ] Real-time alert system: Trigger if $E(x)$ violates the bound (indicates structural hallucination).
+- [x] **Interactive Dashboard**
+    - [x] Enhance `erh-security-app/frontend`.
+    - [x] Create Health Monitor: `GET /analysis/health`, `HealthMonitorChart.tsx`.
+    - [x] E(x) vs x^{1/2} Riemann bound; alert when violation (structural hallucination).
 
-- [ ] **Adversarial Agent**
-    - [ ] Create `simulation/adversarial.py`.
-    - [ ] Implement a "Red Teaming" agent that optimizes inputs to maximize "Ethical Prime" discovery (high importance, high failure rate).
+- [x] **Adversarial Agent**
+    - [x] Create `simulation/adversarial.py`.
+    - [x] Implement `AdversarialAgent` (Red Teaming) that optimizes inputs to maximize Ethical Prime discovery.
