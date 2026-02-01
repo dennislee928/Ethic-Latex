@@ -111,7 +111,8 @@ def run_compas_alpha(
     Compute alpha for COMPAS baseline model.
     Returns None if dataset or sklearn unavailable.
     """
-    if LogisticRegression is None or not (data_path or DEFAULT_DATA_PATH).resolve().exists():
+    path = (data_path or DEFAULT_DATA_PATH).resolve()
+    if LogisticRegression is None or not path.exists():
         return None
     try:
         df = load_compas_dataset(data_path)
