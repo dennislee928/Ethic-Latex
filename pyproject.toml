@@ -33,6 +33,11 @@ ml = [
     "aif360>=0.5.0",
     "scikit-learn>=1.0.0"
 ]
+quantum = [
+    "qiskit>=1.0.0",
+    "qiskit-aer>=0.14.0",
+    "qiskit-ibm-runtime>=0.21.0",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/dennislee928/Ethic-Latex"
