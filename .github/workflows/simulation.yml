@@ -69,6 +69,7 @@ jobs:
 
       - name: Run Simulation
         run: |
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
           python scripts/run_simulation_batch.py \
             --complexity-dist ${{ matrix.complexity_dist }} \
             --output-dir results

@@ -2,10 +2,10 @@
 Generate All Figures for the Paper
 
 This script runs all simulations and generates publication-quality figures.
-Run this before compiling the LaTeX paper to ensure all figures are up-to-date.
+Run from repo root: python -m simulation.generate_all_figures
 
 Usage:
-    python generate_all_figures.py
+    python -m simulation.generate_all_figures
 """
 
 import sys
@@ -15,23 +15,31 @@ import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 
-# Add simulation directory and project root to path to allow imports
+# Ensure project root is on path (for erh_core when run as -m simulation.generate_all_figures)
 script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)  # Parent of simulation directory
-if script_dir not in sys.path:
-    sys.path.insert(0, script_dir)
+project_root = os.path.dirname(script_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from erh_core.core.action_space import generate_world
 from erh_core.core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
 from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth, compare_error_distributions
-from analysis.zeta_function import build_m_sequence, compute_spectrum, find_approximate_zeros, analyze_spectrum_peaks
-from analysis.statistics import compare_judges, generate_report
-from visualization.plots import (
-    setup_paper_style, plot_Pi_B_E, plot_error_growth,
-    plot_multi_judge_errors, plot_spectrum, plot_zero_distribution,
-    plot_complexity_distribution, plot_judge_comparison
+from simulation.analysis.zeta_function import (
+    build_m_sequence,
+    compute_spectrum,
+    find_approximate_zeros,
+    analyze_spectrum_peaks,
+)
+from simulation.analysis.statistics import compare_judges, generate_report
+from simulation.visualization.plots import (
+    setup_paper_style,
+    plot_Pi_B_E,
+    plot_error_growth,
+    plot_multi_judge_errors,
+    plot_spectrum,
+    plot_zero_distribution,
+    plot_complexity_distribution,
+    plot_judge_comparison,
 )
 
 # Setup

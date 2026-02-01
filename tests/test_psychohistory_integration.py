@@ -8,12 +8,15 @@ import numpy as np
 import pytest
 
 try:
-    from simulation.core.action_space import generate_world
-    from simulation.core.judgement_system import BiasedJudge
-    from simulation.core.temporal_erh import track_error_evolution
-    from simulation.core.agent import AgentPopulation, SimpleEthicalAgent
-    from simulation.core.social_network import SocialNetwork
-    from simulation.core.abm_simulator import ABMSimulator
+    from simulation.core import (
+        generate_world,
+        BiasedJudge,
+        track_error_evolution,
+        AgentPopulation,
+        SimpleEthicalAgent,
+        SocialNetwork,
+        ABMSimulator,
+    )
     from simulation.analysis.opinion_dynamics import degroot_model
     from simulation.analysis.temporal_analysis import (
         analyze_temporal_trends,

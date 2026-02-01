@@ -4,8 +4,8 @@
     "passed": 36,
     "failed": 0,
     "success_rate": 1.0,
-    "total_time": 42.2579870223999,
-    "timestamp": "2026-02-01T11:36:55.443216"
+    "total_time": 44.924612045288086,
+    "timestamp": "2026-02-01T12:00:14.536776"
   },
   "results": [
     {
@@ -37,8 +37,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.6955509185791016,
-      "timestamp": "2026-02-01T11:36:13.880795"
+      "elapsed_time": 0.979363203048706,
+      "timestamp": "2026-02-01T11:59:30.591541"
     },
     {
       "test_name": "param_sweep_agents10_toporandom_steps10",
@@ -69,8 +69,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.31064796447753906,
-      "timestamp": "2026-02-01T11:36:14.191518"
+      "elapsed_time": 0.3712000846862793,
+      "timestamp": "2026-02-01T11:59:30.962792"
     },
     {
       "test_name": "param_sweep_agents10_toporandom_steps20",
@@ -101,8 +101,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.5790009498596191,
-      "timestamp": "2026-02-01T11:36:14.770557"
+      "elapsed_time": 0.5782792568206787,
+      "timestamp": "2026-02-01T11:59:31.541111"
     },
     {
       "test_name": "param_sweep_agents10_toposmall_world_steps5",
@@ -133,8 +133,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.1552259922027588,
-      "timestamp": "2026-02-01T11:36:14.925819"
+      "elapsed_time": 0.15932393074035645,
+      "timestamp": "2026-02-01T11:59:31.700478"
     },
     {
       "test_name": "param_sweep_agents10_toposmall_world_steps10",
@@ -165,8 +165,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.2926039695739746,
-      "timestamp": "2026-02-01T11:36:15.218456"
+      "elapsed_time": 0.3616969585418701,
+      "timestamp": "2026-02-01T11:59:32.062212"
     },
     {
       "test_name": "param_sweep_agents10_toposmall_world_steps20",
@@ -197,8 +197,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.5661931037902832,
-      "timestamp": "2026-02-01T11:36:15.784683"
+      "elapsed_time": 1.0034081935882568,
+      "timestamp": "2026-02-01T11:59:33.065681"
     },
     {
       "test_name": "param_sweep_agents10_toposcale_free_steps5",
@@ -229,8 +229,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.15940499305725098,
-      "timestamp": "2026-02-01T11:36:15.944126"
+      "elapsed_time": 0.1583397388458252,
+      "timestamp": "2026-02-01T11:59:33.224058"
     },
     {
       "test_name": "param_sweep_agents10_toposcale_free_steps10",
@@ -261,8 +261,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.29511022567749023,
-      "timestamp": "2026-02-01T11:36:16.239271"
+      "elapsed_time": 0.32282590866088867,
+      "timestamp": "2026-02-01T11:59:33.546921"
     },
     {
       "test_name": "param_sweep_agents10_toposcale_free_steps20",
@@ -293,8 +293,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.9869289398193359,
-      "timestamp": "2026-02-01T11:36:17.226241"
+      "elapsed_time": 0.6031460762023926,
+      "timestamp": "2026-02-01T11:59:34.150106"
     },
     {
       "test_name": "param_sweep_agents50_toporandom_steps5",
@@ -325,8 +325,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.3647119998931885,
-      "timestamp": "2026-02-01T11:36:17.591001"
+      "elapsed_time": 0.3455662727355957,
+      "timestamp": "2026-02-01T11:59:34.495713"
     },
     {
       "test_name": "param_sweep_agents50_toporandom_steps10",
@@ -357,8 +357,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.7927310466766357,
-      "timestamp": "2026-02-01T11:36:18.383791"
+      "elapsed_time": 0.6156489849090576,
+      "timestamp": "2026-02-01T11:59:35.111401"
     },
     {
       "test_name": "param_sweep_agents50_toporandom_steps20",
@@ -389,8 +389,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.248244285583496,
-      "timestamp": "2026-02-01T11:36:19.632085"
+      "elapsed_time": 1.2910258769989014,
+      "timestamp": "2026-02-01T11:59:36.402468"
     },
     {
       "test_name": "param_sweep_agents50_toposmall_world_steps5",
@@ -421,8 +421,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.32905101776123047,
-      "timestamp": "2026-02-01T11:36:19.961174"
+      "elapsed_time": 0.32488584518432617,
+      "timestamp": "2026-02-01T11:59:36.727392"
     },
     {
       "test_name": "param_sweep_agents50_toposmall_world_steps10",
@@ -453,8 +453,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.6049721240997314,
-      "timestamp": "2026-02-01T11:36:20.566186"
+      "elapsed_time": 0.5967748165130615,
+      "timestamp": "2026-02-01T11:59:37.324204"
     },
     {
       "test_name": "param_sweep_agents50_toposmall_world_steps20",
@@ -485,8 +485,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.218763828277588,
-      "timestamp": "2026-02-01T11:36:21.784994"
+      "elapsed_time": 1.4659178256988525,
+      "timestamp": "2026-02-01T11:59:38.790161"
     },
     {
       "test_name": "param_sweep_agents50_toposcale_free_steps5",
@@ -517,8 +517,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.3141357898712158,
-      "timestamp": "2026-02-01T11:36:22.099172"
+      "elapsed_time": 0.3040170669555664,
+      "timestamp": "2026-02-01T11:59:39.094213"
     },
     {
       "test_name": "param_sweep_agents50_toposcale_free_steps10",
@@ -549,8 +549,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.7860150337219238,
-      "timestamp": "2026-02-01T11:36:22.885225"
+      "elapsed_time": 0.6111080646514893,
+      "timestamp": "2026-02-01T11:59:39.705364"
     },
     {
       "test_name": "param_sweep_agents50_toposcale_free_steps20",
@@ -581,8 +581,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.2341909408569336,
-      "timestamp": "2026-02-01T11:36:24.119455"
+      "elapsed_time": 2.2992920875549316,
+      "timestamp": "2026-02-01T11:59:42.004693"
     },
     {
       "test_name": "param_sweep_agents100_toporandom_steps5",
@@ -613,8 +613,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.52040696144104,
-      "timestamp": "2026-02-01T11:36:24.639910"
+      "elapsed_time": 0.5130729675292969,
+      "timestamp": "2026-02-01T11:59:42.517805"
     },
     {
       "test_name": "param_sweep_agents100_toporandom_steps10",
@@ -645,8 +645,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.0222752094268799,
-      "timestamp": "2026-02-01T11:36:25.662225"
+      "elapsed_time": 0.9974260330200195,
+      "timestamp": "2026-02-01T11:59:43.515270"
     },
     {
       "test_name": "param_sweep_agents100_toporandom_steps20",
@@ -677,8 +677,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.9893968105316162,
-      "timestamp": "2026-02-01T11:36:27.651658"
+      "elapsed_time": 2.4037482738494873,
+      "timestamp": "2026-02-01T11:59:45.919060"
     },
     {
       "test_name": "param_sweep_agents100_toposmall_world_steps5",
@@ -709,8 +709,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.5382559299468994,
-      "timestamp": "2026-02-01T11:36:28.189957"
+      "elapsed_time": 0.6390140056610107,
+      "timestamp": "2026-02-01T11:59:46.558117"
     },
     {
       "test_name": "param_sweep_agents100_toposmall_world_steps10",
@@ -741,8 +741,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.0280649662017822,
-      "timestamp": "2026-02-01T11:36:29.218067"
+      "elapsed_time": 1.0036227703094482,
+      "timestamp": "2026-02-01T11:59:47.561778"
     },
     {
       "test_name": "param_sweep_agents100_toposmall_world_steps20",
@@ -773,8 +773,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 2.2013301849365234,
-      "timestamp": "2026-02-01T11:36:31.419438"
+      "elapsed_time": 2.099639892578125,
+      "timestamp": "2026-02-01T11:59:49.661460"
     },
     {
       "test_name": "param_sweep_agents100_toposcale_free_steps5",
@@ -805,8 +805,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.5133130550384521,
-      "timestamp": "2026-02-01T11:36:31.932799"
+      "elapsed_time": 0.5168650150299072,
+      "timestamp": "2026-02-01T11:59:50.178372"
     },
     {
       "test_name": "param_sweep_agents100_toposcale_free_steps10",
@@ -837,8 +837,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.0084218978881836,
-      "timestamp": "2026-02-01T11:36:32.941273"
+      "elapsed_time": 1.1056137084960938,
+      "timestamp": "2026-02-01T11:59:51.284025"
     },
     {
       "test_name": "param_sweep_agents100_toposcale_free_steps20",
@@ -869,8 +869,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 2.0085930824279785,
-      "timestamp": "2026-02-01T11:36:34.949911"
+      "elapsed_time": 2.0378592014312744,
+      "timestamp": "2026-02-01T11:59:53.321927"
     },
     {
       "test_name": "param_sweep_agents200_toporandom_steps5",
@@ -901,8 +901,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.9891278743743896,
-      "timestamp": "2026-02-01T11:36:35.939130"
+      "elapsed_time": 1.1362099647521973,
+      "timestamp": "2026-02-01T11:59:54.458186"
     },
     {
       "test_name": "param_sweep_agents200_toporandom_steps10",
@@ -933,8 +933,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 2.056680917739868,
-      "timestamp": "2026-02-01T11:36:37.995864"
+      "elapsed_time": 1.9569098949432373,
+      "timestamp": "2026-02-01T11:59:56.415143"
     },
     {
       "test_name": "param_sweep_agents200_toporandom_steps20",
@@ -965,8 +965,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 4.0603978633880615,
-      "timestamp": "2026-02-01T11:36:42.056308"
+      "elapsed_time": 4.092350244522095,
+      "timestamp": "2026-02-01T12:00:00.507543"
     },
     {
       "test_name": "param_sweep_agents200_toposmall_world_steps5",
@@ -997,8 +997,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.9671969413757324,
-      "timestamp": "2026-02-01T11:36:43.023552"
+      "elapsed_time": 1.120995283126831,
+      "timestamp": "2026-02-01T12:00:01.628585"
     },
     {
       "test_name": "param_sweep_agents200_toposmall_world_steps10",
@@ -1029,8 +1029,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.985058069229126,
-      "timestamp": "2026-02-01T11:36:45.008662"
+      "elapsed_time": 1.9568991661071777,
+      "timestamp": "2026-02-01T12:00:03.585525"
     },
     {
       "test_name": "param_sweep_agents200_toposmall_world_steps20",
@@ -1061,8 +1061,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 3.6766247749328613,
-      "timestamp": "2026-02-01T11:36:48.685332"
+      "elapsed_time": 4.2986979484558105,
+      "timestamp": "2026-02-01T12:00:07.884264"
     },
     {
       "test_name": "param_sweep_agents200_toposcale_free_steps5",
@@ -1093,8 +1093,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 0.9619159698486328,
-      "timestamp": "2026-02-01T11:36:49.647298"
+      "elapsed_time": 0.9845590591430664,
+      "timestamp": "2026-02-01T12:00:08.868869"
     },
     {
       "test_name": "param_sweep_agents200_toposcale_free_steps10",
@@ -1125,8 +1125,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 1.8517391681671143,
-      "timestamp": "2026-02-01T11:36:51.499076"
+      "elapsed_time": 1.9302709102630615,
+      "timestamp": "2026-02-01T12:00:10.799181"
     },
     {
       "test_name": "param_sweep_agents200_toposcale_free_steps20",
@@ -1157,8 +1157,8 @@
           "status": "critical"
         }
       },
-      "elapsed_time": 3.938105821609497,
-      "timestamp": "2026-02-01T11:36:55.437232"
+      "elapsed_time": 3.73140287399292,
+      "timestamp": "2026-02-01T12:00:14.530648"
     }
   ]
 }

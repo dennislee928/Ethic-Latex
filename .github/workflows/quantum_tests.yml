@@ -2,7 +2,7 @@ name: Quantum Tests
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main","dev"]
     paths:
       - "simulation/quantum/**"
       - "tests/test_quantum_*.py"
@@ -64,7 +64,7 @@ jobs:
   cloud-backend:
     name: Cloud Quantum Judge (optional)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' && env.IBM_QUANTUM_TOKEN != null }}
+    if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
 
