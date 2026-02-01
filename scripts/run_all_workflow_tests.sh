@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Run local equivalents of all .github/workflows pipeline test steps.
-# Usage: from repo root, with venv active: ./scripts/run_all_workflow_tests.sh
+# Usage: from repo root: ./scripts/run_all_workflow_tests.sh
+# With venv active, or the script will create .venv if missing (avoids PEP 668 on Homebrew Python).
 # Or: PYTHONPATH="$(pwd):$PYTHONPATH" bash scripts/run_all_workflow_tests.sh
 #
 # Sections map to: sdk_python, multi_platform_test, simulation, quantum_tests,
@@ -14,8 +15,26 @@ set +e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="${ROOT}:${ROOT}/simulation:${PYTHONPATH}"
-PY="${PY:-python}"
-PIP="${PIP:-pip}"
+
+# Use project .venv when not already in a venv (avoids PEP 668 externally-managed-environment)
+if [ -z "${VIRTUAL_ENV:-}" ]; then
+  VENV="$ROOT/.venv"
+  if [ ! -d "$VENV" ]; then
+    printf "Creating .venv at %s (use it next time: source .venv/bin/activate)\n" "$VENV"
+    python3 -m venv "$VENV" 2>/dev/null || python -m venv "$VENV" 2>/dev/null || true
+  fi
+  if [ -x "$VENV/bin/python" ]; then
+    export VIRTUAL_ENV="$VENV"
+    PY="$VENV/bin/python"
+    PIP="$VENV/bin/pip"
+  else
+    PY="${PY:-python}"
+    PIP="${PIP:-pip}"
+  fi
+else
+  PY="${PY:-python}"
+  PIP="${PIP:-pip}"
+fi
 FAILED=()
 PASSED=()
 
@@ -45,8 +64,9 @@ run_step_allow_fail() {
 }
 
 # Optional bootstrap: install deps so more steps pass when run without a venv
-run_step_allow_fail "bootstrap: pip install -r requirements.txt" bash -c "\"$PIP\" install -r requirements.txt -q"
-run_step_allow_fail "bootstrap: pip install pytest" bash -c "\"$PIP\" install pytest -q"
+# Use $PY -m pip so we don't require a "pip" executable on PATH
+run_step_allow_fail "bootstrap: pip install -r requirements.txt" bash -c "\"$PY\" -m pip install -r requirements.txt -q"
+run_step_allow_fail "bootstrap: pip install pytest" bash -c "\"$PY\" -m pip install pytest -q"
 
 # --- 1. sdk_python.yml ---
 run_step_allow_fail "sdk_python: pip install -e .[ml]" $PIP install -e ".[ml]" pytest pylint flake8 bandit networkx 2>/dev/null
