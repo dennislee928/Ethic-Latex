@@ -100,12 +100,17 @@ class CloudQuantumJudge(QuantumOracle):
         try:
             return self._service.backend(name=self._backend_name)
         except Exception:
-            backends = self._service.backends(simulator=True, operational=True)
-            if not backends:
-                raise RuntimeError(
-                    "No simulator backend available. Check instance/plan at https://quantum.cloud.ibm.com/"
-                )
-            return backends[0]
+            for sim_filter in [{"simulator": True}, {"simulator": True, "operational": True}]:
+                backends = self._service.backends(**sim_filter)
+                if backends:
+                    return backends[0]
+            all_backends = self._service.backends()
+            sim_backends = [b for b in all_backends if getattr(b, "simulator", False)]
+            if sim_backends:
+                return sim_backends[0]
+            raise RuntimeError(
+                "No simulator backend available. Check instance/plan at https://quantum.cloud.ibm.com/"
+            )
 
     def collapse_wavefunction(
         self,
