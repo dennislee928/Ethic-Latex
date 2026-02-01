@@ -14,12 +14,16 @@ Environment variables:
 - IBM_QUANTUM_REGION (optional): "us-east" (default) or "eu-de" for EU region endpoints.
 """
 
+import logging
 import os
 from typing import List, Tuple
 
+logger = logging.getLogger(__name__)
+
 try:
-    from qiskit_ibm_runtime import QiskitRuntimeService, Session, SamplerV2 as Sampler
+    from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
     from qiskit import QuantumCircuit
+    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
     import numpy as np
 
     _IBM_RUNTIME_AVAILABLE = True
@@ -67,11 +71,15 @@ class CloudQuantumJudge(QuantumOracle):
 
     Batches multiple circuits into a single job to reduce queue latency.
     Requires IBM_QUANTUM_TOKEN in environment.
+
+    Default backend is ``ibm_fez`` (open-instance, us-east). Open plan typically
+    offers real QPUs such as ibm_fez, ibm_marrakesh, ibm_torino; simulators may
+    not be listed. Override ``backend_name`` or set ``IBM_QUANTUM_INSTANCE`` if needed.
     """
 
     def __init__(
         self,
-        backend_name: str = "ibmq_qasm_simulator",
+        backend_name: str = "ibm_fez",
         batch_size: int = 100,
     ):
         if not _IBM_RUNTIME_AVAILABLE:
@@ -96,7 +104,7 @@ class CloudQuantumJudge(QuantumOracle):
         self.batch_size = batch_size
 
     def _get_backend(self):
-        """Resolve backend by name, or pick first available simulator if name not found."""
+        """Resolve backend by name, or pick first available simulator, or any backend as last resort."""
         try:
             return self._service.backend(name=self._backend_name)
         except Exception:
@@ -104,12 +112,21 @@ class CloudQuantumJudge(QuantumOracle):
                 backends = self._service.backends(**sim_filter)
                 if backends:
                     return backends[0]
-            all_backends = self._service.backends()
-            sim_backends = [b for b in all_backends if getattr(b, "simulator", False)]
+            all_backends = list(self._service.backends())
+            sim_backends = [
+                b for b in all_backends
+                if getattr(b, "simulator", False) or "simulator" in getattr(b, "name", "").lower()
+            ]
             if sim_backends:
                 return sim_backends[0]
+            if all_backends:
+                logger.warning(
+                    "No simulator found; using first available backend %s (may incur cost).",
+                    getattr(all_backends[0], "name", all_backends[0]),
+                )
+                return all_backends[0]
             raise RuntimeError(
-                "No simulator backend available. Check instance/plan at https://quantum.cloud.ibm.com/"
+                "No backend available for this instance. Add compute resources at https://quantum.cloud.ibm.com/"
             )
 
     def collapse_wavefunction(
@@ -137,11 +154,12 @@ class CloudQuantumJudge(QuantumOracle):
         qc.measure([0, 1], [0, 1])
 
         backend = self._get_backend()
-        with Session(backend=backend) as session:
-            sampler = Sampler(mode=session)
-            pub = (qc,)
-            result = sampler.run([pub]).result()
-            quasi = result[0].data.meas.get_counts()
+        pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
+        isa_circuit = pm.run(qc)
+        # Job mode (Sampler(mode=backend)) works on open plan; Session is not allowed on open plan.
+        sampler = Sampler(mode=backend)
+        result = sampler.run([(isa_circuit,)]).result()
+        quasi = result[0].join_data().get_counts()
 
         total = sum(quasi.values())
         J_a = J_b = 0.0
@@ -176,14 +194,16 @@ class CloudQuantumJudge(QuantumOracle):
             circuits.append(qc)
 
         backend = self._get_backend()
-        with Session(backend=backend) as session:
-            sampler = Sampler(mode=session)
-            pubs = [(qc,) for qc in circuits[: self.batch_size]]
-            result = sampler.run(pubs).result()
+        pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
+        isa_circuits = [pm.run(qc) for qc in circuits[: self.batch_size]]
+        # Job mode (Sampler(mode=backend)) works on open plan; Session is not allowed on open plan.
+        sampler = Sampler(mode=backend)
+        pubs = [(c,) for c in isa_circuits]
+        result = sampler.run(pubs).result()
 
         judgments = []
         for i, pub_result in enumerate(result):
-            quasi = pub_result.data.meas.get_counts()
+            quasi = pub_result.join_data().get_counts()
             total = sum(quasi.values())
             J = 0.0
             for outcome, count in quasi.items():
