@@ -42,7 +42,7 @@ class Action(BaseModel):
     id: int
     c: int = Field(..., description="Complexity level (positive integer)")
     V: float = Field(..., ge=-1.0, le=1.0, description="True moral value (ground truth)")
-    w: float = Field(..., gt=0, description="Importance weight")
+    w: float = Field(..., ge=1e-10, description="Importance weight")
     J: Optional[float] = Field(None, ge=-1.0, le=1.0, description="Judgment value")
     delta: Optional[float] = Field(None, description="Error: J - V")
     mistake_flag: Optional[int] = Field(None, ge=0, le=1, description="Misjudgment indicator")
