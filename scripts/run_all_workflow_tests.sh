@@ -76,23 +76,23 @@ run_step_allow_fail "build_thesis: psychohistory quick" $PY scripts/run_psychohi
 
 # --- 7. erh_security_app.yml (backend) ---
 if [ -f erh-security-app/backend/requirements.txt ]; then
-  run_step_allow_fail "erh_security_app: backend pytest" (cd erh-security-app/backend && $PIP install -r requirements.txt -q && $PY -m pytest tests/ -v --tb=short) 2>/dev/null || true
+  run_step_allow_fail "erh_security_app: backend pytest" bash -c "cd erh-security-app/backend && $PIP install -r requirements.txt -q && $PY -m pytest tests/ -v --tb=short" 2>/dev/null || true
 else
   echo "[skip] erh_security_app backend (no requirements.txt)"
 fi
 
 # --- 8. docs.yml ---
 if [ -f docs/requirements.txt ]; then
-  run_step_allow_fail "docs: sphinx build" ($PIP install -r docs/requirements.txt -q sphinx sphinx-rtd-theme sphinxcontrib-napoleon 2>/dev/null && cd docs && sphinx-build -b html . _build/html) 2>/dev/null || true
+  run_step_allow_fail "docs: sphinx build" bash -c "cd $ROOT && $PIP install -r docs/requirements.txt -q && $PIP install sphinx sphinx-rtd-theme sphinxcontrib-napoleon -q && cd docs && sphinx-build -b html . _build/html" 2>/dev/null || true
 else
-  run_step_allow_fail "docs: sphinx build (no docs/requirements)" ($PIP install sphinx sphinx-rtd-theme sphinxcontrib-napoleon -q 2>/dev/null && cd docs && sphinx-build -b html . _build/html) 2>/dev/null || true
+  run_step_allow_fail "docs: sphinx build (no docs/requirements)" bash -c "cd $ROOT && $PIP install sphinx sphinx-rtd-theme sphinxcontrib-napoleon -q && cd docs && sphinx-build -b html . _build/html" 2>/dev/null || true
 fi
 
 # --- 9. sdk_node.yml (if js-sdk has real package) ---
 if [ -f js-sdk/package.json ] && ! grep -q '"version": "0.0.0"' js-sdk/package.json; then
-  run_step_allow_fail "sdk_node: npm install" (cd js-sdk && npm install) 2>/dev/null || true
-  run_step_allow_fail "sdk_node: npm run build" (cd js-sdk && npm run build) 2>/dev/null || true
-  run_step_allow_fail "sdk_node: npm test" (cd js-sdk && npm test) 2>/dev/null || true
+  run_step_allow_fail "sdk_node: npm install" bash -c "cd js-sdk && npm install" 2>/dev/null || true
+  run_step_allow_fail "sdk_node: npm run build" bash -c "cd js-sdk && npm run build" 2>/dev/null || true
+  run_step_allow_fail "sdk_node: npm test" bash -c "cd js-sdk && npm test" 2>/dev/null || true
 else
   echo "[skip] sdk_node (placeholder or no js-sdk)"
 fi
