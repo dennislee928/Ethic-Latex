@@ -19,10 +19,6 @@ PIP="${PIP:-pip}"
 FAILED=()
 PASSED=()
 
-# Optional bootstrap: install deps so more steps pass when run without a venv
-run_step_allow_fail "bootstrap: pip install -r requirements.txt" bash -c "\"$PIP\" install -r requirements.txt -q"
-run_step_allow_fail "bootstrap: pip install pytest" bash -c "\"$PIP\" install pytest -q"
-
 run_step() {
   local name="$1"
   shift
@@ -47,6 +43,10 @@ run_step_allow_fail() {
   fi
   return 0
 }
+
+# Optional bootstrap: install deps so more steps pass when run without a venv
+run_step_allow_fail "bootstrap: pip install -r requirements.txt" bash -c "\"$PIP\" install -r requirements.txt -q"
+run_step_allow_fail "bootstrap: pip install pytest" bash -c "\"$PIP\" install pytest -q"
 
 # --- 1. sdk_python.yml ---
 run_step_allow_fail "sdk_python: pip install -e .[ml]" $PIP install -e ".[ml]" pytest pylint flake8 bandit networkx 2>/dev/null
