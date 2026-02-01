@@ -4,15 +4,49 @@ from collections import defaultdict
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from ..core.schemas import AnalysisCurves, AnalysisSummary, CurvePoint, HeatmapCell, HeatmapResponse
 from ..deps import get_db
+from ..erh_security.code_complexity import calculate_code_complexity
 from ..erh_security.mapping import build_erh_dataset
 from ..erh_security.metrics import analyze_erh_structure, compute_delta
 
 
+class CodeComplexityRequest(BaseModel):
+    """Request body for code complexity analysis."""
+
+    code_snippet: str
+    method: Literal["cyclomatic", "halstead", "auto"] = "auto"
+
+
+class CodeComplexityResponse(BaseModel):
+    """Response with concrete complexity score c ∈ [1, 100]."""
+
+    complexity: float
+    method_used: str
+
+
 router = APIRouter()
+
+
+@router.post("/complexity", response_model=CodeComplexityResponse, tags=["analysis"])
+def analyze_code_complexity(request: CodeComplexityRequest) -> CodeComplexityResponse:
+    """
+    Compute Cyclomatic or Halstead complexity for a code snippet.
+
+    Returns concrete x value in [1, 100] for use in ERH Security PoC.
+    Use this instead of abstract MR-size complexity when code content is available.
+    """
+    complexity = calculate_code_complexity(
+        request.code_snippet,
+        method=request.method,
+    )
+    return CodeComplexityResponse(
+        complexity=complexity,
+        method_used=request.method,
+    )
 
 
 def _load_and_analyze(db: Session, judge_type: str) -> dict:

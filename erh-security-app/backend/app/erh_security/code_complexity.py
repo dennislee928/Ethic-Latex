@@ -22,22 +22,14 @@ def _cyclomatic_complexity_python(code: str) -> int:
 
     complexity = 1
     for node in ast.walk(tree):
-        if isinstance(
-            node,
-            (
-                ast.If,
-                ast.While,
-                ast.For,
-                ast.ExceptHandler,
-                ast.With,
-                ast.Assert,
-                ast.comprehension,
-                ast.BoolOp,
-            ),
-        ):
+        if isinstance(node, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
             complexity += 1
-        elif isinstance(node, ast.If):
-            complexity += len(node.orelse) if node.orelse else 1
+        elif isinstance(node, ast.With):
+            complexity += len(node.items)
+        elif isinstance(node, ast.BoolOp):
+            complexity += len(node.values) - 1
+        elif isinstance(node, (ast.ListComp, ast.DictComp, ast.SetComp, ast.GeneratorExp)):
+            complexity += sum(len(g.ifs) for g in node.generators)
     return max(1, complexity)
 
 
