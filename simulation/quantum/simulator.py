@@ -1,24 +1,85 @@
 """
-Local Quantum Judge using Qiskit AerSimulator.
+Local Quantum Judge using Qiskit AerSimulator (or pure-Python fallback).
 
 Maps difficulty to θ = difficulty × π for Rx rotation.
 Measurement of superposition yields judgment in [-1, 1].
+
+When qiskit-aer is unavailable (e.g., Python 3.14 or AppleClang 17 build failure),
+a NumPy-based fallback is used so the quantum module still works.
 """
 
 from typing import Tuple
 
+import numpy as np
+
 try:
     from qiskit import QuantumCircuit
     from qiskit_aer import AerSimulator
-    from qiskit.quantum_info import Statevector
-    import numpy as np
 
     _QISKIT_AVAILABLE = True
 except ImportError:
     _QISKIT_AVAILABLE = False
-    np = None
 
 from .interface import QuantumOracle
+
+
+def _numpy_judge_action(difficulty: float, shots: int, seed: int | None) -> float:
+    """Pure-Python fallback: Rx(θ)|0⟩, P(0)=cos²(θ/2)."""
+    rng = np.random.default_rng(seed)
+    theta = max(0.0, min(1.0, difficulty)) * np.pi
+    p0 = float(np.cos(theta / 2) ** 2)
+    ones = int(rng.binomial(shots, p0))
+    return float(2 * ones / shots - 1)
+
+
+def _numpy_entangled_judgment(
+    agent_a_bias: float,
+    agent_b_bias: float,
+    shots: int,
+    seed: int | None,
+) -> Tuple[float, float]:
+    """Pure-Python fallback: Bell state + Rx, sample correlated outcomes."""
+    rng = np.random.default_rng(seed)
+    theta_a = np.clip(agent_a_bias, -1, 1) * np.pi / 2
+    theta_b = np.clip(agent_b_bias, -1, 1) * np.pi / 2
+    # 4x4 state: |Φ⁺⟩ = (|00⟩+|11⟩)/√2, then Rx_a ⊗ Rx_b
+    phi_plus = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+    # Rx(θ) = cos(θ/2)I - i·sin(θ/2)X for single qubit
+    def rx_matrix(t):
+        c, s = np.cos(t / 2), np.sin(t / 2)
+        return np.array([[c, -1j * s], [-1j * s, c]], dtype=complex)
+    Ra, Rb = rx_matrix(theta_a), rx_matrix(theta_b)
+    U = np.kron(Ra, Rb)
+    state = U @ phi_plus
+    probs = np.abs(state) ** 2
+    outcomes = rng.choice(4, size=shots, p=probs)
+    J_a = float(2 * np.mean(outcomes in (0, 2) or outcomes < 2) - 1)
+    # outcomes 0=|00⟩, 1=|01⟩, 2=|10⟩, 3=|11⟩; qubit0=outcome//2, qubit1=outcome%2
+    q0 = (outcomes // 2).astype(float) * 2 - 1  # 0→-1, 1→+1
+    q1 = (outcomes % 2).astype(float) * 2 - 1
+    return (float(np.mean(q0)), float(np.mean(q1)))
+
+
+def _numpy_entangled_simple(
+    agent_a_bias: float,
+    agent_b_bias: float,
+    shots: int,
+    seed: int | None,
+) -> Tuple[float, float]:
+    """Simpler fallback: sample from 4 outcome probabilities."""
+    rng = np.random.default_rng(seed)
+    theta_a = np.clip(agent_a_bias, -1, 1) * np.pi / 2
+    theta_b = np.clip(agent_b_bias, -1, 1) * np.pi / 2
+    phi_plus = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+    def rx(t):
+        c, s = np.cos(t / 2), np.sin(t / 2)
+        return np.array([[c, -1j * s], [-1j * s, c]], dtype=complex)
+    U = np.kron(rx(theta_a), rx(theta_b))
+    probs = np.abs(U @ phi_plus) ** 2
+    idx = rng.choice(4, size=shots, p=probs)
+    q0 = 2 * (idx // 2) - 1
+    q1 = 2 * (idx % 2) - 1
+    return (float(np.mean(q0)), float(np.mean(q1)))
 
 
 class LocalQuantumJudge(QuantumOracle):
@@ -38,15 +99,15 @@ class LocalQuantumJudge(QuantumOracle):
             Number of measurement shots for statistical judgment
         seed : int | None
             Random seed for reproducibility
+
+        Uses qiskit-aer when available; falls back to pure-Python NumPy simulation
+        when qiskit-aer cannot be installed (e.g., Python 3.14, AppleClang 17).
         """
-        if not _QISKIT_AVAILABLE:
-            raise ImportError(
-                "qiskit and qiskit-aer required for LocalQuantumJudge. "
-                "Install with: pip install qiskit qiskit-aer"
-            )
         self.shots = shots
         self.seed = seed
-        self._simulator = AerSimulator()
+        self._use_qiskit = _QISKIT_AVAILABLE
+        if _QISKIT_AVAILABLE:
+            self._simulator = AerSimulator()
 
     def collapse_wavefunction(
         self,
