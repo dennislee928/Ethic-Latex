@@ -1,4 +1,3 @@
-````markdown
 # Ethical Riemann Hypothesis (ERH)
 - https://pypi.org/project/erh/0.1.0/
 - https://www.npmjs.com/package/erh-js-sdk
@@ -61,9 +60,15 @@ Ethic-Latex/
 │       ├── statistics.py       # Statistical analysis
 │       └── zeta_function.py    # Ethical zeta function
 ├── simulation/                 # Python simulation framework (research/experiments)
+│   ├── models.py               # Pydantic models (Action, Judgment)
 │   ├── core/                   # Re-exports from erh_core (backward compatibility)
 │   ├── analysis/               # Re-exports from erh_core + simulation-specific
 │   │   └── fairness_metrics.py # Simulation-specific fairness analysis
+│   ├── quantum/                # Quantum oracle (optional qiskit; NumPy fallback)
+│   │   ├── interface.py        # QuantumOracle interface
+│   │   ├── simulator.py        # LocalQuantumJudge (local/NumPy)
+│   │   └── cloud.py            # CloudQuantumJudge (IBM Quantum Runtime)
+│   ├── adversarial.py          # AdversarialAgent for red-team testing
 │   ├── visualization/          # Plotting utilities
 │   │   └── plots.py            # All visualization functions
 │   ├── notebooks/              # Jupyter notebooks for experiments
@@ -71,7 +76,7 @@ Ethic-Latex/
 │   │   ├── 02_judge_comparison.ipynb
 │   │   └── ... (other analysis notebooks)
 │   ├── api/                    # FastAPI endpoints
-│   ├── real_data/              # Real-world case studies
+│   ├── real_data/              # Real-world case studies (Adult, COMPAS, etc.)
 │   └── output/                 # Generated figures and data
 ├── erh/                        # Python SDK package (for distribution)
 │   ├── core/                   # Re-exports from erh_core (backward compatibility)
@@ -101,9 +106,16 @@ Ethic-Latex/
 git clone <repository-url>
 cd Ethic-Latex
 
-# Install dependencies
+# Recommended: use the install script (creates .venv and installs deps)
+bash scripts/install_dependencies.sh
+# Then: source .venv/bin/activate  (or .venv\Scripts\activate on Windows)
+
+# Or install manually (use a virtual environment)
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Optional: for quantum cloud backend, set `IBM_QUANTUM_TOKEN` in `.env` (see `.env.example`). The quantum module works without it (local/NumPy fallback).
 
 ### LaTeX Setup
 
@@ -152,6 +164,21 @@ bash scripts/start_jupyter.sh
 ```
 
 Start with `simulation/notebooks/01_basic_simulation.ipynb` for an introduction.
+
+### Optional: Quantum Judge and Adversarial Testing
+
+```python
+from simulation.quantum import LocalQuantumJudge
+from simulation.adversarial import AdversarialAgent
+
+# Quantum oracle (local or NumPy fallback if qiskit unavailable)
+quantum_judge = LocalQuantumJudge()
+# Use in place of BiasedJudge for quantum-backed judgments
+
+# Red-team agent to stress-test ERH bound
+agent = AdversarialAgent(n_actions=500)
+agent.run(max_steps=100)
+```
 
 -----
 
@@ -258,8 +285,9 @@ The following table is a placeholder to be filled with simulation results.
 ## 📚 Documentation and Future Work
 
   - **Simulation Framework:** See `simulation/README.md`
-  - **Installation Guide:** See `docs/INSTALL.md`
+  - **Installation Guide:** See `docs/INSTALL.md` (includes venv and optional qiskit/quantum setup)
   - **Theory:** See `ethical_riemann_hypothesis.tex`
+  - **Tests:** `pytest tests/` (includes `test_quantum_entanglement.py`, psychohistory integration)
 
 ### Applications to AI Ethics
 
@@ -269,11 +297,18 @@ The ERH framework provides:
 2.  **Bias Detection**: Violations of ERH indicate systematic failures.
 3.  **Fairness Analysis**: Ethical primes highlight critical errors on vulnerable groups.
 
+### Implemented Extensions
+
+  - **Real-world case studies:** Adult Income, COMPAS; script `scripts/calculate_alpha_comparison.py` compares real vs simulated α.
+  - **Quantum judgment:** Optional `simulation/quantum/` (local simulator or IBM Quantum); NumPy fallback when qiskit is unavailable.
+  - **Health monitor:** E(x) vs Riemann bound monitoring (see `erh-security-app` backend `/analysis/health` and frontend).
+  - **Adversarial agent:** `simulation/adversarial.py` for red-team testing (maximizing ethical-prime discovery).
+
 ### Future Work
 
-  - Apply the framework to real-world AI systems (e.g., content moderation).
+  - Apply the framework to more real-world AI systems (e.g., content moderation).
   - Develop theoretical proofs for ERH boundary conditions.
-  - Explore connections to causal inference and quantum computing implementations.
+  - Explore connections to causal inference.
 
 -----
 
@@ -301,6 +336,3 @@ This project is licensed under the **MIT License**.
 Contributions, suggestions, and discussions are welcome.
 
 **Contact:** admin@dennisleehappy.org
-
-```
-```

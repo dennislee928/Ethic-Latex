@@ -4,9 +4,8 @@ This document provides essential information for reviewers evaluating this paper
 
 ## Main Paper PDF
 
-The primary PDF files are located at:
-- **English version**: `ethical_riemann_hypothesis_en.pdf` (to be generated from `ethical_riemann_hypothesis_en.tex`)
-- **Chinese version**: `ethical_riemann_hypothesis_zh.pdf` (to be generated from `ethical_riemann_hypothesis_zh.tex`)
+The primary PDF is generated from the main LaTeX source:
+- **Paper**: `ethical_riemann_hypothesis.pdf` (build from `ethical_riemann_hypothesis.tex` via `scripts/compile_latex.sh`)
 
 ## Reproducing Experiments
 
@@ -14,10 +13,12 @@ The primary PDF files are located at:
 
 For reviewers with limited time, the minimal reproduction path focuses on the core experimental results:
 
-1. **Install dependencies**:
+1. **Install dependencies** (recommended: use virtual environment):
    ```bash
-   pip install -r requirements.txt
+   bash scripts/install_dependencies.sh
+   source .venv/bin/activate   # or .venv\Scripts\activate on Windows
    ```
+   Or: `pip install -r requirements.txt` (with an active venv).
 
 2. **Generate main figures** (Figures 1-4):
    ```bash
@@ -46,12 +47,24 @@ For complete reproduction of all experiments:
    ```bash
    cd simulation/real_data
    python adult_income_case_study.py
+   # COMPAS: python compas_case_study.py (if data available)
    ```
+   Optional: **α comparison** (real vs simulated):
+   ```bash
+   python scripts/calculate_alpha_comparison.py
+   ```
+   Outputs: `test_report/` (e.g. `alpha_comparison.png`, `summary_report.md`).
 
 4. **Run psychohistory integration tests** (if interested):
    ```bash
    bash scripts/run_psychohistory_tests.sh --quick
    ```
+
+5. **Run quantum entanglement tests** (optional):
+   ```bash
+   pytest tests/test_quantum_entanglement.py -v
+   ```
+   Works with or without qiskit (NumPy fallback used when qiskit is unavailable).
 
 ## Supplementary Material
 
@@ -76,10 +89,15 @@ The following files and directories serve as the primary supplementary material 
    - Adult Income dataset analysis
    - Exam cheating case study
    - Sexual abuse reporting case study
+   - COMPAS case study (when data available)
+
+4. **`test_report/`** (after running `scripts/calculate_alpha_comparison.py`): α comparison (real vs simulated), e.g. `alpha_comparison.png`, `summary_report.md`.
 
 ### Additional Material
 
 - **`simulation/notebooks/`**: Jupyter notebooks for interactive exploration
+- **`simulation/quantum/`**: Quantum oracle (optional; NumPy fallback when qiskit unavailable)
+- **`simulation/adversarial.py`**: Adversarial (red-team) agent for ERH stress testing
 - **`tests/PSYCHOHISTORY_TESTS_README.md`**: Documentation for psychohistory integration tests
 - **`camera_ready_short/`**: Short version (8-10 pages) for workshop submissions
 
@@ -103,9 +121,12 @@ If you have limited time, focus on:
 4. **Section 6.6**: Real-data case study with comparison table
 
 ### Code Verification Points
-- Core simulation logic: `simulation/core/ethical_primes.py`
-- Error growth analysis: `simulation/core/ethical_primes.py` (function `analyze_error_growth`)
+- Core simulation logic: `erh_core/core/ethical_primes.py` (and re-exports in `simulation/core/`)
+- Error growth analysis: `erh_core/core/ethical_primes.py` (function `analyze_error_growth`)
+- Ethical zeta (vectorized): `simulation/analysis/zeta_function.py` (and `erh_core/analysis/zeta_function.py`)
 - Figure generation: `simulation/generate_all_figures.py`
+- Quantum judge: `simulation/quantum/simulator.py` (LocalQuantumJudge), integration in `simulation/core/judgement_system.py`
+- Adversarial agent: `simulation/adversarial.py`
 
 ## Notes for Reviewers
 

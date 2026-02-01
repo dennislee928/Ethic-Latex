@@ -12,14 +12,8 @@ from matplotlib import animation
 import networkx as nx
 from typing import Optional, List, Dict, Tuple
 
-# Handle relative imports for different execution contexts
-try:
-    from ..core.social_network import SocialNetwork
-    from ..core.agent import EthicalAgent
-except ImportError:
-    # Fallback for test environments or direct execution
-    from core.social_network import SocialNetwork
-    from core.agent import EthicalAgent
+# Import from parent package (simulation.core re-exports from erh_core when available)
+from ..core import SocialNetwork, EthicalAgent
 
 
 def plot_network_topology(
