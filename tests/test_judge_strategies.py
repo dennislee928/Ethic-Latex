@@ -21,7 +21,8 @@ from simulation.core.action_space import Action, generate_world
 from simulation.core.judgement_system import (
     BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
 )
-from simulation.core.ethical_primes import (
+# simulation.core re-exports from erh_core.core; no simulation.core.ethical_primes submodule
+from erh_core.core.ethical_primes import (
     select_ethical_primes, compute_Pi_and_error, analyze_error_growth
 )
 from simulation.analysis.erh_checks import check_erh_bound
