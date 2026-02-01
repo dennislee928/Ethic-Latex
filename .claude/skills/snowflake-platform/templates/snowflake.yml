@@ -1,0 +1,31 @@
+# Snowflake Native App Project Configuration
+# Copy to your project root and update placeholders
+
+definition_version: 2
+
+native_app:
+  name: {{APP_NAME}}
+  package:
+    name: {{APP_NAME}}_pkg
+    distribution: external    # For marketplace publishing
+  application:
+    name: {{APP_NAME}}
+  source_stage: stage/dev
+
+  # List files explicitly to avoid nesting issues
+  artifacts:
+    - src: manifest.yml
+      dest: manifest.yml
+    - src: setup_script.sql
+      dest: setup_script.sql
+    # Streamlit files (if using)
+    - src: app/streamlit/environment.yml
+      dest: streamlit/environment.yml
+    - src: app/streamlit/streamlit_app.py
+      dest: streamlit/streamlit_app.py
+    # Add pages individually
+    # - src: app/streamlit/pages/01_page.py
+    #   dest: streamlit/pages/01_page.py
+
+  # Enable for ALPHA/BETA release tracks
+  enable_release_channels: true

@@ -39,6 +39,12 @@ Thumbs.db
 .git/
 .gitignore
 
+# Tests (not needed in image)
+tests/
+
+# Node (for monorepo; erh-security-app has its own Dockerfile)
+node_modules/
+
 # Outputs (will be generated)
 simulation/output/*.pdf
 simulation/output/*.png

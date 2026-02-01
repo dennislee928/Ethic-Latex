@@ -1,0 +1,56 @@
+# Snowflake Native App Manifest
+# Documentation: https://docs.snowflake.com/en/developer-guide/native-apps/creating-manifest
+
+manifest_version: 1
+
+version:
+  name: "1.0.0"
+  label: "Version 1.0.0"
+
+# Application artifacts
+artifacts:
+  readme: README.md
+  setup_script: setup.sql
+
+  # Default Streamlit app (appears as "Application" tab)
+  default_streamlit: streamlit/streamlit_app.py
+
+  # Extension code (optional)
+  # extension_code: true
+
+# Streamlit configuration
+# Optional: Configure default Streamlit environment
+configuration:
+  log_level: INFO
+
+# Required privileges for the app
+privileges:
+  - CREATE SCHEMA:
+      description: "Create schema for app data"
+  - CREATE TABLE:
+      description: "Create tables for app functionality"
+  # Add more privileges as needed:
+  # - EXECUTE TASK:
+  #     description: "Run scheduled tasks"
+  # - CREATE WAREHOUSE:
+  #     description: "Create compute resources"
+
+# References - objects the consumer provides access to
+references:
+  # Example: Reference to consumer's data table
+  # - consumer_data_table:
+  #     label: "Data Table"
+  #     description: "Table containing data to analyze"
+  #     privileges:
+  #       - SELECT
+  #     object_type: TABLE
+  #     multi_valued: false
+  #     register_callback: config.register_data_table
+
+# Lifecycle callbacks (optional)
+# lifecycle_callbacks:
+#   version_initializer: setup.initialize_version
+
+# Telemetry (optional - for usage analytics)
+# telemetry:
+#   shared_telemetry: true

@@ -1,0 +1,31 @@
+# Container Runtime Requirements
+# These packages are installed from PyPI (not Snowflake Anaconda Channel)
+# Requires EXTERNAL_ACCESS_INTEGRATION with pypi.org access
+
+# Streamlit (Container Runtime supports 1.49+)
+streamlit>=1.49.0
+
+# Snowflake connectivity
+snowflake-snowpark-python>=1.20.0
+snowflake-connector-python>=3.10.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization
+plotly>=5.18.0
+altair>=5.0.0
+# matplotlib>=3.8.0  # Uncomment if needed
+
+# Optional: ML packages (uncomment as needed)
+# scikit-learn>=1.4.0
+# xgboost>=2.0.0
+
+# Optional: Additional utilities
+# pillow>=10.0.0
+# scipy>=1.12.0
+# httpx>=0.27.0
+
+# Note: With Container Runtime, you can use ANY PyPI package
+# as long as your External Access Integration allows it.
