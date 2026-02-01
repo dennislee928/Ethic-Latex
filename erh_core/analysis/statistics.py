@@ -253,11 +253,11 @@ def compare_judges(
             )
         except ImportError:
             # Fallback for direct script execution
-            from core.ethical_primes import (
-            select_ethical_primes,
-            compute_Pi_and_error,
-            analyze_error_growth
-        )
+            from erh_core.core.ethical_primes import (
+                select_ethical_primes,
+                compute_Pi_and_error,
+                analyze_error_growth
+            )
     
     comparison = {}
     

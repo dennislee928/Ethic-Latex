@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>erh.core.abm_simulator &mdash; Ethical Riemann Hypothesis (ERH) SDK 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ethical Riemann Hypothesis (ERH) SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ethical Riemann Hypothesis (ERH) SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">erh.core.abm_simulator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for erh.core.abm_simulator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ABM Simulator Module</span>
+
+<span class="sd">This module implements a complete Agent-Based Modeling (ABM) simulator for</span>
+<span class="sd">psychohistory-style simulations of ethical judgment systems.</span>
+
+<span class="sd">The simulator manages:</span>
+<span class="sd">- Large populations of AI judgment agents (thousands)</span>
+<span class="sd">- Agent interaction mechanisms</span>
+<span class="sd">- Built-in ERH computation modules</span>
+<span class="sd">- Dynamic tracking of Π(x,t) and E(x,t)</span>
+<span class="sd">- Evaluation of ERH satisfaction</span>
+<span class="sd">- Simulation result calibration</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">EthicalAgent</span><span class="p">,</span> <span class="n">AgentPopulation</span><span class="p">,</span> <span class="n">SimpleEthicalAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.social_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">SocialNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.action_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">generate_world</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.judgement_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseJudge</span><span class="p">,</span> <span class="n">evaluate_judgement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ethical_primes</span><span class="w"> </span><span class="kn">import</span> <span class="n">select_ethical_primes</span><span class="p">,</span> <span class="n">compute_Pi_and_error</span><span class="p">,</span> <span class="n">analyze_error_growth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.temporal_erh</span><span class="w"> </span><span class="kn">import</span> <span class="n">track_error_evolution</span><span class="p">,</span> <span class="n">compute_Pi_temporal</span><span class="p">,</span> <span class="n">compute_E_temporal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.meta_monitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaMonitor</span>
+
+
+<div class="viewcode-block" id="ABMSimulator">
+<a class="viewcode-back" href="../../../api.html#erh.core.ABMSimulator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ABMSimulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Agent-Based Modeling simulator for ethical judgment systems.</span>
+<span class="sd">    </span>
+<span class="sd">    Manages large populations of agents, their interactions, and tracks</span>
+<span class="sd">    ERH metrics dynamically throughout the simulation.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    population : AgentPopulation</span>
+<span class="sd">        Population of agents</span>
+<span class="sd">    network : SocialNetwork</span>
+<span class="sd">        Social network structure</span>
+<span class="sd">    meta_monitor : Optional[MetaMonitor]</span>
+<span class="sd">        Meta-layer monitor (optional)</span>
+<span class="sd">    simulation_history : List[Dict]</span>
+<span class="sd">        History of simulation states</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_agents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">judge_factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">BaseJudge</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">network_topology</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;small_world&#39;</span><span class="p">,</span>
+        <span class="n">enable_meta_monitor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize ABM simulator.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_agents : int, default=100</span>
+<span class="sd">            Number of agents in population</span>
+<span class="sd">        judge_factory : Optional[Callable[[int], BaseJudge]], default=None</span>
+<span class="sd">            Function to create judge for agent i. If None, uses default.</span>
+<span class="sd">        network_topology : str, default=&#39;small_world&#39;</span>
+<span class="sd">            Network topology for agent interactions</span>
+<span class="sd">        enable_meta_monitor : bool, default=True</span>
+<span class="sd">            Whether to enable meta-layer monitoring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">AgentPopulation</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">judge_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">default_judge_factory</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">.judgement_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">BiasedJudge</span>
+                <span class="n">bias</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">5</span><span class="p">)</span> <span class="o">/</span> <span class="mi">5</span>  <span class="c1"># Vary bias</span>
+                <span class="k">return</span> <span class="n">BiasedJudge</span><span class="p">(</span><span class="n">bias_strength</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Judge_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">judge_factory</span> <span class="o">=</span> <span class="n">default_judge_factory</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">create_population</span><span class="p">(</span><span class="n">num_agents</span><span class="p">,</span> <span class="n">judge_factory</span><span class="p">,</span> <span class="n">SimpleEthicalAgent</span><span class="p">)</span>
+        
+        <span class="c1"># Create network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">SocialNetwork</span><span class="p">(</span>
+            <span class="n">agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span>
+            <span class="n">topology</span><span class="o">=</span><span class="n">network_topology</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">num_agents</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Meta-monitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="o">=</span> <span class="n">MetaMonitor</span><span class="p">()</span> <span class="k">if</span> <span class="n">enable_meta_monitor</span> <span class="k">else</span> <span class="kc">None</span>
+        
+        <span class="c1"># Simulation state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span> <span class="o">=</span> <span class="mi">0</span>
+    
+<div class="viewcode-block" id="ABMSimulator.run_simulation">
+<a class="viewcode-back" href="../../../api.html#erh.core.ABMSimulator.run_simulation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_time_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">actions_per_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">track_erh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">interaction_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run ABM simulation for multiple time steps.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_time_steps : int, default=10</span>
+<span class="sd">            Number of time steps</span>
+<span class="sd">        actions_per_step : int, default=1000</span>
+<span class="sd">            Number of actions to generate per time step</span>
+<span class="sd">        tau : float, default=0.3</span>
+<span class="sd">            Error threshold</span>
+<span class="sd">        X_max : int, default=100</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">        track_erh : bool, default=True</span>
+<span class="sd">            Whether to track ERH metrics</span>
+<span class="sd">        interaction_probability : float, default=0.1</span>
+<span class="sd">            Probability of agent interactions per step</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Simulation results:</span>
+<span class="sd">            - &#39;erh_history&#39;: History of ERH metrics</span>
+<span class="sd">            - &#39;population_history&#39;: Population statistics over time</span>
+<span class="sd">            - &#39;final_state&#39;: Final simulation state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">erh_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">population_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">actions_history</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_time_steps</span><span class="p">):</span>
+            <span class="c1"># Generate actions for this time step</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="n">generate_world</span><span class="p">(</span>
+                <span class="n">num_actions</span><span class="o">=</span><span class="n">actions_per_step</span><span class="p">,</span>
+                <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span> <span class="o">+</span> <span class="n">t</span>
+            <span class="p">)</span>
+            <span class="n">actions_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+            
+            <span class="c1"># Evaluate actions with all agents</span>
+            <span class="n">agent_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">evaluate_actions</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">)</span>
+            
+            <span class="c1"># Track ERH if enabled</span>
+            <span class="k">if</span> <span class="n">track_erh</span><span class="p">:</span>
+                <span class="c1"># Aggregate results across agents</span>
+                <span class="n">all_primes</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">evaluated_actions</span> <span class="ow">in</span> <span class="n">agent_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">primes</span> <span class="o">=</span> <span class="n">select_ethical_primes</span><span class="p">(</span><span class="n">evaluated_actions</span><span class="p">)</span>
+                    <span class="n">all_primes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">primes</span><span class="p">)</span>
+                
+                <span class="c1"># Compute ERH metrics</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_primes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">Pi_x</span><span class="p">,</span> <span class="n">B_x</span><span class="p">,</span> <span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span> <span class="o">=</span> <span class="n">compute_Pi_and_error</span><span class="p">(</span><span class="n">all_primes</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">)</span>
+                    <span class="n">erh_analysis</span> <span class="o">=</span> <span class="n">analyze_error_growth</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span><span class="p">)</span>
+                    
+                    <span class="n">erh_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span>
+                        <span class="s1">&#39;Pi_x&#39;</span><span class="p">:</span> <span class="n">Pi_x</span><span class="p">,</span>
+                        <span class="s1">&#39;B_x&#39;</span><span class="p">:</span> <span class="n">B_x</span><span class="p">,</span>
+                        <span class="s1">&#39;E_x&#39;</span><span class="p">:</span> <span class="n">E_x</span><span class="p">,</span>
+                        <span class="s1">&#39;x_values&#39;</span><span class="p">:</span> <span class="n">x_vals</span><span class="p">,</span>
+                        <span class="s1">&#39;analysis&#39;</span><span class="p">:</span> <span class="n">erh_analysis</span><span class="p">,</span>
+                        <span class="s1">&#39;num_primes&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_primes</span><span class="p">)</span>
+                    <span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">erh_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span>
+                        <span class="s1">&#39;num_primes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s1">&#39;analysis&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+                    <span class="p">})</span>
+            
+            <span class="c1"># Agent interactions (scheduled via population, weighted by network)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">schedule_interactions</span><span class="p">(</span>
+                <span class="n">interaction_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_influence_strength</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">),</span>
+                <span class="n">interaction_probability</span><span class="o">=</span><span class="n">interaction_probability</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Update network attributes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">update_node_attributes</span><span class="p">()</span>
+            
+            <span class="c1"># Population statistics</span>
+            <span class="n">pop_stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">get_population_statistics</span><span class="p">()</span>
+            <span class="n">pop_stats</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">population_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop_stats</span><span class="p">)</span>
+            
+            <span class="c1"># Meta-monitoring</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="ow">and</span> <span class="n">track_erh</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">erh_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Build E_xt array for monitoring</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">E_xt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">erh_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s1">&#39;E_x&#39;</span> <span class="ow">in</span> <span class="n">erh_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">E_xt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">erh_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;E_x&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Extend E_xt</span>
+                    <span class="n">new_E_x</span> <span class="o">=</span> <span class="n">erh_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;E_x&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X_max</span><span class="p">))</span>
+                    <span class="n">E_xt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">new_E_x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+                
+                <span class="c1"># Monitor</span>
+                <span class="n">monitor_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">monitor_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;correction_applied&#39;</span><span class="p">):</span>
+                    <span class="c1"># Parameters were adjusted</span>
+                    <span class="k">pass</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span> <span class="o">=</span> <span class="n">t</span>
+        
+        <span class="c1"># Final state</span>
+        <span class="n">final_state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;population_stats&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">get_population_statistics</span><span class="p">(),</span>
+            <span class="s1">&#39;network_stats&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_network_statistics</span><span class="p">(),</span>
+            <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Store in history</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_history</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;erh_history&#39;</span><span class="p">:</span> <span class="n">erh_history</span><span class="p">,</span>
+            <span class="s1">&#39;population_history&#39;</span><span class="p">:</span> <span class="n">population_history</span><span class="p">,</span>
+            <span class="s1">&#39;final_state&#39;</span><span class="p">:</span> <span class="n">final_state</span>
+        <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;erh_history&#39;</span><span class="p">:</span> <span class="n">erh_history</span><span class="p">,</span>
+            <span class="s1">&#39;population_history&#39;</span><span class="p">:</span> <span class="n">population_history</span><span class="p">,</span>
+            <span class="s1">&#39;final_state&#39;</span><span class="p">:</span> <span class="n">final_state</span><span class="p">,</span>
+            <span class="s1">&#39;actions_history&#39;</span><span class="p">:</span> <span class="n">actions_history</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="ABMSimulator.compute_temporal_erh">
+<a class="viewcode-back" href="../../../api.html#erh.core.ABMSimulator.compute_temporal_erh">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_temporal_erh</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">actions_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]],</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute temporal ERH metrics from simulation history.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        actions_history : List[List[Action]]</span>
+<span class="sd">            History of actions at each time step</span>
+<span class="sd">        tau : float, default=0.3</span>
+<span class="sd">            Error threshold</span>
+<span class="sd">        X_max : int, default=100</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Temporal ERH results:</span>
+<span class="sd">            - &#39;Pi_xt&#39;: Π(x,t) array</span>
+<span class="sd">            - &#39;E_xt&#39;: E(x,t) array</span>
+<span class="sd">            - &#39;erh_satisfaction&#39;: ERH satisfaction over time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Aggregate primes across all agents at each time step</span>
+        <span class="n">primes_history</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">actions</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions_history</span><span class="p">):</span>
+            <span class="c1"># Evaluate with representative agent (first agent)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">actions_copy</span> <span class="o">=</span> <span class="p">[</span><span class="n">Action</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
+                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions_copy</span><span class="p">:</span>
+                    <span class="n">agent</span><span class="o">.</span><span class="n">judge_action</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">)</span>
+                <span class="n">primes</span> <span class="o">=</span> <span class="n">select_ethical_primes</span><span class="p">(</span><span class="n">actions_copy</span><span class="p">)</span>
+                <span class="n">primes_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primes</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">primes_history</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        
+        <span class="c1"># Compute temporal functions</span>
+        <span class="n">time_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">primes_history</span><span class="p">)</span>
+        <span class="n">Pi_xt</span> <span class="o">=</span> <span class="n">compute_Pi_temporal</span><span class="p">(</span><span class="n">primes_history</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+        
+        <span class="c1"># Baseline (simplified - can be improved)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.temporal_erh</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_baseline_temporal</span>
+        <span class="n">B_xt</span> <span class="o">=</span> <span class="n">compute_baseline_temporal</span><span class="p">(</span><span class="n">time_steps</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+        
+        <span class="c1"># Error</span>
+        <span class="n">E_xt</span> <span class="o">=</span> <span class="n">compute_E_temporal</span><span class="p">(</span><span class="n">Pi_xt</span><span class="p">,</span> <span class="n">B_xt</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+        
+        <span class="c1"># ERH satisfaction</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.temporal_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_temporal_erh_satisfaction</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">analysis.temporal_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_temporal_erh_satisfaction</span>
+        <span class="n">erh_satisfaction</span> <span class="o">=</span> <span class="n">compute_temporal_erh_satisfaction</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;Pi_xt&#39;</span><span class="p">:</span> <span class="n">Pi_xt</span><span class="p">,</span>
+            <span class="s1">&#39;B_xt&#39;</span><span class="p">:</span> <span class="n">B_xt</span><span class="p">,</span>
+            <span class="s1">&#39;E_xt&#39;</span><span class="p">:</span> <span class="n">E_xt</span><span class="p">,</span>
+            <span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">:</span> <span class="n">erh_satisfaction</span><span class="p">,</span>
+            <span class="s1">&#39;primes_history&#39;</span><span class="p">:</span> <span class="n">primes_history</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="ABMSimulator.calibrate_erh_parameters">
+<a class="viewcode-back" href="../../../api.html#erh.core.ABMSimulator.calibrate_erh_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calibrate_erh_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">simulation_results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">target_exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calibrate ERH parameters based on simulation results.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        simulation_results : Dict</span>
+<span class="sd">            Results from run_simulation</span>
+<span class="sd">        target_exponent : float, default=0.5</span>
+<span class="sd">            Target ERH exponent</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Calibrated parameters and recommendations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;erh_history&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;calibrated&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="s1">&#39;No ERH history available&#39;</span><span class="p">}</span>
+        
+        <span class="n">erh_history</span> <span class="o">=</span> <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;erh_history&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># Collect all error data</span>
+        <span class="n">all_E_x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">erh_history</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;E_x&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="n">all_E_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;E_x&#39;</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_E_x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;calibrated&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="s1">&#39;No error data available&#39;</span><span class="p">}</span>
+        
+        <span class="c1"># Aggregate analysis</span>
+        <span class="n">exponents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">erh_satisfied_count</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">erh_history</span><span class="p">:</span>
+            <span class="n">analysis</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;analysis&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;estimated_exponent&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">exp</span><span class="p">):</span>
+                <span class="n">exponents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">analysis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">erh_satisfied_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="n">mean_exponent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exponents</span><span class="p">)</span> <span class="k">if</span> <span class="n">exponents</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">satisfaction_rate</span> <span class="o">=</span> <span class="n">erh_satisfied_count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">erh_history</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">erh_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        
+        <span class="c1"># Recommendations</span>
+        <span class="n">recommendations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">mean_exponent</span> <span class="o">&gt;</span> <span class="n">target_exponent</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Reduce bias strength in judges&quot;</span><span class="p">)</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Increase noise filtering&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mean_exponent</span> <span class="o">&lt;</span> <span class="n">target_exponent</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;System is performing better than ERH predicts&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">satisfaction_rate</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;System frequently violates ERH - consider parameter adjustment&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;calibrated&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;mean_exponent&#39;</span><span class="p">:</span> <span class="n">mean_exponent</span><span class="p">,</span>
+            <span class="s1">&#39;target_exponent&#39;</span><span class="p">:</span> <span class="n">target_exponent</span><span class="p">,</span>
+            <span class="s1">&#39;satisfaction_rate&#39;</span><span class="p">:</span> <span class="n">satisfaction_rate</span><span class="p">,</span>
+            <span class="s1">&#39;recommendations&#39;</span><span class="p">:</span> <span class="n">recommendations</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="ABMSimulator.get_simulation_summary">
+<a class="viewcode-back" href="../../../api.html#erh.core.ABMSimulator.get_simulation_summary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_simulation_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get summary of simulation state.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Simulation summary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;current_time&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span>
+            <span class="s1">&#39;num_agents&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">),</span>
+            <span class="s1">&#39;population_stats&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">get_population_statistics</span><span class="p">(),</span>
+            <span class="s1">&#39;network_stats&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_network_statistics</span><span class="p">(),</span>
+            <span class="s1">&#39;meta_monitor_active&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span><span class="o">.</span><span class="n">monitoring_active</span><span class="p">,</span>
+            <span class="s1">&#39;simulation_steps_completed&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_history</span><span class="p">)</span>
+        <span class="p">}</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethical AI Research Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

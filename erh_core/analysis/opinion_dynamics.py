@@ -20,8 +20,8 @@ try:
     from ..core.agent import EthicalAgent
 except ImportError:
     # Fallback for test environments or direct execution
-    from core.social_network import SocialNetwork
-    from core.agent import EthicalAgent
+    from erh_core.core.social_network import SocialNetwork
+    from erh_core.core.agent import EthicalAgent
 
 
 def degroot_model(

@@ -11,7 +11,7 @@ sys.path.insert(0, str(simulation_dir))
 
 import numpy as np
 import pytest
-from core.meta_monitor import MetaMonitor, ERHParameters, CorrectionAction
+from erh.core.meta_monitor import MetaMonitor, ERHParameters, CorrectionAction
 
 
 class TestMetaMonitor:

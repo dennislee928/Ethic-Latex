@@ -2,35 +2,22 @@
 Unit tests for temporal ERH module.
 """
 
-import sys
-import os
-from pathlib import Path
-
-# Add simulation to path
-simulation_dir = Path(__file__).parent.parent / "simulation"
-if str(simulation_dir) not in sys.path:
-    sys.path.insert(0, str(simulation_dir))
-
-# Also add project root for absolute imports
-project_root = Path(__file__).parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-
 import numpy as np
 import pytest
 
 # Import with error handling
 try:
-    from core.action_space import generate_world, Action
-    from core.judgement_system import BiasedJudge
-    from core.temporal_erh import (
+    from erh.core import (
+        generate_world,
+        Action,
+        BiasedJudge,
         compute_Pi_temporal,
         compute_E_temporal,
-        compute_baseline_temporal,
         track_error_evolution,
         simulate_mule_effect,
-        detect_mule_anomalies
+        detect_mule_anomalies,
     )
+    from erh.core.temporal_erh import compute_baseline_temporal
 except ImportError as e:
     pytest.skip(f"Failed to import required modules: {e}", allow_module_level=True)
 

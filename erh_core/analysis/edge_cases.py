@@ -283,3 +283,7 @@ def run_all_edge_case_tests(actions: List[Action], tau: float = 0.3) -> Dict:
     
     return results
 
+
+# Public API alias expected by erh_core.analysis and callers (e.g. erh_service)
+analyze_edge_cases = run_all_edge_case_tests
+

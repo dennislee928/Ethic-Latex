@@ -1,0 +1,746 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>erh_core.analysis.statistics &mdash; Ethical Riemann Hypothesis (ERH) SDK 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ethical Riemann Hypothesis (ERH) SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ethical Riemann Hypothesis (ERH) SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">erh_core.analysis.statistics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for erh_core.analysis.statistics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Statistics Module</span>
+
+<span class="sd">Provides statistical analysis tools for comparing judges, fitting error growth,</span>
+<span class="sd">and generating reports.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">pearsonr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+
+<div class="viewcode-block" id="fit_error_growth">
+<a class="viewcode-back" href="../../../api.html#erh.analysis.statistics.fit_error_growth">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_error_growth</span><span class="p">(</span>
+    <span class="n">E_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">x_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;power_law&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fit a model to the error growth |E(x)|.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    E_x : np.ndarray</span>
+<span class="sd">        Error values</span>
+<span class="sd">    x_values : np.ndarray</span>
+<span class="sd">        Complexity values</span>
+<span class="sd">    model : str, default=&#39;power_law&#39;</span>
+<span class="sd">        Model type: &#39;power_law&#39;, &#39;linear&#39;, &#39;quadratic&#39;, &#39;logarithmic&#39;</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Fitted parameters and goodness of fit metrics</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; fit_result = fit_error_growth(E_x, x_vals, model=&#39;power_law&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Exponent: {fit_result[&#39;exponent&#39;]:.3f}&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;R²: {fit_result[&#39;r_squared&#39;]:.3f}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">abs_E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">E_x</span><span class="p">)</span>
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">abs_E</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_values</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;insufficient_data&#39;</span><span class="p">}</span>
+    
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">abs_E</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+    
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;power_law&#39;</span><span class="p">:</span>
+            <span class="c1"># Fit |E(x)| = C * x^α</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">power_law</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="n">alpha</span><span class="p">)</span>
+            
+            <span class="c1"># Initial guess</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">power_law</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+            <span class="n">C</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">params</span>
+            
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">power_law</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+            
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;power_law&#39;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;exponent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">C</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> * x^</span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span>
+            
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+            <span class="c1"># Fit |E(x)| = a * x + b</span>
+            <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;slope&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> * x + </span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span>
+            
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;quadratic&#39;</span><span class="p">:</span>
+            <span class="c1"># Fit |E(x)| = a * x^2 + b * x + c</span>
+            <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;quadratic&#39;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;coefficients&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.3e</span><span class="si">}</span><span class="s1"> * x^2 + </span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> * x + </span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span>
+            
+        <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;logarithmic&#39;</span><span class="p">:</span>
+            <span class="c1"># Fit |E(x)| = a * log(x) + b</span>
+            <span class="n">log_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">log_x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">log_x</span><span class="p">)</span>
+            
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;logarithmic&#39;</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> * log(x) + </span><span class="si">{</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;unknown_model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span>
+        
+        <span class="c1"># Compute R²</span>
+        <span class="n">ss_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ss_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">r_squared</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ss_res</span> <span class="o">/</span> <span class="n">ss_tot</span><span class="p">)</span> <span class="k">if</span> <span class="n">ss_tot</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        
+        <span class="c1"># Compute RMSE</span>
+        <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+        
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;r_squared&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_squared</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;rmse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rmse</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_exponent_ci</span><span class="p">(</span>
+    <span class="n">E_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">x_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">n_bootstrap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+    <span class="n">ci</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate uncertainty for the growth exponent α via bootstrap.</span>
+
+<span class="sd">    We reuse the same log–log regression protocol as `fit_error_growth`,</span>
+<span class="sd">    but repeatedly resample the (x, |E(x)|) pairs with replacement and</span>
+<span class="sd">    refit α to obtain an empirical distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    E_x : np.ndarray</span>
+<span class="sd">        Error values E(x).</span>
+<span class="sd">    x_values : np.ndarray</span>
+<span class="sd">        Corresponding complexity values x.</span>
+<span class="sd">    n_bootstrap : int, default=500</span>
+<span class="sd">        Number of bootstrap resamples.</span>
+<span class="sd">    ci : float, default=0.95</span>
+<span class="sd">        Confidence level for the interval.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        - &#39;alpha_hat&#39;: point estimate from the full data</span>
+<span class="sd">        - &#39;alpha_ci_low&#39;: lower confidence bound</span>
+<span class="sd">        - &#39;alpha_ci_high&#39;: upper confidence bound</span>
+<span class="sd">        - &#39;num_samples&#39;: number of valid points used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">abs_E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">E_x</span><span class="p">)</span>
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">abs_E</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_values</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;alpha_hat&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_ci_low&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_ci_high&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;num_samples&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)),</span>
+        <span class="p">}</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">abs_E</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+
+    <span class="n">log_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">log_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># Point estimate from full data</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">log_x</span><span class="p">,</span> <span class="n">log_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">alpha_hat</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Bootstrap distribution</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">log_x</span><span class="p">)</span>
+    <span class="n">alphas</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_bootstrap</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">bx</span> <span class="o">=</span> <span class="n">log_x</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">by</span> <span class="o">=</span> <span class="n">log_y</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="c1"># Guard against degenerate resamples</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">bx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">by</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">bcoeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">bx</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">alphas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bcoeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alphas</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;alpha_hat&quot;</span><span class="p">:</span> <span class="n">alpha_hat</span><span class="p">,</span>
+            <span class="s2">&quot;alpha_ci_low&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_ci_high&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;num_samples&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">alphas_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">alphas</span><span class="p">)</span>
+    <span class="n">lower</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">alphas_arr</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ci</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">upper</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">alphas_arr</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ci</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;alpha_hat&quot;</span><span class="p">:</span> <span class="n">alpha_hat</span><span class="p">,</span>
+        <span class="s2">&quot;alpha_ci_low&quot;</span><span class="p">:</span> <span class="n">lower</span><span class="p">,</span>
+        <span class="s2">&quot;alpha_ci_high&quot;</span><span class="p">:</span> <span class="n">upper</span><span class="p">,</span>
+        <span class="s2">&quot;num_samples&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="compare_judges">
+<a class="viewcode-back" href="../../../api.html#erh.analysis.statistics.compare_judges">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_judges</span><span class="p">(</span>
+    <span class="n">results_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span>
+    <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">baseline</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;prime_theorem&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compare multiple judges across various metrics.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results_dict : Dict[str, List[Action]]</span>
+<span class="sd">        Dictionary mapping judge names to lists of evaluated actions</span>
+<span class="sd">    X_max : int, default=100</span>
+<span class="sd">        Maximum complexity for analysis</span>
+<span class="sd">    baseline : str, default=&#39;prime_theorem&#39;</span>
+<span class="sd">        Baseline type for error computation</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Comprehensive comparison across judges</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; judges = {&#39;biased&#39;: BiasedJudge(), &#39;noisy&#39;: NoisyJudge()}</span>
+<span class="sd">    &gt;&gt;&gt; results = batch_evaluate(actions, judges)</span>
+<span class="sd">    &gt;&gt;&gt; comparison = compare_judges(results)</span>
+<span class="sd">    &gt;&gt;&gt; for name, metrics in comparison.items():</span>
+<span class="sd">    ...     print(f&quot;{name}: ERH satisfied = {metrics[&#39;erh_satisfied&#39;]}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle both relative and absolute imports</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">erh_core.core.ethical_primes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">select_ethical_primes</span><span class="p">,</span>
+            <span class="n">compute_Pi_and_error</span><span class="p">,</span>
+            <span class="n">analyze_error_growth</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..core.ethical_primes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+                <span class="n">select_ethical_primes</span><span class="p">,</span>
+                <span class="n">compute_Pi_and_error</span><span class="p">,</span>
+                <span class="n">analyze_error_growth</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="c1"># Fallback for direct script execution</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">erh_core.core.ethical_primes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+                <span class="n">select_ethical_primes</span><span class="p">,</span>
+                <span class="n">compute_Pi_and_error</span><span class="p">,</span>
+                <span class="n">analyze_error_growth</span>
+            <span class="p">)</span>
+    
+    <span class="n">comparison</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">actions</span> <span class="ow">in</span> <span class="n">results_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Select primes</span>
+        <span class="n">primes</span> <span class="o">=</span> <span class="n">select_ethical_primes</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">primes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">comparison</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;no_primes_found&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;num_mistakes&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># Compute error distribution</span>
+        <span class="n">Pi_x</span><span class="p">,</span> <span class="n">B_x</span><span class="p">,</span> <span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span> <span class="o">=</span> <span class="n">compute_Pi_and_error</span><span class="p">(</span><span class="n">primes</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="n">baseline</span><span class="p">)</span>
+        
+        <span class="c1"># Analyze error growth</span>
+        <span class="n">growth_analysis</span> <span class="o">=</span> <span class="n">analyze_error_growth</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span><span class="p">)</span>
+        
+        <span class="c1"># Compute judgment metrics</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">mistakes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        
+        <span class="n">comparison</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;num_actions&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">),</span>
+            <span class="s1">&#39;num_primes&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">primes</span><span class="p">),</span>
+            <span class="s1">&#39;prime_ratio&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">primes</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">),</span>
+            <span class="s1">&#39;mistake_rate&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mistakes</span><span class="p">)</span> <span class="k">if</span> <span class="n">mistakes</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;mae&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">deltas</span><span class="p">))</span> <span class="k">if</span> <span class="n">deltas</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="k">if</span> <span class="n">deltas</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;max_error&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">E_x</span><span class="p">)),</span>
+            <span class="s1">&#39;mean_error&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">E_x</span><span class="p">)),</span>
+            <span class="s1">&#39;estimated_exponent&#39;</span><span class="p">:</span> <span class="n">growth_analysis</span><span class="p">[</span><span class="s1">&#39;estimated_exponent&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span> <span class="n">growth_analysis</span><span class="p">[</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;growth_rate&#39;</span><span class="p">:</span> <span class="n">growth_analysis</span><span class="p">[</span><span class="s1">&#39;growth_rate&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;r_squared&#39;</span><span class="p">:</span> <span class="n">growth_analysis</span><span class="p">[</span><span class="s1">&#39;r_squared&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">comparison</span></div>
+
+
+
+<div class="viewcode-block" id="detect_structural_bias">
+<a class="viewcode-back" href="../../../api.html#erh.analysis.statistics.detect_structural_bias">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_structural_bias</span><span class="p">(</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+    <span class="n">complexity_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect if there&#39;s structural bias correlated with complexity.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    actions : List[Action]</span>
+<span class="sd">        List of evaluated actions</span>
+<span class="sd">    complexity_bins : int, default=10</span>
+<span class="sd">        Number of bins to divide complexity range</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Analysis of bias patterns including correlation and bin statistics</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; actions = generate_world(1000)</span>
+<span class="sd">    &gt;&gt;&gt; judge = BiasedJudge(bias_strength=0.3)</span>
+<span class="sd">    &gt;&gt;&gt; evaluate_judgement(actions, judge)</span>
+<span class="sd">    &gt;&gt;&gt; bias_analysis = detect_structural_bias(actions)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Correlation: {bias_analysis[&#39;complexity_error_correlation&#39;]:.3f}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extract data</span>
+    <span class="n">complexities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+    <span class="n">abs_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">complexities</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;insufficient_data&#39;</span><span class="p">}</span>
+    
+    <span class="c1"># Compute correlation between complexity and error magnitude</span>
+    <span class="n">corr</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">pearsonr</span><span class="p">(</span><span class="n">complexities</span><span class="p">,</span> <span class="n">abs_errors</span><span class="p">)</span>
+    
+    <span class="c1"># Bin analysis</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">complexities</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">complexities</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">complexity_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">(</span><span class="n">bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">bin_mean_errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bin_std_errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bin_counts</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">complexity_bins</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">complexities</span> <span class="o">&gt;=</span> <span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">complexities</span> <span class="o">&lt;</span> <span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">complexity_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">complexities</span> <span class="o">&gt;=</span> <span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">complexities</span> <span class="o">&lt;=</span> <span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="n">bin_errors</span> <span class="o">=</span> <span class="n">abs_errors</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_errors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bin_mean_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bin_errors</span><span class="p">))</span>
+            <span class="n">bin_std_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">bin_errors</span><span class="p">))</span>
+            <span class="n">bin_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bin_errors</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bin_mean_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">bin_std_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">bin_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># Check for monotonic trend</span>
+    <span class="n">is_increasing</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">bin_mean_errors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bin_mean_errors</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> 
+                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bin_mean_errors</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+                       <span class="k">if</span> <span class="n">bin_counts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">bin_counts</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;complexity_error_correlation&#39;</span><span class="p">:</span> <span class="n">corr</span><span class="p">,</span>
+        <span class="s1">&#39;correlation_p_value&#39;</span><span class="p">:</span> <span class="n">p_value</span><span class="p">,</span>
+        <span class="s1">&#39;correlation_significant&#39;</span><span class="p">:</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s1">&#39;bins&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;centers&#39;</span><span class="p">:</span> <span class="n">bin_centers</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s1">&#39;mean_errors&#39;</span><span class="p">:</span> <span class="n">bin_mean_errors</span><span class="p">,</span>
+            <span class="s1">&#39;std_errors&#39;</span><span class="p">:</span> <span class="n">bin_std_errors</span><span class="p">,</span>
+            <span class="s1">&#39;counts&#39;</span><span class="p">:</span> <span class="n">bin_counts</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;monotonic_increasing&#39;</span><span class="p">:</span> <span class="n">is_increasing</span><span class="p">,</span>
+        <span class="s1">&#39;interpretation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Add interpretation</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.3</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;interpretation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Weak or no correlation between complexity and error.&quot;</span>
+    <span class="k">elif</span> <span class="n">corr</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;interpretation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Positive correlation (</span><span class="si">{</span><span class="n">corr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">): errors increase with complexity. &quot;</span>
+            <span class="s2">&quot;This suggests the judge struggles more with complex cases.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;interpretation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Negative correlation (</span><span class="si">{</span><span class="n">corr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">): errors decrease with complexity. &quot;</span>
+            <span class="s2">&quot;This is unusual and may indicate over-confidence on simple cases.&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="generate_report">
+<a class="viewcode-back" href="../../../api.html#erh.analysis.statistics.generate_report">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_report</span><span class="p">(</span>
+    <span class="n">results_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;markdown&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a comprehensive report comparing judges.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results_dict : Dict[str, List[Action]]</span>
+<span class="sd">        Dictionary mapping judge names to evaluated actions</span>
+<span class="sd">    output_path : Optional[str], default=None</span>
+<span class="sd">        If specified, save report to this file</span>
+<span class="sd">    format : str, default=&#39;markdown&#39;</span>
+<span class="sd">        Output format: &#39;markdown&#39;, &#39;json&#39;, &#39;text&#39;</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Report content</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; report = generate_report(results, output_path=&#39;simulation/output/report.md&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(report[:200])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">comparison</span> <span class="o">=</span> <span class="n">compare_judges</span><span class="p">(</span><span class="n">results_dict</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">comparison</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;markdown&#39;</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;# Ethical Riemann Hypothesis - Judge Comparison Report&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Number of judges analyzed:** </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;## Summary Table&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="c1"># Summary uses the canonical ERH decision from the centralized bound check.</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | ERH Satisfied | Growth Rate |&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|-------|---------|--------|--------------|-----|----------|---------------|-------------|&quot;</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metrics</span> <span class="ow">in</span> <span class="n">comparison</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> | - | - | - | - | - | ERROR | - |&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;num_actions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;num_primes&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;mistake_rate&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;mae&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;estimated_exponent&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;growth_rate&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> |&quot;</span>
+            <span class="p">)</span>
+        
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;## Detailed Analysis&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metrics</span> <span class="ow">in</span> <span class="n">comparison</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;### </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**Error:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Total Actions:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;num_actions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Ethical Primes:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;num_primes&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;prime_ratio&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Mistake Rate:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;mistake_rate&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Mean Absolute Error:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;mae&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **RMSE:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;rmse&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Estimated Growth Exponent:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;estimated_exponent&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Canonical bound-based ERH decision</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **Growth Rate Category:** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;growth_rate&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **R² (fit quality):** </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;r_squared&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Interpretation – now keyed to bound satisfaction, with α as a side diagnostic.</span>
+            <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;**Interpretation:** This judge&#39;s cumulative error stays within the ERH-style &quot;</span>
+                    <span class="s2">&quot;bound (up to the allowed slack), indicating &#39;Riemann-healthy&#39; behavior. &quot;</span>
+                    <span class="s2">&quot;The exponent α is reported as an auxiliary diagnostic, not the primary test.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;growth_rate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;superlinear&#39;</span><span class="p">:</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;**Interpretation:** ⚠️ This judge shows problematic error growth. &quot;</span>
+                        <span class="s2">&quot;Errors frequently exceed the ERH-style bound and grow faster than &quot;</span>
+                        <span class="s2">&quot;linearly with complexity.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;growth_rate&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="s1">&#39;sublinear_fast&#39;</span><span class="p">]:</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;**Interpretation:** This judge exhibits moderate error growth: the ERH-style &quot;</span>
+                        <span class="s2">&quot;bound is not strictly satisfied, but errors do not explode catastrophically.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;**Interpretation:** Although the bound test flags some violations, the fitted &quot;</span>
+                        <span class="s2">&quot;exponent α is below the √x target, suggesting a conservative or over-cautious &quot;</span>
+                        <span class="s2">&quot;system whose long-run errors grow slower than the ERH worst case.&quot;</span>
+                    <span class="p">)</span>
+            
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">report</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Ethical Riemann Hypothesis - Judge Comparison Report&quot;</span><span class="p">]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metrics</span> <span class="ow">in</span> <span class="n">comparison</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Judge: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Error: </span><span class="si">{</span><span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">report</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown format: </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Save to file if requested</span>
+    <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">report</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_judge_rankings</span><span class="p">(</span>
+    <span class="n">comparison</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">,</span> <span class="s1">&#39;estimated_exponent&#39;</span><span class="p">,</span> <span class="s1">&#39;mae&#39;</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rank judges based on specified metrics.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    comparison : dict</span>
+<span class="sd">        Output from compare_judges</span>
+<span class="sd">    metrics : List[str], default=[&#39;erh_satisfied&#39;, &#39;estimated_exponent&#39;, &#39;mae&#39;]</span>
+<span class="sd">        Metrics to use for ranking</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Rankings for each metric</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rankings</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">comparison</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;error&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">metric</span><span class="p">]))</span>
+        
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mae&#39;</span><span class="p">,</span> <span class="s1">&#39;rmse&#39;</span><span class="p">,</span> <span class="s1">&#39;estimated_exponent&#39;</span><span class="p">]:</span>
+            <span class="c1"># Lower is better</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span>
+            <span class="c1"># True is better</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="n">rankings</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">rankings</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize_fairness_and_erh</span><span class="p">(</span>
+    <span class="n">results_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span>
+    <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">group_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;group&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a joined summary of ERH-style metrics and simple fairness diagnostics</span>
+<span class="sd">    (group error gaps + calibration) for each judge.</span>
+
+<span class="sd">    This is mainly intended for notebooks/tables that directly contrast what</span>
+<span class="sd">    ERH adds beyond standard fairness metrics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.fairness_metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">compute_group_error_gaps</span><span class="p">,</span>
+            <span class="n">compute_calibration_by_bins</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.fairness_metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">compute_group_error_gaps</span><span class="p">,</span>
+            <span class="n">compute_calibration_by_bins</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">comparison</span> <span class="o">=</span> <span class="n">compare_judges</span><span class="p">(</span><span class="n">results_dict</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">)</span>
+    <span class="n">summary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">actions</span> <span class="ow">in</span> <span class="n">results_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">comparison</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># Fairness diagnostics</span>
+        <span class="n">group_stats</span> <span class="o">=</span> <span class="n">compute_group_error_gaps</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">group_attr</span><span class="o">=</span><span class="n">group_attr</span><span class="p">)</span>
+        <span class="n">calib</span> <span class="o">=</span> <span class="n">compute_calibration_by_bins</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">use_complexity</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">summary</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># ERH / growth side</span>
+            <span class="s2">&quot;erh_satisfied&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;erh_satisfied&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;estimated_exponent&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;estimated_exponent&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_ci_low&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alpha_ci_low&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_ci_high&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alpha_ci_high&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;growth_rate&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;growth_rate&quot;</span><span class="p">),</span>
+            <span class="c1"># Fairness side</span>
+            <span class="s2">&quot;max_mistake_gap&quot;</span><span class="p">:</span> <span class="n">group_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_mistake_gap&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;max_mae_gap&quot;</span><span class="p">:</span> <span class="n">group_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_mae_gap&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="n">group_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mistake_rate_by_group&quot;</span><span class="p">:</span> <span class="n">group_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mistake_rate_by_group&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mae_by_group&quot;</span><span class="p">:</span> <span class="n">group_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mae_by_group&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;calibration_error&quot;</span><span class="p">:</span> <span class="n">calib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;calibration_error&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">summary</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethical AI Research Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

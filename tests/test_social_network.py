@@ -11,9 +11,7 @@ sys.path.insert(0, str(simulation_dir))
 
 import numpy as np
 import pytest
-from core.social_network import SocialNetwork
-from core.agent import SimpleEthicalAgent
-from core.judgement_system import BiasedJudge
+from erh.core import SocialNetwork, SimpleEthicalAgent, BiasedJudge
 
 
 class TestSocialNetwork:
