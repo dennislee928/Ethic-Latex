@@ -1,0 +1,1306 @@
+{
+  "summary": {
+    "total_tests": 43,
+    "passed": 40,
+    "failed": 1,
+    "success_rate": 0.9302325581395349,
+    "total_time": 144.88552713394165,
+    "timestamp": "2025-12-01T17:02:57.525747"
+  },
+  "results": [
+    {
+      "test_name": "param_sweep_agents10_toporandom_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "random",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 7.105427357601002e-16,
+          "trend_direction": "stable",
+          "mean_error": 76.1960625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.18389010429382324,
+      "timestamp": "2025-12-01T17:00:32.824897"
+    },
+    {
+      "test_name": "param_sweep_agents10_toporandom_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "random",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01716515138991502,
+          "trend_direction": "stable",
+          "mean_error": 76.2060625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.2519049644470215,
+      "timestamp": "2025-12-01T17:00:33.077171"
+    },
+    {
+      "test_name": "param_sweep_agents10_toporandom_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "random",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.15080876149001055,
+          "trend_direction": "stable",
+          "mean_error": 76.26106250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.42848825454711914,
+      "timestamp": "2025-12-01T17:00:33.506000"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposmall_world_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "small_world",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 7.105427357601002e-16,
+          "trend_direction": "stable",
+          "mean_error": 76.1960625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.14163875579833984,
+      "timestamp": "2025-12-01T17:00:33.648062"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposmall_world_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "small_world",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01716515138991502,
+          "trend_direction": "stable",
+          "mean_error": 76.2060625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.24520587921142578,
+      "timestamp": "2025-12-01T17:00:33.893900"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposmall_world_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "small_world",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.15080876149001055,
+          "trend_direction": "stable",
+          "mean_error": 76.26106250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.5554256439208984,
+      "timestamp": "2025-12-01T17:00:34.449742"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposcale_free_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "scale_free",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 7.105427357601002e-16,
+          "trend_direction": "stable",
+          "mean_error": 76.1960625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.18545222282409668,
+      "timestamp": "2025-12-01T17:00:34.636362"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposcale_free_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "scale_free",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01716515138991502,
+          "trend_direction": "stable",
+          "mean_error": 76.2060625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.26734042167663574,
+      "timestamp": "2025-12-01T17:00:34.904200"
+    },
+    {
+      "test_name": "param_sweep_agents10_toposcale_free_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 10,
+        "topology": "scale_free",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.15080876149001055,
+          "trend_direction": "stable",
+          "mean_error": 76.26106250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.5178143978118896,
+      "timestamp": "2025-12-01T17:00:35.422567"
+    },
+    {
+      "test_name": "param_sweep_agents50_toporandom_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "random",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.047191835884531554,
+          "trend_direction": "stable",
+          "mean_error": 76.23606250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.6457955837249756,
+      "timestamp": "2025-12-01T17:00:36.068748"
+    },
+    {
+      "test_name": "param_sweep_agents50_toporandom_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "random",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 0.00800000000000334,
+          "trend_direction": "stable",
+          "mean_error": 76.2000625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.7994859218597412,
+      "timestamp": "2025-12-01T17:00:36.868631"
+    },
+    {
+      "test_name": "param_sweep_agents50_toporandom_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "random",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.24967038005293232,
+          "trend_direction": "stable",
+          "mean_error": 76.27006250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 2.203510046005249,
+      "timestamp": "2025-12-01T17:00:39.072596"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposmall_world_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "small_world",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.047191835884531554,
+          "trend_direction": "stable",
+          "mean_error": 76.23606250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.5133726596832275,
+      "timestamp": "2025-12-01T17:00:39.586301"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposmall_world_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "small_world",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 0.00800000000000334,
+          "trend_direction": "stable",
+          "mean_error": 76.2000625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.35764741897583,
+      "timestamp": "2025-12-01T17:00:40.944380"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposmall_world_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "small_world",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.24967038005293232,
+          "trend_direction": "stable",
+          "mean_error": 76.27006250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 2.924513816833496,
+      "timestamp": "2025-12-01T17:00:43.869540"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposcale_free_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "scale_free",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.047191835884531554,
+          "trend_direction": "stable",
+          "mean_error": 76.23606250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.7888748645782471,
+      "timestamp": "2025-12-01T17:00:44.658880"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposcale_free_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "scale_free",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 18.376721236259257
+        },
+        "temporal_stability": {
+          "volatility": 0.00800000000000334,
+          "trend_direction": "stable",
+          "mean_error": 76.2000625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.276564359664917,
+      "timestamp": "2025-12-01T17:00:45.935852"
+    },
+    {
+      "test_name": "param_sweep_agents50_toposcale_free_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 50,
+        "topology": "scale_free",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.24967038005293232,
+          "trend_direction": "stable",
+          "mean_error": 76.27006250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 2.2332987785339355,
+      "timestamp": "2025-12-01T17:00:48.169513"
+    },
+    {
+      "test_name": "param_sweep_agents100_toporandom_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "random",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.20359591794226603,
+          "trend_direction": "increasing",
+          "mean_error": 76.30406250299178
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.963435173034668,
+      "timestamp": "2025-12-01T17:00:49.133421"
+    },
+    {
+      "test_name": "param_sweep_agents100_toporandom_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "random",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3478524414441776,
+          "trend_direction": "decreasing",
+          "mean_error": 76.3640625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.4299368858337402,
+      "timestamp": "2025-12-01T17:00:50.563808"
+    },
+    {
+      "test_name": "param_sweep_agents100_toporandom_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "random",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3266602540378444,
+          "trend_direction": "stable",
+          "mean_error": 76.32306250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 3.329941511154175,
+      "timestamp": "2025-12-01T17:00:53.894598"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposmall_world_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "small_world",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.20359591794226603,
+          "trend_direction": "increasing",
+          "mean_error": 76.30406250299178
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 0.9244384765625,
+      "timestamp": "2025-12-01T17:00:54.819398"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposmall_world_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "small_world",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3478524414441776,
+          "trend_direction": "decreasing",
+          "mean_error": 76.3640625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.412613868713379,
+      "timestamp": "2025-12-01T17:00:56.232357"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposmall_world_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "small_world",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3266602540378444,
+          "trend_direction": "stable",
+          "mean_error": 76.32306250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 3.6248323917388916,
+      "timestamp": "2025-12-01T17:00:59.857975"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposcale_free_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "scale_free",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.20359591794226603,
+          "trend_direction": "increasing",
+          "mean_error": 76.30406250299178
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.5308706760406494,
+      "timestamp": "2025-12-01T17:01:01.389152"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposcale_free_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "scale_free",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3478524414441776,
+          "trend_direction": "decreasing",
+          "mean_error": 76.3640625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 3.069192409515381,
+      "timestamp": "2025-12-01T17:01:04.458844"
+    },
+    {
+      "test_name": "param_sweep_agents100_toposcale_free_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 100,
+        "topology": "scale_free",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3266602540378444,
+          "trend_direction": "stable",
+          "mean_error": 76.32306250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 4.782097578048706,
+      "timestamp": "2025-12-01T17:01:09.242457"
+    },
+    {
+      "test_name": "param_sweep_agents200_toporandom_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "random",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.4017979589711327,
+          "trend_direction": "decreasing",
+          "mean_error": 76.40406250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.6920108795166016,
+      "timestamp": "2025-12-01T17:01:10.934852"
+    },
+    {
+      "test_name": "param_sweep_agents200_toporandom_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "random",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.426713974548885,
+          "trend_direction": "increasing",
+          "mean_error": 76.4860625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 4.772184610366821,
+      "timestamp": "2025-12-01T17:01:15.707430"
+    },
+    {
+      "test_name": "param_sweep_agents200_toporandom_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "random",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01693938739968366,
+          "trend_direction": "stable",
+          "mean_error": 76.20706250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 8.488525390625,
+      "timestamp": "2025-12-01T17:01:24.196314"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposmall_world_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "small_world",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.4017979589711327,
+          "trend_direction": "decreasing",
+          "mean_error": 76.40406250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 1.9025137424468994,
+      "timestamp": "2025-12-01T17:01:26.099569"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposmall_world_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "small_world",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.426713974548885,
+          "trend_direction": "increasing",
+          "mean_error": 76.4860625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 4.575541019439697,
+      "timestamp": "2025-12-01T17:01:30.675504"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposmall_world_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "small_world",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01693938739968366,
+          "trend_direction": "stable",
+          "mean_error": 76.20706250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 12.725507736206055,
+      "timestamp": "2025-12-01T17:01:43.401425"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposcale_free_steps5",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "scale_free",
+        "time_steps": 5
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.4017979589711327,
+          "trend_direction": "decreasing",
+          "mean_error": 76.40406250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 2.169914960861206,
+      "timestamp": "2025-12-01T17:01:45.571838"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposcale_free_steps10",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "scale_free",
+        "time_steps": 10
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.426713974548885,
+          "trend_direction": "increasing",
+          "mean_error": 76.4860625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 5.745521545410156,
+      "timestamp": "2025-12-01T17:01:51.317870"
+    },
+    {
+      "test_name": "param_sweep_agents200_toposcale_free_steps20",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 200,
+        "topology": "scale_free",
+        "time_steps": 20
+      },
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.01693938739968366,
+          "trend_direction": "stable",
+          "mean_error": 76.20706250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "elapsed_time": 8.832074642181396,
+      "timestamp": "2025-12-01T17:02:00.151398"
+    },
+    {
+      "test_name": "long_term_steps50",
+      "status": "UNSTABLE",
+      "time_steps": 50,
+      "elapsed_time": 6.15311861038208,
+      "stability": false,
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.28952553024613725,
+          "trend_direction": "stable",
+          "mean_error": 76.2976625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "timestamp": "2025-12-01T17:02:06.340450"
+    },
+    {
+      "test_name": "long_term_steps100",
+      "status": "UNSTABLE",
+      "time_steps": 100,
+      "elapsed_time": 10.509196043014526,
+      "stability": false,
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.34358539679569317,
+          "trend_direction": "stable",
+          "mean_error": 76.34586250299179
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "timestamp": "2025-12-01T17:02:16.850079"
+    },
+    {
+      "test_name": "stress_agents200",
+      "status": "PASSED",
+      "num_agents": 200,
+      "elapsed_time": 8.697659969329834,
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3311651513899117,
+          "trend_direction": "decreasing",
+          "mean_error": 76.3280625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "timestamp": "2025-12-01T17:02:25.554209"
+    },
+    {
+      "test_name": "stress_agents500",
+      "status": "PASSED",
+      "num_agents": 500,
+      "elapsed_time": 24.562053680419922,
+      "metrics": {
+        "erh_satisfaction": {
+          "satisfaction_rate": 0.0,
+          "violation_rate": 1.0,
+          "worst_violation": 19.036475191602175
+        },
+        "temporal_stability": {
+          "volatility": 0.3095959179422655,
+          "trend_direction": "stable",
+          "mean_error": 76.3140625029918
+        },
+        "network_coherence": {
+          "converged": true,
+          "iterations": 1,
+          "clusters": 0
+        },
+        "system_health": {
+          "score": 0.0,
+          "status": "critical"
+        }
+      },
+      "timestamp": "2025-12-01T17:02:50.116899"
+    },
+    {
+      "test_name": "boundary_minimal",
+      "status": "FAILED",
+      "error": "k>n, choose smaller k or larger n",
+      "timestamp": "2025-12-01T17:02:50.162169"
+    },
+    {
+      "test_name": "boundary_small",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 5,
+        "time_steps": 2,
+        "name": "small"
+      },
+      "elapsed_time": 0.05071139335632324,
+      "timestamp": "2025-12-01T17:02:50.213515"
+    },
+    {
+      "test_name": "boundary_large_agents",
+      "status": "PASSED",
+      "parameters": {
+        "num_agents": 1000,
+        "time_steps": 5,
+        "name": "large_agents"
+      },
+      "elapsed_time": 7.1897382736206055,
+      "timestamp": "2025-12-01T17:02:57.403875"
+    }
+  ]
+}

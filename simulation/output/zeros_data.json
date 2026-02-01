@@ -1,0 +1,17 @@
+{
+  "Biased": [],
+  "metadata": {
+    "real_range": [
+      0.3,
+      0.7
+    ],
+    "imag_range": [
+      0,
+      30
+    ],
+    "grid_size": 40,
+    "num_primes": 11
+  },
+  "Noisy": [],
+  "Conservative": []
+}

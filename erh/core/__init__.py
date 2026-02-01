@@ -66,4 +66,3 @@ __all__ = [
     "ABMSimulator",
     "HybridPsychohistoryModel",
 ]
-

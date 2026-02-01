@@ -14,7 +14,13 @@ import time
 from datetime import datetime
 
 # Ensure simulation module is in path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+
+# Also add erh_core if it exists
+erh_core_path = os.path.join(project_root, 'erh_core')
+if os.path.exists(erh_core_path) and erh_core_path not in sys.path:
+    sys.path.insert(0, erh_core_path)
 
 from simulation.core.action_space import generate_world, Action
 from simulation.core.judgement_system import BiasedJudge, evaluate_judgement

@@ -11,64 +11,77 @@ from pathlib import Path
 
 def setup_paths():
     """
-    Add simulation directory to Python path, works in all environments.
+    Add simulation directory and erh_core to Python path, works in all environments.
     
-    Tries multiple strategies to find the simulation directory:
+    Tries multiple strategies to find the simulation directory and erh_core:
     1. If in notebooks/, go up one level
     2. If in simulation/, use current
     3. Look for simulation directory in parents
     4. Try relative paths
     5. Fallback to common paths
     
+    Also adds erh_core to path if found.
+    
     Returns:
         str: Path to simulation directory, or None if not found
     """
     current_dir = Path(os.getcwd())
+    project_root = None
     
     # Strategy 1: If in notebooks/, go up one level
     if current_dir.name == 'notebooks':
         simulation_dir = str(current_dir.parent)
+        project_root = current_dir.parent.parent
         if simulation_dir not in sys.path:
             sys.path.insert(0, simulation_dir)
-        return simulation_dir
-    
     # Strategy 2: If in simulation/, use current
-    if current_dir.name == 'simulation':
+    elif current_dir.name == 'simulation':
         simulation_dir = str(current_dir)
+        project_root = current_dir.parent
         if simulation_dir not in sys.path:
             sys.path.insert(0, simulation_dir)
-        return simulation_dir
-    
     # Strategy 3: Look for simulation directory in parents
-    for parent in current_dir.parents:
-        if parent.name == 'simulation':
-            simulation_dir = str(parent)
-            if simulation_dir not in sys.path:
-                sys.path.insert(0, simulation_dir)
-            return simulation_dir
+    else:
+        for parent in current_dir.parents:
+            if parent.name == 'simulation':
+                simulation_dir = str(parent)
+                project_root = parent.parent
+                if simulation_dir not in sys.path:
+                    sys.path.insert(0, simulation_dir)
+                break
     
     # Strategy 4: Try relative path
-    simulation_dir = os.path.join(os.getcwd(), 'simulation')
-    if os.path.exists(simulation_dir):
-        if simulation_dir not in sys.path:
-            sys.path.insert(0, simulation_dir)
-        return simulation_dir
+    if project_root is None:
+        simulation_dir = os.path.join(os.getcwd(), 'simulation')
+        if os.path.exists(simulation_dir):
+            project_root = Path(os.getcwd())
+            if simulation_dir not in sys.path:
+                sys.path.insert(0, simulation_dir)
     
     # Strategy 5: Try going up from notebooks
-    notebooks_dir = os.path.join(os.getcwd(), 'notebooks')
-    if os.path.exists(notebooks_dir):
-        parent = os.path.dirname(os.path.abspath(notebooks_dir))
-        if parent not in sys.path:
-            sys.path.insert(0, parent)
-        return parent
+    if project_root is None:
+        notebooks_dir = os.path.join(os.getcwd(), 'notebooks')
+        if os.path.exists(notebooks_dir):
+            parent = os.path.dirname(os.path.abspath(notebooks_dir))
+            project_root = Path(parent).parent
+            if parent not in sys.path:
+                sys.path.insert(0, parent)
     
     # Fallback: add common paths
-    for path in ['..', '../simulation', 'simulation', os.path.dirname(os.getcwd())]:
-        abs_path = os.path.abspath(path)
-        if abs_path not in sys.path and os.path.exists(abs_path):
-            sys.path.insert(0, abs_path)
+    if project_root is None:
+        for path in ['..', '../simulation', 'simulation', os.path.dirname(os.getcwd())]:
+            abs_path = os.path.abspath(path)
+            if abs_path not in sys.path and os.path.exists(abs_path):
+                sys.path.insert(0, abs_path)
+                project_root = Path(abs_path).parent if 'simulation' in abs_path else Path(abs_path)
     
-    return None
+    # Add erh_core to path if found
+    if project_root is not None:
+        erh_core_path = project_root / "erh_core"
+        if erh_core_path.exists() and str(erh_core_path) not in sys.path:
+            sys.path.insert(0, str(erh_core_path))
+    
+    return simulation_dir if 'simulation_dir' in locals() else None
 
 
 def verify_imports(modules):

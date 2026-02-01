@@ -1,7 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Boolean, JSON
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Boolean, JSON, Text, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import JSONB
+import enum
 
 from .db import Base
 
@@ -105,5 +107,97 @@ class DerivedMetrics(Base):
     is_prime: Mapped[bool] = mapped_column(Boolean, default=False)
 
     action: Mapped[Action] = relationship(back_populates="derived_metrics")
+
+
+class User(Base):
+    """
+    User accounts for authentication and authorization.
+    """
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    latex_rules: Mapped[list["LatexRule"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    settings: Mapped["UserSettings"] = relationship(back_populates="user", uselist=False, cascade="all, delete-orphan")
+
+
+class LatexRule(Base):
+    """
+    Stores LaTeX-based ethical rules for formal verification.
+    """
+
+    __tablename__ = "latex_rules"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(512))
+    content: Mapped[str] = mapped_column(Text)  # LaTeX string
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner: Mapped["User"] = relationship(back_populates="latex_rules")
+    security_reports: Mapped[list["SecurityReport"]] = relationship(back_populates="rule", cascade="all, delete-orphan")
+
+
+class SecurityReport(Base):
+    """
+    Stores results from erh_core analysis and verification.
+    """
+
+    __tablename__ = "security_reports"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    rule_id: Mapped[int] = mapped_column(ForeignKey("latex_rules.id"), index=True)
+    risk_score: Mapped[float] = mapped_column(Float)
+    violations: Mapped[dict] = mapped_column(JSONB, nullable=True)  # JSONB for PostgreSQL, falls back to JSON for SQLite
+    verified_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    rule: Mapped["LatexRule"] = relationship(back_populates="security_reports")
+
+
+class SimulationStatus(str, enum.Enum):
+    """Enumeration for simulation status values."""
+
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class Simulation(Base):
+    """
+    Stores psychohistory simulation runs and their results.
+    """
+
+    __tablename__ = "simulations"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    status: Mapped[SimulationStatus] = mapped_column(Enum(SimulationStatus), default=SimulationStatus.PENDING, index=True)
+    result_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    config: Mapped[dict] = mapped_column(JSONB, nullable=True)  # Simulation configuration parameters
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
+class UserSettings(Base):
+    """
+    User preferences and settings.
+    """
+
+    __tablename__ = "user_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, unique=True)
+    preferences: Mapped[dict] = mapped_column(JSONB, nullable=True)  # User preferences as JSON
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user: Mapped["User"] = relationship(back_populates="settings")
 
 

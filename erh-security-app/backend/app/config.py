@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     gitlab_base_url: Optional[AnyUrl] = None
     gitlab_token: Optional[str] = None
 
-    # Database configuration (SQLite by default for PoC)
-    database_url: str = "sqlite:///./erh_security.db"
+    # Database configuration (PostgreSQL for production, SQLite for development)
+    database_url: str = "postgresql://admin:password123@localhost:5432/ethic_latex_db"
 
     # Logging
     log_level: str = "INFO"

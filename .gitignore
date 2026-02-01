@@ -10,7 +10,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+
 lib64/
 parts/
 sdist/
@@ -19,6 +19,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+#node-modules
+./frontend/node_modules
+*node_modules
 
 # Git ignore folder
 .gitignore-folder
@@ -84,9 +87,9 @@ figures/*.png
 
 # Data
 *.csv
-*.json
 *.pkl
 *.h5
+
 
 # Temporary files
 *.tmp

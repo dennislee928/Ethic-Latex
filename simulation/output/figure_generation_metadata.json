@@ -1,0 +1,98 @@
+{
+  "generation_timestamp": "2025-11-20T18:05:03.112507",
+  "configuration": {
+    "num_actions": 2000,
+    "tau": 0.3,
+    "X_max": 100,
+    "X_max_zeta": 200,
+    "random_seed": 42,
+    "figure_style": "paper",
+    "figure_format": "pdf",
+    "dpi": 300,
+    "output_dir": "../output/figures",
+    "batch_mode": false,
+    "batch_seeds": [
+      42
+    ]
+  },
+  "generated_figures": {
+    "fig1": {
+      "path": "../output/figures/paper_fig1_pi_b_e.pdf",
+      "exists": true,
+      "size_kb": 30.640625,
+      "caption": "Distribution functions $\\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge."
+    },
+    "fig2": {
+      "path": "../output/figures/paper_fig2_error_growth.pdf",
+      "exists": true,
+      "size_kb": 33.3779296875,
+      "caption": "Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale."
+    },
+    "fig3": {
+      "path": "../output/figures/paper_fig3_judge_comparison.pdf",
+      "exists": true,
+      "size_kb": 29.650390625,
+      "caption": "Comparison of error growth across different judgment systems."
+    },
+    "fig4": {
+      "path": "../output/figures/paper_fig4_spectrum.pdf",
+      "exists": true,
+      "size_kb": 23.470703125,
+      "caption": "Frequency spectrum of the ethical zeta function."
+    },
+    "fig5": {
+      "path": "../output/figures/paper_fig5_zeros.pdf",
+      "exists": true,
+      "size_kb": 9.958984375,
+      "caption": "Distribution of zeros of the ethical zeta function in the complex plane."
+    },
+    "fig6": {
+      "path": "../output/figures/paper_fig6_complexity_dist.pdf",
+      "exists": true,
+      "size_kb": 18.7158203125,
+      "caption": "Distribution of action complexities in the generated moral action space."
+    }
+  },
+  "validation": {
+    "total_figures": 6,
+    "valid_figures": 5,
+    "validation_results": {
+      "fig1": {
+        "exists": true,
+        "size_kb": 30.640625,
+        "valid": true,
+        "path": "../output/figures/paper_fig1_pi_b_e.pdf"
+      },
+      "fig2": {
+        "exists": true,
+        "size_kb": 33.3779296875,
+        "valid": true,
+        "path": "../output/figures/paper_fig2_error_growth.pdf"
+      },
+      "fig3": {
+        "exists": true,
+        "size_kb": 29.650390625,
+        "valid": true,
+        "path": "../output/figures/paper_fig3_judge_comparison.pdf"
+      },
+      "fig4": {
+        "exists": true,
+        "size_kb": 23.470703125,
+        "valid": true,
+        "path": "../output/figures/paper_fig4_spectrum.pdf"
+      },
+      "fig5": {
+        "exists": true,
+        "size_kb": 9.958984375,
+        "valid": false,
+        "path": "../output/figures/paper_fig5_zeros.pdf"
+      },
+      "fig6": {
+        "exists": true,
+        "size_kb": 18.7158203125,
+        "valid": true,
+        "path": "../output/figures/paper_fig6_complexity_dist.pdf"
+      }
+    }
+  }
+}
