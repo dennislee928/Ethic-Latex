@@ -58,6 +58,12 @@ def find_figures(figures_dir):
             'caption_en': 'Distribution of action complexities in the generated moral action space.',
             'caption_zh': '生成道德行動空間中行動複雜度的分布。',
             'section': 'framework'
+        },
+        'paper_fig8_quantum_judge.pdf': {
+            'label': 'fig:quantum_judge',
+            'caption_en': '$\\Pi(x)$, $B(x)$, and $E(x)$ for the Quantum Judge.',
+            'caption_zh': '量子判斷者的 $\\Pi(x)$、$B(x)$ 與 $E(x)$。',
+            'section': 'results'
         }
     }
     
