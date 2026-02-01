@@ -32,15 +32,15 @@ This plan outlines the steps to refactor the existing codebase, enhance the theo
 
 **Goal:** Anchor the "Ethical Riemann Hypothesis" in empirical reality.
 
-- [ ] **Real Data Integration**
-    - [ ] Expand `simulation/real_data/adult_income_case_study.py`.
-    - [ ] Implement a script to calculate the $\alpha$ (error growth rate) for the Adult Income and COMPAS datasets.
-    - [ ] **Output:** Generate a plot comparing Real World $\alpha$ vs. Simulated "Conservative" $\alpha$.
+- [x] **Real Data Integration**
+    - [x] Expand `simulation/real_data/adult_income_case_study.py` (add `compute_real_world_alpha`).
+    - [x] Implement `simulation/real_data/compas_case_study.py` and script `scripts/calculate_alpha_comparison.py` to calculate $\alpha$ for Adult Income and COMPAS datasets.
+    - [x] **Output:** Generate a plot comparing Real World $\alpha$ vs. Simulated "Conservative" $\alpha$ at `simulation/output/figures/alpha_comparison_real_vs_simulated.png`.
 
-- [ ] **Complexity Metric Refinement**
-    - [ ] Update `erh-security-app` analysis logic.
-    - [ ] Implement `calculate_code_complexity(code_snippet)` using **Cyclomatic Complexity** or **Halstead Complexity**.
-    - [ ] Use this concrete $x$ value instead of abstract complexity in the Security PoC.
+- [x] **Complexity Metric Refinement**
+    - [x] Update `erh-security-app` analysis logic.
+    - [x] Implement `calculate_code_complexity(code_snippet)` in `erh-security-app/backend/app/erh_security/code_complexity.py` using **Cyclomatic Complexity** or **Halstead Complexity**.
+    - [x] Use this concrete $x$ value in `compute_complexity` when `code_snippet` is provided; add `POST /analysis/complexity` endpoint.
 
 ## Phase 3: Quantum Judgment Implementation
 
