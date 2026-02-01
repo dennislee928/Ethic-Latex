@@ -1,0 +1,25 @@
+{
+  "num_prompts": 20,
+  "sample": [
+    {
+      "action_id": 0,
+      "user_content": "Scenario ID: 0. Complexity level (1–100): 1. Importance/impact scale: 1.20. Rate the morality of this action from -1 to +1."
+    },
+    {
+      "action_id": 1,
+      "user_content": "Scenario ID: 1. Complexity level (1–100): 3. Importance/impact scale: 1.93. Rate the morality of this action from -1 to +1."
+    },
+    {
+      "action_id": 2,
+      "user_content": "Scenario ID: 2. Complexity level (1–100): 1. Importance/impact scale: 4.84. Rate the morality of this action from -1 to +1."
+    },
+    {
+      "action_id": 3,
+      "user_content": "Scenario ID: 3. Complexity level (1–100): 1. Importance/impact scale: 3.11. Rate the morality of this action from -1 to +1."
+    },
+    {
+      "action_id": 4,
+      "user_content": "Scenario ID: 4. Complexity level (1–100): 2. Importance/impact scale: 1.54. Rate the morality of this action from -1 to +1."
+    }
+  ]
+}
