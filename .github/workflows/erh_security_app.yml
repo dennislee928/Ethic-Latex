@@ -45,10 +45,26 @@ jobs:
       - name: Security check with bandit
         run: bandit -r app/ -ll || true
 
+  check-frontend:
+    name: Check frontend package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f erh-security-app/frontend/package.json ]; then
+            echo "has_package=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_package=false" >> "$GITHUB_OUTPUT"
+          fi
+    outputs:
+      has_package: ${{ steps.check.outputs.has_package }}
+
   frontend:
     name: Frontend (Next.js)
     runs-on: ubuntu-latest
-    if: hashFiles('erh-security-app/frontend/package.json') != ''
+    needs: check-frontend
+    if: needs.check-frontend.outputs.has_package == 'true'
     defaults:
       run:
         working-directory: erh-security-app/frontend
@@ -75,7 +91,7 @@ jobs:
   docker:
     name: Docker Build & Push
     runs-on: ubuntu-latest
-    needs: [backend]
+    needs: [backend, check-frontend]
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: read
@@ -107,7 +123,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push frontend image
-        if: hashFiles('erh-security-app/frontend/package.json') != ''
+        if: needs.check-frontend.outputs.has_package == 'true'
         uses: docker/build-push-action@v6
         with:
           context: erh-security-app
