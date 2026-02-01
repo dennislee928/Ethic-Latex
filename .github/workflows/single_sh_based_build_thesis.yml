@@ -2,7 +2,7 @@ name: Build Thesis (Single Script)
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "dev"]
   pull_request:
     branches: ["main", "master"]
   workflow_dispatch:

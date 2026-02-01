@@ -2,7 +2,7 @@ name: Build Thesis
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "dev"]
   pull_request:
     branches: ["main", "master"]
   workflow_dispatch:
@@ -47,13 +47,10 @@ jobs:
 
       - name: Run Simulation and Generate Figures
         run: |
-          # Set PYTHONPATH to include the current directory and simulation directory
-          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
-          # Ensure output directory exists
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           mkdir -p simulation/output/figures
           mkdir -p simulation/output
-          # Run from project root with explicit path to script
-          python simulation/generate_all_figures.py
+          python -m simulation.generate_all_figures
 
       - name: Run Real-Data Case Study (optional)
         run: |
