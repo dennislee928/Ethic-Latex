@@ -39,6 +39,32 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
           pytest tests/test_sdk.py -v --tb=short || echo "⚠ Some tests failed, continuing..."
 
+      - name: Run ERH Phase 1 tests
+        shell: bash
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
+          pytest tests/test_erh_phase1.py -v --tb=short || echo "⚠ Some tests failed, continuing..."
+
+      - name: Run Pydantic models and zeta function tests
+        shell: bash
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
+          python -c "
+          from simulation.models import Action, Judgment
+          a = Action(id=1, c=50, V=0.5, w=1.0)
+          assert a.c == 50 and a.V == 0.5
+          j = Judgment(action_id=1, J=0.4, V=0.5, delta=-0.1, mistake_flag=0)
+          assert j.J == 0.4
+          print('simulation.models OK')
+          "
+          python -c "
+          from simulation.analysis.zeta_function import ethical_zeta_product, build_m_sequence
+          z = ethical_zeta_product(primes=[], s=1.0+0j, max_terms=10)
+          assert isinstance(z, complex)
+          print('simulation.analysis.zeta_function OK')
+          "
+        continue-on-error: true
+
       - name: Test LaTeX compilation (Linux only)
         if: matrix.os == 'ubuntu-latest'
         shell: bash

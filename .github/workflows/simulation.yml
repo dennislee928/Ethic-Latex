@@ -137,53 +137,35 @@ jobs:
         run: |
           pip install pandas matplotlib seaborn tabulate
 
-      - name: Download Simulation Artifacts
+      - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: simulation-results-zipf
           path: all_results
-        continue-on-error: true
-
-      - name: Download All Simulation Results
-        run: |
-          for name in simulation-results-uniform simulation-results-power_law; do
-            if [ -d "all_results/$name" ]; then true
-            else actions/download-artifact doesn't support multiple; fi
-          done
-          mkdir -p combined_results
-          find all_results -name "*.json" -exec cp {} combined_results/ \; 2>/dev/null || true
-          if [ -z "$(ls -A combined_results 2>/dev/null)" ]; then
-            echo "[]" > combined_results/placeholder.json
-          fi
 
       - name: Download Alpha Comparison Plot
         uses: actions/download-artifact@v4
         with:
           name: alpha-comparison-plot
-          path: final_report
+          path: alpha_plot
         continue-on-error: true
 
       - name: Consolidate Results
         run: |
           mkdir -p combined_results final_report
-          for a in simulation-results-zipf simulation-results-uniform simulation-results-power_law; do
-            if [ -d "all_results/$a" ]; then find "all_results/$a" -name "*.json" -exec cp {} combined_results/ \; ; fi
-          done
-          ls -la combined_results/ || true
+          find all_results -name "*.json" -exec cp {} combined_results/ \; 2>/dev/null || true
+          if [ -z "$(ls -A combined_results 2>/dev/null)" ]; then
+            echo "[]" > combined_results/placeholder.json
+          fi
+          if [ -f alpha_plot/alpha_comparison_real_vs_simulated.png ]; then
+            cp alpha_plot/alpha_comparison_real_vs_simulated.png final_report/
+          fi
+          ls -la combined_results/ final_report/ || true
 
       - name: Generate Report
         run: |
           python scripts/generate_comprehensive_report.py \
             --input-dir combined_results \
             --output-dir final_report
-        continue-on-error: true
-
-      - name: Copy Alpha Plot to Final Report
-        run: |
-          if [ -f final_report/alpha_comparison_real_vs_simulated.png ]; then true
-          elif [ -d final_report/alpha-comparison-plot ]; then
-            cp final_report/alpha-comparison-plot/alpha_comparison_real_vs_simulated.png final_report/ 2>/dev/null || true
-          fi
         continue-on-error: true
 
       - name: Install R

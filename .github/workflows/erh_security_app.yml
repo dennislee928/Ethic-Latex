@@ -2,7 +2,7 @@ name: ERH Security App
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main"]
     paths:
       - "erh-security-app/**"
   pull_request:
