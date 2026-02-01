@@ -13,20 +13,20 @@ This plan outlines the steps to refactor the existing codebase, enhance the theo
 
 **Goal:** Address technical debt and prepare the repo for advanced extensions.
 
-- [ ] **Dependency Management & Installation**
-    - [ ] Switch to a modern package manager (recommend `uv` or `poetry`) or strictly define `requirements.txt`.
-    - [ ] Configure `setup.py` or `pyproject.toml` to support editable installs (`pip install -e .`) to resolve import issues in tests.
-    - [ ] **Fix:** Refactor `tests/test_psychohistory_integration.py` to remove `sys.path.insert` hacks.
+- [x] **Dependency Management & Installation**
+    - [x] Switch to a modern package manager (recommend `uv` or `poetry`) or strictly define `requirements.txt`.
+    - [x] Configure `setup.py` or `pyproject.toml` to support editable installs (`pip install -e .`) to resolve import issues in tests.
+    - [x] **Fix:** Refactor `tests/test_psychohistory_integration.py` to remove `sys.path.insert` hacks.
 
-- [ ] **Type Safety & Validation**
-    - [ ] Introduce **Pydantic** models.
-    - [ ] Create `erh_core/models.py`:
-        - [ ] Define `Action(BaseModel)` to replace the custom class.
-        - [ ] Define `Judgment(BaseModel)` for runtime validation of simulation data.
+- [x] **Type Safety & Validation**
+    - [x] Introduce **Pydantic** models.
+    - [x] Create `simulation/models.py` (erh_core→simulation in current structure):
+        - [x] Define `Action(BaseModel)` to replace the custom class.
+        - [x] Define `Judgment(BaseModel)` for runtime validation of simulation data.
 
-- [ ] **Performance Optimization**
-    - [ ] Vectorize `ethical_zeta_product` in `erh_core/analysis/zeta_function.py`.
-    - [ ] Replace the iterative product loop with `numpy` broadcasting/vectorization to support higher `max_terms` for the Riemann analogy.
+- [x] **Performance Optimization**
+    - [x] Vectorize `ethical_zeta_product` in `simulation/analysis/zeta_function.py` (and `erh/analysis/zeta_function.py`).
+    - [x] Replace the iterative product loop with `numpy` broadcasting/vectorization to support higher `max_terms` for the Riemann analogy.
 
 ## Phase 2: Scientific Grounding & Real Data
 
