@@ -67,12 +67,13 @@ def ethical_zeta_product(
     max_terms: int = 100
 ) -> complex:
     """
-    Compute the ethical zeta function via Euler product formula.
-    
+    Compute the ethical zeta function via Euler product formula (vectorized).
+
     ζ_E(s) = ∏_{p ∈ P} 1 / (1 - c(p)^{-s})
-    
+
     This is a toy model inspired by the Euler product for ζ(s).
-    
+    Uses numpy broadcasting for higher max_terms support.
+
     Parameters
     ----------
     primes : List[Action]
@@ -81,44 +82,47 @@ def ethical_zeta_product(
         Complex argument (typically Re(s) > 1 for convergence)
     max_terms : int, default=100
         Maximum number of terms to include
-        
+
     Returns
     -------
     complex
         Value of ζ_E(s)
-        
+
     Examples
     --------
     >>> primes = select_ethical_primes(actions)
     >>> zeta_2 = ethical_zeta_product(primes, s=2.0)
     >>> print(f"ζ_E(2) = {zeta_2}")
-    
+
     Notes
     -----
     This is a heuristic construction. In the real Riemann zeta function,
     the product runs over all primes. Here we use "ethical primes" instead.
-    
+
     Convergence requires Re(s) > 1 typically.
     """
     if len(primes) == 0:
         return 1.0
-    
+
     # Take up to max_terms primes
-    primes_subset = primes[:min(max_terms, len(primes))]
-    
-    product = 1.0 + 0j
-    
-    for prime in primes_subset:
-        c = prime.c
-        if c > 0:
-            try:
-                term = 1.0 / (1.0 - c**(-s))
-                product *= term
-            except (OverflowError, ZeroDivisionError):
-                # Skip terms that cause numerical issues
-                continue
-    
-    return product
+    primes_subset = primes[: min(max_terms, len(primes))]
+
+    # Vectorized: extract complexity values, filter c > 0
+    c_vals = np.array([p.c for p in primes_subset], dtype=float)
+    mask = c_vals > 0
+    c_vals = c_vals[mask]
+
+    if len(c_vals) == 0:
+        return 1.0
+
+    # Compute terms: 1 / (1 - c^{-s}) for all c at once
+    with np.errstate(over="ignore", invalid="ignore"):
+        terms = 1.0 / (1.0 - np.power(c_vals, -s))
+        # Replace inf/nan with 1 (neutral for product)
+        terms = np.where(np.isfinite(terms), terms, 1.0 + 0j)
+        product = np.prod(terms)
+
+    return complex(product)
 
 
 def ethical_zeta_sum(
