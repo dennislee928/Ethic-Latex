@@ -23,9 +23,9 @@ if script_dir not in sys.path:
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from core.action_space import generate_world
-from core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
-from core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth, compare_error_distributions
+from erh_core.core.action_space import generate_world
+from erh_core.core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
+from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth, compare_error_distributions
 from analysis.zeta_function import build_m_sequence, compute_spectrum, find_approximate_zeros, analyze_spectrum_peaks
 from analysis.statistics import compare_judges, generate_report
 from visualization.plots import (
