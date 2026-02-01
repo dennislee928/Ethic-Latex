@@ -28,6 +28,15 @@ class CodeComplexityResponse(BaseModel):
     method_used: str
 
 
+class HealthMonitorResponse(BaseModel):
+    """E(x) vs Riemann bound x^{1/2} for Health Monitor."""
+
+    error_curve: list[CurvePoint]
+    riemann_bound: list[CurvePoint]
+    violation: bool
+    violation_points: list[CurvePoint]
+
+
 router = APIRouter()
 
 
@@ -92,6 +101,44 @@ def get_curves(
     error_curve = [CurvePoint(x=float(e[0]), y=float(e[1])) for e in err_raw]
 
     return AnalysisCurves(pi_curve=pi_curve, error_curve=error_curve)
+
+
+@router.get("/health", response_model=HealthMonitorResponse, tags=["analysis"])
+def get_health_monitor(
+    judge_type: Literal["PIPELINE", "HUMAN", "COMBINED"] = Query("COMBINED"),
+    db: Session = Depends(get_db),
+) -> HealthMonitorResponse:
+    """
+    Health Monitor: E(x) vs Riemann bound x^{1/2}.
+    Triggers alert if |E(x)| > C·x^{1/2} (structural hallucination).
+    """
+    result = _load_and_analyze(db, judge_type=judge_type)
+    err_raw = result.get("error_curve") or []
+    error_curve = [CurvePoint(x=float(e[0]), y=float(e[1])) for e in err_raw]
+    if not error_curve:
+        return HealthMonitorResponse(
+            error_curve=[],
+            riemann_bound=[],
+            violation=False,
+            violation_points=[],
+        )
+    x_max = max(p.x for p in error_curve)
+    scale = max(1e-6, max(abs(p.y) for p in error_curve) / max(1e-6, x_max**0.5))
+    riemann_bound = [
+        CurvePoint(x=float(x), y=float(scale * (x**0.5)))
+        for x in [p.x for p in error_curve]
+    ]
+    violation_points = [
+        p for p, b in zip(error_curve, riemann_bound)
+        if abs(p.y) > b.y + 1e-6
+    ]
+    violation = len(violation_points) > 0
+    return HealthMonitorResponse(
+        error_curve=error_curve,
+        riemann_bound=riemann_bound,
+        violation=violation,
+        violation_points=violation_points,
+    )
 
 
 @router.get("/heatmap", response_model=HeatmapResponse, tags=["analysis"])
