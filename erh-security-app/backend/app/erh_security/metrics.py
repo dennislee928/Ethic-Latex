@@ -94,5 +94,3 @@ def analyze_erh_structure(
     }
 
 
-
-

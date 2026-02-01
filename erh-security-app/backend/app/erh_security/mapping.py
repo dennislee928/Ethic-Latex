@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session
 
 from ..core.models import Action, GroundTruth, Importance, Judgment
 
+from .code_complexity import calculate_code_complexity as _calculate_code_complexity
+
 
 @dataclass
 class ErhSample:
@@ -23,14 +25,22 @@ class ErhSample:
     action_id: int
 
 
-def compute_complexity(action: Action) -> float:
+def compute_complexity(
+    action: Action,
+    code_snippet: str | None = None,
+) -> float:
     """
-    Combine basic MR size signals into a bounded complexity score c ∈ [1, 100].
+    Compute complexity score c ∈ [1, 100].
+
+    When code_snippet is provided, uses Cyclomatic/Halstead complexity for
+    concrete x value. Otherwise uses MR size signals (lines, files, services).
     """
+    if code_snippet and code_snippet.strip():
+        return _calculate_code_complexity(code_snippet, method="auto")
+
     lines = max(0, action.lines_changed or 0)
     files = max(0, action.files_changed or 0)
     services = max(0, action.services_touched or 0)
-
     raw = 1.0 + (lines / 1000.0 + files / 10.0 + services * 5.0)
     return float(min(100.0, raw))
 
@@ -127,7 +137,5 @@ def build_erh_dataset(db: Session, judge_type: str = "COMBINED") -> List[ErhSamp
         )
 
     return samples
-
-
 
 

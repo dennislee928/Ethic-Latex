@@ -1,73 +1,148 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  db:
+  postgres:
     image: postgres:15-alpine
-    restart: always
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=password123
-      - POSTGRES_DB=ethic_latex_db
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: erh_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-erh_password}
+      POSTGRES_DB: erh_database
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U erh_user"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  api:
-    build: ./erh-security-app/backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://admin:password123@db:5432/ethic_latex_db
-      - PYTHONPATH=/app
-    volumes:
-      - ./erh-security-app/backend:/app
-      - ./erh_core:/app/erh_core
-      - ./simulation:/app/simulation
-    depends_on:
-      db:
-        condition: service_healthy
     restart: unless-stopped
 
-  frontend:
-    build: ./frontend
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     ports:
-      - "3000:80"
-    environment:
-      - VITE_API_BASE_URL=http://localhost:8000
-    depends_on:
-      - api
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   jupyter:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
     ports:
       - "8888:8888"
     volumes:
       - ./simulation:/app/simulation
       - ./figures:/app/figures
+      - ./data:/app/data
     environment:
       - JUPYTER_ENABLE_LAB=yes
-    command: python -m notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+      - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
+    command: >
+      python -m notebook
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --NotebookApp.token=''
+      --NotebookApp.password=''
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   streamlit:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
     ports:
       - "8501:8501"
     volumes:
       - ./simulation:/app/simulation
       - ./figures:/app/figures
-    command: streamlit run simulation/app.py --server.port=8501 --server.address=0.0.0.0
-    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+    command: >
+      streamlit run simulation/app.py
+      --server.port=8501
+      --server.address=0.0.0.0
     depends_on:
       - jupyter
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  erh-backend:
+    build:
+      context: ./erh-security-app
+      dockerfile: Dockerfile
+      target: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./erh-security-app/backend:/app
+    environment:
+      - DATABASE_URL=postgresql://erh_user:${POSTGRES_PASSWORD:-erh_password}@postgres:5432/erh_database
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  erh-frontend:
+    build:
+      context: ./erh-security-app
+      dockerfile: Dockerfile
+      target: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://erh-backend:8000
+    depends_on:
+      - erh-backend
+    restart: unless-stopped
+
+  quantum-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: quantum
+    volumes:
+      - ./simulation:/app/simulation
+      - ./data:/app/data
+    environment:
+      - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
+      - REDIS_URL=redis://redis:6379/1
+      - WORKER_CONCURRENCY=4
+    command: >
+      python -m simulation.quantum.worker
+      --redis-url redis://redis:6379/1
+      --batch-size 100
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 2
 
 volumes:
   postgres_data:
+  redis_data:
 
+networks:
+  default:
+    name: erh-network
