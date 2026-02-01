@@ -21,13 +21,22 @@ if [ -z "${VIRTUAL_ENV:-}" ]; then
   VENV="$ROOT/.venv"
   if [ ! -d "$VENV" ]; then
     printf "Creating .venv at %s (use it next time: source .venv/bin/activate)\n" "$VENV"
-    python3 -m venv "$VENV" 2>/dev/null || python -m venv "$VENV" 2>/dev/null || true
+    for py in python3 python; do
+      if command -v "$py" &>/dev/null && "$py" -m venv "$VENV" 2>/dev/null; then
+        break
+      fi
+    done
   fi
   if [ -x "$VENV/bin/python" ]; then
     export VIRTUAL_ENV="$VENV"
     PY="$VENV/bin/python"
-    PIP="$VENV/bin/pip"
+    # Ensure pip exists in venv (e.g. ensurepip for minimal venv)
+    if [ ! -x "$VENV/bin/pip" ]; then
+      "$PY" -m ensurepip --upgrade 2>/dev/null || true
+    fi
+    PIP="${VENV}/bin/pip"
   else
+    printf "Warning: .venv not available, using system Python (bootstrap may fail with PEP 668).\n" 1>&2
     PY="${PY:-python}"
     PIP="${PIP:-pip}"
   fi
