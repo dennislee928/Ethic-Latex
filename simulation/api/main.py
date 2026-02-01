@@ -1,9 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from simulation.api.schemas import HealthResponse, SimulationRequest, SimulationResponse
-from simulation.core.action_space import generate_world
-from simulation.core.judgement_system import BiasedJudge, evaluate_judgement
-from simulation.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
+# Import from shared core (erh_core) or fallback to local
+try:
+    from erh_core.core.action_space import generate_world
+    from erh_core.core.judgement_system import BiasedJudge, evaluate_judgement
+    from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
+except ImportError:
+    # Fallback to simulation.core for backward compatibility
+    from simulation.core.action_space import generate_world
+    from simulation.core.judgement_system import BiasedJudge, evaluate_judgement
+    from simulation.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
 
 app = FastAPI(
     title="Ethical Riemann Hypothesis API",

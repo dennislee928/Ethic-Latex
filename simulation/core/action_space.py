@@ -3,47 +3,14 @@ Action Space Module
 
 This module defines the Action class and functions for generating moral action spaces
 with various complexity and value distributions.
+
+Action is a Pydantic model for type safety and runtime validation (see simulation.models).
 """
 
 import numpy as np
 from typing import List, Optional, Literal
-from dataclasses import dataclass
 
-
-@dataclass
-class Action:
-    """
-    Represents a single action/case in the moral judgment space.
-    
-    Attributes
-    ----------
-    id : int
-        Unique identifier for the action
-    c : int
-        Complexity level (positive integer)
-    V : float
-        True moral value (ground truth), typically in [-1, 1]
-        -1 = extremely immoral, 0 = neutral, +1 = extremely moral
-    w : float
-        Importance weight (e.g., number of people affected, severity)
-    J : Optional[float]
-        Judgment value assigned by a judge (initially None)
-    delta : Optional[float]
-        Error: Δ(a) = J(a) - V(a) (initially None)
-    mistake_flag : Optional[int]
-        Binary indicator: 1 if |Δ| > τ, 0 otherwise (initially None)
-    """
-    id: int
-    c: int  # complexity
-    V: float  # true moral value
-    w: float  # importance weight
-    J: Optional[float] = None  # judgment
-    delta: Optional[float] = None  # error
-    mistake_flag: Optional[int] = None  # misjudgment indicator
-    severity: Optional[float] = None  # fuzzy severity (0-1) for continuous error assessment
-    
-    def __repr__(self):
-        return f"Action(id={self.id}, c={self.c}, V={self.V:.2f}, w={self.w:.2f})"
+from simulation.models import Action
 
 
 def generate_world(
@@ -146,12 +113,7 @@ def generate_world(
         complexity_factor = importance_correlation * (c / max_c)
         w = base_importance * (1 + complexity_factor)
         
-        action = Action(
-            id=i,
-            c=c,
-            V=V,
-            w=w
-        )
+        action = Action(id=i, c=c, V=float(V), w=float(w))
         actions.append(action)
     
     return actions

@@ -26,10 +26,10 @@ REPORT_PATH = OUTPUT_DIR / "alpha_stability_report.md"
 
 
 def _setup_paths() -> None:
-    """Ensure simulation package is importable."""
-    sim_path = str(SIM_DIR)
-    if sim_path not in sys.path:
-        sys.path.insert(0, sim_path)
+    """Ensure simulation package is importable (project root)."""
+    root = str(PROJECT_ROOT)
+    if root not in sys.path:
+        sys.path.insert(0, root)
 
 
 def _run_single_seed(seed: int) -> Dict[str, Dict[str, float]]:
@@ -37,15 +37,15 @@ def _run_single_seed(seed: int) -> Dict[str, Dict[str, float]]:
     Run a lightweight simulation for a single random seed and
     return {judge_name: {'alpha': float, 'r2': float}}.
     """
-    from core.action_space import generate_world
-    from core.judgement_system import (
+    from simulation.core.action_space import generate_world
+    from simulation.core.judgement_system import (
         BiasedJudge,
         NoisyJudge,
         ConservativeJudge,
         RadicalJudge,
         batch_evaluate,
     )
-    from analysis.statistics import compare_judges
+    from simulation.analysis.statistics import compare_judges
 
     actions = generate_world(
         num_actions=1000,

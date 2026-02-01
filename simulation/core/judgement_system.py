@@ -3,12 +3,17 @@ Judgment System Module
 
 This module defines various judge classes that evaluate moral actions,
 introducing different types of biases, noise, and judgment strategies.
+
+Supports optional QuantumOracle for non-binary superposition judgments.
 """
 
 import numpy as np
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, TYPE_CHECKING
 from abc import ABC, abstractmethod
 from .action_space import Action
+
+if TYPE_CHECKING:
+    from simulation.quantum.interface import QuantumOracle
 
 
 class BaseJudge(ABC):
@@ -239,6 +244,29 @@ class RadicalJudge(BaseJudge):
         return np.clip(J, -1, 1)
 
 
+class QuantumJudge(BaseJudge):
+    """
+    Judge that uses a QuantumOracle for superposition-based judgments.
+
+    |ψ⟩ = α|Ethical⟩ + β|Unethical⟩; measurement yields J ∈ [-1, 1].
+    """
+
+    def __init__(
+        self,
+        quantum_oracle: "QuantumOracle",
+        name: str = "QuantumJudge",
+    ):
+        super().__init__(name)
+        self._oracle = quantum_oracle
+
+    def judge(self, action: Action) -> float:
+        difficulty = action.c / 100.0
+        if hasattr(self._oracle, "judge_action"):
+            return self._oracle.judge_action(difficulty)
+        alpha_sq, beta_sq = self._oracle.collapse_wavefunction((difficulty,))
+        return float(2 * alpha_sq - 1)
+
+
 class CustomJudge(BaseJudge):
     """
     A judge with a custom judgment function.
@@ -264,6 +292,37 @@ class CustomJudge(BaseJudge):
         Apply custom judgment function.
         """
         return self.judge_func(action)
+
+
+def evaluate_action_quantum(
+    action: Action,
+    quantum_oracle: "QuantumOracle",
+    tau: float = 0.3,
+) -> float:
+    """
+    Evaluate a single action via quantum measurement.
+
+    |ψ⟩ = α|Ethical⟩ + β|Unethical⟩; J = 2|α|² - 1 ∈ [-1, 1].
+
+    Parameters
+    ----------
+    action : Action
+        Action to judge
+    quantum_oracle : QuantumOracle
+        Oracle with judge_action(difficulty) method
+    tau : float
+        Mistake threshold (for consistency; not used in quantum path)
+
+    Returns
+    -------
+    float
+        Judgment J(a)
+    """
+    difficulty = action.c / 100.0
+    if hasattr(quantum_oracle, "judge_action"):
+        return quantum_oracle.judge_action(difficulty)
+    alpha_sq, _ = quantum_oracle.collapse_wavefunction((difficulty,))
+    return float(2 * alpha_sq - 1)
 
 
 def evaluate_judgement(

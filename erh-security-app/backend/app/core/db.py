@@ -14,11 +14,14 @@ class Base(DeclarativeBase):
 
 def get_engine():
     settings = get_settings()
+    connect_args = {}
+    if settings.database_url.startswith("sqlite"):
+        connect_args = {"check_same_thread": False}
+    # PostgreSQL uses connection pooling by default, no special args needed
     return create_engine(
         settings.database_url,
-        connect_args={"check_same_thread": False}
-        if settings.database_url.startswith("sqlite")
-        else {},
+        connect_args=connect_args,
+        pool_pre_ping=True,  # Verify connections before using
     )
 
 

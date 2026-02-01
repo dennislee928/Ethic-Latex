@@ -13,6 +13,12 @@ from .ethical_primes import (
     select_ethical_primes,
     compute_Pi_and_error,
     analyze_error_growth,
+    ethical_primality_test,
+)
+from .scenario_generator import (
+    action_to_scenario_text,
+    actions_to_prompts,
+    DEFAULT_SYSTEM_PROMPT,
 )
 
 # Psychohistory modules
@@ -41,6 +47,10 @@ __all__ = [
     "select_ethical_primes",
     "compute_Pi_and_error",
     "analyze_error_growth",
+    "ethical_primality_test",
+    "action_to_scenario_text",
+    "actions_to_prompts",
+    "DEFAULT_SYSTEM_PROMPT",
     # Psychohistory
     "compute_Pi_temporal",
     "compute_E_temporal",
@@ -56,4 +66,3 @@ __all__ = [
     "ABMSimulator",
     "HybridPsychohistoryModel",
 ]
-
