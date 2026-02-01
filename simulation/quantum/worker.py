@@ -44,6 +44,9 @@ def get_redis():
         return None
     try:
         import redis
+    except ImportError:
+        return None
+    try:
         _redis_client = redis.from_url(redis_url, decode_responses=True)
         _redis_client.ping()
         return _redis_client
