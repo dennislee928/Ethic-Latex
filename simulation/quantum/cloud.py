@@ -33,12 +33,30 @@ from .interface import QuantumOracle
 def _get_ibm_token() -> str | None:
     token = os.environ.get("IBM_QUANTUM_TOKEN")
     if not token:
+        # Load .env from repo root (simulation/quantum/cloud.py -> parent.parent.parent)
         try:
-            from dotenv import load_dotenv
+            from pathlib import Path
 
-            load_dotenv()
-            token = os.environ.get("IBM_QUANTUM_TOKEN")
-        except ImportError:
+            _this_file = Path(__file__).resolve()
+            _repo_root = _this_file.parent.parent.parent
+            _env_file = _repo_root / ".env"
+            if _env_file.exists():
+                try:
+                    from dotenv import load_dotenv
+
+                    load_dotenv(_env_file)
+                    token = os.environ.get("IBM_QUANTUM_TOKEN")
+                except ImportError:
+                    for line in _env_file.read_text().splitlines():
+                        line = line.strip()
+                        if not line or line.startswith("#"):
+                            continue
+                        if "=" in line:
+                            k, _, v = line.partition("=")
+                            if k.strip() == "IBM_QUANTUM_TOKEN":
+                                token = v.strip().strip('"').strip("'")
+                                break
+        except Exception:
             pass
     return token
 
@@ -77,6 +95,18 @@ class CloudQuantumJudge(QuantumOracle):
         self._backend_name = backend_name
         self.batch_size = batch_size
 
+    def _get_backend(self):
+        """Resolve backend by name, or pick first available simulator if name not found."""
+        try:
+            return self._service.backend(name=self._backend_name)
+        except Exception:
+            backends = self._service.backends(simulator=True, operational=True)
+            if not backends:
+                raise RuntimeError(
+                    "No simulator backend available. Check instance/plan at https://quantum.cloud.ibm.com/"
+                )
+            return backends[0]
+
     def collapse_wavefunction(
         self,
         complexity_amplitudes: Tuple[float, ...],
@@ -101,7 +131,7 @@ class CloudQuantumJudge(QuantumOracle):
         qc.rx(theta_b, 1)
         qc.measure([0, 1], [0, 1])
 
-        backend = self._service.backend(name=self._backend_name)
+        backend = self._get_backend()
         with Session(backend=backend) as session:
             sampler = Sampler(mode=session)
             pub = (qc,)
@@ -140,7 +170,7 @@ class CloudQuantumJudge(QuantumOracle):
             qc.measure(0, 0)
             circuits.append(qc)
 
-        backend = self._service.backend(name=self._backend_name)
+        backend = self._get_backend()
         with Session(backend=backend) as session:
             sampler = Sampler(mode=session)
             pubs = [(qc,) for qc in circuits[: self.batch_size]]
