@@ -85,8 +85,8 @@ jobs:
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           python -c "
           from simulation.quantum.cloud import CloudQuantumJudge
-          judge = CloudQuantumJudge(shots=64)
-          j = judge.judge_action(difficulty=0.5)
+          judge = CloudQuantumJudge()
+          j = judge.batch_judge([0.5])[0]
           assert -1 <= j <= 1, f'judgment {j} out of range'
           print('CloudQuantumJudge OK')
           "
