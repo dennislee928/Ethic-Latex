@@ -146,12 +146,7 @@ def generate_world(
         complexity_factor = importance_correlation * (c / max_c)
         w = base_importance * (1 + complexity_factor)
         
-        action = Action(
-            id=i,
-            c=c,
-            V=V,
-            w=w
-        )
+        action = Action(id=i, c=c, V=float(V), w=float(w))
         actions.append(action)
     
     return actions
