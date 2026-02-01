@@ -584,7 +584,7 @@ This reflects the intuition that simple moral cases are often clear-cut, while c
 
 \subsection{Judgment System Models}
 
-We implement four archetypal judges:
+We implement five archetypal judges:
 
 \begin{enumerate}
     \item \textbf{BiasedJudge}: Systematic bias $b(c)$ increasing with complexity:
@@ -610,6 +610,8 @@ We implement four archetypal judges:
     J(a) = \alpha \cdot V(a) + \mathcal{N}(0, \sigma^2)
     \]
     where $\alpha > 1$.
+    
+    \item \textbf{QuantumJudge}: Superposition-based judgment via quantum measurement. Let $\theta = c(a)/100 \cdot \pi$; apply Rx$(\theta)$ rotation to $|0\rangle$. Measurement yields $J(a) = 2|\alpha|^2 - 1 \in [-1, 1]$, where $|\alpha|^2$ is the probability of measuring ``ethical'' ($|0\rangle$). Uses qiskit-aer when available; otherwise NumPy fallback for deterministic reproducibility.
 \end{enumerate}
 
 \subsection{Analysis Pipeline}
@@ -665,6 +667,7 @@ To ensure experimental reproducibility, we adopted the following measures:
         \item \textbf{Noisy Judge}: $J(a) = V(a) + \mathcal{N}(0, (0.3 \cdot \sqrt{c(a)/100})^2)$, noise standard deviation grows with square root of complexity
         \item \textbf{Conservative Judge}: $J(a) = (1 - 0.5 \cdot c(a)/100) \cdot V(a) + \mathcal{N}(0, 0.1^2)$, shrinkage factor increases linearly with complexity
         \item \textbf{Radical Judge}: $J(a) = 1.5 \cdot V(a) + \mathcal{N}(0, 0.1^2)$, fixed amplification factor
+        \item \textbf{Quantum Judge}: Rx$(\theta)$ with $\theta = c(a)/100 \cdot \pi$, shots=512; qiskit-aer or NumPy fallback
     \end{itemize}
     \item \textbf{Error growth exponent fitting}: We fit $|E(x)| \sim C x^\alpha$ using linear regression in log-log scale, where $\alpha$ is the error growth exponent. Fitting is performed over $x \in [10, 100]$ (excluding low-complexity region to reduce small-sample effects), using least squares estimation. We also report bootstrap confidence intervals for $\alpha$ obtained by resampling the $(x, |E(x)|)$ pairs, and we treat $R^2$ as a supplementary diagnostic rather than a primary model selection criterion.
     \item \textbf{Experimental repeatability}: Although the figures in the main text are based on a single representative run, we verified statistical stability across independent runs with $200$ different random seeds. For each judge, we re-estimate the growth exponent $\alpha$ across all seeds and compute mean, standard deviation, coefficient of variation (CV), and empirical 95\% confidence intervals. The CV of $\alpha$ remains below $0.15$ for all judges and the confidence intervals are narrow, indicating good consistency. Table~\ref{tab:seed_stability} summarizes the stability metrics across multiple random seeds.
@@ -753,13 +756,14 @@ Biased       & 0.132 & 0.185 & $-0.629$ & Yes & Structurally safe but biased & S
 Noisy        & 0.256 & 0.209 & $-0.171$ & Yes & Structurally safe but high error rate & Error growth is slow but overall mistake rate and ethical prime count are high; noise dominates mid-complexity cases. \\
 Conservative & 0.611 & 0.342 & $-0.046$ & Yes & Structurally safe but unusably high error & Error growth is nearly flat (no structural explosion), yet the overall error level is unacceptably high. \\
 Radical      & 0.149 & 0.183 & $-0.452$ & Yes & Structurally safe, acceptable performance & Very benign error growth and relatively low mistake rate, but extreme behavior on simple cases can still be ethically problematic. \\
+Quantum      & [TBD] & [TBD] & [TBD] & [TBD] & [TBD] & Quantum superposition judgment; results filled by \texttt{update\_latex.py} from simulation. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Representative Results}
 
-We present results for four judgment systems evaluated on 2000 actions with Zipf-distributed complexity.
+We present results for five judgment systems evaluated on 2000 actions with Zipf-distributed complexity.
 
 \subsubsection{BiasedJudge}
 
@@ -825,6 +829,20 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
 
 \textbf{Interpretation}: The Radical Judge displays an error growth exponent of $-0.452$, showing rapid decrease in error as complexity increases, which is the best performance mathematically. ERH-style bound: satisfied ($\alpha = -0.452 < 0.5$); however, the system is far from the ``critical'' ERH regime. It maintains a relatively low mistake rate (14.9\%) with a moderate number of ethical primes (26), and $R^2 = 0.691$ indicates good fit quality. The strategy of amplifying extreme values produces noticeable errors in low-complexity cases, but as complexity increases, the deviation from true values decreases, possibly because the amplification effect provides clearer discriminative signals in ambiguous cases.
 
+\subsubsection{QuantumJudge}
+
+\textbf{Parameters}: Rx$(\theta)$, $\theta = c(a)/100 \cdot \pi$; shots=512, seed=42.
+
+\textbf{Results}:
+\begin{itemize}
+    \item Mistake rate: [TBD]\%
+    \item Number of ethical primes: [TBD]
+    \item Estimated exponent: $\alpha = $ [TBD]
+    \item ERH satisfied: [YES/NO]
+\end{itemize}
+
+\textbf{Interpretation}: [TBD after running simulations with Quantum Judge.]
+
 % Figures will be inserted here by the figure integration script
 
 \begin{figure}[htbp]
@@ -867,6 +885,13 @@ We present results for four judgment systems evaluated on 2000 actions with Zipf
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
   \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. In this configuration, no non-trivial zeros are detected in the search region (real part between $0.3$ and $0.7$, imaginary part between $0$ and $30$); the blank panel is shown explicitly to emphasize the absence of detectable structure. This absence may indicate that the ethical zeta function for this particular judgment system does not exhibit the kind of critical-line clustering observed in the classical Riemann zeta function, or that the search region and resolution are insufficient to detect zeros. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the ethical zeta function may require different analytical approaches or exhibit zeros in regions not captured by this search.}
   \label{fig:zeros}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/paper_fig8_quantum_judge.pdf}
+  \caption{$\Pi(x)$, $B(x)$, and $E(x)$ for the Quantum Judge. Superposition-based judgment via Rx$(\theta)$ with $\theta = c(a)/100 \cdot \pi$; uses qiskit-aer or NumPy fallback.}
+  \label{fig:quantum_judge}
 \end{figure}
 
 % \input{figures/figures_content.tex}

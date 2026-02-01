@@ -462,7 +462,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週�
 
 \subsection{判斷系統模型}
 
-我們實現四種典型判斷者：
+我們實現五種典型判斷者：
 
 \begin{enumerate}
     \item \textbf{偏見判斷者}：系統性偏見 $b(c)$ 隨複雜度增加：
@@ -488,6 +488,8 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週�
     J(a) = \alpha \cdot V(a) + \mathcal{N}(0, \sigma^2)
     \]
     其中 $\alpha > 1$。
+    
+    \item \textbf{量子判斷者}：基於疊加態的量子測量判斷。令 $\theta = c(a)/100 \cdot \pi$；對 $|0\rangle$ 施加 Rx$(\theta)$ 旋轉。測量得 $J(a) = 2|\alpha|^2 - 1 \in [-1, 1]$，其中 $|\alpha|^2$ 為測得「倫理」（$|0\rangle$）之機率。可用 qiskit-aer 或 NumPy 後備以確保可重現性。
 \end{enumerate}
 
 \subsection{分析流程}
@@ -543,6 +545,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理素數分布的「週�
         \item \textbf{隨機判斷者}：$J(a) = V(a) + \mathcal{N}(0, (0.3 \cdot \sqrt{c(a)/100})^2)$，雜訊標準差隨複雜度平方根增長
         \item \textbf{保守判斷者}：$J(a) = (1 - 0.5 \cdot c(a)/100) \cdot V(a) + \mathcal{N}(0, 0.1^2)$，收縮因子隨複雜度線性增加
         \item \textbf{激進判斷者}：$J(a) = 1.5 \cdot V(a) + \mathcal{N}(0, 0.1^2)$，固定放大因子
+        \item \textbf{量子判斷者}：Rx$(\theta)$，$\theta = c(a)/100 \cdot \pi$，shots=512；qiskit-aer 或 NumPy 後備
     \end{itemize}
     \item \textbf{誤差增長指數擬合}：使用對數-對數尺度下的線性回歸擬合 $|E(x)| \sim C x^\alpha$，其中 $\alpha$ 為誤差增長指數。擬合範圍為 $x \in [10, 100]$（排除低複雜度區域以減少小樣本效應），使用最小二乘法估計參數，並計算決定係數 $R^2$ 作為擬合品質指標。
     \item \textbf{實驗重複性}：雖然本文展示的結果為單次運行的代表性輸出，但我們在獨立運行（不同隨機種子）上驗證了結果的統計穩定性。誤差增長指數 $\alpha$ 的變異係數（標準差/平均值）小於 $0.15$，表明結果具有良好的一致性。
@@ -602,13 +605,14 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 隨機判斷者       & 0.256 & 0.209 & $-0.171$ & 是 & 結構安全但錯誤率高 & 誤差增長緩慢，但整體錯誤率與倫理素數數量偏高，顯示中等複雜度區域受雜訊主導。 \\
 保守判斷者       & 0.611 & 0.342 & $-0.046$ & 是 & 結構安全但錯誤率過高不可用 & 誤差增長幾乎為零（沒有結構性爆炸），但整體錯誤水準極高，在道德上難以接受。 \\
 激進判斷者       & 0.149 & 0.183 & $-0.452$ & 是 & 結構安全，表現可接受 & 誤差增長相當溫和且錯誤率較低，但在簡單案例上的極端行為仍可能帶來倫理風險。 \\
+量子判斷者       & [待填入] & [待填入] & [待填入] & [待填入] & [待填入] & 量子疊加態判斷；數值由模擬腳本填入。 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{代表性結果}
 
-我們呈現對 2000 個具有 Zipf 分布複雜度的行動進行評估的四個判斷系統的結果。
+我們呈現對 2000 個具有 Zipf 分布複雜度的行動進行評估的五個判斷系統的結果。
 
 \subsubsection{偏見判斷者}
 
@@ -674,6 +678,20 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 
 \textbf{解釋}：激進判斷者的誤差增長指數為 $-0.452$，顯示誤差隨複雜度增加而快速下降，在數學意義上表現最佳。ERH 式界限：滿足（$\alpha = -0.452 < 0.5$）；然而，系統遠離「臨界」ERH 區間。錯誤率相對較低（14.9\%），倫理素數數量適中（26），$R^2 = 0.691$ 顯示良好的擬合。放大極端值的策略在低複雜度案例中產生明顯誤差，但隨著複雜度增加，其判斷與真實值的偏差反而減小，可能因為極端值的放大效應在模糊案例中提供了更清晰的判別信號。
 
+\subsubsection{量子判斷者}
+
+\textbf{參數}：Rx$(\theta)$，$\theta = c(a)/100 \cdot \pi$；shots=512，seed=42。
+
+\textbf{結果}：
+\begin{itemize}
+    \item 錯誤率：[待填入]\%
+    \item 倫理素數數量：[待填入]
+    \item 估計指數：$\alpha = $ [待填入]
+    \item ERH 滿足：[是/否]
+\end{itemize}
+
+\textbf{解釋}：[待模擬後填入。]
+
 % 圖表將由圖表整合腳本插入此處
 
 \begin{figure}[htbp]
@@ -716,6 +734,13 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
   \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
   \caption{倫理 zeta 函數 $\zeta_E(s)$ 在複平面中的零點分布。圖中顯示在實部介於 $0.3$ 至 $0.7$ 之間的區域內搜尋到的近似零點。零點的分布模式反映了倫理素數分布的深層結構規律性。與經典黎曼 zeta 函數的零點集中在臨界線 $\text{Re}(s) = 1/2$ 附近不同，倫理 zeta 函數的零點分布可能呈現不同的模式，這可能揭示了道德判斷系統的獨特結構特徵。}
   \label{fig:zeros}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/paper_fig8_quantum_judge.pdf}
+  \caption{量子判斷者的 $\Pi(x)$、$B(x)$ 與 $E(x)$。Rx$(\theta)$ 疊加態判斷，$\theta = c(a)/100 \cdot \pi$；使用 qiskit-aer 或 NumPy 後備。}
+  \label{fig:quantum_judge}
 \end{figure}
 
 % \input{figures/figures_content.tex}

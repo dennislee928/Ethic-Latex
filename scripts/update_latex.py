@@ -63,7 +63,8 @@ def update_latex_file(latex_path, results):
         'BiasedJudge': 'Biased',
         'NoisyJudge': 'Noisy',
         'ConservativeJudge': 'Conservative',
-        'RadicalJudge': 'Radical'
+        'RadicalJudge': 'Radical',
+        'QuantumJudge': 'Quantum'
     }
 
     updated_content = content
@@ -146,7 +147,8 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
             '偏見判斷者': 'Biased',
             '隨機判斷者': 'Noisy',
             '保守判斷者': 'Conservative',
-            '激進判斷者': 'Radical'
+            '激進判斷者': 'Radical',
+            '量子判斷者': 'Quantum'
         }
         
         updated_content = content
