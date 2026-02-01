@@ -25,7 +25,7 @@ from simulation.core.judgement_system import (
 from erh_core.core.ethical_primes import (
     select_ethical_primes, compute_Pi_and_error, analyze_error_growth
 )
-from simulation.analysis.erh_checks import check_erh_bound
+from erh_core.analysis.erh_checks import check_erh_bound
 
 
 class TestJudgeStrategies:
@@ -36,15 +36,15 @@ class TestJudgeStrategies:
         judge = BiasedJudge(bias_strength=0.2)
         actions = generate_world(num_actions=100, random_seed=42)
         
-        # Evaluate actions
+        # Evaluate actions (judgment in [-1, 1] per Action model)
         for action in actions[:10]:
             judgment = judge.judge(action)
             assert isinstance(judgment, (int, float))
-            assert 0 <= judgment <= 1
+            assert -1 <= judgment <= 1
         
         # Test that bias increases with complexity
-        simple_action = Action(c=1, v=0.5, w=1.0)
-        complex_action = Action(c=50, v=0.5, w=1.0)
+        simple_action = Action(id=0, c=1, V=0.5, w=1.0)
+        complex_action = Action(id=1, c=50, V=0.5, w=1.0)
         
         simple_judgment = judge.judge(simple_action)
         complex_judgment = judge.judge(complex_action)
@@ -54,8 +54,9 @@ class TestJudgeStrategies:
     
     def test_noisy_judge(self):
         """Test NoisyJudge adds random noise."""
-        judge = NoisyJudge(noise_scale=0.3, random_seed=42)
-        action = Action(c=10, v=0.5, w=1.0)
+        np.random.seed(42)
+        judge = NoisyJudge(noise_scale=0.3)
+        action = Action(id=0, c=10, V=0.5, w=1.0)
         
         judgments = [judge.judge(action) for _ in range(10)]
         
@@ -65,22 +66,22 @@ class TestJudgeStrategies:
     def test_conservative_judge(self):
         """Test ConservativeJudge tends to avoid extremes."""
         judge = ConservativeJudge(threshold=0.5)
-        extreme_action = Action(c=10, v=0.9, w=1.0)  # High value
+        extreme_action = Action(id=0, c=10, V=0.9, w=1.0)  # High value
         
         judgment = judge.judge(extreme_action)
         
         # Conservative judge should pull toward threshold
-        assert judgment < extreme_action.v
+        assert judgment < extreme_action.V
     
     def test_radical_judge(self):
         """Test RadicalJudge amplifies differences."""
         judge = RadicalJudge(amplification=1.5)
-        moderate_action = Action(c=10, v=0.6, w=1.0)
+        moderate_action = Action(id=0, c=10, V=0.6, w=1.0)
         
         judgment = judge.judge(moderate_action)
         
         # Radical judge should amplify away from 0.5
-        assert abs(judgment - 0.5) > abs(moderate_action.v - 0.5)
+        assert abs(judgment - 0.5) > abs(moderate_action.V - 0.5)
 
 
 class TestERHDetermination:
@@ -133,7 +134,7 @@ class TestERHDetermination:
         # Evaluate and mark mistakes
         for action in actions:
             judgment = judge.judge(action)
-            action.delta = judgment - action.v
+            action.delta = judgment - action.V
             action.mistake_flag = 1 if abs(action.delta) > 0.3 else 0
         
         # Test importance strategy
@@ -167,7 +168,7 @@ class TestPiBErrorComputation:
         # Evaluate actions
         for action in actions:
             judgment = judge.judge(action)
-            action.delta = judgment - action.v
+            action.delta = judgment - action.V
             action.mistake_flag = 1 if abs(action.delta) > 0.3 else 0
         
         primes = select_ethical_primes(actions, importance_quantile=0.9)

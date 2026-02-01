@@ -6,9 +6,9 @@ Total Tests: 36
 Passed: 36
 Failed: 0
 Success Rate: 100.0%
-Total Time: 40.51s
+Total Time: 42.26s
 
-Timestamp: 2026-02-01T11:33:55.623688
+Timestamp: 2026-02-01T11:36:55.444897
 
 ======================================================================
 DETAILED RESULTS
@@ -16,15 +16,15 @@ DETAILED RESULTS
 
 Test: param_sweep_agents10_toporandom_steps5
   Status: PASSED
-  Time: 0.65s
+  Time: 0.70s
 
 Test: param_sweep_agents10_toporandom_steps10
   Status: PASSED
-  Time: 0.30s
+  Time: 0.31s
 
 Test: param_sweep_agents10_toporandom_steps20
   Status: PASSED
-  Time: 0.72s
+  Time: 0.58s
 
 Test: param_sweep_agents10_toposmall_world_steps5
   Status: PASSED
@@ -32,11 +32,11 @@ Test: param_sweep_agents10_toposmall_world_steps5
 
 Test: param_sweep_agents10_toposmall_world_steps10
   Status: PASSED
-  Time: 0.33s
+  Time: 0.29s
 
 Test: param_sweep_agents10_toposmall_world_steps20
   Status: PASSED
-  Time: 0.58s
+  Time: 0.57s
 
 Test: param_sweep_agents10_toposcale_free_steps5
   Status: PASSED
@@ -44,117 +44,117 @@ Test: param_sweep_agents10_toposcale_free_steps5
 
 Test: param_sweep_agents10_toposcale_free_steps10
   Status: PASSED
-  Time: 0.47s
+  Time: 0.30s
 
 Test: param_sweep_agents10_toposcale_free_steps20
   Status: PASSED
-  Time: 0.63s
+  Time: 0.99s
 
 Test: param_sweep_agents50_toporandom_steps5
   Status: PASSED
-  Time: 0.34s
+  Time: 0.36s
 
 Test: param_sweep_agents50_toporandom_steps10
   Status: PASSED
-  Time: 0.58s
+  Time: 0.79s
 
 Test: param_sweep_agents50_toporandom_steps20
   Status: PASSED
-  Time: 1.18s
+  Time: 1.25s
 
 Test: param_sweep_agents50_toposmall_world_steps5
   Status: PASSED
-  Time: 0.30s
+  Time: 0.33s
 
 Test: param_sweep_agents50_toposmall_world_steps10
   Status: PASSED
-  Time: 0.58s
+  Time: 0.60s
 
 Test: param_sweep_agents50_toposmall_world_steps20
   Status: PASSED
-  Time: 1.16s
+  Time: 1.22s
 
 Test: param_sweep_agents50_toposcale_free_steps5
   Status: PASSED
-  Time: 0.30s
+  Time: 0.31s
 
 Test: param_sweep_agents50_toposcale_free_steps10
   Status: PASSED
-  Time: 0.74s
+  Time: 0.79s
 
 Test: param_sweep_agents50_toposcale_free_steps20
   Status: PASSED
-  Time: 1.16s
+  Time: 1.23s
 
 Test: param_sweep_agents100_toporandom_steps5
   Status: PASSED
-  Time: 0.49s
+  Time: 0.52s
 
 Test: param_sweep_agents100_toporandom_steps10
   Status: PASSED
-  Time: 0.98s
+  Time: 1.02s
 
 Test: param_sweep_agents100_toporandom_steps20
   Status: PASSED
-  Time: 2.05s
+  Time: 1.99s
 
 Test: param_sweep_agents100_toposmall_world_steps5
   Status: PASSED
-  Time: 0.52s
+  Time: 0.54s
 
 Test: param_sweep_agents100_toposmall_world_steps10
   Status: PASSED
-  Time: 0.96s
+  Time: 1.03s
 
 Test: param_sweep_agents100_toposmall_world_steps20
   Status: PASSED
-  Time: 2.06s
+  Time: 2.20s
 
 Test: param_sweep_agents100_toposcale_free_steps5
   Status: PASSED
-  Time: 0.50s
+  Time: 0.51s
 
 Test: param_sweep_agents100_toposcale_free_steps10
   Status: PASSED
-  Time: 0.97s
+  Time: 1.01s
 
 Test: param_sweep_agents100_toposcale_free_steps20
   Status: PASSED
-  Time: 1.92s
+  Time: 2.01s
 
 Test: param_sweep_agents200_toporandom_steps5
   Status: PASSED
-  Time: 0.95s
+  Time: 0.99s
 
 Test: param_sweep_agents200_toporandom_steps10
   Status: PASSED
-  Time: 2.22s
+  Time: 2.06s
 
 Test: param_sweep_agents200_toporandom_steps20
   Status: PASSED
-  Time: 3.55s
+  Time: 4.06s
 
 Test: param_sweep_agents200_toposmall_world_steps5
   Status: PASSED
-  Time: 0.93s
+  Time: 0.97s
 
 Test: param_sweep_agents200_toposmall_world_steps10
   Status: PASSED
-  Time: 1.77s
+  Time: 1.99s
 
 Test: param_sweep_agents200_toposmall_world_steps20
   Status: PASSED
-  Time: 3.78s
+  Time: 3.68s
 
 Test: param_sweep_agents200_toposcale_free_steps5
   Status: PASSED
-  Time: 0.91s
+  Time: 0.96s
 
 Test: param_sweep_agents200_toposcale_free_steps10
   Status: PASSED
-  Time: 1.78s
+  Time: 1.85s
 
 Test: param_sweep_agents200_toposcale_free_steps20
   Status: PASSED
-  Time: 3.85s
+  Time: 3.94s
 
