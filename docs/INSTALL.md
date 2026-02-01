@@ -6,14 +6,18 @@ This guide will help you install all dependencies for the Ethical Riemann Hypoth
 
 ### Option 1: Use Installation Script (Recommended)
 
+Uses a virtual environment to avoid PEP 668 `externally-managed-environment` errors on Homebrew Python (macOS).
+
 **For Linux/macOS/Git Bash:**
 ```bash
-bash install_dependencies.sh
+cd /path/to/Ethic-Latex
+bash scripts/install_dependencies.sh
+source .venv/bin/activate   # Activate venv before running scripts
 ```
 
 **For Windows PowerShell:**
 ```powershell
-.\install_dependencies.ps1
+.\scripts\install_dependencies.ps1
 ```
 
 **For Windows CMD:**
@@ -21,9 +25,13 @@ bash install_dependencies.sh
 install_dependencies.bat
 ```
 
-### Option 2: Manual Installation
+### Option 2: Manual Installation with venv
 
 ```bash
+cd /path/to/Ethic-Latex
+python3 -m venv .venv
+source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+pip install -e .
 pip install -r requirements.txt
 ```
 
@@ -65,6 +73,17 @@ LaTeX is **not** a Python package. Install separately:
   ```
 
 ## Troubleshooting
+
+### "externally-managed-environment" (macOS Homebrew Python)
+
+Homebrew Python blocks `pip install` to system Python. Use a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+pip install -r requirements.txt
+```
 
 ### "pip: command not found"
 Install pip first:
