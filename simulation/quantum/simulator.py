@@ -32,34 +32,6 @@ def _numpy_judge_action(difficulty: float, shots: int, seed: int | None) -> floa
     return float(2 * ones / shots - 1)
 
 
-def _numpy_entangled_judgment(
-    agent_a_bias: float,
-    agent_b_bias: float,
-    shots: int,
-    seed: int | None,
-) -> Tuple[float, float]:
-    """Pure-Python fallback: Bell state + Rx, sample correlated outcomes."""
-    rng = np.random.default_rng(seed)
-    theta_a = np.clip(agent_a_bias, -1, 1) * np.pi / 2
-    theta_b = np.clip(agent_b_bias, -1, 1) * np.pi / 2
-    # 4x4 state: |Φ⁺⟩ = (|00⟩+|11⟩)/√2, then Rx_a ⊗ Rx_b
-    phi_plus = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
-    # Rx(θ) = cos(θ/2)I - i·sin(θ/2)X for single qubit
-    def rx_matrix(t):
-        c, s = np.cos(t / 2), np.sin(t / 2)
-        return np.array([[c, -1j * s], [-1j * s, c]], dtype=complex)
-    Ra, Rb = rx_matrix(theta_a), rx_matrix(theta_b)
-    U = np.kron(Ra, Rb)
-    state = U @ phi_plus
-    probs = np.abs(state) ** 2
-    outcomes = rng.choice(4, size=shots, p=probs)
-    J_a = float(2 * np.mean(outcomes in (0, 2) or outcomes < 2) - 1)
-    # outcomes 0=|00⟩, 1=|01⟩, 2=|10⟩, 3=|11⟩; qubit0=outcome//2, qubit1=outcome%2
-    q0 = (outcomes // 2).astype(float) * 2 - 1  # 0→-1, 1→+1
-    q1 = (outcomes % 2).astype(float) * 2 - 1
-    return (float(np.mean(q0)), float(np.mean(q1)))
-
-
 def _numpy_entangled_simple(
     agent_a_bias: float,
     agent_b_bias: float,

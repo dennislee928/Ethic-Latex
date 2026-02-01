@@ -69,11 +69,12 @@ echo ""
 echo "======================================================================"
 echo "STEP 6: Optional - Quantum (Phase 3)"
 echo "======================================================================"
-read -p "Install qiskit for Quantum Judgment? (y/n) " -n 1 -r
+echo "Quantum module works WITHOUT qiskit-aer (uses NumPy fallback)."
+echo "Install qiskit-aer only if you want native simulation (may fail on Python 3.14 or AppleClang 17)."
+read -p "Install qiskit qiskit-aer? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    $PIP_CMD install qiskit qiskit-aer
-    echo "✓ qiskit installed. For IBM Cloud: pip install qiskit-ibm-runtime"
+    $PIP_CMD install qiskit qiskit-aer 2>/dev/null || echo "qiskit-aer build failed; quantum module will use NumPy fallback."
 fi
 
 echo ""

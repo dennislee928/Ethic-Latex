@@ -74,6 +74,20 @@ LaTeX is **not** a Python package. Install separately:
 
 ## Troubleshooting
 
+### qiskit-aer build failure (Python 3.14, AppleClang 17)
+
+qiskit-aer may fail to build on Python 3.14 or AppleClang 17 (Conan compiler.version unsupported).
+**No action needed:** the quantum module uses a pure-Python NumPy fallback and works without qiskit-aer.
+
+To use native qiskit-aer instead, use Python 3.11 or 3.12:
+```bash
+pyenv install 3.12.0
+pyenv local 3.12.0
+python -m venv .venv
+source .venv/bin/activate
+pip install qiskit qiskit-aer
+```
+
 ### "externally-managed-environment" (macOS Homebrew Python)
 
 Homebrew Python blocks `pip install` to system Python. Use a virtual environment:
