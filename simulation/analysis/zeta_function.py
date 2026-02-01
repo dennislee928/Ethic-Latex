@@ -117,12 +117,13 @@ def ethical_zeta_product(
 
     # Compute terms: 1 / (1 - c^{-s}) for all c at once
     with np.errstate(over="ignore", invalid="ignore"):
-        terms = 1.0 / (1.0 - np.power(c_vals, -s))
+        c_complex = c_vals.astype(complex)
+        terms = 1.0 / (1.0 - np.power(c_complex, -s))
         # Replace inf/nan with 1 (neutral for product)
         terms = np.where(np.isfinite(terms), terms, 1.0 + 0j)
         product = np.prod(terms)
 
-    return complex(product)
+    return complex(np.asarray(product).ravel()[0])
 
 
 def ethical_zeta_sum(
