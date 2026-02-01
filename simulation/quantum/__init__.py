@@ -14,5 +14,5 @@ try:
     from .cloud import CloudQuantumJudge
 
     __all__.append("CloudQuantumJudge")
-except ImportError:
-    CloudQuantumJudge = None  # qiskit-ibm-runtime not installed
+except (ImportError, ValueError):
+    CloudQuantumJudge = None  # qiskit-ibm-runtime or IBM_QUANTUM_TOKEN
