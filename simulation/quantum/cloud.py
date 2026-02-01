@@ -56,7 +56,7 @@ class CloudQuantumJudge(QuantumOracle):
             raise ValueError(
                 "IBM_QUANTUM_TOKEN not set. Get a free token at https://quantum.ibm.com/"
             )
-        self._service = QiskitRuntimeService(channel="ibm_quantum", token=token)
+        self._service = QiskitRuntimeService(channel="ibm_quantum_platform", token=token)
         self._backend_name = backend_name
         self.batch_size = batch_size
 
@@ -84,8 +84,9 @@ class CloudQuantumJudge(QuantumOracle):
         qc.rx(theta_b, 1)
         qc.measure([0, 1], [0, 1])
 
-        with Session(self._service, self._backend_name) as session:
-            sampler = Sampler(session=session)
+        backend = self._service.backend(name=self._backend_name)
+        with Session(backend=backend) as session:
+            sampler = Sampler(mode=session)
             pub = (qc,)
             result = sampler.run([pub]).result()
             quasi = result[0].data.meas.get_counts()
@@ -122,8 +123,9 @@ class CloudQuantumJudge(QuantumOracle):
             qc.measure(0, 0)
             circuits.append(qc)
 
-        with Session(self._service, self._backend_name) as session:
-            sampler = Sampler(session=session)
+        backend = self._service.backend(name=self._backend_name)
+        with Session(backend=backend) as session:
+            sampler = Sampler(mode=session)
             pubs = [(qc,) for qc in circuits[: self.batch_size]]
             result = sampler.run(pubs).result()
 
