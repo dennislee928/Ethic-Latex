@@ -353,6 +353,7 @@ The following table is a placeholder to be filled with simulation results.
 ## 📚 Documentation and Future Work
 
 - **Simulation Framework:** See `simulation/README.md`
+- **CI/Workflows:** `build_thesis_gated.yml` runs simulation → quantum tests → thesis build; `simulation.yml` fetches real data and empirical sources (HuggingFace, AITA, GitHub PR); `build_thesis.yml` fetches and processes case-study CSV before running Adult/Exam Cheating/Sexual Abuse case studies.
 - **Installation Guide:** See `docs/INSTALL.md` (includes venv and optional qiskit/quantum setup)
 - **Theory:** See `ethical_riemann_hypothesis.tex`
 - **Tests:** `pytest tests/` (includes `test_quantum_entanglement.py`, psychohistory integration)
