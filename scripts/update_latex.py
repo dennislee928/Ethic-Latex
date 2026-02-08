@@ -11,6 +11,17 @@ import os
 import re
 import sys
 
+# #region agent log
+def _debug_log(msg, data=None):
+    try:
+        import json
+        p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".cursor", "debug.log")
+        with open(p, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"location": "update_latex.py", "message": msg, "data": data or {}, "timestamp": __import__("time").time()}) + "\n")
+    except Exception:
+        pass
+# #endregion
+
 def parse_results_summary(file_path):
     """Parse the results summary text file into a structured dictionary."""
     if not os.path.exists(file_path):
@@ -46,6 +57,7 @@ def parse_results_summary(file_path):
                 value = metric_match.group(2).strip()
                 results[current_judge][key] = value
 
+    _debug_log("parse_results_summary exit", {"judges": list(results.keys()), "has_quantum": "Quantum" in results})
     return results
 
 def update_latex_file(latex_path, results):
@@ -129,6 +141,22 @@ def update_latex_file(latex_path, results):
         # Update the main content
         updated_content = updated_content.replace(section_text, new_section_text)
         print(f"Updated section for {latex_name}")
+    
+    # Replace Table row for Quantum Judge (English)
+    if 'Quantum' in results:
+        qd = results['Quantum']
+        try:
+            err_rate = float(qd.get('Mistake rate', 0))
+            mae = float(qd.get('MAE', 0))
+            alpha = float(qd.get('Estimated exponent', 0))
+            erh_yes = 'Yes' in str(qd.get('Within ERH-style bound (α ≲ 0.5)?', 'No'))
+            erh_en = 'Yes' if erh_yes else 'No'
+            overall = 'Structurally safe but error rate too high' if err_rate > 0.5 else 'Structurally safe, acceptable'
+            old_row = "Quantum      & [TBD] & [TBD] & [TBD] & [TBD] & [TBD] &"
+            new_row = f"Quantum      & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_en} & {overall} &"
+            updated_content = updated_content.replace(old_row, new_row)
+        except (ValueError, TypeError):
+            pass
 
     with open(latex_path, 'w') as f:
         f.write(updated_content)
@@ -155,6 +183,7 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
         updated_content = content
         
         for zh_name, result_key in judge_mapping.items():
+            _debug_log("zh section loop", {"zh_name": zh_name, "result_key": result_key, "in_results": result_key in results})
             if result_key not in results:
                 continue
                 
@@ -206,7 +235,29 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
             )
             
             updated_content = updated_content.replace(section_text, new_section_text)
+            _debug_log("zh section replaced", {"zh_name": zh_name})
             print(f"Updated Chinese section for {zh_name}")
+        
+        # Replace Table 5 row for 量子判斷者 (was never replaced before)
+        if 'Quantum' in results:
+            qd = results['Quantum']
+            try:
+                err_rate = float(qd.get('Mistake rate', 0))
+                mae = float(qd.get('MAE', 0))
+                alpha = float(qd.get('Estimated exponent', 0))
+                erh_yes = 'Yes' in str(qd.get('Within ERH-style bound (α ≲ 0.5)?', 'No'))
+                erh_zh = '是' if erh_yes else '否'
+                overall = '結構安全但錯誤率過高' if err_rate > 0.5 else '結構安全，表現可接受'
+                old_row = r"量子判斷者       & \[待填入\] & \[待填入\] & \[待填入\] & \[待填入\] & \[待填入\] & 量子疊加態判斷；數值由模擬腳本填入。"
+                new_row = f"量子判斷者       & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_zh} & {overall} & 量子疊加態判斷；數值由模擬腳本填入。"
+                updated_content = re.sub(re.escape(old_row), new_row, updated_content)
+                _debug_log("Table 5 row replaced", {"row_updated": old_row not in updated_content})
+            except (ValueError, TypeError) as e:
+                _debug_log("Table 5 row replace failed", {"error": str(e)})
+        
+        # H1: Check if Table 5 row for 量子判斷者 is replaced
+        table5_has_tbd = "量子判斷者       & [待填入]" in updated_content
+        _debug_log("Table 5 row check", {"table5_仍有待填入": table5_has_tbd})
         
         with open(latex_path_zh, 'w', encoding='utf-8') as f:
             f.write(updated_content)
