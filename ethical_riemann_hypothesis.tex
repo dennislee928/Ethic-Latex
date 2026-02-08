@@ -346,7 +346,7 @@ To make ERH applicable to real systems, we operationalize complexity $c(a)$ conc
 \begin{enumerate}
     \item \textbf{Principle conflict count}: $c(a) = \#\{\text{conflicting ethical principles}\}$. Example: honesty vs.\ non-harm $\Rightarrow c = 2$. High $c$ indicates moral dilemmas with incommensurable values. Implemented as \texttt{count\_principle\_conflicts()} and \texttt{calculate\_complexity()} in our codebase.
     \item \textbf{Token-length proxy}: When action descriptions are available (e.g., from RLHF prompts), $c(a) \propto \log(1 + \text{word count})$ serves as a proxy for reasoning complexity.
-    \item \textbf{Ground truth proxy}: Instead of random ``God view'' $V(a)$, we support loading human consensus or RLHF-weighted datasets where $V(a)$ is defined by annotator agreement and confidence scores.
+    \item \textbf{Ground truth proxy}: Instead of random ``God view'' $V(a)$, we support loading human consensus or RLHF-weighted datasets where $V(a)$ is defined by annotator agreement and confidence scores. Real-world datasets (Adult Income, COMPAS) can be obtained via \texttt{scripts/fetch\_real\_data.sh} and \texttt{scripts/convert\_adult\_to\_csv.py}; see README for instructions.
 \end{enumerate}
 
 Judges can output both a decision $J(a)$ and a confidence interval $[J_{\text{low}}, J_{\text{high}}]$, enabling calibration analysis and dual-metric evaluation (Accuracy vs.\ Structural Stability).
@@ -571,7 +571,7 @@ ERH-based analysis can:
 \subsection{Future Work}
 
 \begin{itemize}
-    \item \textbf{Real-world datasets}: Apply ERH analysis to actual AI systems (e.g., recidivism prediction, content moderation)
+    \item \textbf{Real-world datasets}: The framework includes real-data case studies on Adult Income (UCI) and COMPAS (ProPublica). Data can be obtained via \texttt{scripts/fetch\_real\_data.sh} and \texttt{scripts/convert\_adult\_to\_csv.py}; see README for instructions. Future work may extend ERH analysis to additional AI systems (e.g., content moderation).
     \item \textbf{Causal analysis}: Connect ERH violations to specific model components
     \item \textbf{Theoretical foundations}: Prove conditions under which ERH must hold
     \item \textbf{Multi-objective extension}: Generalize to multiple ethical dimensions

@@ -567,6 +567,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
     \end{itemize}
     \item \textbf{圖表生成}：論文圖表由 \texttt{simulation/generate\_all\_figures.py} 與 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 自動生成。PDF 圖表保存在 \texttt{simulation/output/figures/}；量子電路與分布 PNG（\texttt{latest\_quantum\_circuit.png}、\texttt{latest\_quantum\_distribution.png}）由量子 Hilbert 模擬產生。
     \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
+    \item \textbf{真實世界資料}：Adult Income（UCI）與 COMPAS（ProPublica）資料集可透過 \texttt{scripts/fetch\_real\_data.sh} 取得，該腳本會下載 \texttt{adult.data}、\texttt{adult.test} 至 \texttt{data/real\_world/}，並將 \texttt{compas-scores-two-years.csv} 下載至 \texttt{data/}。執行 \texttt{scripts/convert\_adult\_to\_csv.py} 可將 UCI Adult 格式轉換為 \texttt{data/adult.csv} 供 Adult Income 案例研究使用。COMPAS 資料集由 \texttt{simulation/real\_data/compas\_case\_study.py} 直接讀取。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
     cd simulation
@@ -845,7 +846,7 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 
 \subsection{實證案例研究：Adult Income 與延伸情境}
 
-為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為了可重現性與匿名審查，我們使用本地預先處理的 Adult CSV 檔，對應程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
+為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，請執行 \texttt{scripts/fetch\_real\_data.sh} 下載資料，再執行 \texttt{scripts/convert\_adult\_to\_csv.py} 產生 \texttt{data/adult.csv}。案例研究程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
 在此情境中，收入分類（\texttt{>50K} vs. \texttt{\textless=50K}）被視為具有分配正義含義的決策問題，錯誤類型對不同群體的實質影響並不對稱。
 我們比較了一個標準 logistic regression 模型與一個使用類別重加權（\texttt{class\_weight='balanced'}）的簡單緩解模型，並為每個測試樣本構造結合特徵量級與預測不確定度的複雜度 proxy，將所有誤分類樣本視為簡化版的倫理質數，據此估計實際的 $\Pi(x)$、$B(x)$ 與 $E(x)$ 曲線。
 
