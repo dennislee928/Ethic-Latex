@@ -213,10 +213,27 @@ jobs:
           path: llm_stress_test_results/
           retention-days: 14
           if-no-files-found: ignore
-      - name: Install TeX Live
+      - name: Free disk space (GitHub Actions runner)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Install TeX Live (minimal, not texlive-full)
         run: |
-          # Install a reasonably complete TeX Live and latexmk
-          sudo apt-get install -y texlive-full latexmk
+          # Use minimal TeX Live (~1GB) instead of texlive-full (~5–7GB) to avoid "No space left on device"
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-xetex \
+            latexmk
 
       - name: Compile English LaTeX Document
         run: |
