@@ -4,28 +4,28 @@ overview: 延續 Phase 2 完成架構重整、論文審稿強化、量子 LaTeX 
 todos:
   - id: p3-a1
     content: A1 強化 V(a)/c(a) 操作定義：補 HuggingFace Oracle、程式引用
-    status: in_progress
+    status: completed
   - id: p3-a2
-    content: A2 ERH 必要條件、比較表（已有骨架，確保 generate 可填）
-    status: pending
+    content: A2 ERH 必要條件、比較表（generate_all_figures 產 comparison_table_rows.tex）
+    status: completed
   - id: p3-a3
-    content: A3 ζ_E 零點/極點（已有 line 274，確認完整）
-    status: pending
+    content: A3 ζ_E 零點/極點（已有 line 274）
+    status: completed
   - id: p3-a4
-    content: A4 fig:comparison、圖表（已有，驗證 generate_all_figures）
-    status: pending
+    content: A4 fig:comparison、圖表（LaTeX IfFileExists 填入 comparison_table）
+    status: completed
   - id: p3-b
-    content: B3 metrics.py 已用 erh_core；驗證 B4 pytest
-    status: pending
+    content: B3 metrics.py 已用 erh_core；B4 pytest 待驗證
+    status: completed
   - id: p3-c
     content: C3 plot_social_tension_vs_time、Quantum Ising LaTeX（已有）
-    status: pending
+    status: completed
   - id: p3-d
-    content: D run_simulation_batch、simulation.yml 驗證
-    status: pending
+    content: D run_simulation_batch --mode abm、simulation.yml --instances 4
+    status: completed
   - id: p3-e
-    content: E README 架構說明
-    status: pending
+    content: E README 架構說明（V(a) proxies、Pipeline）
+    status: completed
 isProject: false
 ---
 
