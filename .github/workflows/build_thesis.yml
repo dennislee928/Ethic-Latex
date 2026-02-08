@@ -227,12 +227,14 @@ jobs:
       - name: Install TeX Live (minimal, not texlive-full)
         run: |
           # Use minimal TeX Live (~1GB) instead of texlive-full (~5–7GB) to avoid "No space left on device"
+          # texlive-lang-chinese provides xeCJK.sty for Chinese LaTeX (ethical_riemann_hypothesis_zh.tex)
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             texlive-latex-base \
             texlive-latex-extra \
             texlive-fonts-recommended \
             texlive-xetex \
+            texlive-lang-chinese \
             latexmk
 
       - name: Compile English LaTeX Document
