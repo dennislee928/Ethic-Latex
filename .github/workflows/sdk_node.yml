@@ -115,6 +115,8 @@ jobs:
       working-directory: js-sdk
       run: npm run build
 
+    # NPM_TOKEN must be an Automation token (npm.com → Access Tokens → Generate → Automation).
+    # Automation tokens bypass 2FA in CI; legacy or granular tokens require OTP (EOTP error).
     - name: Publish to npm
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
       working-directory: js-sdk

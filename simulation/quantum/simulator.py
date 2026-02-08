@@ -267,30 +267,47 @@ class SocialDynamicsQuantumSimulator:
                 insert_barriers=True,
             )
 
-    def construct_hamiltonian(
+    def construct_ising_hamiltonian(
         self,
         interaction_matrix: np.ndarray,
         biases: np.ndarray | list,
     ) -> Any:
         """
-        Construct the cost Hamiltonian from agent data.
+        Construct the Transverse-Field Ising Hamiltonian from agent data.
 
-        Ising model: H = Σ_{i<j} J_ij Z_i Z_j + Σ_i h_i X_i.
-        - J_ij: interaction weight (from interaction_matrix)
-        - h_i: transverse field (from biases)
+        Convention: H = -Σ_{⟨i,j⟩} J_ij Z_i Z_j - Σ_i h_i X_i.
+        - Z_i, Z_j: Pauli-Z (moral judgment: +1 support, -1 oppose)
+        - J_ij: social coupling (J_ij>0 ferromagnetic, J_ij<0 frustration)
+        - X_i: Pauli-X (uncertainty / quantum tunneling)
+        - h_i: transverse field (external pressure)
 
         Parameters
         ----------
         interaction_matrix : ndarray, shape (n, n)
             2D array where interaction_matrix[i][j] is the weight of connection.
         biases : array-like, length n
-            Individual agent biases (transverse field).
+            Individual agent biases (transverse field h_i).
 
         Returns
         -------
         SparsePauliOp or None
             Hamiltonian; None if SparsePauliOp unavailable.
         """
+        return self._build_ising_hamiltonian(interaction_matrix, biases)
+
+    def construct_hamiltonian(
+        self,
+        interaction_matrix: np.ndarray,
+        biases: np.ndarray | list,
+    ) -> Any:
+        """Alias for construct_ising_hamiltonian (backward compatibility)."""
+        return self.construct_ising_hamiltonian(interaction_matrix, biases)
+
+    def _build_ising_hamiltonian(
+        self,
+        interaction_matrix: np.ndarray,
+        biases: np.ndarray | list,
+    ) -> Any:
         if not _VQE_AVAILABLE or SparsePauliOp is None:
             return None
 
@@ -362,7 +379,7 @@ class SocialDynamicsQuantumSimulator:
             logging.warning("compute_ground_state: NumPyMinimumEigensolver unavailable")
             return (0.0, 0.0)
 
-        hamiltonian = self.construct_hamiltonian(adjacency_matrix, bias_vector)
+        hamiltonian = self.construct_ising_hamiltonian(adjacency_matrix, bias_vector)
         if hamiltonian is None:
             return (0.0, 0.0)
 
@@ -422,7 +439,7 @@ class SocialDynamicsQuantumSimulator:
         if not _VQE_AVAILABLE or self.ansatz is None or Estimator is None:
             return self._mock_run_simulation()
 
-        hamiltonian = self.construct_hamiltonian(interaction_matrix, biases)
+        hamiltonian = self.construct_ising_hamiltonian(interaction_matrix, biases)
         if hamiltonian is None:
             return self._mock_run_simulation()
 
