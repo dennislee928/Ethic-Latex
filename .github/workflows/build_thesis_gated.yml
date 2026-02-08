@@ -18,3 +18,4 @@ jobs:
   thesis:
     needs: [simulation, quantum]
     uses: ./.github/workflows/build_thesis.yml
+    secrets: inherit

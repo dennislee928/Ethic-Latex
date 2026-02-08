@@ -62,8 +62,8 @@ jobs:
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           pytest tests/test_quantum_entanglement.py -v --tb=short
 
-  cloud-backend:
-    name: Cloud Quantum Judge (optional)
+  ibm-complex-circuit:
+    name: IBM Complex Circuit (AdvancedEthicalQuantumEngine)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
@@ -78,22 +78,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
+          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
 
-      # IBM_QUANTUM_TOKEN: IBM Cloud API key. Empty on fork PRs (GitHub does not pass secrets).
-      - name: Test CloudQuantumJudge connectivity
+      - name: Test complex circuit on IBM Quantum
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
+          USE_IBM_QUANTUM: "1"
+          IBM_QUANTUM_BACKEND: ibm_fez
         run: |
           if [ -z "$IBM_QUANTUM_TOKEN" ]; then
             echo "Skipped: IBM_QUANTUM_TOKEN not set (normal on fork PRs)"
             exit 0
           fi
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          python -c "
-          from simulation.quantum.cloud import CloudQuantumJudge
-          judge = CloudQuantumJudge()
-          j = judge.batch_judge([0.5])[0]
-          assert -1 <= j <= 1, f'judgment {j} out of range'
-          print('CloudQuantumJudge OK')
-          "
+          python scripts/run_quantum_hilbert_figures.py
+          echo "AdvancedEthicalQuantumEngine OK (IBM)"
         continue-on-error: true
