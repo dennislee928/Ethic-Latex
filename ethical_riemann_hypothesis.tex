@@ -259,8 +259,7 @@ Zeros of $\zeta(s)$ & Zeros of $\zeta_E(s)$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Ethical Zeta Function (Optional Extension)}
-
+\paragraph{Ethical Zeta Function (Optional Extension).}
 We can define an ``ethical zeta function'' via generating functions:
 
 \begin{definition}[Ethical Zeta Function]
@@ -275,7 +274,7 @@ The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes informati
 
 \textbf{Interpretation of zeros and poles}: (1) \emph{Zeros}---complexity levels $x$ where $E(x) \approx 0$---correspond to points where the judgment system structurally corrects its cumulative error; the system ``resolves'' that complexity. (2) \emph{Poles}---points where $|E(x)|$ spikes sharply---correspond to \emph{moral phase transitions}: when complexity crosses a critical threshold, errors may collapse catastrophically, analogous to spin-glass frustration in physics. We detect poles when $|E(x)| > 3 \times \text{median}(|E|)$; see \texttt{detect\_poles()} in our implementation.
 
-\subsection{The Quantum Isomorphism}
+\subsection{The Quantum Isomorphism (Hamiltonian \& Ising Model)}
 \label{sec:quantum-isomorphism}
 
 We model the social moral consensus system as a \emph{Transverse-Field Ising Model}. The total energy (Social Tension Hamiltonian) is:
@@ -292,12 +291,15 @@ where:
 
 In physics, the energy levels of large atomic nuclei follow \emph{GUE (Gaussian Unitary Ensemble)} statistics. Montgomery's Pair Correlation Conjecture shows that the zeros of the Riemann Zeta function follow the same statistical law. Searching for the \emph{ground state} (minimum energy) of the social Hamiltonian is structurally isomorphic to locating Zeta zeros.
 
-\section{Computational Framework}
+\section{Computational Model}
 \label{sec:framework}
+
+\subsection{Classical Agent Logic}
+\label{sec:classical-agent}
 
 We have implemented a Python simulation framework with the following components:
 
-\subsection{Action Space Generation}
+\subsubsection{Action Space Generation}
 
 Actions are generated with complexity sampled from:
 \begin{itemize}
@@ -314,7 +316,7 @@ True moral values $V(a)$ are generated with \emph{complexity-dependent ambiguity
 
 This reflects the intuition that simple moral cases are often clear-cut, while complex cases involve multiple competing considerations.
 
-\subsection{Judgment System Models}
+\subsubsection{Judgment System Models}
 
 We implement four archetypal judges:
 
@@ -344,7 +346,7 @@ We implement four archetypal judges:
     where $\alpha > 1$.
 \end{enumerate}
 
-\subsection{Analysis Pipeline}
+\subsubsection{Analysis Pipeline}
 
 For each judgment system:
 \begin{enumerate}
@@ -357,7 +359,7 @@ For each judgment system:
     \item Test if $\alpha \approx 0.5$ (ERH satisfied)
 \end{enumerate}
 
-\subsection{Operationalizing Complexity in Large Language Models}
+\subsubsection{Operationalizing Complexity in Large Language Models}
 \label{sec:operationalizing}
 
 To make ERH applicable to real systems, we operationalize complexity $c(a)$ concretely:
@@ -375,7 +377,7 @@ Judges can output both a decision $J(a)$ and a confidence interval $[J_{\text{lo
 
 We use \texttt{NumPyMinimumEigensolver} for exact ground-state computation on small systems, and \texttt{VQE} (Variational Quantum Eigensolver) or \texttt{QAOA} for larger systems. The Hamiltonian is constructed via \texttt{construct\_ising\_hamiltonian()} mapping agent interactions to $J_{ij}$ and biases to $h_i$. The ground state yields minimal social tension; we also compute Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ as an echo-chamber indicator.
 
-\subsection{Fourier Spectrum Analysis}
+\subsubsection{Fourier Spectrum Analysis}
 
 To detect periodic patterns in misjudgments, we compute:
 \[
@@ -383,7 +385,7 @@ To detect periodic patterns in misjudgments, we compute:
 \]
 Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific complexity scales.
 
-\section{Quantum Simulation of High-Dimensional Ethical States}
+\subsection{Quantum Simulation of High-Dimensional Ethical States}
 \label{sec:quantum}
 
 To transcend binary ethical modeling, we map the agent population to a Hilbert space $\mathcal{H}^{2^N}$. Each agent $i$ is represented by a qubit state
@@ -404,7 +406,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed'' societal states, where dominant basis states indicate the emergence of ethical consensus groups.
 
-\subsection{Quantum Simulation of Ethical Frustration and Phase Transitions}
+\subsubsection{Quantum Simulation of Ethical Frustration and Phase Transitions}
 \label{sec:quantum_phase}
 
 \subsubsection{Quantum Ising Model of Social Conflict}
@@ -441,10 +443,13 @@ As conflict density increases, the system cannot reach a stable ground state: gr
     \label{fig:quantum_dist}
 \end{figure}
 
-\section{Results and Discussion}
+\section{Experiments and Results}
 \label{sec:results}
 
-\subsection{Representative Results}
+\subsection{Synthetic Simulation (Zipf Distribution)}
+\label{sec:synthetic}
+
+\subsubsection{Representative Results}
 
 [This section will be filled with actual experimental results from running the simulations]
 
@@ -583,12 +588,14 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
     \label{fig:ethical_primes_map}
 \end{figure}
 
+Figure~\ref{fig:normalized_oscillation} shows the Riemann evidence: $E(x)/\sqrt{x}$ normalized oscillation. When ERH holds, the curve remains bounded. Figure~\ref{fig:prime_ladder} displays the ethical prime ladder with $\Pi(x)$ step function and $Li(x)$ smooth overlay.
+
 \subsection{Phase Transition Analysis}
 \label{sec:phase-transition}
 
-We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function.
+We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function. Figure~\ref{fig:phase_transition_h} illustrates this quantum phase transition.
 
-\subsection{Empirical Validation Framework}
+\subsection{Empirical Feasibility (Real-Data Integration Plan)}
 \label{sec:empirical}
 
 Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks.
