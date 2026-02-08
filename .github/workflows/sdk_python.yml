@@ -63,9 +63,10 @@ jobs:
     - name: Build
       run: |
         python -m build
+    # --skip-existing: idempotent publish; skips files already on PyPI (e.g. re-run, same tag).
     - name: Publish to PyPI
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
-        twine upload dist/*
+        twine upload dist/* --skip-existing
