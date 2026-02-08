@@ -852,12 +852,15 @@ def plot_normalized_error_growth(
     ax.plot(x_values, ratio, "o-", linewidth=2, markersize=4, label=r"$E(x)/\sqrt{x}$")
     ax.axhline(y=0, color="k", linestyle="-", linewidth=0.8, alpha=0.3)
     if annotate_erh and len(ratio) > 0:
-        y_max = np.max(np.abs(ratio))
-        if y_max < 5:
+        y_max = np.nanmax(np.abs(ratio)) if np.any(np.isfinite(ratio)) else 0
+        if 0 < y_max < 5:
+            mid_x = x_values[len(x_values) // 2]
+            mid_y = np.median(ratio)
+            text_y = max(y_max * 0.8, mid_y + 0.5) if y_max > 0 else 0.5
             ax.annotate(
                 "ERH: bounded oscillation",
-                xy=(x_values[len(x_values) // 2], np.median(ratio)),
-                xytext=(x_values[len(x_values) // 4], np.max(ratio) * 0.8),
+                xy=(mid_x, mid_y),
+                xytext=(x_values[len(x_values) // 4], text_y),
                 fontsize=10,
                 color="green",
                 bbox=dict(boxstyle="round", facecolor="lightgreen", alpha=0.7),
