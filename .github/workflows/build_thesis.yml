@@ -53,6 +53,11 @@ jobs:
           mkdir -p simulation/output
           python -m simulation.generate_all_figures
 
+      - name: Run Quantum Phase Transition (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python scripts/run_quantum_phase_transition.py --save-plot --n-points 10 || echo "⚠ Quantum phase transition skipped."
+
       - name: Run Real-Data Case Study (optional)
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)

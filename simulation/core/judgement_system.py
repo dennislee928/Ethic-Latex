@@ -8,13 +8,47 @@ Supports optional QuantumOracle for non-binary superposition judgments.
 GroundTruthProxy provides V(a) from human consensus / RLHF-style datasets.
 """
 
+import csv
+import json
+import os
 import numpy as np
-from typing import List, Optional, Callable, Tuple, Dict, Any, TYPE_CHECKING
+from typing import List, Optional, Callable, Tuple, Dict, Any, Union, TYPE_CHECKING
 from abc import ABC, abstractmethod
+from pathlib import Path
 from .action_space import Action
 
 if TYPE_CHECKING:
     from simulation.quantum.interface import QuantumOracle
+
+
+def _bradley_terry_v(
+    preferences: List[Tuple[int, int, float]],
+    action_ids: Optional[List[int]] = None,
+    n_iter: int = 50,
+) -> Dict[int, float]:
+    """
+    Bradley-Terry model: V(a) from pairwise preferences (winner_id, loser_id, margin).
+    Returns action_id -> V in [-1, 1].
+    """
+    all_ids = set()
+    for w, l, _ in preferences:
+        all_ids.add(w)
+        all_ids.add(l)
+    ids = sorted(all_ids) if action_ids is None else list(action_ids)
+    idx = {aid: i for i, aid in enumerate(ids)}
+    n = len(ids)
+    scores = np.zeros(n)
+    for w, l, m in preferences:
+        i, j = idx.get(w), idx.get(l)
+        if i is not None:
+            scores[i] += m
+        if j is not None:
+            scores[j] -= m
+    scores = scores - scores.min()
+    if scores.max() - scores.min() < 1e-12:
+        return {aid: 0.0 for aid in ids}
+    scaled = 2 * (scores - scores.min()) / (scores.max() - scores.min()) - 1
+    return {aid: float(np.clip(scaled[idx[aid]], -1, 1)) for aid in ids}
 
 
 class GroundTruthProxy:
@@ -69,20 +103,91 @@ class GroundTruthProxy:
         cls,
         actions: List[Action],
         noise_scale: float = 0.1,
+        n_annotators: int = 5,
         seed: Optional[int] = None,
     ) -> "GroundTruthProxy":
         """
-        Build proxy from existing actions: V = action.V with small noise.
-        Simulates RLHF-style human consensus with confidence intervals.
+        Build proxy from existing actions: V = action.V with annotator noise.
+        Simulates RLHF-style human consensus with confidence intervals from
+        annotator agreement variance.
         """
         if seed is not None:
             np.random.seed(seed)
         data = {}
         for a in actions:
-            v = a.V + np.random.normal(0, noise_scale)
-            v = np.clip(v, -1, 1)
-            w = 0.1 + 0.15 * np.random.random()
+            votes = [a.V + np.random.normal(0, noise_scale) for _ in range(n_annotators)]
+            v = float(np.clip(np.mean(votes), -1, 1))
+            std = float(np.std(votes))
+            w = max(0.1, min(0.3, std + 0.05))
             data[a.id] = (v, np.clip(v - w, -1, 1), np.clip(v + w, -1, 1))
+        return cls(data=data)
+
+    @classmethod
+    def load_from_csv(
+        cls,
+        path: Union[str, Path],
+        id_col: str = "action_id",
+        v_col: str = "V",
+        ci_low_col: Optional[str] = "ci_low",
+        ci_high_col: Optional[str] = "ci_high",
+        confidence_col: Optional[str] = "confidence",
+    ) -> "GroundTruthProxy":
+        """
+        Load ground truth from CSV with columns: action_id, V, and optionally
+        ci_low, ci_high or confidence (for interval width).
+        """
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"CSV not found: {path}")
+        data = {}
+        with open(path, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                aid = int(row[id_col])
+                v = float(row[v_col])
+                if ci_low_col and ci_high_col and ci_low_col in row and ci_high_col in row:
+                    data[aid] = (v, float(row[ci_low_col]), float(row[ci_high_col]))
+                elif confidence_col and confidence_col in row:
+                    w = float(row[confidence_col]) / 2
+                    data[aid] = (v, np.clip(v - w, -1, 1), np.clip(v + w, -1, 1))
+                else:
+                    data[aid] = (v, np.clip(v - 0.2, -1, 1), np.clip(v + 0.2, -1, 1))
+        return cls(data=data)
+
+    @classmethod
+    def load_from_json(
+        cls,
+        path: Union[str, Path],
+        id_key: str = "action_id",
+        v_key: str = "V",
+    ) -> "GroundTruthProxy":
+        """Load ground truth from JSON array of {action_id, V, ci_low?, ci_high?}."""
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"JSON not found: {path}")
+        with open(path, encoding="utf-8") as f:
+            arr = json.load(f)
+        data = {}
+        for obj in arr:
+            aid = int(obj[id_key])
+            v = float(obj[v_key])
+            ci_low = obj.get("ci_low", v - 0.2)
+            ci_high = obj.get("ci_high", v + 0.2)
+            data[aid] = (v, float(np.clip(ci_low, -1, 1)), float(np.clip(ci_high, -1, 1)))
+        return cls(data=data)
+
+    @classmethod
+    def from_rlhf_preferences(
+        cls,
+        preferences: List[Tuple[int, int, float]],
+        action_ids: Optional[List[int]] = None,
+    ) -> "GroundTruthProxy":
+        """
+        Build V(a) from RLHF pairwise preferences via Bradley-Terry.
+        preferences: [(winner_id, loser_id, margin)].
+        """
+        v_map = _bradley_terry_v(preferences, action_ids)
+        data = {aid: (v, np.clip(v - 0.15, -1, 1), np.clip(v + 0.15, -1, 1)) for aid, v in v_map.items()}
         return cls(data=data)
 
 

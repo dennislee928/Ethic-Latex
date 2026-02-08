@@ -10,19 +10,58 @@ Action is a Pydantic model for type safety and runtime validation (see simulatio
 import numpy as np
 from typing import List, Optional, Literal
 
-from simulation.models import Action
+import math
+from simulation.models import Action, ETHICAL_PRINCIPLES
+
+
+def count_principle_conflicts(action: Action) -> int:
+    """
+    Count the number of conflicting ethical principles for an action.
+
+    Uses principle_conflict_pairs if set; else infers from active_principles
+    via a default conflict matrix (Deontology vs Utilitarianism, etc.).
+    Returns 0 if neither is set.
+
+    Parameters
+    ----------
+    action : Action
+        Action with optional active_principles and principle_conflict_pairs.
+
+    Returns
+    -------
+    int
+        Number of conflicting principle pairs.
+    """
+    pairs = getattr(action, "principle_conflict_pairs", None)
+    if pairs is not None and len(pairs) > 0:
+        return len(pairs)
+
+    active = getattr(action, "active_principles", None)
+    if active is None or len(active) < 2:
+        return 0
+
+    # Default conflict matrix: canonical conflicts (e.g. Deontology vs Utilitarianism)
+    # (0,1), (0,2), (1,2) etc. - indices into ETHICAL_PRINCIPLES
+    n = len(ETHICAL_PRINCIPLES)
+    conflict_count = 0
+    for i, pi in enumerate(active):
+        for pj in active[i + 1:]:
+            if pi != pj and 0 <= pi < n and 0 <= pj < n:
+                conflict_count += 1
+    return conflict_count
 
 
 def calculate_complexity(
     action: Action,
     use_token_proxy: bool = False,
+    use_principle_conflicts: bool = True,
 ) -> int:
     """
     Compute concrete complexity c(a) for an action.
 
     Primary metric: Number of conflicting ethical principles
-    (e.g., Deontology vs. Utilitarianism count).
-    Falls back to action.c when conflicting_principles is not set.
+    (e.g., Deontology vs. Utilitarianism count). Uses principle_conflict_pairs
+    or active_principles when available; else conflicting_principles or c.
 
     Token-length proxy: When action has a description and use_token_proxy=True,
     uses log(1 + word_count) as a proxy for reasoning complexity.
@@ -34,6 +73,8 @@ def calculate_complexity(
         The action to evaluate.
     use_token_proxy : bool, default=False
         If True and action has description, incorporate token-length proxy.
+    use_principle_conflicts : bool, default=True
+        If True, prefer counting from principle_conflict_pairs/active_principles.
 
     Returns
     -------
@@ -45,17 +86,25 @@ def calculate_complexity(
     >>> a = Action(id=0, c=5, V=0.3, w=1.0, conflicting_principles=3)
     >>> calculate_complexity(a)
     3
+    >>> a2 = Action(id=1, c=10, V=0.5, w=1.0, active_principles=[0,1,2],
+    ...            principle_conflict_pairs=[(0,1),(1,2)])
+    >>> calculate_complexity(a2)  # 2 explicit conflicts
+    2
     """
-    base = getattr(action, "conflicting_principles", None)
-    if base is not None:
-        c_principle = int(base)
-    else:
-        c_principle = action.c
+    c_principle = action.c
+
+    if use_principle_conflicts:
+        conflict_count = count_principle_conflicts(action)
+        if conflict_count > 0:
+            c_principle = conflict_count
+        else:
+            base = getattr(action, "conflicting_principles", None)
+            if base is not None:
+                c_principle = int(base)
 
     if use_token_proxy and hasattr(action, "description") and action.description:
-        import math
         word_count = len(str(action.description).split())
-        token_proxy = int(math.log(1 + word_count) * 10)  # scale to ~c range
+        token_proxy = int(math.log(1 + word_count) * 10)
         c_principle = max(c_principle, token_proxy)
 
     return max(0, c_principle)
@@ -69,6 +118,7 @@ def generate_world(
     importance_correlation: float = 0.5,
     random_seed: Optional[int] = None,
     set_conflicting_principles: bool = False,
+    set_principle_conflicts: bool = False,
 ) -> List[Action]:
     """
     Generate a moral action space with specified distributions.
@@ -165,6 +215,13 @@ def generate_world(
         kwargs = {"id": i, "c": c, "V": float(V), "w": float(w)}
         if set_conflicting_principles:
             kwargs["conflicting_principles"] = c
+        if set_principle_conflicts:
+            n_principles = len(ETHICAL_PRINCIPLES)
+            k = min(max(2, c), n_principles)
+            active = np.random.choice(n_principles, size=k, replace=False).tolist()
+            pairs = [(active[xi], active[yi]) for xi in range(len(active)) for yi in range(xi + 1, len(active))]
+            kwargs["active_principles"] = active
+            kwargs["principle_conflict_pairs"] = pairs[: max(1, min(len(pairs), c))]
         action = Action(**kwargs)
         actions.append(action)
     

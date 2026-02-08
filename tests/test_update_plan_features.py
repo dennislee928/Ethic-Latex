@@ -274,3 +274,120 @@ class TestGenerateComprehensiveReportEvs:
             out = os.path.join(tmp, "report_out")
             generate_visualizations(df, out)
             assert os.path.isfile(os.path.join(out, "evs_over_time.png"))
+
+
+class TestERHEnhancementPlan:
+    """Tests for ERH Research Enhancement & Quantum Realization plan."""
+
+    def test_calculate_complexity_with_conflicting_principles(self):
+        """calculate_complexity uses conflicting_principles when set."""
+        from simulation.core.action_space import calculate_complexity
+        from simulation.models import Action
+
+        a = Action(id=0, c=10, V=0.5, w=1.0, conflicting_principles=5)
+        assert calculate_complexity(a) == 5
+
+    def test_calculate_complexity_with_principle_conflict_pairs(self):
+        """calculate_complexity uses principle_conflict_pairs when set."""
+        from simulation.core.action_space import calculate_complexity, count_principle_conflicts
+        from simulation.models import Action
+
+        a = Action(
+            id=0, c=10, V=0.5, w=1.0,
+            active_principles=[0, 1, 2],
+            principle_conflict_pairs=[(0, 1), (1, 2)],
+        )
+        assert count_principle_conflicts(a) == 2
+        assert calculate_complexity(a) == 2
+
+    def test_ground_truth_proxy_from_mock_rlhf(self):
+        """GroundTruthProxy.from_mock_rlhf produces V and CI."""
+        from simulation.core.judgement_system import GroundTruthProxy
+        from simulation.core.action_space import generate_world
+
+        actions = generate_world(5, random_seed=42)
+        proxy = GroundTruthProxy.from_mock_rlhf(actions, seed=42)
+        v = proxy.get_V(actions[0])
+        ci = proxy.get_confidence_interval(actions[0])
+        assert -1 <= v <= 1
+        assert ci[0] <= ci[1]
+        assert -1 <= ci[0] <= 1
+
+    def test_ground_truth_proxy_load_from_json(self):
+        """GroundTruthProxy.load_from_json loads data."""
+        from simulation.core.judgement_system import GroundTruthProxy
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump([{"action_id": 0, "V": 0.5}, {"action_id": 1, "V": -0.3}], f)
+            path = f.name
+        try:
+            proxy = GroundTruthProxy.load_from_json(path)
+            assert proxy.get_V(type("A", (), {"id": 0, "V": 0})()) == 0.5
+        finally:
+            os.unlink(path)
+
+    def test_moral_hamiltonian_build_and_sweep(self):
+        """MoralHamiltonian runs phase transition sweep."""
+        import numpy as np
+        from simulation.quantum.simulator import MoralHamiltonian
+
+        mh = MoralHamiltonian(n_qubits=3, seed=42)
+        densities = np.linspace(0.2, 0.8, 5)
+        result = mh.run_phase_transition_sweep(densities)
+        assert "fidelities" in result
+        assert "von_neumann_entropies" in result
+        assert len(result["fidelities"]) == 5
+
+    def test_actions_to_conflict_matrix(self):
+        """actions_to_conflict_matrix produces symmetric J."""
+        import numpy as np
+        from simulation.quantum.simulator import actions_to_conflict_matrix
+        from simulation.models import Action
+
+        actions = [
+            Action(id=0, c=2, V=0.5, w=1.0, principle_conflict_pairs=[(0, 1)]),
+        ]
+        J = actions_to_conflict_matrix(actions, n_principles=4)
+        assert J.shape == (4, 4)
+        assert np.allclose(J, J.T)
+
+    def test_fit_error_to_zeta_critical_line(self):
+        """fit_error_to_zeta_critical_line returns exponent and ERH flag."""
+        import numpy as np
+        from simulation.analysis.zeta_function import fit_error_to_zeta_critical_line
+
+        x = np.arange(1, 51)
+        E_x = 0.5 * np.sqrt(x) + np.random.rand(50) * 0.1
+        result = fit_error_to_zeta_critical_line(E_x, x)
+        assert "fitted_exponent" in result
+        assert "erh_satisfied" in result
+
+    def test_detect_zeros_and_poles(self):
+        """detect_zeros and detect_poles return x values."""
+        import numpy as np
+        from simulation.analysis.zeta_function import detect_zeros, detect_poles
+
+        x = np.arange(1, 101)
+        E_x = np.sin(x / 10) * 0.5  # oscillating
+        zeros = detect_zeros(E_x, x, threshold=0.2)
+        poles = detect_poles(E_x, x, spike_factor=2.0)
+        assert isinstance(zeros, list)
+        assert isinstance(poles, list)
+
+    def test_compute_dual_metrics(self):
+        """compute_dual_metrics returns accuracy and stability."""
+        try:
+            from erh_core.core.action_space import generate_world
+            from erh_core.core.judgement_system import ConservativeJudge, evaluate_judgement
+        except ImportError:
+            from simulation.core.action_space import generate_world
+            from simulation.core.judgement_system import ConservativeJudge, evaluate_judgement
+        from erh_core.analysis.statistics import compute_dual_metrics
+
+        actions = generate_world(100, random_seed=42)
+        judge = ConservativeJudge()
+        evaluate_judgement(actions, judge, tau=0.3)
+        m = compute_dual_metrics(actions)
+        assert "accuracy" in m
+        assert "stability" in m
+        assert 0 <= m["accuracy"] <= 1

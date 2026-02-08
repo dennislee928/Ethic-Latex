@@ -29,6 +29,9 @@ from simulation.analysis.zeta_function import (
     compute_spectrum,
     find_approximate_zeros,
     analyze_spectrum_peaks,
+    fit_error_to_zeta_critical_line,
+    detect_zeros,
+    detect_poles,
 )
 from simulation.analysis.statistics import compare_judges, generate_report
 from simulation.visualization.plots import (
@@ -40,6 +43,9 @@ from simulation.visualization.plots import (
     plot_zero_distribution,
     plot_complexity_distribution,
     plot_judge_comparison,
+    plot_critical_bound,
+    plot_phase_transition_diagram,
+    plot_ethical_primes_map,
 )
 
 # Setup
@@ -191,19 +197,55 @@ plot_zero_distribution(
 print(f"      Found {len(zeros)} approximate zeros")
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
 
-# Figure 7: Complexity distribution
-print("\n[10/11] Figure 7: Complexity distribution...")
+# Figure 7: Critical Bound (Log-Log |E(x)| vs x with x^1/2 overlay)
+print("\n[10/13] Figure 7: Critical Bound (dual agents)...")
+plot_critical_bound(
+    error_comparison,
+    save_path=os.path.join(output_dir, 'paper_fig7_critical_bound.pdf'),
+    show=False
+)
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_critical_bound.pdf')}")
+
+# Figure 8: Ethical Primes Map (2D/3D irreducible dilemmas)
+print("\n[11/13] Figure 8: Ethical Primes Map...")
+plot_ethical_primes_map(
+    primes_biased,
+    x_attr='c',
+    y_attr='w',
+    color_attr='delta',
+    title='Ethical Primes: Irreducible Dilemmas in Action Space',
+    save_path=os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf'),
+    show=False
+)
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf')}")
+
+# Figure 9: Zeta zeros/poles analysis
+print("\n[12/13] Figure 9: Zeta zeros and poles...")
+zeta_fit = fit_error_to_zeta_critical_line(E_x, x_vals)
+zeros_x = detect_zeros(E_x, x_vals, threshold=0.15)
+poles_x = detect_poles(E_x, x_vals, spike_factor=2.5)
+if "error" not in zeta_fit:
+    print(f"      Zeta fit: α={zeta_fit.get('fitted_exponent', 0):.3f}, ERH satisfied={zeta_fit.get('erh_satisfied', False)}")
+print(f"      Zeros (E≈0): {len(zeros_x)}; Poles (error spikes): {len(poles_x)}")
+
+# Figure 10: Complexity distribution
+print("\n[13/13] Figure 10: Complexity distribution...")
 plot_complexity_distribution(
     actions,
     title="Action Complexity Distribution (Zipf)",
-    save_path=os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf'),
+    save_path=os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf'),
     show=False
 )
-print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf')}")
 
-# Figure 8: Π(x), B(x), E(x) for Quantum Judge
+# Figure 11: Phase Transition (if quantum phase script run)
+phase_transition_path = os.path.join(script_dir, 'output', 'phase_transition_diagram.png')
+if os.path.exists(phase_transition_path):
+    print("\n      Phase transition diagram found (run scripts/run_quantum_phase_transition.py --save-plot for full pipeline)")
+
+# Figure 12: Π(x), B(x), E(x) for Quantum Judge
 if 'Quantum' in results:
-    print("\n[11/11] Figure 8: Π(x), B(x), E(x) curves (Quantum Judge)...")
+    print("\n[14/14] Figure 12: Π(x), B(x), E(x) curves (Quantum Judge)...")
     primes_quantum = select_ethical_primes(results['Quantum'], importance_quantile=0.9)
     Pi_x_q, B_x_q, E_x_q, x_vals_q = compute_Pi_and_error(primes_quantum, X_max=100, baseline='prime_theorem')
     plot_Pi_B_E(
@@ -212,9 +254,9 @@ if 'Quantum' in results:
         save_path=os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf'),
         show=False
     )
-    print(f"      Saved: {os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf')}")
+    print(f"      Saved: {os.path.join(output_dir, 'paper_fig12_quantum_judge.pdf')}")
 else:
-    print("\n[11/11] Figure 8: Skipped (Quantum Judge not available)")
+    print("\n[14/14] Figure 12: Skipped (Quantum Judge not available)")
 
 # Generate detailed report
 print("\n" + "=" * 70)
@@ -248,9 +290,11 @@ print(f"  - {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
-print(f"  - {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig7_critical_bound.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf')}")
 if 'Quantum' in results:
-    print(f"  - {os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf')}")
+    print(f"  - {os.path.join(output_dir, 'paper_fig12_quantum_judge.pdf')}")
 print(f"  - {report_path}")
 print("\nNext steps:")
 print("  1. Review generated figures")

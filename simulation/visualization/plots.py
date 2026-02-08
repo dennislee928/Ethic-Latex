@@ -10,6 +10,11 @@ import matplotlib as mpl
 from typing import Optional, Dict, List, Tuple
 import seaborn as sns
 
+try:
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+except ImportError:
+    Axes3D = None
+
 
 def setup_paper_style():
     """
@@ -771,17 +776,20 @@ def plot_ethical_primes_map(
     primes: List,
     x_attr: str = "c",
     y_attr: str = "w",
+    z_attr: Optional[str] = None,
     color_attr: Optional[str] = "delta",
     title: str = "Ethical Primes Map: Irreducible Dilemmas",
     save_path: Optional[str] = None,
     show: bool = True,
+    use_3d: bool = False,
 ) -> plt.Figure:
     """
     Plot 3: Ethical Primes Map.
 
-    2D scatter of "Irreducible Dilemmas" within the Action Space.
+    2D or 3D scatter of "Irreducible Dilemmas" within the Action Space.
     x_attr: typically complexity (c).
     y_attr: typically importance (w).
+    z_attr: optional third dimension (e.g. id, V).
     color_attr: typically delta (error magnitude).
     """
     if not primes:
@@ -796,14 +804,28 @@ def plot_ethical_primes_map(
     else:
         c_vals = None
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    if c_vals:
-        sc = ax.scatter(x_vals, y_vals, c=c_vals, cmap="viridis", alpha=0.7, s=50)
-        plt.colorbar(sc, ax=ax, label=f"|{color_attr}|")
+    use_3d = use_3d and z_attr and len(primes) >= 3 and Axes3D is not None
+    if use_3d:
+        z_vals = [getattr(p, z_attr, 0) for p in primes]
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection="3d")
+        if c_vals:
+            sc = ax.scatter(x_vals, y_vals, z_vals, c=c_vals, cmap="viridis", alpha=0.7, s=50)
+            plt.colorbar(sc, ax=ax, label=f"|{color_attr}|")
+        else:
+            ax.scatter(x_vals, y_vals, z_vals, alpha=0.7, s=50)
+        ax.set_xlabel(x_attr)
+        ax.set_ylabel(y_attr)
+        ax.set_zlabel(z_attr)
     else:
-        ax.scatter(x_vals, y_vals, alpha=0.7, s=50)
-    ax.set_xlabel(x_attr)
-    ax.set_ylabel(y_attr)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        if c_vals:
+            sc = ax.scatter(x_vals, y_vals, c=c_vals, cmap="viridis", alpha=0.7, s=50)
+            plt.colorbar(sc, ax=ax, label=f"|{color_attr}|")
+        else:
+            ax.scatter(x_vals, y_vals, alpha=0.7, s=50)
+        ax.set_xlabel(x_attr)
+        ax.set_ylabel(y_attr)
     ax.set_title(title)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()

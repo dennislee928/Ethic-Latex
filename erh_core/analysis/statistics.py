@@ -282,6 +282,7 @@ def compare_judges(
         deltas = [a.delta for a in actions if a.delta is not None]
         mistakes = [a.mistake_flag for a in actions if a.mistake_flag is not None]
         
+        dual = compute_dual_metrics(actions, X_max=X_max, baseline=baseline)
         comparison[name] = {
             'num_actions': len(actions),
             'num_primes': len(primes),
@@ -294,7 +295,10 @@ def compare_judges(
             'estimated_exponent': growth_analysis['estimated_exponent'],
             'erh_satisfied': growth_analysis['erh_satisfied'],
             'growth_rate': growth_analysis['growth_rate'],
-            'r_squared': growth_analysis['r_squared']
+            'r_squared': growth_analysis['r_squared'],
+            'accuracy': dual.get('accuracy', 0.0),
+            'stability': dual.get('stability', 0.0),
+            'f1_score': dual.get('f1_score'),
         }
     
     return comparison
@@ -424,6 +428,7 @@ def generate_report(
     >>> print(report[:200])
     """
     comparison = compare_judges(results_dict)
+    anomaly = analyze_conservative_judge_anomaly(results_dict)
     
     if format == 'json':
         report = json.dumps(comparison, indent=2, default=str)
@@ -436,17 +441,21 @@ def generate_report(
         lines.append("## Summary Table")
         lines.append("")
         # Summary uses the canonical ERH decision from the centralized bound check.
-        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | Exponent | ERH Satisfied | Growth Rate |")
-        lines.append("|-------|---------|--------|--------------|-----|----------|---------------|-------------|")
+        lines.append("| Judge | Actions | Primes | Mistake Rate | MAE | F1 | Accuracy | Stability | Exponent | ERH | Growth |")
+        lines.append("|-------|---------|--------|--------------|-----|-----|----------|-----------|----------|-----|--------|")
         
         for name, metrics in comparison.items():
             if 'error' in metrics:
                 lines.append(f"| {name} | - | - | - | - | - | ERROR | - |")
                 continue
             
+            acc = metrics.get('accuracy', 0.0)
+            stab = metrics.get('stability', 0.0)
+            f1 = metrics.get('f1_score', acc)
             lines.append(
                 f"| {name} | {metrics['num_actions']} | {metrics['num_primes']} | "
                 f"{metrics['mistake_rate']:.3f} | {metrics['mae']:.3f} | "
+                f"{f1:.3f} | {acc:.3f} | {stab:.3f} | "
                 f"{metrics['estimated_exponent']:.3f} | "
                 f"{'Yes' if metrics.get('erh_satisfied', False) else 'No'} | "
                 f"{metrics['growth_rate']} |"
@@ -478,7 +487,18 @@ def generate_report(
             )
             lines.append(f"- **Growth Rate Category:** {metrics['growth_rate']}")
             lines.append(f"- **R² (fit quality):** {metrics['r_squared']:.3f}")
+            if metrics.get('accuracy') is not None:
+                lines.append(f"- **Accuracy (F1/MAE-derived):** {metrics['accuracy']:.3f}")
+                lines.append(f"- **Stability (x^½ fit):** {metrics.get('stability', 0):.3f}")
             lines.append("")
+            
+            # Conservative Judge anomaly
+            if anomaly.get("conservative_anomaly"):
+                for a in anomaly["conservative_anomaly"]:
+                    if a["judge"] == name:
+                        lines.append(f"**Conservative Judge Anomaly:** {a['interpretation']}")
+                        lines.append("")
+                        break
             
             # Interpretation – now keyed to bound satisfaction, with α as a side diagnostic.
             if metrics.get('erh_satisfied', False):
@@ -661,15 +681,61 @@ def summarize_fairness_and_erh(
     return summary
 
 
+def _compute_f1_binary(
+    actions: List,
+    threshold: float = 0.0,
+) -> Tuple[float, float, float]:
+    """
+    F1 Score for binary classification: moral (V>0) vs immoral (V<=0).
+    Uses J vs V with threshold. Returns (precision, recall, f1).
+    """
+    y_true = [1 if a.V > threshold else 0 for a in actions if a.J is not None]
+    y_pred = [1 if a.J > threshold else 0 for a in actions if a.J is not None]
+    if len(y_true) < 2:
+        return 0.0, 0.0, 0.0
+    tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)
+    fp = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 1)
+    fn = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 0)
+    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+    return prec, rec, f1
+
+
+def _compute_stability_metric(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    target_exponent: float = 0.5,
+) -> float:
+    """
+    Goodness of fit to |E(x)| ≤ C·x^α (ERH boundary).
+    Returns R² of log-log fit when α=0.5; lower residual = higher stability.
+    """
+    abs_E = np.abs(E_x)
+    valid = (abs_E > 0) & (x_values > 1)
+    if np.sum(valid) < 3:
+        return 0.0
+    x, y = x_values[valid], abs_E[valid]
+    log_x, log_y = np.log(x), np.log(y)
+    # Fit log|E| = log C + 0.5*log x
+    log_C = np.mean(log_y - target_exponent * log_x)
+    y_pred = np.exp(log_C + target_exponent * log_x)
+    ss_res = np.sum((y - y_pred) ** 2)
+    ss_tot = np.sum((y - np.mean(y)) ** 2)
+    r2 = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+    return float(np.clip(r2, 0, 1))
+
+
 def compute_dual_metrics(
     actions: List,
     X_max: int = 100,
     baseline: str = "prime_theorem",
+    use_f1: bool = True,
 ) -> dict:
     """
     Compute Dual Metrics: Accuracy vs. Structural Stability.
 
-    - **Accuracy**: Traditional F1/MAE against ground truth V(a).
+    - **Accuracy**: F1 Score (binary moral/immoral) or MAE against ground truth V(a).
     - **Stability**: Goodness of fit to x^(1/2) boundary (ERH compliance).
 
     Used to analyze the Conservative Judge anomaly: High Stability, Low Accuracy.
@@ -694,22 +760,28 @@ def compute_dual_metrics(
     Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes, X_max=X_max, baseline=baseline)
     growth = analyze_error_growth(E_x, x_vals)
 
-    # Accuracy: MAE of deltas
-    deltas = [a.delta for a in actions if a.delta is not None]
-    mae = np.mean(np.abs(deltas)) if deltas else 0.0
-    # Inverse: lower MAE = higher accuracy; map to [0,1]
-    accuracy_score = max(0, 1.0 - mae)
+    # Accuracy: F1 (binary) or MAE
+    if use_f1:
+        prec, rec, f1 = _compute_f1_binary(actions)
+        accuracy_score = f1
+    else:
+        deltas = [a.delta for a in actions if a.delta is not None]
+        mae = np.mean(np.abs(deltas)) if deltas else 0.0
+        accuracy_score = max(0, 1.0 - mae)
 
-    # Stability: R² of fit to x^0.5, or exponent <= 0.5
+    # Stability: explicit fit to x^0.5 boundary
+    stability_score = _compute_stability_metric(E_x, x_vals, target_exponent=0.5)
     alpha = growth.get("estimated_exponent", 0.5)
     erh_ok = growth.get("erh_satisfied", False)
     r2 = growth.get("r_squared", 0.0)
-    stability_score = r2 if erh_ok else r2 * 0.5  # Penalize if ERH violated
+    if not erh_ok:
+        stability_score *= 0.5  # Penalize ERH violation
 
     return {
         "accuracy": float(accuracy_score),
         "stability": float(stability_score),
-        "mae": float(mae),
+        "f1_score": float(accuracy_score) if use_f1 else None,
+        "mae": np.mean(np.abs([a.delta for a in actions if a.delta is not None])) or 0.0,
         "estimated_exponent": alpha,
         "erh_satisfied": erh_ok,
         "r_squared": r2,
