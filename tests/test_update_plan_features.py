@@ -123,9 +123,11 @@ class TestHybridModelQuantumIntegration:
         qs = results["quantum_stability"]
         assert qs is not None
         if isinstance(qs, dict) and "error" not in qs:
-            assert "social_tension_energy" in qs
-            assert "is_stable" in qs
-            assert "circuit_depth" in qs
+            # AdvancedEthicalQuantumEngine schema
+            assert "consensus_state" in qs
+            assert "system_coherence" in qs
+            assert "circuit_image" in qs
+            assert "dist_image" in qs
 
     def test_get_summary_includes_quantum_feature(self):
         """get_summary includes quantum in features_enabled."""

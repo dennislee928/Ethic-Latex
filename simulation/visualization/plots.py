@@ -667,3 +667,47 @@ def plot_complexity_distribution(
     
     return fig
 
+
+def save_bloch_sphere_snapshot(
+    state_vector: np.ndarray,
+    step_number: int,
+    save_dir: str,
+) -> str:
+    """
+    Render the 3D ethical state of the society on the Bloch sphere.
+
+    Each arrow represents an agent's orientation in Ethical Hilbert Space.
+    Requires qiskit for plot_bloch_multivector.
+
+    Parameters
+    ----------
+    state_vector : np.ndarray
+        Quantum state vector (complex amplitudes).
+    step_number : int
+        Simulation step (used in filename).
+    save_dir : str
+        Directory to save the PNG.
+
+    Returns
+    -------
+    str
+        Path to saved file, or empty string if failed.
+    """
+    import os
+
+    try:
+        from qiskit.visualization import plot_bloch_multivector
+    except ImportError:
+        return ""
+
+    os.makedirs(save_dir, exist_ok=True)
+    filename = os.path.join(save_dir, f"bloch_state_step_{step_number:03d}.png")
+    try:
+        fig = plot_bloch_multivector(state_vector)
+        if hasattr(fig, "savefig"):
+            fig.savefig(filename, dpi=300, bbox_inches="tight")
+        plt.close("all")
+        return filename
+    except Exception:
+        return ""
+
