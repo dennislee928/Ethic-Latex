@@ -385,6 +385,21 @@ class SocialDynamicsQuantumSimulator:
             pass
 
 
+def _outcome_to_bitstring(outcome: Any, n_qubits: int) -> str:
+    """Convert SamplerV2 outcome (BitArray, int, etc.) to '0000' style string."""
+    if isinstance(outcome, str) and all(c in "01" for c in outcome):
+        s = outcome
+    else:
+        s = str(outcome)
+        if s.startswith("0b"):
+            s = s[2:]
+        elif s.startswith("0x"):
+            s = format(int(outcome, 16) & ((1 << n_qubits) - 1), f"0{n_qubits}b")
+        elif s.lstrip("-").isdigit():
+            s = format(int(outcome) & ((1 << n_qubits) - 1), f"0{n_qubits}b")
+    return s.zfill(n_qubits)[:n_qubits]
+
+
 class AdvancedEthicalQuantumEngine:
     """
     High-Dimensional Ethical Hilbert Space engine.
@@ -392,9 +407,17 @@ class AdvancedEthicalQuantumEngine:
     Maps agents to Bloch sphere positions via U3 gates and models social
     entanglement via Rzz gates. Produces circuit diagrams and measurement
     distributions for paper-ready visualizations.
+
+    When use_real_hardware=True and IBM_QUANTUM_TOKEN is set, submits the
+    multi-qubit U3+Rzz circuit to IBM Quantum (e.g. ibm_fez) instead of Aer.
     """
 
-    def __init__(self, num_agents: int, use_real_hardware: bool = False):
+    def __init__(
+        self,
+        num_agents: int,
+        use_real_hardware: bool = False,
+        backend_name: str = "ibm_fez",
+    ):
         """
         Initialize the Ethical Hilbert Space engine.
 
@@ -403,21 +426,49 @@ class AdvancedEthicalQuantumEngine:
         num_agents : int
             Number of qubits (1 qubit per agent/cluster).
         use_real_hardware : bool, default=False
-            If True, attempts to connect to IBM Quantum (requires API key).
+            If True, submits circuit to IBM Quantum (requires IBM_QUANTUM_TOKEN).
+        backend_name : str, default='ibm_fez'
+            IBM backend name when use_real_hardware=True.
         """
         self.num_qubits = num_agents
         self.use_real_hardware = use_real_hardware
+        self._backend_name = backend_name
         self._service = None
         self.simulator = AerSimulator() if _QISKIT_AVAILABLE else None
         self._qc = None  # Last built circuit, for error mitigation calibration
 
         if use_real_hardware:
             try:
+                import os
                 from qiskit_ibm_runtime import QiskitRuntimeService
 
-                self._service = QiskitRuntimeService()
+                token = os.environ.get("IBM_QUANTUM_TOKEN")
+                if token:
+                    service_kw = {"channel": "ibm_quantum_platform", "token": token}
+                    if os.environ.get("IBM_QUANTUM_INSTANCE"):
+                        service_kw["instance"] = os.environ["IBM_QUANTUM_INSTANCE"]
+                    if os.environ.get("IBM_QUANTUM_REGION"):
+                        service_kw["region"] = os.environ["IBM_QUANTUM_REGION"]
+                    self._service = QiskitRuntimeService(**service_kw)
             except ImportError:
                 pass
+
+    def _get_ibm_backend(self):
+        """Resolve IBM backend; fallback to simulator if hardware unavailable."""
+        if not self._service:
+            return None
+        try:
+            return self._service.backend(name=self._backend_name)
+        except Exception:
+            for sim_filter in [{"simulator": True}, {"simulator": True, "operational": True}]:
+                backends = list(self._service.backends(**sim_filter))
+                if backends:
+                    return backends[0]
+            all_backends = list(self._service.backends())
+            sims = [b for b in all_backends if getattr(b, "simulator", False) or "simulator" in str(getattr(b, "name", "")).lower()]
+            if sims:
+                return sims[0]
+            return all_backends[0] if all_backends else None
 
     def build_social_circuit(
         self,
@@ -569,9 +620,33 @@ class AdvancedEthicalQuantumEngine:
         if qc is None:
             return self._numpy_fallback_results(output_dir)
 
-        transpiled = transpile(qc, self.simulator)
-        result = self.simulator.run(transpiled, shots=shot_count).result()
-        counts = result.get_counts()
+        counts: Dict[str, int] = {}
+        use_ibm = self.use_real_hardware and self._service
+        backend = self._get_ibm_backend() if use_ibm else None
+
+        if backend is not None:
+            try:
+                from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+                from qiskit_ibm_runtime import Sampler
+
+                pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
+                isa_circuit = pm.run(qc)
+                sampler = Sampler(mode=backend)
+                sampler_result = sampler.run([(isa_circuit,)], shots=shot_count).result()
+                quasi = sampler_result[0].join_data().get_counts()
+
+                n = self.num_qubits
+                for outcome, cnt in quasi.items():
+                    key = _outcome_to_bitstring(outcome, n)
+                    counts[key] = counts.get(key, 0) + int(cnt)
+            except Exception:
+                use_ibm = False
+                counts = {}
+
+        if not use_ibm or not counts:
+            transpiled = transpile(qc, self.simulator)
+            result = self.simulator.run(transpiled, shots=shot_count).result()
+            counts = result.get_counts()
 
         if use_error_mitigation:
             counts = self.apply_error_mitigation(counts)

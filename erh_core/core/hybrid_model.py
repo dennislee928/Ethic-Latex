@@ -327,7 +327,13 @@ class HybridPsychohistoryModel:
                     n_q = min(len(agents), self.quantum_agents_subsample, 20)
                     n_q = max(n_q, 2)
                     if self._q_sim is None:
-                        self._q_sim = AdvancedEthicalQuantumEngine(num_agents=n_q)
+                        use_ibm = os.environ.get("USE_IBM_QUANTUM", "").lower() in ("1", "true", "yes")
+                        backend_name = os.environ.get("IBM_QUANTUM_BACKEND", "ibm_fez")
+                        self._q_sim = AdvancedEthicalQuantumEngine(
+                            num_agents=n_q,
+                            use_real_hardware=use_ibm,
+                            backend_name=backend_name,
+                        )
 
                     active_agents = agents[:n_q] if len(agents) <= n_q else list(agents[i] for i in range(0, len(agents), max(1, len(agents) // n_q)))[:n_q]
                     agent_data = [

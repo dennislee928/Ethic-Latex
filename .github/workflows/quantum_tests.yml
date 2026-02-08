@@ -79,11 +79,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
 
-      # IBM_QUANTUM_TOKEN: IBM Cloud API key from Dashboard (REST API uses it for IAM bearer token). Optional: IBM_QUANTUM_INSTANCE (CRN), IBM_QUANTUM_REGION (us-east|eu-de). See https://quantum.cloud.ibm.com/docs/en/api/qiskit-runtime-rest
+      # IBM_QUANTUM_TOKEN: IBM Cloud API key. Empty on fork PRs (GitHub does not pass secrets).
       - name: Test CloudQuantumJudge connectivity
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
         run: |
+          if [ -z "$IBM_QUANTUM_TOKEN" ]; then
+            echo "Skipped: IBM_QUANTUM_TOKEN not set (normal on fork PRs)"
+            exit 0
+          fi
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           python -c "
           from simulation.quantum.cloud import CloudQuantumJudge
