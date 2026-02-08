@@ -49,3 +49,7 @@ qiskit-aer>=0.14.0
 # Phase 2: HuggingFace Ethical Oracle (ground-truth proxy)
 transformers>=4.30.0
 torch>=2.0.0
+
+# Phase 3 expand: Real data ingestion
+datasets>=2.14.0
+sentence-transformers>=2.2.0

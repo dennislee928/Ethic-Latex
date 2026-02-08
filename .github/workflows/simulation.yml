@@ -296,3 +296,16 @@ jobs:
           path: simulation/output/figures/*.png
           if-no-files-found: ignore
           retention-days: 30
+
+      - name: Upload Expand Plan Figures
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: expand-plan-figures
+          path: |
+            simulation/output/figures/paper_fig9_normalized_oscillation.pdf
+            simulation/output/figures/paper_fig10_phase_transition_h.pdf
+            simulation/output/figures/paper_fig11_prime_ladder.pdf
+            simulation/output/figures/von_neumann_entropy_over_time.pdf
+          if-no-files-found: ignore
+          retention-days: 30

@@ -273,6 +273,23 @@ The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes informati
 
 \textbf{Interpretation of zeros and poles}: (1) \emph{Zeros}---complexity levels $x$ where $E(x) \approx 0$---correspond to points where the judgment system structurally corrects its cumulative error; the system ``resolves'' that complexity. (2) \emph{Poles}---points where $|E(x)|$ spikes sharply---correspond to \emph{moral phase transitions}: when complexity crosses a critical threshold, errors may collapse catastrophically, analogous to spin-glass frustration in physics. We detect poles when $|E(x)| > 3 \times \text{median}(|E|)$; see \texttt{detect\_poles()} in our implementation.
 
+\subsection{The Quantum Isomorphism}
+\label{sec:quantum-isomorphism}
+
+We model the social moral consensus system as a \emph{Transverse-Field Ising Model}. The total energy (Social Tension Hamiltonian) is:
+\[
+H = -\sum_{\langle i,j \rangle} J_{ij} Z_i Z_j - \sum_{i} h_i X_i
+\]
+where:
+\begin{itemize}
+    \item $Z_i, Z_j$ are Pauli-$Z$ operators representing Agent $i$ and $j$ moral judgment ($+1$ support, $-1$ oppose).
+    \item $J_{ij}$ is social coupling: $J_{ij} > 0$ (ferromagnetic) indicates tendency toward consensus; $J_{ij} < 0$ (frustration) indicates conflict.
+    \item $X_i$ is Pauli-$X$ (uncertainty / quantum tunneling).
+    \item $h_i$ is the external field (e.g., media pressure).
+\end{itemize}
+
+In physics, the energy levels of large atomic nuclei follow \emph{GUE (Gaussian Unitary Ensemble)} statistics. Montgomery's Pair Correlation Conjecture shows that the zeros of the Riemann Zeta function follow the same statistical law. Searching for the \emph{ground state} (minimum energy) of the social Hamiltonian is structurally isomorphic to locating Zeta zeros.
+
 \section{Computational Framework}
 \label{sec:framework}
 
@@ -350,6 +367,11 @@ To make ERH applicable to real systems, we operationalize complexity $c(a)$ conc
 \end{enumerate}
 
 Judges can output both a decision $J(a)$ and a confidence interval $[J_{\text{low}}, J_{\text{high}}]$, enabling calibration analysis and dual-metric evaluation (Accuracy vs.\ Structural Stability).
+
+\subsection{Quantum Solver Implementation (QAOA/VQE)}
+\label{sec:quantum-solver}
+
+We use \texttt{NumPyMinimumEigensolver} for exact ground-state computation on small systems, and \texttt{VQE} (Variational Quantum Eigensolver) or \texttt{QAOA} for larger systems. The Hamiltonian is constructed via \texttt{construct\_ising\_hamiltonian()} mapping agent interactions to $J_{ij}$ and biases to $h_i$. The ground state yields minimal social tension; we also compute Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ as an echo-chamber indicator.
 
 \subsection{Fourier Spectrum Analysis}
 
@@ -517,6 +539,39 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
+    \IfFileExists{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Riemann evidence: $E(x)/\sqrt{x}$ normalized oscillation. If ERH holds, the curve remains bounded.}
+    \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Quantum phase transition: magnetization vs transverse field $h$. Critical $h_c$ marks ordered $\to$ disordered.}
+    \label{fig:phase_transition_h}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig11_prime_ladder.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Ethical prime ladder: $\Pi(x)$ step function with $Li(x)$ smooth overlay.}
+    \label{fig:prime_ladder}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
     \IfFileExists{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
         \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
     }{%
@@ -525,6 +580,16 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
     \caption{Ethical primes in action space: 2D scatter (complexity vs.\ importance), colored by error magnitude.}
     \label{fig:ethical_primes_map}
 \end{figure}
+
+\subsection{Phase Transition Analysis}
+\label{sec:phase-transition}
+
+We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function.
+
+\subsection{Empirical Validation Framework}
+\label{sec:empirical}
+
+Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks.
 
 \subsection{Spectrum Analysis}
 
@@ -567,6 +632,11 @@ ERH-based analysis can:
     \item Quantify whether error patterns differ across demographic groups
     \item Guide targeted interventions to reduce structural inequality
 \end{itemize}
+
+\subsection{Free Will and Quantum Randomness}
+\label{sec:free-will}
+
+A philosophical implication: if moral judgment is modeled by quantum processes (superposition, measurement collapse), the ``randomness'' of quantum outcomes may inform debates on free will. The model does not resolve this debate but offers a formal framework where moral uncertainty is represented as quantum indeterminacy.
 
 \subsection{Future Work}
 

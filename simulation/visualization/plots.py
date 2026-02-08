@@ -830,6 +830,161 @@ def plot_phase_transition_diagram(
     return fig
 
 
+def plot_normalized_error_growth(
+    x_values: np.ndarray,
+    E_x: np.ndarray,
+    title: str = "Riemann Evidence: $E(x)/\\sqrt{x}$ Normalized Oscillation",
+    save_path: Optional[str] = None,
+    show: bool = True,
+    annotate_erh: bool = True,
+) -> plt.Figure:
+    """
+    Plot E(x)/sqrt(x) vs x. If ERH holds, the curve should oscillate within bounds.
+
+    X-axis: Complexity x.
+    Y-axis: E(x) / sqrt(x).
+    Bounded oscillation indicates ERH satisfaction.
+    """
+    setup_paper_style()
+    sqrt_x = np.sqrt(np.maximum(x_values, 1e-6))
+    ratio = np.where(sqrt_x > 1e-9, E_x / sqrt_x, 0.0)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(x_values, ratio, "o-", linewidth=2, markersize=4, label=r"$E(x)/\sqrt{x}$")
+    ax.axhline(y=0, color="k", linestyle="-", linewidth=0.8, alpha=0.3)
+    if annotate_erh and len(ratio) > 0:
+        y_max = np.max(np.abs(ratio))
+        if y_max < 5:
+            ax.annotate(
+                "ERH: bounded oscillation",
+                xy=(x_values[len(x_values) // 2], np.median(ratio)),
+                xytext=(x_values[len(x_values) // 4], np.max(ratio) * 0.8),
+                fontsize=10,
+                color="green",
+                bbox=dict(boxstyle="round", facecolor="lightgreen", alpha=0.7),
+            )
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel(r"$E(x) / \sqrt{x}$", fontsize=12)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_quantum_phase_transition(
+    h_values: np.ndarray,
+    magnetization: np.ndarray,
+    critical_h: Optional[float] = None,
+    title: str = "Quantum Phase Transition: Magnetization vs Transverse Field",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot magnetization (consensus) vs transverse field strength h.
+
+    X-axis: h (external pressure).
+    Y-axis: Magnetization / consensus.
+    Critical h_c marks有序→無序 transition.
+    """
+    setup_paper_style()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(h_values, magnetization, "o-", linewidth=2, label="Magnetization (Consensus)")
+    if critical_h is not None:
+        ax.axvline(
+            x=critical_h,
+            color="red",
+            linestyle="--",
+            alpha=0.8,
+            label=f"Critical $h_c \\approx {critical_h:.2f}$",
+        )
+        ax.annotate("Ordered", xy=(h_values[0], magnetization[0]), fontsize=9, color="green")
+        ax.annotate("Disordered", xy=(h_values[-1], magnetization[-1]), fontsize=9, color="red")
+    ax.set_xlabel("Transverse Field $h$ (External Pressure)", fontsize=12)
+    ax.set_ylabel("Magnetization (Consensus)", fontsize=12)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_prime_ladder(
+    x_values: np.ndarray,
+    Pi_x: np.ndarray,
+    Li_x: Optional[np.ndarray] = None,
+    title: str = "Ethical Prime Ladder: $\\Pi(x)$ vs $Li(x)$",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot step function Pi(x) with smooth Li(x) overlay.
+
+    X-axis: Complexity x.
+    Y-axis: Cumulative count.
+    """
+    setup_paper_style()
+    if Li_x is None:
+        x_safe = np.maximum(x_values, 1.1)
+        Li_x = x_safe / np.log(x_safe)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.step(x_values, Pi_x, where="post", label=r"$\Pi(x)$ (Ethical Primes)", linewidth=2)
+    ax.plot(x_values, Li_x, "--", label=r"$Li(x)$ (Smooth)", linewidth=2)
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel("Count", fontsize=12)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_von_neumann_entropy_over_time(
+    time_steps: np.ndarray,
+    entropy_values: np.ndarray,
+    title: str = "Von Neumann Entropy (Echo-Chamber Indicator) Over Time",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot Von Neumann entropy over time. Low entropy = echo chamber; high = no consensus.
+    """
+    setup_paper_style()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(time_steps, entropy_values, "o-", linewidth=2)
+    ax.set_xlabel("Time Step", fontsize=12)
+    ax.set_ylabel("Von Neumann Entropy $S(\\rho)$", fontsize=12)
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    ax.annotate("Low: Echo chamber", xy=(time_steps[0], entropy_values[0]), fontsize=9, color="blue")
+    ax.annotate("High: No consensus", xy=(time_steps[-1], entropy_values[-1]), fontsize=9, color="red")
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def plot_social_tension_vs_time(
     time_steps: np.ndarray,
     social_tension: np.ndarray,

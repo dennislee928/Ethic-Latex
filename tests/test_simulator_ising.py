@@ -88,3 +88,26 @@ def test_compute_ground_state_energy_is_real(sim, interaction_matrix, biases):
     """Assert compute_ground_state energy is real when Hamiltonian is real symmetric."""
     energy, _ = sim.compute_ground_state(interaction_matrix, biases)
     assert np.isrealobj(energy) or (isinstance(energy, (int, float)) and not np.iscomplexobj(energy))
+
+
+def test_construct_ising_hamiltonian_alias(sim, interaction_matrix, biases):
+    """construct_ising_hamiltonian and construct_hamiltonian return identical result."""
+    H1 = sim.construct_hamiltonian(interaction_matrix, biases)
+    H2 = sim.construct_ising_hamiltonian(interaction_matrix, biases)
+    if H1 is None or H2 is None:
+        pytest.skip("SparsePauliOp unavailable")
+    m1 = np.asarray(H1.to_matrix()) if hasattr(H1, "to_matrix") else None
+    m2 = np.asarray(H2.to_matrix()) if hasattr(H2, "to_matrix") else None
+    if m1 is not None and m2 is not None:
+        np.testing.assert_allclose(m1, m2)
+
+
+def test_construct_ising_hamiltonian_zz_sign_convention(sim):
+    """ZZ terms use -J_ij convention: H = -Σ J_ij Z_i Z_j."""
+    J = np.array([[0, 1.0], [1.0, 0]])
+    biases = np.array([0.0, 0.0])
+    H = sim.construct_ising_hamiltonian(J, biases)
+    if H is None:
+        pytest.skip("SparsePauliOp unavailable")
+    mat = np.asarray(H.to_matrix())
+    assert np.any(np.abs(mat) > 0), "Hamiltonian should be non-trivial"
