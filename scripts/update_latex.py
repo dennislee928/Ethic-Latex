@@ -245,14 +245,13 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
                 err_rate = float(qd.get('Mistake rate', 0))
                 mae = float(qd.get('MAE', 0))
                 alpha = float(qd.get('Estimated exponent', 0))
-                erh_yes = 'Yes' in str(qd.get('Within ERH-style bound (α ≲ 0.5)?', 'No'))
-                erh_zh = '是' if erh_yes else '否'
+                erh_zh = '是' if any('Yes' in str(v) for k, v in qd.items() if 'bound' in k.lower() or 'ERH' in k) else '否'
                 overall = '結構安全但錯誤率過高' if err_rate > 0.5 else '結構安全，表現可接受'
-                old_row = r"量子判斷者       & \[待填入\] & \[待填入\] & \[待填入\] & \[待填入\] & \[待填入\] & 量子疊加態判斷；數值由模擬腳本填入。"
+                old_row = "量子判斷者       & [待填入] & [待填入] & [待填入] & [待填入] & [待填入] & 量子疊加態判斷；數值由模擬腳本填入。"
                 new_row = f"量子判斷者       & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_zh} & {overall} & 量子疊加態判斷；數值由模擬腳本填入。"
-                updated_content = re.sub(re.escape(old_row), new_row, updated_content)
+                updated_content = updated_content.replace(old_row, new_row)
                 _debug_log("Table 5 row replaced", {"row_updated": old_row not in updated_content})
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError, IndexError) as e:
                 _debug_log("Table 5 row replace failed", {"error": str(e)})
         
         # H1: Check if Table 5 row for 量子判斷者 is replaced
