@@ -58,6 +58,22 @@ jobs:
             curl -sL "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv" -o data/compas-scores-two-years.csv || true
           fi
 
+      - name: Fetch Empirical ERH Data (HuggingFace, AITA, GitHub PR)
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pip install -q datasets sentence-transformers PyGithub firecrawl-py 2>/dev/null || true
+          pip install -q -r requirements.txt 2>/dev/null || true
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          python scripts/fetch_empirical_erh_data.py \
+            --output-dir data/empirical \
+            --max-samples 30 \
+            --aita-limit 15 \
+            --pr-limit 20 \
+            --repo dennislee928/Ethic-Latex
+        continue-on-error: true
+
       - name: Upload Real Data artifact
         uses: actions/upload-artifact@v4
         with:
