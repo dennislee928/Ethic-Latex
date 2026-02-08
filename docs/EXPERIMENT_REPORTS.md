@@ -7,6 +7,172 @@ In the summary tables, the column **Within ERH-style bound?** refers to whether 
 
 ---
 
+## simulation/output/judge_comparison_report.md
+
+
+# Ethical Riemann Hypothesis - Judge Comparison Report
+
+**Number of judges analyzed:** 5
+
+## Summary Table
+
+| Judge | Actions | Primes | Mistake Rate | MAE | F1 | Accuracy | Stability | Exponent | ERH | Growth |
+|-------|---------|--------|--------------|-----|-----|----------|-----------|----------|-----|--------|
+| Biased | 2000 | 23 | 0.132 | 0.185 | 0.970 | 0.970 | 0.000 | -0.629 | No | sublinear_slow |
+| Noisy | 2000 | 46 | 0.256 | 0.209 | 0.951 | 0.951 | 0.000 | -0.171 | No | sublinear_slow |
+| Conservative | 2000 | 110 | 0.611 | 0.342 | 0.972 | 0.972 | 0.000 | -0.046 | No | sublinear_slow |
+| Radical | 2000 | 26 | 0.149 | 0.183 | 0.996 | 0.996 | 0.000 | -0.452 | No | sublinear_slow |
+| Quantum | 2000 | 136 | 0.751 | 0.997 | 0.662 | 0.662 | 0.000 | -0.037 | No | sublinear_slow |
+
+## Detailed Analysis
+
+### Biased
+
+- **Total Actions:** 2000
+- **Ethical Primes:** 23 (1.15%)
+- **Mistake Rate:** 0.132
+- **Mean Absolute Error:** 0.185
+- **RMSE:** 0.210
+- **Estimated Growth Exponent:** -0.629
+- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** No
+- **Growth Rate Category:** sublinear_slow
+- **R² (fit quality):** 0.604
+- **Accuracy (F1/MAE-derived):** 0.970
+- **Stability (x^½ fit):** 0.000
+
+**Interpretation:** Although the bound test flags some violations, the fitted exponent α is below the √x target, suggesting a conservative or over-cautious system whose long-run errors grow slower than the ERH worst case.
+
+### Noisy
+
+- **Total Actions:** 2000
+- **Ethical Primes:** 46 (2.30%)
+- **Mistake Rate:** 0.256
+- **Mean Absolute Error:** 0.209
+- **RMSE:** 0.270
+- **Estimated Growth Exponent:** -0.171
+- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** No
+- **Growth Rate Category:** sublinear_slow
+- **R² (fit quality):** 0.780
+- **Accuracy (F1/MAE-derived):** 0.951
+- **Stability (x^½ fit):** 0.000
+
+**Interpretation:** Although the bound test flags some violations, the fitted exponent α is below the √x target, suggesting a conservative or over-cautious system whose long-run errors grow slower than the ERH worst case.
+
+### Conservative
+
+- **Total Actions:** 2000
+- **Ethical Primes:** 110 (5.50%)
+- **Mistake Rate:** 0.611
+- **Mean Absolute Error:** 0.342
+- **RMSE:** 0.376
+- **Estimated Growth Exponent:** -0.046
+- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** No
+- **Growth Rate Category:** sublinear_slow
+- **R² (fit quality):** 0.507
+- **Accuracy (F1/MAE-derived):** 0.972
+- **Stability (x^½ fit):** 0.000
+
+**Interpretation:** Although the bound test flags some violations, the fitted exponent α is below the √x target, suggesting a conservative or over-cautious system whose long-run errors grow slower than the ERH worst case.
+
+### Radical
+
+- **Total Actions:** 2000
+- **Ethical Primes:** 26 (1.30%)
+- **Mistake Rate:** 0.149
+- **Mean Absolute Error:** 0.183
+- **RMSE:** 0.211
+- **Estimated Growth Exponent:** -0.452
+- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** No
+- **Growth Rate Category:** sublinear_slow
+- **R² (fit quality):** 0.691
+- **Accuracy (F1/MAE-derived):** 0.996
+- **Stability (x^½ fit):** 0.000
+
+**Interpretation:** Although the bound test flags some violations, the fitted exponent α is below the √x target, suggesting a conservative or over-cautious system whose long-run errors grow slower than the ERH worst case.
+
+### Quantum
+
+- **Total Actions:** 2000
+- **Ethical Primes:** 136 (6.80%)
+- **Mistake Rate:** 0.751
+- **Mean Absolute Error:** 0.997
+- **RMSE:** 1.218
+- **Estimated Growth Exponent:** -0.037
+- **ERH Bound Satisfied (|E(x)| ≤ C·x^(1/2+ε) up to slack)?** No
+- **Growth Rate Category:** sublinear_slow
+- **R² (fit quality):** 0.497
+- **Accuracy (F1/MAE-derived):** 0.662
+- **Stability (x^½ fit):** 0.000
+
+**Interpretation:** Although the bound test flags some violations, the fitted exponent α is below the √x target, suggesting a conservative or over-cautious system whose long-run errors grow slower than the ERH worst case.
+
+
+---
+
+## simulation/output/results_summary.txt
+
+
+ETHICAL RIEMANN HYPOTHESIS - NUMERICAL RESULTS
+======================================================================
+
+Biased Judge:
+  Total actions: 2000
+  Ethical primes: 23
+  Mistake rate: 0.132
+  MAE: 0.185
+  RMSE: 0.210
+  Estimated exponent: -0.629
+  Within ERH-style bound (α ≲ 0.5)?: Yes
+  Growth rate: sublinear_slow
+  R^2 (fit quality): 0.604
+
+Noisy Judge:
+  Total actions: 2000
+  Ethical primes: 46
+  Mistake rate: 0.256
+  MAE: 0.209
+  RMSE: 0.270
+  Estimated exponent: -0.171
+  Within ERH-style bound (α ≲ 0.5)?: Yes
+  Growth rate: sublinear_slow
+  R^2 (fit quality): 0.780
+
+Conservative Judge:
+  Total actions: 2000
+  Ethical primes: 110
+  Mistake rate: 0.611
+  MAE: 0.342
+  RMSE: 0.376
+  Estimated exponent: -0.046
+  Within ERH-style bound (α ≲ 0.5)?: Yes
+  Growth rate: sublinear_slow
+  R^2 (fit quality): 0.507
+
+Radical Judge:
+  Total actions: 2000
+  Ethical primes: 26
+  Mistake rate: 0.149
+  MAE: 0.183
+  RMSE: 0.211
+  Estimated exponent: -0.452
+  Within ERH-style bound (α ≲ 0.5)?: Yes
+  Growth rate: sublinear_slow
+  R^2 (fit quality): 0.691
+
+Quantum Judge:
+  Total actions: 2000
+  Ethical primes: 136
+  Mistake rate: 0.751
+  MAE: 0.997
+  RMSE: 1.218
+  Estimated exponent: -0.037
+  Within ERH-style bound (α ≲ 0.5)?: Yes
+  Growth rate: sublinear_slow
+  R^2 (fit quality): 0.497
+
+
+---
+
 ## simulation/output/psychohistory_tests/test_summary.txt
 
 
@@ -18,9 +184,9 @@ Total Tests: 36
 Passed: 36
 Failed: 0
 Success Rate: 100.0%
-Total Time: 42.26s
+Total Time: 44.92s
 
-Timestamp: 2026-02-01T11:36:55.444897
+Timestamp: 2026-02-01T12:00:14.538442
 
 ======================================================================
 DETAILED RESULTS
@@ -28,11 +194,11 @@ DETAILED RESULTS
 
 Test: param_sweep_agents10_toporandom_steps5
   Status: PASSED
-  Time: 0.70s
+  Time: 0.98s
 
 Test: param_sweep_agents10_toporandom_steps10
   Status: PASSED
-  Time: 0.31s
+  Time: 0.37s
 
 Test: param_sweep_agents10_toporandom_steps20
   Status: PASSED
@@ -44,11 +210,11 @@ Test: param_sweep_agents10_toposmall_world_steps5
 
 Test: param_sweep_agents10_toposmall_world_steps10
   Status: PASSED
-  Time: 0.29s
+  Time: 0.36s
 
 Test: param_sweep_agents10_toposmall_world_steps20
   Status: PASSED
-  Time: 0.57s
+  Time: 1.00s
 
 Test: param_sweep_agents10_toposcale_free_steps5
   Status: PASSED
@@ -56,27 +222,27 @@ Test: param_sweep_agents10_toposcale_free_steps5
 
 Test: param_sweep_agents10_toposcale_free_steps10
   Status: PASSED
-  Time: 0.30s
+  Time: 0.32s
 
 Test: param_sweep_agents10_toposcale_free_steps20
   Status: PASSED
-  Time: 0.99s
+  Time: 0.60s
 
 Test: param_sweep_agents50_toporandom_steps5
   Status: PASSED
-  Time: 0.36s
+  Time: 0.35s
 
 Test: param_sweep_agents50_toporandom_steps10
   Status: PASSED
-  Time: 0.79s
+  Time: 0.62s
 
 Test: param_sweep_agents50_toporandom_steps20
   Status: PASSED
-  Time: 1.25s
+  Time: 1.29s
 
 Test: param_sweep_agents50_toposmall_world_steps5
   Status: PASSED
-  Time: 0.33s
+  Time: 0.32s
 
 Test: param_sweep_agents50_toposmall_world_steps10
   Status: PASSED
@@ -84,91 +250,91 @@ Test: param_sweep_agents50_toposmall_world_steps10
 
 Test: param_sweep_agents50_toposmall_world_steps20
   Status: PASSED
-  Time: 1.22s
+  Time: 1.47s
 
 Test: param_sweep_agents50_toposcale_free_steps5
   Status: PASSED
-  Time: 0.31s
+  Time: 0.30s
 
 Test: param_sweep_agents50_toposcale_free_steps10
   Status: PASSED
-  Time: 0.79s
+  Time: 0.61s
 
 Test: param_sweep_agents50_toposcale_free_steps20
   Status: PASSED
-  Time: 1.23s
+  Time: 2.30s
 
 Test: param_sweep_agents100_toporandom_steps5
   Status: PASSED
-  Time: 0.52s
+  Time: 0.51s
 
 Test: param_sweep_agents100_toporandom_steps10
   Status: PASSED
-  Time: 1.02s
+  Time: 1.00s
 
 Test: param_sweep_agents100_toporandom_steps20
   Status: PASSED
-  Time: 1.99s
+  Time: 2.40s
 
 Test: param_sweep_agents100_toposmall_world_steps5
   Status: PASSED
-  Time: 0.54s
+  Time: 0.64s
 
 Test: param_sweep_agents100_toposmall_world_steps10
   Status: PASSED
-  Time: 1.03s
+  Time: 1.00s
 
 Test: param_sweep_agents100_toposmall_world_steps20
   Status: PASSED
-  Time: 2.20s
+  Time: 2.10s
 
 Test: param_sweep_agents100_toposcale_free_steps5
   Status: PASSED
-  Time: 0.51s
+  Time: 0.52s
 
 Test: param_sweep_agents100_toposcale_free_steps10
   Status: PASSED
-  Time: 1.01s
+  Time: 1.11s
 
 Test: param_sweep_agents100_toposcale_free_steps20
   Status: PASSED
-  Time: 2.01s
+  Time: 2.04s
 
 Test: param_sweep_agents200_toporandom_steps5
   Status: PASSED
-  Time: 0.99s
+  Time: 1.14s
 
 Test: param_sweep_agents200_toporandom_steps10
   Status: PASSED
-  Time: 2.06s
+  Time: 1.96s
 
 Test: param_sweep_agents200_toporandom_steps20
   Status: PASSED
-  Time: 4.06s
+  Time: 4.09s
 
 Test: param_sweep_agents200_toposmall_world_steps5
   Status: PASSED
-  Time: 0.97s
+  Time: 1.12s
 
 Test: param_sweep_agents200_toposmall_world_steps10
   Status: PASSED
-  Time: 1.99s
+  Time: 1.96s
 
 Test: param_sweep_agents200_toposmall_world_steps20
   Status: PASSED
-  Time: 3.68s
+  Time: 4.30s
 
 Test: param_sweep_agents200_toposcale_free_steps5
   Status: PASSED
-  Time: 0.96s
+  Time: 0.98s
 
 Test: param_sweep_agents200_toposcale_free_steps10
   Status: PASSED
-  Time: 1.85s
+  Time: 1.93s
 
 Test: param_sweep_agents200_toposcale_free_steps20
   Status: PASSED
-  Time: 3.94s
+  Time: 3.73s
 
 
 ---
