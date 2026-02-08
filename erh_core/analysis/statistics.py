@@ -540,6 +540,35 @@ def generate_report(
     return report
 
 
+def calculate_evs(stability: float, fairness: float, polarization: float) -> float:
+    """
+    Ethical Viability Score (EVS).
+
+    Harmonic mean of Stability and Fairness, penalized by Polarization.
+    Range: [0, 1].
+
+    Formula: EVS = (2 * Stability * Fairness) / (Stability + Fairness) * (1 - Polarization)
+
+    Parameters
+    ----------
+    stability : float
+        Consensus/stability measure ∈ [0, 1]
+    fairness : float
+        Fairness measure ∈ [0, 1]
+    polarization : float
+        Polarization measure ∈ [0, 1] (higher = worse)
+
+    Returns
+    -------
+    float
+        EVS ∈ [0, 1]
+    """
+    if stability + fairness == 0:
+        return 0.0
+    f1_score = 2 * (stability * fairness) / (stability + fairness)
+    return float(f1_score * (1.0 - max(0.0, min(1.0, polarization))))
+
+
 def compute_judge_rankings(
     comparison: dict,
     metrics: List[str] = ['erh_satisfied', 'estimated_exponent', 'mae']

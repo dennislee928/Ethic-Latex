@@ -52,33 +52,45 @@ jobs:
   simulate:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
+        python-version: ["3.10", "3.11"]
         complexity_dist: ["zipf", "uniform", "power_law"]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-${{ matrix.python-version }}-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Simulation
+      - name: Run Simulation (parallel)
         run: |
           export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          mkdir -p results
           python scripts/run_simulation_batch.py \
             --complexity-dist ${{ matrix.complexity_dist }} \
-            --output-dir results
+            --output-dir results \
+            --instances 4
 
       - name: Upload Simulation Results
         uses: actions/upload-artifact@v4
         with:
-          name: simulation-results-${{ matrix.complexity_dist }}
+          name: simulation-results-${{ matrix.complexity_dist }}-py${{ matrix.python-version }}
           path: results/
           retention-days: 5
 
