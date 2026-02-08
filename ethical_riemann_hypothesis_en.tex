@@ -733,6 +733,57 @@ To detect periodic patterns in misjudgments, we compute:
 \]
 Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific complexity scales.
 
+\subsection{Quantum Simulation of High-Dimensional Ethical States}
+\label{sec:quantum_hilbert}
+
+To transcend binary ethical modeling, we map the agent population to a Hilbert space $\mathcal{H}^{2^N}$. Each agent $i$ is represented by a qubit state
+$|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_i}{2}|1\rangle$, where $\theta$ represents ethical alignment and $\phi$ represents flexibility. Social interactions are modeled via entangling $R_{ZZ}(\gamma_{ij})$ gates, where $\gamma_{ij}$ corresponds to the interaction strength between agents $i$ and $j$.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{figures/latest_quantum_circuit.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_hilbert\_figures.py} or simulation with \texttt{enable\_quantum=True} to generate this figure.}}
+    }}
+    \caption{Dynamically generated quantum circuit representing the social entanglement of the agent population. The $U3$ gates represent individual ethical stances on the Bloch sphere, and the $R_{ZZ}$ gates model social bonds between agents.}
+    \label{fig:quantum_circuit}
+\end{figure}
+
+The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed'' societal states, where dominant basis states indicate the emergence of ethical consensus groups.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    }{\IfFileExists{figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_hilbert\_figures.py} to generate this figure.}}
+    }}
+    \caption{Probability distribution of ethical states after simulation. Peaks represent highly probable societal configurations.}
+    \label{fig:quantum_dist}
+\end{figure}
+
+Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantum Hilbert space simulation.
+
+\begin{table}[htbp]
+\centering
+\caption{Quantum Hilbert Space simulation metrics. Consensus state is the most frequently observed basis state; system coherence measures agreement strength; Von Neumann entropy quantifies social entanglement.}
+\label{tab:quantum_hilbert_stats}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Consensus state & [QUANTUM_CONSENSUS_STATE] \\
+System coherence & [QUANTUM_SYSTEM_COHERENCE] \\
+Von Neumann entropy $H(\rho)$ & [QUANTUM_VON_NEUMANN_ENTROPY] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % ============================================
 % SECTION 6: RESULTS
 % ============================================
