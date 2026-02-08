@@ -356,6 +356,23 @@ class HybridPsychohistoryModel:
                         )
                         self._hamiltonian_cache[cache_key] = q_results
 
+                    if "raw_counts" in q_results:
+                        try:
+                            from erh_core.analysis.statistics import calculate_von_neumann_entropy
+
+                            counts = q_results["raw_counts"]
+                            if not counts:
+                                raise ValueError("empty counts")
+                            total = sum(counts.values())
+                            n_qubits = len(next(iter(counts.keys())))
+                            dim = 2 ** n_qubits
+                            rho = np.zeros((dim, dim), dtype=np.float64)
+                            for outcome, c in counts.items():
+                                idx = int(outcome, 2) if outcome else 0
+                                rho[idx, idx] = c / total if total else 0.0
+                            q_results["von_neumann_entropy"] = calculate_von_neumann_entropy(rho)
+                        except Exception:
+                            pass
                     results["quantum_stability"] = q_results
             except ImportError:
                 results["quantum_stability"] = {"error": "simulation.quantum not available"}
