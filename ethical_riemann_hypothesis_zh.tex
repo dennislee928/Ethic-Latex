@@ -562,9 +562,10 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
         \item \texttt{results\_summary.txt}：所有判斷者的統計摘要
         \item \texttt{judge\_comparison\_report.md}：詳細比較報告
         \item \texttt{spectrum\_data.json} 與 \texttt{zeros\_data.json}：頻譜與零點分析數據
+        \item \texttt{quantum\_hilbert\_results.json}：量子 Hilbert 空間模擬的共識態、系統一致性、Von Neumann 熵
         \item \texttt{*.csv}：參數敏感度分析結果
     \end{itemize}
-    \item \textbf{圖表生成}：所有論文圖表由 \texttt{simulation/generate\_all\_figures.py} 腳本自動生成，執行該腳本可完全重現所有圖表。圖表以 PDF 格式保存在 \texttt{simulation/output/figures/} 目錄，並複製至 \texttt{figures/} 目錄供 \LaTeX 使用。
+    \item \textbf{圖表生成}：論文圖表由 \texttt{simulation/generate\_all\_figures.py} 與 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 自動生成。PDF 圖表保存在 \texttt{simulation/output/figures/}；量子電路與分布 PNG（\texttt{latest\_quantum\_circuit.png}、\texttt{latest\_quantum\_distribution.png}）由量子 Hilbert 模擬產生。
     \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
@@ -582,6 +583,57 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
 \hat{m}(k) = \sum_{n=1}^{N} m(n) e^{-2\pi i kn / N}
 \]
 $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤聚集。
+
+\subsection{高維度倫理態的量子模擬}
+\label{sec:quantum_hilbert}
+
+為超越二元倫理建模，我們將智能體群體映射至高維 Hilbert 空間 $\mathcal{H}^{2^N}$。每個智能體 $i$ 以 qubit 態表示：
+$|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_i}{2}|1\rangle$，其中 $\theta$ 表示倫理對齊，$\phi$ 表示彈性。社會互動以糾纏門 $R_{ZZ}(\gamma_{ij})$ 建模，$\gamma_{ij}$ 對應智能體 $i$ 與 $j$ 之間的互動強度。
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{figures/latest_quantum_circuit.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 或 \texttt{enable\_quantum=True} 模擬以生成此圖。}}
+    }}
+    \caption{動態產生的量子電路，代表智能體群體的社會糾纏。$U3$ 門表示 Bloch 球面上的個體倫理姿態，$R_{ZZ}$ 門表示智能體間的社會連結。}
+    \label{fig:quantum_circuit_zh}
+\end{figure}
+
+測量結果（圖~\ref{fig:quantum_dist_zh}）揭示「坍縮」後的社會態，主導基底態表示倫理共識群的浮現。
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    }{\IfFileExists{figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 以生成此圖。}}
+    }}
+    \caption{模擬後的倫理態機率分布。峰值表示高機率的社會配置。}
+    \label{fig:quantum_dist_zh}
+\end{figure}
+
+表~\ref{tab:quantum_hilbert_stats_zh} 彙整量子 Hilbert 空間模擬的關鍵指標。
+
+\begin{table}[htbp]
+\centering
+\caption{量子 Hilbert 空間模擬指標。共識態為最常觀測的基底態；系統一致性衡量同意強度；Von Neumann 熵量化社會糾纏度。}
+\label{tab:quantum_hilbert_stats_zh}
+\begin{tabular}{lc}
+\toprule
+\textbf{指標} & \textbf{數值} \\
+\midrule
+共識態 & 11111111 \\
+系統一致性 & 0.9570 \\
+Von Neumann 熵 $H(\rho)$ & 0.2528 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 % ============================================
 % 第六節：實驗結果與分析
@@ -684,10 +736,10 @@ $|\hat{m}(k)|$ 中的峰值表示在特定複雜度級別上的週期性錯誤�
 
 \textbf{結果}：
 \begin{itemize}
-    \item 錯誤率：[待填入]\%
-    \item 倫理質數數量：[待填入]
+    \item 錯誤率：75.0\%
+    \item 倫理質數數量：136
     \item 估計指數：$\alpha = $ [待填入]
-    \item ERH 滿足：[是/否]
+    \item ERH 滿足：否
 \end{itemize}
 
 \textbf{解釋}：[待模擬後填入。]
