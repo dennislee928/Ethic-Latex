@@ -31,21 +31,31 @@ jobs:
       - name: Create data directories
         run: mkdir -p data data/real_world
 
-      - name: Download Adult Income Dataset (UCI)
+      - name: Fetch real-world datasets
         run: |
-          wget -q https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data -O data/real_world/adult.data || true
-          wget -q https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test -O data/real_world/adult.test || true
+          bash scripts/fetch_real_data.sh || true
 
-      - name: Generate synthetic Adult CSV for case study
+      - name: Convert Adult to CSV or generate synthetic
         run: |
           pip install pandas numpy
-          python scripts/generate_synthetic_adult.py || true
+          if [ -f data/real_world/adult.data ]; then
+            python scripts/convert_adult_to_csv.py
+          else
+            python scripts/generate_synthetic_adult.py || true
+          fi
 
-      - name: Download COMPAS (Git LFS or secret)
+      - name: Download COMPAS (fallback from ProPublica if needed)
         run: |
-          git lfs pull --include="data/compas-scores-two-years.csv" 2>/dev/null || true
-          if [ -n "${{ secrets.COMPAS_DATA_URL }}" ]; then
-            curl -sL "${{ secrets.COMPAS_DATA_URL }}" -o data/compas-scores-two-years.csv || true
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            git lfs pull --include="data/compas-scores-two-years.csv" 2>/dev/null || true
+          fi
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            if [ -n "${{ secrets.COMPAS_DATA_URL }}" ]; then
+              curl -sL "${{ secrets.COMPAS_DATA_URL }}" -o data/compas-scores-two-years.csv || true
+            fi
+          fi
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            curl -sL "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv" -o data/compas-scores-two-years.csv || true
           fi
 
       - name: Upload Real Data artifact

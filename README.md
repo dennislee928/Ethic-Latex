@@ -212,6 +212,30 @@ agent = AdversarialAgent(n_actions=500)
 agent.run(max_steps=100)
 ```
 
+### Real-World Data (Adult Income, COMPAS)
+
+To run real-data case studies (`adult_income_case_study`, `compas_case_study`), fetch and prepare datasets:
+
+```bash
+# 1. Download Adult (UCI) and COMPAS (ProPublica)
+bash scripts/fetch_real_data.sh
+
+# 2. Convert UCI Adult to CSV (creates data/adult.csv)
+python scripts/convert_adult_to_csv.py
+```
+
+Expected outputs:
+
+- `data/adult.csv` – Adult Income (from UCI adult.data/test)
+- `data/compas-scores-two-years.csv` – COMPAS (from ProPublica GitHub)
+
+Then run:
+
+```bash
+python -m simulation.real_data.adult_income_case_study
+python -m simulation.real_data.compas_case_study   # or run_compas_alpha
+```
+
 ---
 
 ## ☁️ Cloud Deployment
