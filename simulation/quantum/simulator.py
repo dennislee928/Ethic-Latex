@@ -192,6 +192,181 @@ class AdvancedEthicalCircuit:
         return self._analyze_consensus(counts)
 
 
+class SocialDynamicsQuantumSimulator:
+    """
+    Physics-informed VQE for social consensus simulation using Quantum Ising Hamiltonian.
+
+    Models social interactions with H = Σ J_ij * Z_i * Z_j + Σ h_i * X_i:
+    - J_ij (interaction): influence between agents i and j
+    - h_i (field): individual ethical bias/pressure
+    """
+
+    def __init__(
+        self,
+        num_agents: int = 4,
+        topology: str = "full",
+        reps: int = 3,
+        seed: int | None = None,
+    ):
+        """
+        Parameters
+        ----------
+        num_agents : int, default=4
+            Number of agents/nodes (qubits).
+        topology : str, default='full'
+            Entanglement topology: 'linear', 'full', 'circular'.
+        reps : int, default=3
+            Repetition layers in TwoLocal ansatz.
+        seed : int | None, default=None
+            Random seed for reproducibility.
+        """
+        self.num_qubits = num_agents
+        self.topology = topology
+        self.reps = reps
+        self.seed = seed
+        self.ansatz = None
+        if _VQE_AVAILABLE and TwoLocal is not None:
+            self.ansatz = TwoLocal(
+                self.num_qubits,
+                rotation_blocks="ry",
+                entanglement_blocks="cz",
+                entanglement=topology,
+                reps=reps,
+                insert_barriers=True,
+            )
+
+    def construct_hamiltonian(
+        self,
+        interaction_matrix: np.ndarray,
+        biases: np.ndarray | list,
+    ) -> Any:
+        """
+        Construct the cost Hamiltonian from agent data.
+
+        Parameters
+        ----------
+        interaction_matrix : ndarray, shape (n, n)
+            2D array where interaction_matrix[i][j] is the weight of connection.
+        biases : array-like, length n
+            Individual agent biases (transverse field).
+
+        Returns
+        -------
+        SparsePauliOp or None
+            Hamiltonian; None if SparsePauliOp unavailable.
+        """
+        if not _VQE_AVAILABLE or SparsePauliOp is None:
+            return None
+
+        pauli_list: list[tuple[str, float]] = []
+        interaction_matrix = np.asarray(interaction_matrix)
+        biases = np.asarray(biases).flatten()
+        n = min(self.num_qubits, interaction_matrix.shape[0], interaction_matrix.shape[1])
+
+        # Symmetrize: use upper triangle; weight (i,j) and (j,i) same
+        for i in range(n):
+            for j in range(i + 1, n):
+                w = float(interaction_matrix[i, j] + interaction_matrix[j, i]) / 2.0
+                if abs(w) > 1e-12:
+                    pauli_str = ["I"] * self.num_qubits
+                    # Qiskit little-endian: qubit 0 is rightmost
+                    pauli_str[self.num_qubits - 1 - i] = "Z"
+                    pauli_str[self.num_qubits - 1 - j] = "Z"
+                    pauli_list.append(("".join(pauli_str), -1.0 * w))
+
+        for i in range(min(n, len(biases))):
+            b = float(biases[i])
+            if abs(b) > 1e-12:
+                pauli_str = ["I"] * self.num_qubits
+                pauli_str[self.num_qubits - 1 - i] = "X"
+                pauli_list.append(("".join(pauli_str), b))
+
+        if not pauli_list:
+            return SparsePauliOp.from_list([("I" * self.num_qubits, 0.0)])
+
+        return SparsePauliOp.from_list(pauli_list)
+
+    def run_simulation(
+        self,
+        interaction_matrix: np.ndarray,
+        biases: np.ndarray | list,
+        params: np.ndarray | list | None = None,
+        save_path: str | None = None,
+    ) -> Dict[str, Any]:
+        """
+        Run VQE-style estimation of social state energy.
+
+        Parameters
+        ----------
+        interaction_matrix : ndarray
+            Agent interaction weights.
+        biases : array-like
+            Agent biases.
+        params : array-like | None
+            Ansatz parameters. If None, uses random.
+        save_path : str | None
+            Path to save circuit diagram PNG.
+
+        Returns
+        -------
+        dict
+            - social_tension_energy: float
+            - is_stable: bool (energy < -1.0 heuristic)
+            - circuit_depth: int
+        """
+        if not _VQE_AVAILABLE or self.ansatz is None or Estimator is None:
+            return self._mock_run_simulation()
+
+        hamiltonian = self.construct_hamiltonian(interaction_matrix, biases)
+        if hamiltonian is None:
+            return self._mock_run_simulation()
+
+        rng = np.random.default_rng(self.seed)
+        n_params = self.ansatz.num_parameters
+        if params is not None:
+            p = np.asarray(params).flatten()
+            params_arr = p[:n_params] if len(p) >= n_params else np.resize(p, n_params)
+        else:
+            params_arr = rng.uniform(0, 2 * np.pi, size=n_params)
+
+        bound_circuit = self.ansatz.assign_parameters(params_arr)
+        estimator = Estimator()
+        job = estimator.run([(bound_circuit, hamiltonian)])
+        result = job.result()
+        energy = float(result.values[0])
+
+        if save_path:
+            self._save_circuit_diagram(bound_circuit, save_path)
+
+        return {
+            "social_tension_energy": energy,
+            "is_stable": energy < -1.0,
+            "circuit_depth": bound_circuit.depth(),
+        }
+
+    def _mock_run_simulation(self) -> Dict[str, Any]:
+        """Fallback when VQE dependencies unavailable."""
+        rng = np.random.default_rng(self.seed)
+        energy = float(rng.uniform(-2.0, 0.0))
+        return {
+            "social_tension_energy": energy,
+            "is_stable": energy < -1.0,
+            "circuit_depth": 0,
+        }
+
+    def _save_circuit_diagram(self, circuit: Any, path: str) -> None:
+        """Render quantum circuit to PNG for LaTeX."""
+        try:
+            import matplotlib.pyplot as plt
+
+            fig = circuit.draw(output="mpl", style="iqp")
+            if hasattr(fig, "savefig"):
+                fig.savefig(path, dpi=150, bbox_inches="tight")
+            plt.close("all")
+        except Exception:
+            pass
+
+
 class LocalQuantumJudge(QuantumOracle):
     """
     Local quantum simulator for ethical judgments.

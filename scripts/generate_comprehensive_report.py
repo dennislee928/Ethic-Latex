@@ -85,9 +85,13 @@ def generate_visualizations(df, output_dir):
     plt.close()
 
     # 2. Alpha (Exponent) by Complexity Distribution
+    # Use plt.boxplot with orientation='vertical' to avoid seaborn vert deprecation warning
     if "estimated_exponent" in df.columns and df["estimated_exponent"].notna().any():
         plt.figure(figsize=(10, 6))
-        sns.boxplot(data=df, x="complexity_dist", y="estimated_exponent")
+        valid = df.dropna(subset=["estimated_exponent"])
+        order = valid["complexity_dist"].unique()
+        data = [valid[valid["complexity_dist"] == g]["estimated_exponent"].values for g in order]
+        plt.boxplot(data, tick_labels=order.tolist(), patch_artist=True, orientation="vertical")
         plt.axhline(y=0.5, color="r", linestyle="--", label="ERH limit (0.5)")
         plt.title("Error Growth Exponent (α) Distribution")
         plt.ylabel("α (Exponent)")

@@ -67,11 +67,13 @@ class HybridPsychohistoryModel:
         enable_temporal: bool = True,
         enable_network_dynamics: bool = True,
         enable_fluid_model: bool = False,
-        enable_meta_monitor: bool = True
+        enable_meta_monitor: bool = True,
+        enable_quantum: bool = False,
+        quantum_agents_subsample: int = 4,
     ):
         """
         Initialize hybrid model.
-        
+
         Parameters
         ----------
         num_agents : int, default=100
@@ -88,6 +90,10 @@ class HybridPsychohistoryModel:
             Enable fluid model (computationally expensive)
         enable_meta_monitor : bool, default=True
             Enable meta-layer monitoring
+        enable_quantum : bool, default=False
+            Enable quantum VQE stability estimation
+        quantum_agents_subsample : int, default=4
+            Max agents (qubits) for quantum simulation; subsample if population larger
         """
         # Initialize ABM simulator
         self.abm_simulator = ABMSimulator(
@@ -96,14 +102,20 @@ class HybridPsychohistoryModel:
             network_topology=network_topology,
             enable_meta_monitor=enable_meta_monitor
         )
-        
+
         self.meta_monitor = self.abm_simulator.meta_monitor
-        
+
         # Feature flags
         self.temporal_enabled = enable_temporal
         self.network_dynamics_enabled = enable_network_dynamics
         self.fluid_model_enabled = enable_fluid_model
-        
+        self.enable_quantum = enable_quantum
+        self.quantum_agents_subsample = quantum_agents_subsample
+
+        # Quantum state (lazy init)
+        self._q_sim = None
+        self._current_q_params = None
+
         # State
         self.simulation_state = {
             'time': 0,
@@ -111,7 +123,42 @@ class HybridPsychohistoryModel:
             'network_history': [],
             'fluid_history': []
         }
-    
+
+    def _get_interaction_matrix(self, agents: List) -> np.ndarray:
+        """Build similarity-based adjacency matrix from agents (error_rate)."""
+        n = min(len(agents), self.quantum_agents_subsample)
+        if n < 2:
+            return np.zeros((1, 1))
+        # Subsample uniformly if needed
+        if len(agents) > n:
+            step = max(1, len(agents) // n)
+            idx = list(range(0, len(agents), step))[:n]
+            agents = [agents[i] for i in idx]
+        else:
+            agents = list(agents)[:n]
+        matrix = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                if i < j:
+                    w = 1.0 / (1.0 + abs(agents[i].error_rate - agents[j].error_rate))
+                    matrix[i, j] = w
+                    matrix[j, i] = w
+        return matrix
+
+    def _get_biases(self, agents: List) -> np.ndarray:
+        """Extract biases from agents (judgment_tendency)."""
+        n = min(len(agents), self.quantum_agents_subsample)
+        if n < 1:
+            return np.array([0.0])
+        if len(agents) > n:
+            step = max(1, len(agents) // n)
+            idx = list(range(0, len(agents), step))[:n]
+            agents = [agents[i] for i in idx]
+        else:
+            agents = list(agents)[:n]
+        biases = np.array([np.clip(a.judgment_tendency, -1.0, 1.0) for a in agents])
+        return biases
+
     def run_simulation(
         self,
         num_time_steps: int = 10,
@@ -158,7 +205,8 @@ class HybridPsychohistoryModel:
             'temporal_erh': None,
             'network_dynamics': None,
             'fluid_model': None,
-            'meta_monitoring': None
+            'meta_monitoring': None,
+            'quantum_stability': None,
         }
         
         # Temporal ERH analysis
@@ -248,7 +296,45 @@ class HybridPsychohistoryModel:
         # Meta-monitoring summary
         if self.meta_monitor:
             results['meta_monitoring'] = self.meta_monitor.get_monitoring_summary()
-        
+
+        # Quantum VQE stability (lazy import)
+        if self.enable_quantum:
+            try:
+                from simulation.quantum.simulator import SocialDynamicsQuantumSimulator
+                agents = self.abm_simulator.population.agents
+                if agents:
+                    if self._q_sim is None:
+                        n_q = min(len(agents), self.quantum_agents_subsample)
+                        n_q = max(n_q, 2)  # need at least 2 qubits for meaningful circuit
+                        self._q_sim = SocialDynamicsQuantumSimulator(
+                            num_agents=n_q,
+                            topology='full',
+                        )
+                        n_p = self._q_sim.ansatz.num_parameters if self._q_sim.ansatz is not None else 1
+                        self._current_q_params = np.random.default_rng().random(max(1, n_p))
+                    matrix = self._get_interaction_matrix(agents)
+                    biases = self._get_biases(agents)
+                    n_params = (
+                        self._q_sim.ansatz.num_parameters
+                        if self._q_sim.ansatz is not None else 1
+                    )
+                    params = np.asarray(self._current_q_params).flatten()
+                    params = params[:n_params] if len(params) >= n_params else np.resize(params, n_params)
+                    import os
+                    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                    fig_dir = os.path.join(root, 'simulation', 'output', 'figures')
+                    os.makedirs(fig_dir, exist_ok=True)
+                    save_path = os.path.join(fig_dir, 'quantum_circuit_step_latest.png')
+                    q_results = self._q_sim.run_simulation(
+                        matrix, biases, params, save_path=save_path
+                    )
+                    results['quantum_stability'] = q_results
+                    self._current_q_params = params
+            except ImportError:
+                results['quantum_stability'] = {'error': 'simulation.quantum not available'}
+            except Exception as e:
+                results['quantum_stability'] = {'error': str(e)}
+
         # Update state
         self.simulation_state['time'] = num_time_steps
         self.simulation_state['erh_history'] = abm_results.get('erh_history', [])
@@ -392,7 +478,8 @@ class HybridPsychohistoryModel:
                 'temporal': self.temporal_enabled,
                 'network_dynamics': self.network_dynamics_enabled,
                 'fluid_model': self.fluid_model_enabled,
-                'meta_monitor': self.meta_monitor is not None
+                'meta_monitor': self.meta_monitor is not None,
+                'quantum': self.enable_quantum,
             },
             'simulation_state': self.simulation_state,
             'abm_summary': self.abm_simulator.get_simulation_summary()
