@@ -1,6 +1,7 @@
 name: Quantum Tests
 
 on:
+  workflow_call:
   push:
     branches: ["main","dev"]
     paths:
@@ -32,7 +33,7 @@ jobs:
       - name: Install dependencies (with quantum)
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[quantum]" pytest
+          pip install -e ".[quantum]" pytest networkx
           pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
 
       - name: Run quantum entanglement tests
@@ -54,7 +55,7 @@ jobs:
       - name: Install dependencies (no quantum)
         run: |
           python -m pip install --upgrade pip
-          pip install -e . pytest numpy
+          pip install -e . pytest numpy networkx
 
       - name: Run quantum tests (NumPy fallback)
         run: |
@@ -76,8 +77,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[quantum]" pytest
+          pip install -e ".[quantum]" pytest networkx
 
+      # IBM_QUANTUM_TOKEN: IBM Cloud API key from Dashboard (REST API uses it for IAM bearer token). Optional: IBM_QUANTUM_INSTANCE (CRN), IBM_QUANTUM_REGION (us-east|eu-de). See https://quantum.cloud.ibm.com/docs/en/api/qiskit-runtime-rest
       - name: Test CloudQuantumJudge connectivity
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
@@ -85,8 +87,8 @@ jobs:
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           python -c "
           from simulation.quantum.cloud import CloudQuantumJudge
-          judge = CloudQuantumJudge(shots=64)
-          j = judge.judge_action(difficulty=0.5)
+          judge = CloudQuantumJudge()
+          j = judge.batch_judge([0.5])[0]
           assert -1 <= j <= 1, f'judgment {j} out of range'
           print('CloudQuantumJudge OK')
           "

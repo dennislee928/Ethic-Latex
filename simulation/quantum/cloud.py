@@ -1,15 +1,29 @@
 """
 Cloud Quantum Judge using IBM Quantum Runtime.
 
-Requires IBM_QUANTUM_TOKEN in environment. Implements batching for 100+ agents.
+Uses the Qiskit Runtime REST API (see https://quantum.cloud.ibm.com/docs/en/api/qiskit-runtime-rest).
+Implements batching for 100+ agents.
+
+Environment variables:
+- IBM_QUANTUM_TOKEN (required): IBM Cloud API key from the Dashboard. The REST API uses it to
+  obtain an IAM bearer token for each request. Create at https://quantum.cloud.ibm.com/
+  (Dashboard → Create API key). Must be the 44-character API key; legacy quantum.ibm.com
+  tokens are no longer supported.
+- IBM_QUANTUM_INSTANCE (recommended): Instance Cloud Resource Name (CRN). Many REST API calls
+  require the Service-CRN header; see Instances page on the platform for your CRN.
+- IBM_QUANTUM_REGION (optional): "us-east" (default) or "eu-de" for EU region endpoints.
 """
 
+import logging
 import os
 from typing import List, Tuple
 
+logger = logging.getLogger(__name__)
+
 try:
-    from qiskit_ibm_runtime import QiskitRuntimeService, Session, SamplerV2 as Sampler
+    from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
     from qiskit import QuantumCircuit
+    from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
     import numpy as np
 
     _IBM_RUNTIME_AVAILABLE = True
@@ -23,12 +37,30 @@ from .interface import QuantumOracle
 def _get_ibm_token() -> str | None:
     token = os.environ.get("IBM_QUANTUM_TOKEN")
     if not token:
+        # Load .env from repo root (simulation/quantum/cloud.py -> parent.parent.parent)
         try:
-            from dotenv import load_dotenv
+            from pathlib import Path
 
-            load_dotenv()
-            token = os.environ.get("IBM_QUANTUM_TOKEN")
-        except ImportError:
+            _this_file = Path(__file__).resolve()
+            _repo_root = _this_file.parent.parent.parent
+            _env_file = _repo_root / ".env"
+            if _env_file.exists():
+                try:
+                    from dotenv import load_dotenv
+
+                    load_dotenv(_env_file)
+                    token = os.environ.get("IBM_QUANTUM_TOKEN")
+                except ImportError:
+                    for line in _env_file.read_text().splitlines():
+                        line = line.strip()
+                        if not line or line.startswith("#"):
+                            continue
+                        if "=" in line:
+                            k, _, v = line.partition("=")
+                            if k.strip() == "IBM_QUANTUM_TOKEN":
+                                token = v.strip().strip('"').strip("'")
+                                break
+        except Exception:
             pass
     return token
 
@@ -39,11 +71,15 @@ class CloudQuantumJudge(QuantumOracle):
 
     Batches multiple circuits into a single job to reduce queue latency.
     Requires IBM_QUANTUM_TOKEN in environment.
+
+    Default backend is ``ibm_fez`` (open-instance, us-east). Open plan typically
+    offers real QPUs such as ibm_fez, ibm_marrakesh, ibm_torino; simulators may
+    not be listed. Override ``backend_name`` or set ``IBM_QUANTUM_INSTANCE`` if needed.
     """
 
     def __init__(
         self,
-        backend_name: str = "ibmq_qasm_simulator",
+        backend_name: str = "ibm_fez",
         batch_size: int = 100,
     ):
         if not _IBM_RUNTIME_AVAILABLE:
@@ -54,11 +90,44 @@ class CloudQuantumJudge(QuantumOracle):
         token = _get_ibm_token()
         if not token:
             raise ValueError(
-                "IBM_QUANTUM_TOKEN not set. Get a free token at https://quantum.ibm.com/"
+                "IBM_QUANTUM_TOKEN not set. Create an API key at https://quantum.cloud.ibm.com/ (Dashboard → Create API key)."
             )
-        self._service = QiskitRuntimeService(channel="ibm_quantum", token=token)
+        instance = os.environ.get("IBM_QUANTUM_INSTANCE")
+        region = os.environ.get("IBM_QUANTUM_REGION")
+        service_kw: dict = {"channel": "ibm_quantum_platform", "token": token}
+        if instance:
+            service_kw["instance"] = instance
+        if region:
+            service_kw["region"] = region
+        self._service = QiskitRuntimeService(**service_kw)
         self._backend_name = backend_name
         self.batch_size = batch_size
+
+    def _get_backend(self):
+        """Resolve backend by name, or pick first available simulator, or any backend as last resort."""
+        try:
+            return self._service.backend(name=self._backend_name)
+        except Exception:
+            for sim_filter in [{"simulator": True}, {"simulator": True, "operational": True}]:
+                backends = self._service.backends(**sim_filter)
+                if backends:
+                    return backends[0]
+            all_backends = list(self._service.backends())
+            sim_backends = [
+                b for b in all_backends
+                if getattr(b, "simulator", False) or "simulator" in getattr(b, "name", "").lower()
+            ]
+            if sim_backends:
+                return sim_backends[0]
+            if all_backends:
+                logger.warning(
+                    "No simulator found; using first available backend %s (may incur cost).",
+                    getattr(all_backends[0], "name", all_backends[0]),
+                )
+                return all_backends[0]
+            raise RuntimeError(
+                "No backend available for this instance. Add compute resources at https://quantum.cloud.ibm.com/"
+            )
 
     def collapse_wavefunction(
         self,
@@ -84,11 +153,13 @@ class CloudQuantumJudge(QuantumOracle):
         qc.rx(theta_b, 1)
         qc.measure([0, 1], [0, 1])
 
-        with Session(self._service, self._backend_name) as session:
-            sampler = Sampler(session=session)
-            pub = (qc,)
-            result = sampler.run([pub]).result()
-            quasi = result[0].data.meas.get_counts()
+        backend = self._get_backend()
+        pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
+        isa_circuit = pm.run(qc)
+        # Job mode (Sampler(mode=backend)) works on open plan; Session is not allowed on open plan.
+        sampler = Sampler(mode=backend)
+        result = sampler.run([(isa_circuit,)]).result()
+        quasi = result[0].join_data().get_counts()
 
         total = sum(quasi.values())
         J_a = J_b = 0.0
@@ -122,14 +193,17 @@ class CloudQuantumJudge(QuantumOracle):
             qc.measure(0, 0)
             circuits.append(qc)
 
-        with Session(self._service, self._backend_name) as session:
-            sampler = Sampler(session=session)
-            pubs = [(qc,) for qc in circuits[: self.batch_size]]
-            result = sampler.run(pubs).result()
+        backend = self._get_backend()
+        pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
+        isa_circuits = [pm.run(qc) for qc in circuits[: self.batch_size]]
+        # Job mode (Sampler(mode=backend)) works on open plan; Session is not allowed on open plan.
+        sampler = Sampler(mode=backend)
+        pubs = [(c,) for c in isa_circuits]
+        result = sampler.run(pubs).result()
 
         judgments = []
         for i, pub_result in enumerate(result):
-            quasi = pub_result.data.meas.get_counts()
+            quasi = pub_result.join_data().get_counts()
             total = sum(quasi.values())
             J = 0.0
             for outcome, count in quasi.items():

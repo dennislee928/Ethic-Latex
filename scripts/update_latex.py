@@ -63,7 +63,8 @@ def update_latex_file(latex_path, results):
         'BiasedJudge': 'Biased',
         'NoisyJudge': 'Noisy',
         'ConservativeJudge': 'Conservative',
-        'RadicalJudge': 'Radical'
+        'RadicalJudge': 'Radical',
+        'QuantumJudge': 'Quantum'
     }
 
     updated_content = content
@@ -146,7 +147,8 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
             '偏見判斷者': 'Biased',
             '隨機判斷者': 'Noisy',
             '保守判斷者': 'Conservative',
-            '激進判斷者': 'Radical'
+            '激進判斷者': 'Radical',
+            '量子判斷者': 'Quantum'
         }
         
         updated_content = content
@@ -179,10 +181,10 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
                 new_section_text
             )
             
-            # 倫理素數數量：[待填入]
+            # 倫理質數數量：[待填入]
             new_section_text = re.sub(
-                r"倫理素數數量：\[待填入\]", 
-                f"倫理素數數量：{judge_data.get('Ethical primes', 'N/A')}", 
+                r"倫理質數數量：\[待填入\]", 
+                f"倫理質數數量：{judge_data.get('Ethical primes', 'N/A')}", 
                 new_section_text
             )
             

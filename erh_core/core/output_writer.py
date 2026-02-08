@@ -21,9 +21,10 @@ def save_json_result(result: Dict[str, Any], output_dir: str, file_prefix: str =
     config = result.get("config", {})
     dist = config.get("complexity_dist", "unknown")
     n = config.get("num_actions", 0)
-    
+    sim_id = config.get("id")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{file_prefix}_{dist}_N{n}_{timestamp}.json"
+    id_part = f"_id{sim_id}" if sim_id is not None else ""
+    filename = f"{file_prefix}_{dist}_N{n}{id_part}_{timestamp}.json"
     filepath = os.path.join(output_dir, filename)
     
     with open(filepath, 'w') as f:

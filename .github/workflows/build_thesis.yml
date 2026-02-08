@@ -1,6 +1,7 @@
 name: Build Thesis
 
 on:
+  workflow_call:
   push:
     branches: ["main", "dev"]
   pull_request:

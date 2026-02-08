@@ -72,6 +72,14 @@ judges = {
     'Conservative': ConservativeJudge(threshold=0.5),
     'Radical': RadicalJudge(amplification=1.5)
 }
+try:
+    from simulation.quantum import LocalQuantumJudge
+    from simulation.core.judgement_system import QuantumJudge
+    oracle = LocalQuantumJudge(shots=512, seed=42)
+    judges['Quantum'] = QuantumJudge(quantum_oracle=oracle)
+    print("      Added Quantum Judge (qiskit or NumPy fallback)")
+except Exception as e:
+    print(f"      Quantum Judge skipped: {e}")
 print(f"      Created {len(judges)} judges")
 
 print("\n[3/10] Evaluating all judges...")
@@ -109,7 +117,7 @@ print("GENERATING FIGURES")
 print("=" * 70)
 
 # Figure 1: Basic Π(x), B(x), E(x) for Biased Judge
-print("\n[4/10] Figure 1: Π(x), B(x), E(x) curves (Biased Judge)...")
+print("\n[4/11] Figure 1: Π(x), B(x), E(x) curves (Biased Judge)...")
 primes_biased = select_ethical_primes(results['Biased'], importance_quantile=0.9)
 Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes_biased, X_max=100, baseline='prime_theorem')
 plot_Pi_B_E(
@@ -121,7 +129,7 @@ plot_Pi_B_E(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf')}")
 
 # Figure 2: Error growth analysis
-print("\n[5/10] Figure 2: Error growth in log-log scale...")
+print("\n[5/11] Figure 2: Error growth in log-log scale...")
 analysis = analyze_error_growth(E_x, x_vals)
 plot_error_growth(
     x_vals, E_x, analysis,
@@ -132,7 +140,7 @@ plot_error_growth(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig2_error_growth.pdf')}")
 
 # Figure 3: Multi-judge comparison
-print("\n[6/10] Figure 3: Multi-judge error comparison...")
+print("\n[6/11] Figure 3: Multi-judge error comparison...")
 error_comparison = compare_error_distributions(results, X_max=100)
 plot_multi_judge_errors(
     error_comparison,
@@ -142,7 +150,7 @@ plot_multi_judge_errors(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
 
 # Figure 4: Judge metric comparison (bar chart)
-print("\n[7/10] Figure 4: Judge exponent comparison...")
+print("\n[7/11] Figure 4: Judge exponent comparison...")
 plot_judge_comparison(
     comparison,
     metric='estimated_exponent',
@@ -153,7 +161,7 @@ plot_judge_comparison(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 
 # Figure 5: Spectrum analysis
-print("\n[8/10] Figure 5: Frequency spectrum...")
+print("\n[8/11] Figure 5: Frequency spectrum...")
 m = build_m_sequence(primes_biased, X_max=200, mode='count')
 freqs, amps = compute_spectrum(m, normalize=True)
 peaks = analyze_spectrum_peaks(freqs, amps, num_peaks=5)
@@ -166,7 +174,7 @@ plot_spectrum(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 
 # Figure 6: Zero distribution
-print("\n[9/10] Figure 6: Ethical zeta function zeros...")
+print("\n[9/11] Figure 6: Ethical zeta function zeros...")
 zeros = find_approximate_zeros(
     m,
     real_range=(0.3, 0.7),
@@ -184,7 +192,7 @@ print(f"      Found {len(zeros)} approximate zeros")
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
 
 # Figure 7: Complexity distribution
-print("\n[10/10] Figure 7: Complexity distribution...")
+print("\n[10/11] Figure 7: Complexity distribution...")
 plot_complexity_distribution(
     actions,
     title="Action Complexity Distribution (Zipf)",
@@ -192,6 +200,21 @@ plot_complexity_distribution(
     show=False
 )
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+
+# Figure 8: Π(x), B(x), E(x) for Quantum Judge
+if 'Quantum' in results:
+    print("\n[11/11] Figure 8: Π(x), B(x), E(x) curves (Quantum Judge)...")
+    primes_quantum = select_ethical_primes(results['Quantum'], importance_quantile=0.9)
+    Pi_x_q, B_x_q, E_x_q, x_vals_q = compute_Pi_and_error(primes_quantum, X_max=100, baseline='prime_theorem')
+    plot_Pi_B_E(
+        x_vals_q, Pi_x_q, B_x_q, E_x_q,
+        title="Ethical Prime Distribution (Quantum Judge)",
+        save_path=os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf'),
+        show=False
+    )
+    print(f"      Saved: {os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf')}")
+else:
+    print("\n[11/11] Figure 8: Skipped (Quantum Judge not available)")
 
 # Generate detailed report
 print("\n" + "=" * 70)
@@ -226,6 +249,8 @@ print(f"  - {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+if 'Quantum' in results:
+    print(f"  - {os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf')}")
 print(f"  - {report_path}")
 print("\nNext steps:")
 print("  1. Review generated figures")

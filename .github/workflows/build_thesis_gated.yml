@@ -1,0 +1,19 @@
+name: Build Thesis (Gated)
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  simulation:
+    uses: ./.github/workflows/simulation.yml
+
+  quantum:
+    uses: ./.github/workflows/quantum_tests.yml
+
+  thesis:
+    needs: [simulation, quantum]
+    uses: ./.github/workflows/build_thesis.yml

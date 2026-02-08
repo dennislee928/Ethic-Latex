@@ -10,6 +10,7 @@ from erh_core.analysis.statistics import (
     compare_judges,
     detect_structural_bias,
     generate_report,
+    calculate_evs,
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "compare_judges",
     "detect_structural_bias",
     "generate_report",
+    "calculate_evs",
 ]
