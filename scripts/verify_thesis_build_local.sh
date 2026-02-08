@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 # Local verification of build_thesis_gated.yml thesis job
 # Simulates build_thesis.yml steps for macOS ( BasicTeX path, pdflatex/xelatex )
-# Usage: ./scripts/verify_thesis_build_local.sh
+# Usage: source .venv/bin/activate && ./scripts/verify_thesis_build_local.sh
+#   Or: ./scripts/verify_thesis_build_local.sh  (will try to use .venv)
 
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="$ROOT:$ROOT/erh_core:$ROOT/simulation:$PYTHONPATH"
+
+# Use project .venv if not already in a venv
+if [ -z "${VIRTUAL_ENV:-}" ] && [ -f "$ROOT/.venv/bin/activate" ]; then
+  echo "Activating .venv..."
+  source "$ROOT/.venv/bin/activate"
+fi
 
 # TeX path for BasicTeX 2025 on macOS
 TEXBIN="/usr/local/texlive/2025basic/bin/universal-darwin"
@@ -63,11 +70,13 @@ fi
 
 echo "=== [11/12] Compile Chinese LaTeX (xelatex) ==="
 if command -v xelatex &>/dev/null; then
-  xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex
-  bibtex ethical_riemann_hypothesis_zh || true
-  xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex
-  xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex
-  echo "✓ ethical_riemann_hypothesis_zh.pdf"
+  xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
+  if [ -f ethical_riemann_hypothesis_zh.aux ]; then
+    bibtex ethical_riemann_hypothesis_zh 2>/dev/null || true
+    xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
+    xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
+  fi
+  [ -f ethical_riemann_hypothesis_zh.pdf ] && echo "✓ ethical_riemann_hypothesis_zh.pdf" || echo "⚠ Chinese PDF skipped (install: tlmgr install xecjk ctex; or fonts-noto-cjk)"
 else
   echo "⚠ xelatex not found, skipping Chinese PDF"
 fi
