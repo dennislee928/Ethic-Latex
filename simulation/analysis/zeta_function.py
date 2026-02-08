@@ -469,6 +469,131 @@ def compute_zeta_grid(
     return real_grid, imag_grid, magnitude_grid
 
 
+def fit_error_to_zeta_critical_line(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    expected_exponent: float = 0.5,
+) -> dict:
+    """
+    Fit simulation error E(x) to Zeta critical line format |E(x)| ≈ C·x^α.
+
+    ERH states |E(x)| ≤ C·x^(1/2+ε). This fits |E(x)| = C·x^α and reports
+    whether α ≤ 0.5 (satisfies ERH).
+
+    Parameters
+    ----------
+    E_x : np.ndarray
+        Error values E(x)
+    x_values : np.ndarray
+        Complexity values
+    expected_exponent : float, default=0.5
+        Target exponent (ERH: 0.5)
+
+    Returns
+    -------
+    dict
+        - fitted_exponent: float
+        - fitted_constant: float
+        - erh_satisfied: bool
+        - r_squared: float
+    """
+    abs_E = np.abs(E_x)
+    valid = (abs_E > 0) & (x_values > 1)
+    if np.sum(valid) < 3:
+        return {"error": "insufficient_data"}
+
+    x = x_values[valid]
+    y = abs_E[valid]
+    log_x = np.log(x)
+    log_y = np.log(y)
+
+    coeffs = np.polyfit(log_x, log_y, 1)
+    alpha = float(coeffs[0])
+    log_C = float(coeffs[1])
+    C = np.exp(log_C)
+
+    y_pred = C * (x ** alpha)
+    ss_res = np.sum((y - y_pred) ** 2)
+    ss_tot = np.sum((y - np.mean(y)) ** 2)
+    r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
+
+    return {
+        "fitted_exponent": alpha,
+        "fitted_constant": C,
+        "erh_satisfied": alpha <= expected_exponent + 0.15,
+        "r_squared": r_squared,
+    }
+
+
+def detect_zeros(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    threshold: float = 0.1,
+) -> List[float]:
+    """
+    Detect points where E(x) ≈ 0 (system resolves complexity).
+
+    Zeros: complexity levels where the judgment system effectively
+    corrects the error (E → 0).
+
+    Parameters
+    ----------
+    E_x : np.ndarray
+        Error values
+    x_values : np.ndarray
+        Complexity values
+    threshold : float, default=0.1
+        |E(x)| < threshold counts as zero
+
+    Returns
+    -------
+    List[float]
+        x values where |E(x)| < threshold
+    """
+    abs_E = np.abs(E_x)
+    mask = abs_E < threshold
+    return x_values[mask].tolist()
+
+
+def detect_poles(
+    E_x: np.ndarray,
+    x_values: np.ndarray,
+    spike_factor: float = 3.0,
+    min_x: int = 5,
+) -> List[float]:
+    """
+    Detect points where error explodes (phase transition / pole).
+
+    Poles: complexity levels where |E(x)| suddenly spikes (e.g. > 3× median).
+    Corresponds to "moral phase transition" or ethical Zeta function poles.
+
+    Parameters
+    ----------
+    E_x : np.ndarray
+        Error values
+    x_values : np.ndarray
+        Complexity values
+    spike_factor : float, default=3.0
+        |E(x)| > spike_factor * median(|E|) counts as spike
+    min_x : int, default=5
+        Minimum x to consider (avoid trivial low-x spikes)
+
+    Returns
+    -------
+    List[float]
+        x values where error spikes (poles)
+    """
+    abs_E = np.abs(E_x)
+    mask = x_values >= min_x
+    if np.sum(mask) < 2:
+        return []
+    med = np.median(abs_E[mask])
+    if med < 1e-10:
+        return []
+    spike_mask = mask & (abs_E > spike_factor * med)
+    return x_values[spike_mask].tolist()
+
+
 def detect_periodic_bias(
     m: np.ndarray,
     significance_threshold: float = 0.3

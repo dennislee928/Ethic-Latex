@@ -5,15 +5,85 @@ This module defines various judge classes that evaluate moral actions,
 introducing different types of biases, noise, and judgment strategies.
 
 Supports optional QuantumOracle for non-binary superposition judgments.
+GroundTruthProxy provides V(a) from human consensus / RLHF-style datasets.
 """
 
 import numpy as np
-from typing import List, Optional, Callable, TYPE_CHECKING
+from typing import List, Optional, Callable, Tuple, Dict, Any, TYPE_CHECKING
 from abc import ABC, abstractmethod
 from .action_space import Action
 
 if TYPE_CHECKING:
     from simulation.quantum.interface import QuantumOracle
+
+
+class GroundTruthProxy:
+    """
+    Provides ground truth V(a) from human consensus or RLHF-weighted data.
+
+    Replaces random "God view" with deterministic or dataset-driven values.
+    Use mock data for simulation; load real RLHF/preference data for empirical studies.
+
+    Parameters
+    ----------
+    data : Dict[int, float] or Dict[int, Tuple[float, float, float]]
+        Maps action_id -> V, or action_id -> (V, ci_low, ci_high).
+    default_ci_width : float, default=0.2
+        Default half-width for confidence interval when not provided.
+    """
+
+    def __init__(
+        self,
+        data: Optional[Dict[int, Any]] = None,
+        default_ci_width: float = 0.2,
+    ):
+        self._data = data or {}
+        self.default_ci_width = default_ci_width
+
+    def get_V(self, action: Action) -> float:
+        """Return ground truth V(a). Falls back to action.V if missing."""
+        val = self._data.get(action.id)
+        if val is None:
+            return action.V
+        if isinstance(val, (list, tuple)) and len(val) >= 1:
+            return float(val[0])
+        return float(val)
+
+    def get_confidence_interval(
+        self,
+        action: Action,
+    ) -> Tuple[float, float]:
+        """
+        Return (ci_low, ci_high) for V(a).
+        Uses stored interval if available; else centers on V with default width.
+        """
+        val = self._data.get(action.id)
+        if val is not None and isinstance(val, (list, tuple)) and len(val) >= 3:
+            return (float(val[1]), float(val[2]))
+        v = self.get_V(action)
+        w = self.default_ci_width
+        return (np.clip(v - w, -1, 1), np.clip(v + w, -1, 1))
+
+    @classmethod
+    def from_mock_rlhf(
+        cls,
+        actions: List[Action],
+        noise_scale: float = 0.1,
+        seed: Optional[int] = None,
+    ) -> "GroundTruthProxy":
+        """
+        Build proxy from existing actions: V = action.V with small noise.
+        Simulates RLHF-style human consensus with confidence intervals.
+        """
+        if seed is not None:
+            np.random.seed(seed)
+        data = {}
+        for a in actions:
+            v = a.V + np.random.normal(0, noise_scale)
+            v = np.clip(v, -1, 1)
+            w = 0.1 + 0.15 * np.random.random()
+            data[a.id] = (v, np.clip(v - w, -1, 1), np.clip(v + w, -1, 1))
+        return cls(data=data)
 
 
 class BaseJudge(ABC):
@@ -43,6 +113,27 @@ class BaseJudge(ABC):
             Judgment value J(a)
         """
         pass
+
+    def judge_with_confidence(
+        self,
+        action: Action,
+    ) -> Tuple[float, float, float]:
+        """
+        Produce judgment J(a) and a confidence interval (ci_low, ci_high).
+
+        Default implementation uses judge() and estimates interval from
+        judge-specific noise (e.g. noise_scale). Override for finer control.
+
+        Returns
+        -------
+        tuple of (float, float, float)
+            (J, ci_low, ci_high)
+        """
+        j = self.judge(action)
+        width = getattr(self, "noise_scale", 0.2)
+        ci_low = np.clip(j - width, -1, 1)
+        ci_high = np.clip(j + width, -1, 1)
+        return (float(j), float(ci_low), float(ci_high))
     
     def __repr__(self):
         return f"{self.__class__.__name__}(name='{self.name}')"

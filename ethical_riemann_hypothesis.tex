@@ -323,6 +323,19 @@ For each judgment system:
     \item Test if $\alpha \approx 0.5$ (ERH satisfied)
 \end{enumerate}
 
+\subsection{Operationalizing Complexity in Large Language Models}
+\label{sec:operationalizing}
+
+To make ERH applicable to real systems, we operationalize complexity $c(a)$ concretely:
+
+\begin{itemize}
+    \item \textbf{Principle conflict count}: $c(a)$ = number of conflicting ethical principles (e.g., Deontology vs.\ Utilitarianism) involved in the action. High $c$ indicates moral dilemmas with incommensurable values.
+    \item \textbf{Token-length proxy}: When action descriptions are available (e.g., from RLHF prompts), we use $\log(1 + \text{word count})$ as a proxy for reasoning complexity.
+    \item \textbf{Ground truth proxy}: Instead of random ``God view'' $V(a)$, we support loading human consensus or RLHF-weighted datasets where $V(a)$ is defined by annotator agreement and confidence scores.
+\end{itemize}
+
+Judges can output both a decision $J(a)$ and a confidence interval $[J_{\text{low}}, J_{\text{high}}]$, enabling calibration analysis and dual-metric evaluation (Accuracy vs.\ Structural Stability).
+
 \subsection{Fourier Spectrum Analysis}
 
 To detect periodic patterns in misjudgments, we compute:
@@ -351,6 +364,28 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \end{figure}
 
 The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed'' societal states, where dominant basis states indicate the emergence of ethical consensus groups.
+
+\subsection{Quantum Simulation of Ethical Frustration and Phase Transitions}
+\label{sec:quantum_phase}
+
+We map moral principle conflicts to a \emph{quantum spin glass} Hamiltonian:
+\[
+H = -\sum_{i<j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i^x
+\]
+where $J_{ij}$ encodes the conflict weight between principles $i$ and $j$, and $\sigma_i$ are Pauli-$Z$ operators. When multiple principles cannot be simultaneously satisfied (e.g., honesty vs.\ non-harm), the system exhibits \emph{frustration}---analogous to spin glass physics.
+
+As conflict density increases, the system cannot reach a stable ground state: ground-state fidelity drops, and coherence collapses. This ``moral phase transition'' corresponds to the \emph{poles} of the Ethical Zeta Function---points where error explodes. We run this on IBM Quantum (or Aer simulator) and measure fidelity and Von Neumann entropy across conflict sweeps.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/phase_transition_diagram.png}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/phase_transition_diagram.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_phase\_transition.py --save-plot} to generate this figure.}}
+    }
+    \caption{Moral phase transition: as conflict density (complexity) increases, ground-state fidelity drops. The collapse point marks the ``pole'' of the Ethical Zeta Function.}
+    \label{fig:phase_transition}
+\end{figure}
 
 \begin{figure}[h!]
     \centering
@@ -472,6 +507,8 @@ We have introduced the Ethical Riemann Hypothesis, a mathematical framework for 
 \end{enumerate}
 
 This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
+
+We emphasize that ERH is a \emph{necessary} condition for safety (structural stability): systems violating ERH exhibit unbounded error growth and are thus unreliable at scale. ERH is \emph{not sufficient} for correctness: a Conservative Judge may satisfy ERH (low $\alpha$, bounded error) yet underperform on raw accuracy (tendency toward neutral). The dual metrics---Accuracy and Stability---address this distinction.
 
 The fundamental question remains: \emph{Can we design AI systems that satisfy ERH?} And if not, what does that tell us about the inherent limitations of automated moral reasoning?
 

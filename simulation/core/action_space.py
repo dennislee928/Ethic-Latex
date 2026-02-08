@@ -13,13 +13,62 @@ from typing import List, Optional, Literal
 from simulation.models import Action
 
 
+def calculate_complexity(
+    action: Action,
+    use_token_proxy: bool = False,
+) -> int:
+    """
+    Compute concrete complexity c(a) for an action.
+
+    Primary metric: Number of conflicting ethical principles
+    (e.g., Deontology vs. Utilitarianism count).
+    Falls back to action.c when conflicting_principles is not set.
+
+    Token-length proxy: When action has a description and use_token_proxy=True,
+    uses log(1 + word_count) as a proxy for reasoning complexity.
+    Combined with principle count when both are available.
+
+    Parameters
+    ----------
+    action : Action
+        The action to evaluate.
+    use_token_proxy : bool, default=False
+        If True and action has description, incorporate token-length proxy.
+
+    Returns
+    -------
+    int
+        Complexity value (≥ 0).
+
+    Examples
+    --------
+    >>> a = Action(id=0, c=5, V=0.3, w=1.0, conflicting_principles=3)
+    >>> calculate_complexity(a)
+    3
+    """
+    base = getattr(action, "conflicting_principles", None)
+    if base is not None:
+        c_principle = int(base)
+    else:
+        c_principle = action.c
+
+    if use_token_proxy and hasattr(action, "description") and action.description:
+        import math
+        word_count = len(str(action.description).split())
+        token_proxy = int(math.log(1 + word_count) * 10)  # scale to ~c range
+        c_principle = max(c_principle, token_proxy)
+
+    return max(0, c_principle)
+
+
 def generate_world(
     num_actions: int = 1000,
     complexity_dist: Literal['uniform', 'zipf', 'power_law'] = 'zipf',
     complexity_range: tuple = (1, 100),
     moral_ambiguity_factor: float = 0.3,
     importance_correlation: float = 0.5,
-    random_seed: Optional[int] = None
+    random_seed: Optional[int] = None,
+    set_conflicting_principles: bool = False,
 ) -> List[Action]:
     """
     Generate a moral action space with specified distributions.
@@ -112,8 +161,11 @@ def generate_world(
         base_importance = np.random.gamma(shape=2, scale=1)
         complexity_factor = importance_correlation * (c / max_c)
         w = base_importance * (1 + complexity_factor)
-        
-        action = Action(id=i, c=c, V=float(V), w=float(w))
+
+        kwargs = {"id": i, "c": c, "V": float(V), "w": float(w)}
+        if set_conflicting_principles:
+            kwargs["conflicting_principles"] = c
+        action = Action(**kwargs)
         actions.append(action)
     
     return actions

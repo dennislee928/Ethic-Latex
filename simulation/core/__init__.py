@@ -6,13 +6,14 @@ try:
 except ImportError:
     # Fallback: try to import from local if erh_core not available
     # This maintains backward compatibility during transition
-    from .action_space import Action, generate_world
+    from .action_space import Action, generate_world, calculate_complexity
     from .judgement_system import (
         BaseJudge,
         BiasedJudge,
         NoisyJudge,
         ConservativeJudge,
         RadicalJudge,
+        GroundTruthProxy,
         evaluate_judgement,
     )
     from .ethical_primes import (
@@ -38,11 +39,13 @@ except ImportError:
     __all__ = [
         "Action",
         "generate_world",
+        "calculate_complexity",
         "BaseJudge",
         "BiasedJudge",
         "NoisyJudge",
         "ConservativeJudge",
         "RadicalJudge",
+        "GroundTruthProxy",
         "evaluate_judgement",
         "select_ethical_primes",
         "compute_Pi_and_error",

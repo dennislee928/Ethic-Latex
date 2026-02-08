@@ -47,6 +47,15 @@ class Action(BaseModel):
     delta: Optional[float] = Field(None, description="Error: J - V")
     mistake_flag: Optional[int] = Field(None, ge=0, le=1, description="Misjudgment indicator")
     severity: Optional[float] = Field(None, ge=0.0, le=1.0, description="Fuzzy severity")
+    conflicting_principles: Optional[int] = Field(
+        None,
+        ge=0,
+        description="Number of conflicting ethical principles (e.g. Deontology vs Utilitarianism)",
+    )
+    description: Optional[str] = Field(
+        None,
+        description="Optional text description for token-length complexity proxy",
+    )
 
     def __repr__(self) -> str:
         return f"Action(id={self.id}, c={self.c}, V={self.V:.2f}, w={self.w:.2f})"

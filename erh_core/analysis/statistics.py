@@ -661,6 +661,98 @@ def summarize_fairness_and_erh(
     return summary
 
 
+def compute_dual_metrics(
+    actions: List,
+    X_max: int = 100,
+    baseline: str = "prime_theorem",
+) -> dict:
+    """
+    Compute Dual Metrics: Accuracy vs. Structural Stability.
+
+    - **Accuracy**: Traditional F1/MAE against ground truth V(a).
+    - **Stability**: Goodness of fit to x^(1/2) boundary (ERH compliance).
+
+    Used to analyze the Conservative Judge anomaly: High Stability, Low Accuracy.
+    """
+    try:
+        from erh_core.core.ethical_primes import (
+            select_ethical_primes,
+            compute_Pi_and_error,
+            analyze_error_growth,
+        )
+    except ImportError:
+        from ..core.ethical_primes import (
+            select_ethical_primes,
+            compute_Pi_and_error,
+            analyze_error_growth,
+        )
+
+    primes = select_ethical_primes(actions)
+    if len(primes) == 0:
+        return {"error": "no_primes", "accuracy": 0.0, "stability": 0.0}
+
+    Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes, X_max=X_max, baseline=baseline)
+    growth = analyze_error_growth(E_x, x_vals)
+
+    # Accuracy: MAE of deltas
+    deltas = [a.delta for a in actions if a.delta is not None]
+    mae = np.mean(np.abs(deltas)) if deltas else 0.0
+    # Inverse: lower MAE = higher accuracy; map to [0,1]
+    accuracy_score = max(0, 1.0 - mae)
+
+    # Stability: R² of fit to x^0.5, or exponent <= 0.5
+    alpha = growth.get("estimated_exponent", 0.5)
+    erh_ok = growth.get("erh_satisfied", False)
+    r2 = growth.get("r_squared", 0.0)
+    stability_score = r2 if erh_ok else r2 * 0.5  # Penalize if ERH violated
+
+    return {
+        "accuracy": float(accuracy_score),
+        "stability": float(stability_score),
+        "mae": float(mae),
+        "estimated_exponent": alpha,
+        "erh_satisfied": erh_ok,
+        "r_squared": r2,
+    }
+
+
+def analyze_conservative_judge_anomaly(
+    results_dict: Dict[str, List],
+    X_max: int = 100,
+) -> dict:
+    """
+    Analyze the Conservative Judge anomaly: High Stability, Low Accuracy.
+
+    Conservative judges tend toward neutral (0) → low MAE in some setups
+    but high structural stability (ERH compliance). This function
+    identifies judges with this pattern.
+    """
+    dual = {}
+    for name, actions in results_dict.items():
+        m = compute_dual_metrics(actions, X_max=X_max)
+        if "error" not in m:
+            dual[name] = m
+
+    anomaly = []
+    for name, m in dual.items():
+        high_stability = m["stability"] > 0.5
+        low_accuracy = m["accuracy"] < 0.6
+        if high_stability and low_accuracy:
+            anomaly.append({
+                "judge": name,
+                "accuracy": m["accuracy"],
+                "stability": m["stability"],
+                "interpretation": "Conservative Judge pattern: satisfies ERH bound "
+                "but underperforms on raw accuracy (tendency toward neutral).",
+            })
+
+    return {
+        "dual_metrics": dual,
+        "conservative_anomaly": anomaly,
+        "has_anomaly": len(anomaly) > 0,
+    }
+
+
 def calculate_von_neumann_entropy(density_matrix: np.ndarray) -> float:
     """
     Calculate Von Neumann entropy of a density matrix (social complexity measure).

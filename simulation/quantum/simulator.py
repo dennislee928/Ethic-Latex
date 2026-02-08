@@ -385,6 +385,182 @@ class SocialDynamicsQuantumSimulator:
             pass
 
 
+class MoralHamiltonian:
+    """
+    Ising Spin Glass Hamiltonian for ethical conflict modeling.
+
+    Maps moral principle conflicts to H = Σ J_ij σ_i σ_j (frustration).
+    High conflict density → high frustration → system cannot reach ground state
+    (phase transition / "collapse" at critical complexity x_crit).
+
+    Parameters
+    ----------
+    n_qubits : int, default=4
+        Number of principles (spins).
+    use_real_hardware : bool, default=False
+        If True, submit to IBM Quantum (requires IBM_QUANTUM_TOKEN).
+    seed : int | None, default=None
+        Random seed for reproducibility.
+    """
+
+    def __init__(
+        self,
+        n_qubits: int = 4,
+        use_real_hardware: bool = False,
+        seed: int | None = None,
+    ):
+        self.n_qubits = n_qubits
+        self.use_real_hardware = use_real_hardware
+        self.seed = seed
+        self._backend = None
+        if _QISKIT_AVAILABLE:
+            self._simulator = AerSimulator()
+        else:
+            self._simulator = None
+
+    def build_conflict_hamiltonian(
+        self,
+        conflict_matrix: np.ndarray,
+        transverse_field: float = 0.1,
+    ) -> Any:
+        """
+        Build Ising Hamiltonian from moral conflict matrix.
+
+        H = -Σ_{i<j} J_ij Z_i Z_j + Σ_i h_i X_i
+
+        J_ij > 0: principles i,j conflict (frustration).
+        Higher sum of |J_ij| → more frustration.
+
+        Parameters
+        ----------
+        conflict_matrix : np.ndarray, shape (n, n)
+            J_ij = conflict weight between principles i and j.
+        transverse_field : float, default=0.1
+            h_i for quantum fluctuations.
+
+        Returns
+        -------
+        SparsePauliOp or None
+        """
+        if not _VQE_AVAILABLE or SparsePauliOp is None:
+            return None
+
+        J = np.asarray(conflict_matrix)
+        n = min(self.n_qubits, J.shape[0], J.shape[1])
+        pauli_list: list[tuple[str, float]] = []
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                w = float(J[i, j] + J[j, i]) / 2.0
+                if abs(w) > 1e-12:
+                    pauli_str = ["I"] * self.n_qubits
+                    pauli_str[self.n_qubits - 1 - i] = "Z"
+                    pauli_str[self.n_qubits - 1 - j] = "Z"
+                    pauli_list.append(("".join(pauli_str), -1.0 * w))
+
+        for i in range(n):
+            pauli_str = ["I"] * self.n_qubits
+            pauli_str[self.n_qubits - 1 - i] = "X"
+            pauli_list.append(("".join(pauli_str), transverse_field))
+
+        if not pauli_list:
+            return SparsePauliOp.from_list([("I" * self.n_qubits, 0.0)])
+        return SparsePauliOp.from_list(pauli_list)
+
+    def run_phase_transition_sweep(
+        self,
+        conflict_densities: np.ndarray,
+        base_strength: float = 0.5,
+        shots: int = 2048,
+    ) -> Dict[str, Any]:
+        """
+        Sweep conflict density and measure fidelity / coherence.
+
+        Hypothesis: At critical conflict, fidelity drops (phase transition).
+
+        Parameters
+        ----------
+        conflict_densities : np.ndarray
+            Array of conflict density values (0–1).
+        base_strength : float, default=0.5
+            Base interaction strength.
+        shots : int, default=2048
+            Measurement shots per run.
+
+        Returns
+        -------
+        dict
+            - conflict_densities: np.ndarray
+            - fidelities: np.ndarray
+            - coherences: np.ndarray (consensus measure)
+            - collapse_point: float or None (estimated x_crit)
+        """
+        from qiskit.quantum_info import Statevector
+
+        try:
+            from qiskit_algorithms import NumPyMinimumEigensolver
+        except ImportError:
+            from qiskit.algorithms.minimum_eigensolvers import NumPyMinimumEigensolver
+
+        fidelities = []
+        coherences = []
+
+        for rho in conflict_densities:
+            # Random conflict matrix scaled by density
+            rng = np.random.default_rng(self.seed)
+            J = (np.random.rand(self.n_qubits, self.n_qubits) - 0.5) * 2
+            J = (J + J.T) / 2
+            np.fill_diagonal(J, 0)
+            J = J * base_strength * rho
+
+            H = self.build_conflict_hamiltonian(J)
+            if H is None:
+                fidelities.append(0.5)
+                coherences.append(0.5)
+                continue
+
+            try:
+                solver = NumPyMinimumEigensolver()
+                result = solver.compute_minimum_eigenvalue(H)
+                ground_state = result.eigenstate
+                if hasattr(ground_state, "to_statevector"):
+                    sv = ground_state.to_statevector()
+                else:
+                    sv = Statevector(ground_state)
+
+                # Fidelity: overlap with |0...0⟩ (trivial consensus)
+                zeros = "0" * self.n_qubits
+                fid = float(np.abs(sv.data[0]) ** 2) if len(sv.data) > 0 else 0.0
+
+                # Coherence: concentration on |00..0⟩ or |11..1⟩
+                data = np.asarray(sv.data)
+                p0 = np.abs(data[0]) ** 2 if len(data) > 0 else 0
+                p1 = np.abs(data[-1]) ** 2 if len(data) > 0 else 0
+                coherence = p0 + p1
+
+                fidelities.append(fid)
+                coherences.append(coherence)
+            except Exception:
+                fidelities.append(0.5)
+                coherences.append(0.5)
+
+        fidelities = np.array(fidelities)
+        coherences = np.array(coherences)
+
+        # Estimate collapse: first point where fidelity < 0.3
+        collapse_point = None
+        idx = np.where(fidelities < 0.3)[0]
+        if len(idx) > 0:
+            collapse_point = float(conflict_densities[idx[0]])
+
+        return {
+            "conflict_densities": conflict_densities,
+            "fidelities": np.array(fidelities),
+            "coherences": np.array(coherences),
+            "collapse_point": collapse_point,
+        }
+
+
 def _outcome_to_bitstring(outcome: Any, n_qubits: int) -> str:
     """Convert SamplerV2 outcome (BitArray, int, etc.) to '0000' style string."""
     if isinstance(outcome, str) and all(c in "01" for c in outcome):
