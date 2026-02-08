@@ -188,7 +188,41 @@ def generate_visualizations(df, output_dir):
         plt.savefig(os.path.join(output_dir, "evs_over_time.png"))
         plt.close()
 
-def generate_markdown_report(df, output_dir):
+def _append_empirical_section(f, empirical_dir: str) -> None:
+    """Append Empirical Data section if data/empirical exists (HuggingFace, AITA, GitHub PR)."""
+    emp_path = Path(empirical_dir) / "empirical"
+    if not emp_path.exists():
+        return
+    summaries = []
+    for name, fname in [
+        ("HuggingFace", "huggingface_empirical.json"),
+        ("Reddit AITA", "aita_empirical.json"),
+        ("GitHub PR", "github_pr_empirical.json"),
+    ]:
+        p = emp_path / fname
+        if p.exists():
+            try:
+                with open(p) as fp:
+                    data = json.load(fp)
+                err = data.get("error")
+                if err:
+                    summaries.append(f"- **{name}**: error: {err}")
+                elif "count" in data:
+                    summaries.append(f"- **{name}**: {data['count']} rows")
+                elif "datasets" in data:
+                    counts = [f"{k}={v.get('count', '?')}" for k, v in data.get("datasets", {}).items()]
+                    summaries.append(f"- **{name}**: " + ", ".join(counts))
+                else:
+                    summaries.append(f"- **{name}**: fetched")
+            except Exception as e:
+                summaries.append(f"- **{name}**: read error: {e}")
+    if summaries:
+        f.write("\n## Empirical Data (Pipeline Fetch)\n")
+        f.write("Real-world data sources used for ERH validation:\n\n")
+        f.write("\n".join(summaries) + "\n\n")
+
+
+def generate_markdown_report(df, output_dir, empirical_dir: str = ""):
     """Create a markdown summary report."""
     report_path = os.path.join(output_dir, "summary_report.md")
 
@@ -236,6 +270,9 @@ def generate_markdown_report(df, output_dir):
         if "evs" in df.columns and os.path.isfile(os.path.join(output_dir, "evs_over_time.png")):
             f.write("![EVS over Time](evs_over_time.png)\n")
 
+        if empirical_dir:
+            _append_empirical_section(f, empirical_dir)
+
     print(f"Report generated at {report_path}")
 
 def write_phase_transition_latex(output_dir: str) -> None:
@@ -267,6 +304,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate Comprehensive Report")
     parser.add_argument("--input-dir", required=True, help="Directory containing JSON results")
     parser.add_argument("--output-dir", default="report", help="Output directory for report")
+    parser.add_argument("--empirical-dir", default="", help="Directory containing data/empirical (HuggingFace, AITA, GitHub PR)")
     parser.add_argument("--skip-phase-transition", action="store_true", help="Skip phase transition run")
     args = parser.parse_args()
 
@@ -296,7 +334,7 @@ def main():
         return
 
     generate_visualizations(df, output_dir)
-    generate_markdown_report(df, output_dir)
+    generate_markdown_report(df, output_dir, empirical_dir=args.empirical_dir or str(ROOT / "data"))
 
 if __name__ == "__main__":
     main()
