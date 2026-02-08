@@ -388,13 +388,16 @@ class SocialDynamicsQuantumSimulator:
 def _outcome_to_bitstring(outcome: Any, n_qubits: int) -> str:
     """Convert SamplerV2 outcome (BitArray, int, etc.) to '0000' style string."""
     if isinstance(outcome, str) and all(c in "01" for c in outcome):
-        return outcome
-    s = str(outcome)
-    if s.startswith("0b"):
-        s = s[2:].zfill(n_qubits)
-    elif s.isdigit():
-        s = format(int(s), f"0{n_qubits}b")
-    return s[:n_qubits].ljust(n_qubits, "0") if len(s) >= n_qubits else s.zfill(n_qubits)
+        s = outcome
+    else:
+        s = str(outcome)
+        if s.startswith("0b"):
+            s = s[2:]
+        elif s.startswith("0x"):
+            s = format(int(outcome, 16) & ((1 << n_qubits) - 1), f"0{n_qubits}b")
+        elif s.lstrip("-").isdigit():
+            s = format(int(outcome) & ((1 << n_qubits) - 1), f"0{n_qubits}b")
+    return s.zfill(n_qubits)[:n_qubits]
 
 
 class AdvancedEthicalQuantumEngine:
