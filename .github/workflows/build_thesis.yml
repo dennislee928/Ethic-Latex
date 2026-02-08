@@ -123,6 +123,13 @@ jobs:
           # Run quick tests in CI to save time
           python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
 
+      - name: Run Quantum Hilbert Space Simulation
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          mkdir -p simulation/output/figures
+          python scripts/run_quantum_hilbert_figures.py || echo "⚠ Quantum Hilbert figures step failed, continuing..."
+
       - name: Download Simulation Figures (if available)
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -152,6 +159,12 @@ jobs:
             cp figures/simulation/*.png figures/ 2>/dev/null || true
             echo "Copied PNG figures from simulation workflow:"
             ls -l figures/*.png || echo "No PNG figures found"
+          fi
+          # Copy quantum Hilbert figures (circuit, distribution) for thesis PDF
+          if [ -d "simulation/output/figures" ]; then
+            cp simulation/output/figures/latest_quantum_circuit.png figures/ 2>/dev/null || true
+            cp simulation/output/figures/latest_quantum_distribution.png figures/ 2>/dev/null || true
+            ls -la simulation/output/figures/*.png 2>/dev/null || true
           fi
 
       - name: Integrate Figures into LaTeX

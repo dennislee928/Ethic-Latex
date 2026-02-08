@@ -11,6 +11,7 @@ from erh_core.analysis.statistics import (
     detect_structural_bias,
     generate_report,
     calculate_evs,
+    calculate_von_neumann_entropy,
 )
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     "detect_structural_bias",
     "generate_report",
     "calculate_evs",
+    "calculate_von_neumann_entropy",
 ]

@@ -6,13 +6,19 @@ CloudQuantumJudge) for superposition-based ethical judgments.
 """
 
 from .interface import QuantumOracle
-from .simulator import LocalQuantumJudge, AdvancedEthicalCircuit, SocialDynamicsQuantumSimulator
+from .simulator import (
+    LocalQuantumJudge,
+    AdvancedEthicalCircuit,
+    SocialDynamicsQuantumSimulator,
+    AdvancedEthicalQuantumEngine,
+)
 
 __all__ = [
     "QuantumOracle",
     "LocalQuantumJudge",
     "AdvancedEthicalCircuit",
     "SocialDynamicsQuantumSimulator",
+    "AdvancedEthicalQuantumEngine",
 ]
 
 try:

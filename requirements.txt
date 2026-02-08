@@ -40,7 +40,7 @@ requests>=2.28.0
 # Type safety & validation
 pydantic>=2.0.0
 
-# Phase 3: Quantum Judgment (optional - install with: pip install qiskit qiskit-aer qiskit-ibm-runtime)
-# qiskit>=1.0.0
-# qiskit-aer>=0.14.0
-# qiskit-ibm-runtime>=0.21.0
+# Phase 3: Quantum Judgment (Advanced Ethical Hilbert Space)
+qiskit>=1.0.0
+qiskit-aer>=0.14.0
+# qiskit-ibm-runtime>=0.21.0  # Optional: for IBM Quantum hardware

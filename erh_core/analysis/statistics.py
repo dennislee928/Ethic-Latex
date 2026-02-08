@@ -660,3 +660,26 @@ def summarize_fairness_and_erh(
 
     return summary
 
+
+def calculate_von_neumann_entropy(density_matrix: np.ndarray) -> float:
+    """
+    Calculate Von Neumann entropy of a density matrix (social complexity measure).
+
+    H(rho) = -Tr(rho * ln(rho)). High value indicates high social entanglement
+    (complex dependencies); zero indicates complete individual autonomy.
+
+    Parameters
+    ----------
+    density_matrix : np.ndarray
+        Density matrix (Hermitian, positive semi-definite, trace 1).
+
+    Returns
+    -------
+    float
+        Von Neumann entropy in nats.
+    """
+    eigenvals = np.linalg.eigvalsh(density_matrix)
+    eigenvals = np.clip(eigenvals, 1e-15, 1.0)
+    entropy = -np.sum(eigenvals * np.log(eigenvals))
+    return float(entropy)
+
