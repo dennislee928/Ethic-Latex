@@ -4,14 +4,15 @@ This directory contains Dockerfiles and infrastructure configuration files for d
 
 ## Files
 
-- `Dockerfile.fastapi` - Production Dockerfile for the FastAPI backend
+- `fastapi/Dockerfile` - Production Dockerfile for the FastAPI backend (erh-security-app)
+- `fastapi/README.md` - Detailed build and deployment instructions
 
 ## Building the FastAPI Backend
 
 From the repository root:
 
 ```bash
-docker build -f infra/Dockerfile.fastapi -t ethic-latex-api .
+docker build -f infra/fastapi/Dockerfile -t ethic-latex-api .
 ```
 
 ## Running the Container
