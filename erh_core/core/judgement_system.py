@@ -3,10 +3,11 @@ Judgment System Module
 
 This module defines various judge classes that evaluate moral actions,
 introducing different types of biases, noise, and judgment strategies.
+Supports HuggingFaceEthicalOracle for ground-truth V(a) from model scoring.
 """
 
 import numpy as np
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Any
 from abc import ABC, abstractmethod
 from .action_space import Action
 
@@ -237,6 +238,56 @@ class RadicalJudge(BaseJudge):
         J += noise
         
         return np.clip(J, -1, 1)
+
+
+class OracleDrivenJudge(BaseJudge):
+    """
+    Judge that sets V(a) from HuggingFaceEthicalOracle before computing J(a).
+
+    Supports GroundTruthProxy priority: if csv_proxy has action_id, use it;
+    else use oracle.score(action.description). E(x) = |J - V|.
+
+    Parameters
+    ----------
+    oracle : HuggingFaceEthicalOracle
+        Oracle that scores action text to produce V.
+    inner_judge : BaseJudge, optional
+        Judge to use after V is set. If None, returns V (perfect judge).
+    csv_proxy : Any, optional
+        GroundTruthProxy from load_from_csv. When provided, use it first
+        for actions it has; else fall back to oracle.
+    name : str, optional
+        Name for this judge
+    """
+
+    def __init__(
+        self,
+        oracle: Any,
+        inner_judge: Optional[BaseJudge] = None,
+        csv_proxy: Optional[Any] = None,
+        name: str = "OracleDrivenJudge",
+    ):
+        super().__init__(name)
+        self.oracle = oracle
+        self.inner_judge = inner_judge
+        self.csv_proxy = csv_proxy
+
+    def _get_V(self, action: Action) -> float:
+        """Get V from csv_proxy (if available) else oracle. Priority: CSV first."""
+        if self.csv_proxy is not None and hasattr(self.csv_proxy, "_data"):
+            if action.id in self.csv_proxy._data:
+                return self.csv_proxy.get_V(action)
+        text = getattr(action, "description", None) or ""
+        if text:
+            return self.oracle.score(text)
+        return action.V
+
+    def judge(self, action: Action) -> float:
+        """Set V from csv_proxy or oracle, then produce J via inner judge."""
+        action.V = self._get_V(action)
+        if self.inner_judge is not None:
+            return self.inner_judge.judge(action)
+        return action.V
 
 
 class CustomJudge(BaseJudge):

@@ -3,6 +3,7 @@
 Batch Simulation Runner
 Execute ERH simulations with configurable parameters and save results to JSON/CSV.
 Supports parallel execution via multiprocessing for CI/CD pipelines.
+Modes: judge (default) = judge-based ERH analysis; abm = Agent-Based Model simulation.
 """
 
 import argparse
@@ -12,6 +13,7 @@ import os
 import sys
 import time
 from datetime import datetime
+from pathlib import Path
 
 # Ensure simulation module is in path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -34,6 +36,40 @@ try:
     from erh_core.core.output_writer import save_json_result
 except ImportError:
     from simulation.core.output_writer import save_json_result  # type: ignore
+
+
+def _run_single_trial_abm(trial_id: int, config: dict) -> dict:
+    """Worker for ABMSimulator mode: run one ABM trial and return metrics."""
+    try:
+        from erh_core.core.abm_simulator import ABMSimulator
+    except ImportError:
+        from simulation.core import ABMSimulator  # type: ignore
+    n_agents = config.get("n_agents", 50)
+    n_steps = config.get("steps", 100)
+    sim = ABMSimulator(num_agents=n_agents)
+    results = sim.run_simulation(num_time_steps=n_steps)
+    erh_history = results.get("erh_history", [])
+    final_error = 0.0
+    quantum_energy = 0.0
+    evs = 0.0
+    if erh_history:
+        last = erh_history[-1]
+        analysis = last.get("analysis", {})
+        E_x = last.get("E_x", [])
+        if E_x is not None and len(E_x) > 0:
+            import numpy as np
+            final_error = float(np.mean(np.abs(E_x)))
+        erh_satisfied = analysis.get("erh_satisfied", False)
+        alpha = analysis.get("estimated_exponent", 0.5)
+        stability = 1.0 if erh_satisfied else max(0, 0.5 - alpha)
+        evs = stability * 0.9  # Placeholder; full EVS needs fairness, polarization
+    return {
+        "id": trial_id,
+        "final_error": final_error,
+        "social_tension": quantum_energy,
+        "evs": evs,
+        "erh_history_len": len(erh_history),
+    }
 
 
 def _run_single_config(config: dict, output_dir: str) -> str:
@@ -123,7 +159,23 @@ def run_simulation(args):
 def main():
     parser = argparse.ArgumentParser(description="ERH Batch Simulation Runner")
     parser.add_argument(
-        "--num-actions", type=int, default=1000, help="Number of actions"
+        "--mode",
+        type=str,
+        default="judge",
+        choices=["judge", "abm"],
+        help="Simulation mode: judge (default) or abm (Agent-Based Model)",
+    )
+    parser.add_argument(
+        "--num-actions", type=int, default=1000, help="Number of actions (judge mode)"
+    )
+    parser.add_argument(
+        "--agents", type=int, default=50, help="Number of agents (abm mode)"
+    )
+    parser.add_argument(
+        "--steps", type=int, default=100, help="Time steps (abm mode)"
+    )
+    parser.add_argument(
+        "--trials", type=int, default=4, help="Number of trials (abm mode)"
     )
     parser.add_argument(
         "--complexity-dist",
@@ -139,6 +191,12 @@ def main():
         help="Output directory",
     )
     parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help="Path for aggregated JSON output (abm mode or when --instances>1). Default: simulation/output/batch_results.json",
+    )
+    parser.add_argument(
         "--instances",
         type=int,
         default=1,
@@ -152,6 +210,20 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # ABM mode
+    if args.mode == "abm":
+        config = {"n_agents": args.agents, "steps": args.steps}
+        start_time = time.time()
+        with multiprocessing.Pool() as pool:
+            results = pool.starmap(_run_single_trial_abm, [(i, config) for i in range(args.trials)])
+        duration = time.time() - start_time
+        output_path = args.output or os.path.join(project_root, "simulation", "output", "batch_results.json")
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w") as f:
+            json.dump({"config": config, "results": results, "duration_seconds": duration}, f, indent=2)
+        print(f"ABM batch completed in {duration:.2f}s ({args.trials} trials) -> {output_path}")
+        return
 
     if args.instances <= 1 and args.configs is None:
         # Single-run path (backward compatible)

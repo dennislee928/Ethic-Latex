@@ -3,7 +3,7 @@
 % Packages
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{microtype}
+\usepackage[expansion=false]{microtype}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -726,6 +726,39 @@ Complete code, simulation scripts, and generated figures for this study are publ
     or use the provided Jupyter notebooks (\texttt{simulation/notebooks/}) for interactive exploration.
 \end{itemize}
 
+\subsection{Real-World Data Acquisition}
+\label{subsec:real_world_data}
+
+Real-data case studies (Adult Income, COMPAS) require datasets that are not bundled in the repository. Table~\ref{tab:real_data_sources} lists the data sources and output paths.
+
+\begin{table}[htbp]
+\centering
+\caption{Real-world data sources, URLs, and output paths}
+\label{tab:real_data_sources}
+\begin{tabular}{lll}
+\toprule
+\textbf{Dataset} & \textbf{Source} & \textbf{Output Path} \\
+\midrule
+Adult Income (train) & UCI ML Repository & \texttt{data/real\_world/adult.data} \\
+Adult Income (test) & UCI ML Repository & \texttt{data/real\_world/adult.test} \\
+Adult Income (processed) & --- & \texttt{data/adult.csv} (after conversion) \\
+COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Fetch and conversion steps}:
+\begin{enumerate}
+    \item Run \texttt{scripts/fetch\_real\_data.sh} to download Adult (\url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}) and COMPAS (\url{https://github.com/propublica/compas-analysis}) into \texttt{data/}.
+    \item Run \texttt{scripts/convert\_adult\_to\_csv.py} to convert UCI Adult format (no header, comma-separated) into \texttt{data/adult.csv} with column headers; rows containing missing values (\texttt{?}) are dropped.
+\end{enumerate}
+
+\textbf{Output paths and case study mapping}:
+\begin{itemize}
+    \item \texttt{data/adult.csv} $\rightarrow$ \texttt{simulation/real\_data/adult\_income\_case\_study.py} (requires \texttt{income} column)
+    \item \texttt{data/compas-scores-two-years.csv} $\rightarrow$ \texttt{simulation/real\_data/compas\_case\_study.py} (requires \texttt{two\_year\_recid}, \texttt{decile\_score} columns)
+\end{itemize}
+
 \subsection{Fourier Spectrum Analysis}
 
 To detect periodic patterns in misjudgments, we compute:
@@ -985,7 +1018,7 @@ Results indicate differential sensitivity of the error growth exponent $\alpha$ 
 \subsection{Real-Data Case Study: Adult Income}
 \label{subsec:real_data}
 
-To illustrate how ERH can be used as an auditing tool beyond synthetic simulations, we conducted a small real-data case study on the UCI Adult Income dataset.\footnote{For reproducibility and anonymized review, we use a preprocessed CSV version of the Adult dataset stored locally; the code for this experiment is provided in \texttt{simulation/real\_data/adult\_income\_case\_study.py}.}
+To illustrate how ERH can be used as an auditing tool beyond synthetic simulations, we conducted a small real-data case study on the UCI Adult Income dataset.\footnote{For reproducibility, see Section~\ref{subsec:real_world_data} for data acquisition steps. The case study code is in \texttt{simulation/real\_data/adult\_income\_case\_study.py}.}
 The goal is not to build a competitive classifier, but to demonstrate how ERH-style error growth analysis can complement standard reliability and fairness metrics.
 
 We treat income prediction (\texttt{>50K} vs. \texttt{\textless=50K}) as a morally loaded decision problem where false negatives and false positives correspond to different types of distributive harms.

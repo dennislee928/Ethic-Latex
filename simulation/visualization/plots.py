@@ -729,6 +729,64 @@ def plot_critical_bound(
     return fig
 
 
+def plot_phase_transition(
+    data: dict,
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot phase transition: Coupling Strength J vs Ethical Stability.
+
+    X-axis: Coupling Strength ($J$)
+    Y-axis: Ethical Stability (1 - Error Rate)
+    Marks critical point J_c where stability drops.
+
+    Parameters
+    ----------
+    data : dict
+        From run_phase_transition_exp: coupling_strengths, error_rates,
+        stability, critical_point_J, fidelities.
+    save_path : Optional[str]
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    sns.set_style("whitegrid")
+    J = np.array(data.get("coupling_strengths", []))
+    if len(J) == 0 and "error_rates" in data:
+        J = np.arange(len(data["error_rates"]))
+    error_rates = np.array(data.get("error_rates", []))
+    stability = np.array(data.get("stability", 1.0 - error_rates)) if len(error_rates) else np.array([])
+    fidelities = np.array(data.get("fidelities", []))
+    critical_point = data.get("critical_point_J")
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(J, stability, "o-", label="Ethical Stability (1 - Error Rate)", linewidth=2)
+    if len(fidelities) == len(J):
+        ax.plot(J, fidelities, "s--", label="Quantum Fidelity", alpha=0.8)
+    if critical_point is not None:
+        ax.axvline(
+            x=critical_point,
+            color="red",
+            linestyle="--",
+            alpha=0.8,
+            label=f"Critical point $J_c \\approx {critical_point:.2f}$",
+        )
+    ax.set_xlabel("Coupling Strength $J$", fontsize=12)
+    ax.set_ylabel("Ethical Stability / Fidelity", fontsize=12)
+    ax.set_title("Phase Transition: Ethical Stability vs Coupling Strength")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def plot_phase_transition_diagram(
     conflict_densities: np.ndarray,
     fidelities: np.ndarray,
@@ -761,6 +819,90 @@ def plot_phase_transition_diagram(
     ax.set_ylabel("Fidelity / Coherence", fontsize=12)
     ax.set_title("Moral Phase Transition: Ethical Conflict → Spin Glass Frustration")
     ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_social_tension_vs_time(
+    time_steps: np.ndarray,
+    social_tension: np.ndarray,
+    title: str = "Social Tension (Energy) vs Time",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot social tension (quantum energy proxy for ethical conflict) over time.
+
+    X-axis: Time step.
+    Y-axis: Social Tension (Energy).
+
+    Parameters
+    ----------
+    time_steps : np.ndarray
+        Time step values.
+    social_tension : np.ndarray
+        Social tension (energy) values.
+    title : str
+        Plot title.
+    save_path : Optional[str]
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(time_steps, social_tension, "o-", linewidth=2)
+    ax.set_xlabel("Time Step", fontsize=12)
+    ax.set_ylabel("Social Tension (Energy)", fontsize=12)
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_phase_transition_error_vs_complexity(
+    complexities: np.ndarray,
+    error_rates: np.ndarray,
+    title: str = "Error Rate vs Complexity (Phase Transition)",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot error rate vs complexity to visualize phase transition (error spike).
+
+    X-axis: Complexity.
+    Y-axis: Error Rate.
+
+    Parameters
+    ----------
+    complexities : np.ndarray
+        Complexity values.
+    error_rates : np.ndarray
+        Error rate at each complexity.
+    title : str
+        Plot title.
+    save_path : Optional[str]
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(complexities, error_rates, "o-", linewidth=2)
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel("Error Rate", fontsize=12)
+    ax.set_title(title)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
     if save_path:

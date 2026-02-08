@@ -58,6 +58,12 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python scripts/run_quantum_phase_transition.py --save-plot --n-points 10 || echo "⚠ Quantum phase transition skipped."
 
+      - name: Run Phase Transition Experiment (J vs stability)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/erh_core
+          mkdir -p simulation/output/figures
+          python scripts/run_phase_transition_exp.py --no-oracle --save-plot --output-dir simulation/output || echo "⚠ Phase transition exp skipped."
+
       - name: Run Real-Data Case Study (optional)
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
@@ -207,10 +213,31 @@ jobs:
           path: llm_stress_test_results/
           retention-days: 14
           if-no-files-found: ignore
-      - name: Install TeX Live
+      - name: Free disk space (GitHub Actions runner)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Install TeX Live (minimal, not texlive-full)
         run: |
-          # Install a reasonably complete TeX Live and latexmk
-          sudo apt-get install -y texlive-full latexmk
+          # Use minimal TeX Live (~1GB) instead of texlive-full (~5–7GB) to avoid "No space left on device"
+          # texlive-lang-cjk provides xeCJK.sty (required for ethical_riemann_hypothesis_zh.tex)
+          # texlive-lang-chinese provides ctex and Chinese fonts
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-xetex \
+            texlive-lang-cjk \
+            texlive-lang-chinese \
+            latexmk
 
       - name: Compile English LaTeX Document
         run: |

@@ -47,6 +47,7 @@ quantum = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+# erh* matches erh, erh_core (Single Source of Truth)
 include = ["erh*", "simulation*"]
 namespaces = false
 

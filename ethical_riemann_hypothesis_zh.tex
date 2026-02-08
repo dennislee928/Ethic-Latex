@@ -2,7 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{fontspec}
 \usepackage{xeCJK}
-\usepackage{microtype}
+\usepackage[expansion=false]{microtype}
 \setmainfont{Latin Modern Roman}
 % Use a widely available CJK font on cloud runners; if missing locally,
 % you may switch this to a system font such as "Microsoft JhengHei" or "PingFang TC".
@@ -576,6 +576,39 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
     或使用提供的 Jupyter notebooks（\texttt{simulation/notebooks/}）進行互動式探索。
 \end{itemize}
 
+\subsection{真實世界資料取得}
+\label{subsec:real_world_data}
+
+真實資料案例研究（Adult Income、COMPAS）所需之資料集未隨倉庫一併提供。表~\ref{tab:real_data_sources_zh} 列出資料來源與輸出路徑。
+
+\begin{table}[htbp]
+\centering
+\caption{真實世界資料來源、URL 與輸出路徑}
+\label{tab:real_data_sources_zh}
+\begin{tabular}{lll}
+\toprule
+\textbf{資料集} & \textbf{來源} & \textbf{輸出路徑} \\
+\midrule
+Adult Income（訓練） & UCI ML Repository & \texttt{data/real\_world/adult.data} \\
+Adult Income（測試） & UCI ML Repository & \texttt{data/real\_world/adult.test} \\
+Adult Income（處理後） & --- & \texttt{data/adult.csv}（轉換後） \\
+COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{取得與轉換步驟}：
+\begin{enumerate}
+    \item 執行 \texttt{scripts/fetch\_real\_data.sh} 下載 Adult（\url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}）與 COMPAS（\url{https://github.com/propublica/compas-analysis}）至 \texttt{data/}。
+    \item 執行 \texttt{scripts/convert\_adult\_to\_csv.py} 將 UCI Adult 格式（無表頭、逗號分隔）轉換為含欄位名稱的 \texttt{data/adult.csv}；含缺失值（\texttt{?}）的列會被排除。
+\end{enumerate}
+
+\textbf{輸出路徑與案例對應}：
+\begin{itemize}
+    \item \texttt{data/adult.csv} $\rightarrow$ \texttt{simulation/real\_data/adult\_income\_case\_study.py}（需含 \texttt{income} 欄位）
+    \item \texttt{data/compas-scores-two-years.csv} $\rightarrow$ \texttt{simulation/real\_data/compas\_case\_study.py}（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
+\end{itemize}
+
 \subsection{傅立葉頻譜分析}
 
 為了檢測誤判中的週期性模式，我們計算：
@@ -845,7 +878,7 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 
 \subsection{實證案例研究：Adult Income 與延伸情境}
 
-為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為了可重現性與匿名審查，我們使用本地預先處理的 Adult CSV 檔，對應程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
+為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，資料取得步驟請見第~\ref{subsec:real_world_data}小節。案例研究程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
 在此情境中，收入分類（\texttt{>50K} vs. \texttt{\textless=50K}）被視為具有分配正義含義的決策問題，錯誤類型對不同群體的實質影響並不對稱。
 我們比較了一個標準 logistic regression 模型與一個使用類別重加權（\texttt{class\_weight='balanced'}）的簡單緩解模型，並為每個測試樣本構造結合特徵量級與預測不確定度的複雜度 proxy，將所有誤分類樣本視為簡化版的倫理質數，據此估計實際的 $\Pi(x)$、$B(x)$ 與 $E(x)$ 曲線。
 
