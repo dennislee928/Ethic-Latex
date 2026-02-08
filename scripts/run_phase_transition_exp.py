@@ -34,6 +34,11 @@ except ImportError:
     from simulation.core.judgement_system import BiasedJudge, evaluate_judgement
 
 try:
+    from simulation.core.judgement_system import GroundTruthProxy
+except ImportError:
+    GroundTruthProxy = None
+
+try:
     from erh_core.core.oracle import HuggingFaceEthicalOracle
     from erh_core.core.judgement_system import OracleDrivenJudge
     _ORACLE_AVAILABLE = True
@@ -102,6 +107,13 @@ def main() -> int:
         help="Use random V from generate_world instead of HuggingFace Oracle",
     )
     parser.add_argument(
+        "--csv-proxy",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help="Path to CSV with action_id,V columns. When provided, use CSV first, Oracle as fallback.",
+    )
+    parser.add_argument(
         "--save-plot",
         action="store_true",
         help="Save phase_transition.png",
@@ -117,10 +129,20 @@ def main() -> int:
     rng = np.random.default_rng(args.seed)
 
     use_oracle = _ORACLE_AVAILABLE and not args.no_oracle
+    csv_proxy = None
+    if args.csv_proxy and GroundTruthProxy is not None:
+        try:
+            csv_proxy = GroundTruthProxy.load_from_csv(args.csv_proxy)
+        except Exception as e:
+            print(f"Warning: could not load CSV proxy from {args.csv_proxy}: {e}")
     if use_oracle:
         try:
             oracle = HuggingFaceEthicalOracle(cache_path=str(output_dir / "oracle_cache.json"))
-            judge = OracleDrivenJudge(oracle=oracle, inner_judge=BiasedJudge(bias_strength=0.2))
+            judge = OracleDrivenJudge(
+                oracle=oracle,
+                inner_judge=BiasedJudge(bias_strength=0.2),
+                csv_proxy=csv_proxy,
+            )
         except Exception:
             use_oracle = False
             judge = BiasedJudge(bias_strength=0.2)
@@ -186,6 +208,7 @@ def main() -> int:
         "J_range": [args.J_min, args.J_max],
         "n_points": args.n_points,
         "use_oracle": use_oracle,
+        "csv_proxy_path": args.csv_proxy,
     }
 
     out_path = output_dir / "phase_transition_results.json"

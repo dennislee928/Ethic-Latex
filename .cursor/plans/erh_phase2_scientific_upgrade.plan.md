@@ -4,16 +4,16 @@ overview: 將 ERH 專案從「概念玩具模型」升級為「物理知情模�
 todos:
   - id: step1
     content: Quantum Core 物理化 - compute_ground_state()、NumPyMinimumEigensolver
-    status: pending
+    status: completed
   - id: step2
     content: 建立 HuggingFaceEthicalOracle、整合 judgement_system
-    status: pending
+    status: completed
   - id: step3
     content: 建立 run_phase_transition_exp.py、plot_phase_transition
-    status: pending
+    status: completed
   - id: step4
     content: 更新 generate_comprehensive_report、CI 整合、run_full_pipeline.sh
-    status: pending
+    status: completed
 isProject: false
 ---
 
