@@ -113,12 +113,15 @@ This paper makes the following contributions:
 
 \subsection{Paper Organization}
 
-The remainder of this paper is organized as follows. Section~\ref{sec:formalization} develops the mathematical formalization. Section~\ref{sec:erh} states the Ethical Riemann Hypothesis and its variants. Section~\ref{sec:framework} describes our computational framework. Section~\ref{sec:results} presents experimental results. Section~\ref{sec:implications} discusses implications for AI ethics. Section~\ref{sec:conclusion} concludes and outlines future work.
+The remainder of this paper is organized as follows. Section~\ref{sec:theoretical} (Theoretical Framework) presents the mathematical definition and the quantum isomorphism. Section~\ref{sec:framework} (Computational Model) describes classical agent logic and quantum solver implementation. Section~\ref{sec:results} (Experiments \& Results) presents synthetic simulation, phase transition analysis, and empirical feasibility. Section~\ref{sec:discussion} (Discussion) addresses philosophical implications. Section~\ref{sec:conclusion} concludes.
 
-\section{Mathematical Formalization}
+\section{Theoretical Framework}
+\label{sec:theoretical}
+
+\subsection{Mathematical Definition (Zeta, Primes)}
 \label{sec:formalization}
 
-\subsection{Action Space}
+\subsubsection{Action Space}
 
 \begin{definition}[Action Space]
 An \emph{action space} is a finite set $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$ where each action $a_i$ has the following attributes:
@@ -133,7 +136,7 @@ An \emph{action space} is a finite set $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$
 The true moral value $V(a)$ represents an idealized ``god's-eye view'' or consensus among perfect moral reasoners. In practice, this is inaccessible and must be approximated. In our simulations, we define $V(a)$ explicitly as ground truth.
 \end{remark}
 
-\subsection{Approximating True Moral Value $V(a)$}
+\subsubsection{Approximating True Moral Value $V(a)$}
 \label{sec:approximating-v}
 
 Since $V(a)$ is epistemically inaccessible in the real world, we operationalize it via proxies:
@@ -147,7 +150,7 @@ Since $V(a)$ is epistemically inaccessible in the real world, we operationalize 
 
 \textbf{Limitations}: Different proxies introduce different biases. Annotator disagreement, sampling noise, and cultural variation affect the approximation quality. ERH analysis remains heuristic when $V(a)$ is proxy-based.
 
-\subsection{Judgment Systems}
+\subsubsection{Judgment Systems}
 
 \begin{definition}[Judgment System]
 A \emph{judgment system} $\mathcal{J}$ is a function that assigns a moral evaluation to each action:
@@ -173,7 +176,7 @@ M(a) = \begin{cases}
 \end{cases}
 \]
 
-\subsection{Ethical Primes}
+\subsubsection{Ethical Primes}
 
 \begin{definition}[Ethical Prime]
 An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
@@ -186,7 +189,7 @@ An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
 
 Let $\mathcal{P} \subseteq \mathcal{A}$ denote the set of ethical primes. In practice, we select $\mathcal{P}$ by filtering misjudged actions by importance quantile and complexity range.
 
-\subsection{Counting Functions}
+\subsubsection{Counting Functions}
 
 \begin{definition}[Ethical Prime Counting Function]
 Define $\Pi(x)$ as the number of ethical primes with complexity at most $x$:
@@ -211,10 +214,10 @@ E(x) = \Pi(x) - B(x)
 This measures how the actual distribution of ethical primes deviates from the baseline expectation.
 \end{definition}
 
-\section{The Ethical Riemann Hypothesis}
+\subsubsection{The Ethical Riemann Hypothesis}
 \label{sec:erh}
 
-\subsection{Statement of ERH}
+\paragraph{Statement of ERH.}
 
 \begin{theorem}[Ethical Riemann Hypothesis (ERH)]
 \label{thm:erh}
@@ -225,8 +228,7 @@ Let $\mathcal{J}$ be a judgment system and let $E(x) = \Pi(x) - B(x)$ be the err
 for all $x$ in the complexity range.
 \end{theorem}
 
-\subsection{Intuitive Interpretation}
-
+\paragraph{Intuitive Interpretation.}
 The ERH states that the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$ (up to a small factor $x^\varepsilon$). This is a \emph{sublinear} growth rate, meaning:
 
 \begin{itemize}
@@ -235,7 +237,7 @@ The ERH states that the cumulative error in predicting critical misjudgments gro
     \item The system maintains structural integrity across scales
 \end{itemize}
 
-\subsection{Comparison with Classical Riemann Hypothesis}
+\paragraph{Comparison with Classical Riemann Hypothesis.}
 
 \begin{table}[h]
 \centering
