@@ -239,6 +239,21 @@ def find_approximate_zeros(
         pass
     # #endregion
     
+    # Fallback: if no zeros below threshold, use points with smallest |ζ_E| (approximate zeros)
+    if len(zeros) == 0:
+        all_pts = []
+        for re in real_vals:
+            for im in imag_vals:
+                s = complex(re, im)
+                try:
+                    abs_z = abs(ethical_zeta_sum(m, s))
+                    all_pts.append((abs_z, s))
+                except (OverflowError, RuntimeWarning):
+                    continue
+        all_pts.sort(key=lambda x: x[0])
+        n_fallback = min(20, len(all_pts))
+        zeros = [s for _, s in all_pts[:n_fallback]]
+    
     # Refine zeros if requested
     if refine and len(zeros) > 0:
         try:
