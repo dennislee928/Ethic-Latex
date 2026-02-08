@@ -58,6 +58,12 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python scripts/run_quantum_phase_transition.py --save-plot --n-points 10 || echo "⚠ Quantum phase transition skipped."
 
+      - name: Run Phase Transition Experiment (J vs stability)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/erh_core
+          mkdir -p simulation/output/figures
+          python scripts/run_phase_transition_exp.py --no-oracle --save-plot --output-dir simulation/output || echo "⚠ Phase transition exp skipped."
+
       - name: Run Real-Data Case Study (optional)
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
