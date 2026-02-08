@@ -134,10 +134,9 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
     with open(latex_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # Check if figures are already inserted to avoid duplication
-    if figures and any(f"figures/{fig_file}" in content for fig_file in figures.keys()):
-        print(f"Figures already exist in {latex_path}, skipping insertion to avoid duplication")
-        return
+    # Skip results/framework insertion if main PDF figures already exist (avoid duplication)
+    results_figures = [f for f, i in figures.items() if i.get('section') in ('results', 'framework')]
+    results_already_in = any(f"figures/{f}" in content for f in results_figures) if results_figures else False
     
     # Find the results section
     if lang == 'en':
@@ -147,8 +146,8 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
         results_marker = r"% 圖表將由圖表整合腳本插入此處"
         section_label = r"\\section\{實驗結果"
     
-    # Insert figures in results section
-    if results_marker in content:
+    # Insert figures in results section (skip if already present)
+    if results_marker in content and not results_already_in:
         figure_insertions = []
         for fig_file, info in figures.items():
             if info['section'] == 'results':
@@ -170,7 +169,7 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
         if info['section'] == 'framework':
             framework_figures.append(insert_figure_latex(fig_file, info, lang))
     
-    if framework_figures and framework_marker in content:
+    if framework_figures and framework_marker in content and not results_already_in:
         # Insert before Fourier section
         insertion = "\n".join(framework_figures) + "\n\n" + framework_marker
         content = content.replace(framework_marker, insertion)
@@ -180,8 +179,10 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
     supp_marker_en = r"% Supplementary pipeline figures will be inserted here by integrate_figures.py"
     supp_marker_zh = r"% 補充流程圖表將由 integrate_figures.py 插入此處"
     supp_marker = supp_marker_en if lang == 'en' else supp_marker_zh
+    supp_files = [f for f, info in figures.items() if info.get('section') == 'supplementary']
+    supp_already_in = any(f"figures/{f}" in content for f in supp_files) if supp_files else False
     supp_figures = [insert_figure_latex(f, info, lang) for f, info in figures.items() if info.get('section') == 'supplementary']
-    if supp_figures and supp_marker in content:
+    if supp_figures and supp_marker in content and not supp_already_in:
         content = content.replace(supp_marker, supp_marker + "\n\n" + "\n".join(supp_figures))
         print(f"Inserted {len(supp_figures)} supplementary pipeline figures")
     
