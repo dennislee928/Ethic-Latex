@@ -11,17 +11,6 @@ import os
 import re
 import sys
 
-# #region agent log
-def _debug_log(msg, data=None):
-    try:
-        import json
-        p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".cursor", "debug.log")
-        with open(p, "a", encoding="utf-8") as f:
-            f.write(json.dumps({"location": "update_latex.py", "message": msg, "data": data or {}, "timestamp": __import__("time").time()}) + "\n")
-    except Exception:
-        pass
-# #endregion
-
 def parse_results_summary(file_path):
     """Parse the results summary text file into a structured dictionary."""
     if not os.path.exists(file_path):
@@ -57,7 +46,6 @@ def parse_results_summary(file_path):
                 value = metric_match.group(2).strip()
                 results[current_judge][key] = value
 
-    _debug_log("parse_results_summary exit", {"judges": list(results.keys()), "has_quantum": "Quantum" in results})
     return results
 
 def update_latex_file(latex_path, results):
@@ -183,7 +171,6 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
         updated_content = content
         
         for zh_name, result_key in judge_mapping.items():
-            _debug_log("zh section loop", {"zh_name": zh_name, "result_key": result_key, "in_results": result_key in results})
             if result_key not in results:
                 continue
                 
@@ -235,7 +222,6 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
             )
             
             updated_content = updated_content.replace(section_text, new_section_text)
-            _debug_log("zh section replaced", {"zh_name": zh_name})
             print(f"Updated Chinese section for {zh_name}")
         
         # Replace Table 5 row for 量子判斷者 (was never replaced before)
