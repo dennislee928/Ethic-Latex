@@ -57,18 +57,18 @@ def load_social_i_qa(
     split: str = "train",
     max_samples: Optional[int] = 100,
 ) -> List[Dict[str, Any]]:
-    """Load social_i_qa dataset. Returns stub if unavailable."""
+    """Load social_i_qa dataset (allenai/social_i_qa). Returns stub if unavailable."""
     if not _HF_AVAILABLE or load_dataset is None:
         return [{"context": t, "question": "?", "answer": "A"} for t in _stub_texts(max_samples or 20)]
     try:
-        ds = load_dataset("social_i_qa", "social_i_qa", split=split, trust_remote_code=True)
+        ds = load_dataset("allenai/social_i_qa", split=split, trust_remote_code=True)
         if max_samples:
             ds = ds.select(range(min(max_samples, len(ds))))
         return [
             {
                 "context": row.get("context", ""),
                 "question": row.get("question", ""),
-                "answer": row.get("answer", ""),
+                "answer": row.get("label", row.get("answerA", "")),
             }
             for row in ds
         ]

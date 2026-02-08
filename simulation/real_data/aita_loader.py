@@ -12,11 +12,17 @@ from typing import Any, Dict, List, Optional
 import re
 
 _FIRECRAWL_AVAILABLE = False
+_FIRECRAWL_V2 = False  # New API: Firecrawl.scrape()
 try:
-    from firecrawl import FirecrawlApp
+    from firecrawl import Firecrawl
     _FIRECRAWL_AVAILABLE = True
+    _FIRECRAWL_V2 = True
 except ImportError:
-    FirecrawlApp = None
+    try:
+        from firecrawl import FirecrawlApp
+        _FIRECRAWL_AVAILABLE = True
+    except ImportError:
+        FirecrawlApp = None
 
 
 def _parse_aita_vote(text: str) -> Optional[float]:
@@ -49,23 +55,38 @@ def scrape_aita_firecrawl(
     """
     Scrape r/AmItheAsshole via Firecrawl.
 
+    Supports Firecrawl v2 (Firecrawl.scrape) and legacy FirecrawlApp.scrape_url.
     Returns list of {action_text, verdict, V, score} or stub if unavailable.
     """
-    if not _FIRECRAWL_AVAILABLE or FirecrawlApp is None:
+    if not _FIRECRAWL_AVAILABLE:
         return _stub_aita_data(limit)
     api_key = api_key or _get_firecrawl_key()
     if not api_key:
         return _stub_aita_data(limit)
     try:
-        app = FirecrawlApp(api_key=api_key)
-        # Scrape Reddit AITA
-        result = app.scrape_url(
-            "https://www.reddit.com/r/AmItheAsshole/top/?t=week",
-            params={"limit": limit},
-        )
-        if not result or not result.get("success"):
+        if _FIRECRAWL_V2:
+            from firecrawl import Firecrawl
+            app = Firecrawl(api_key=api_key)
+            result = app.scrape(
+                "https://www.reddit.com/r/AmItheAsshole/top/?t=week",
+                formats=["markdown"],
+            )
+            content = result.get("markdown", result.get("content", "")) if result else ""
+        else:
+            from firecrawl import FirecrawlApp
+            app = FirecrawlApp(api_key=api_key)
+            if hasattr(app, "scrape_url"):
+                result = app.scrape_url(
+                    "https://www.reddit.com/r/AmItheAsshole/top/?t=week",
+                )
+            else:
+                result = app.scrape(
+                    "https://www.reddit.com/r/AmItheAsshole/top/?t=week",
+                    formats=["markdown"],
+                ) if hasattr(app, "scrape") else None
+            content = (result.get("markdown", result.get("content", "")) if result else "") if isinstance(result, dict) else ""
+        if not content:
             return _stub_aita_data(limit)
-        content = result.get("markdown", result.get("content", ""))
         return _parse_aita_content(content, limit)
     except Exception:
         return _stub_aita_data(limit)
@@ -118,6 +139,6 @@ def load_aita_empirical(
     List[Dict]
         Each dict: action_text, verdict, V (moral value in [-1, 1])
     """
-    if use_firecrawl and _FIRECRAWL_AVAILABLE:
+    if use_firecrawl and _FIRECRAWL_AVAILABLE and _get_firecrawl_key():
         return scrape_aita_firecrawl(limit=limit)
     return _stub_aita_data(limit)
