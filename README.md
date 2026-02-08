@@ -79,7 +79,7 @@ Ethic-Latex/
 │   │   ├── 02_judge_comparison.ipynb
 │   │   └── ... (other analysis notebooks)
 │   ├── api/                    # FastAPI endpoints
-│   ├── real_data/              # Real-world case studies (Adult, COMPAS, etc.)
+│   ├── real_data/              # Real-world case studies (Adult, Exam Cheating, Sexual Abuse, COMPAS)
 │   └── output/                 # Generated figures and data
 ├── erh/                        # Python SDK package (for distribution)
 │   ├── core/                   # Re-exports from erh_core (backward compatibility)
@@ -87,6 +87,10 @@ Ethic-Latex/
 │   ├── client.py               # SDK client interface
 │   └── tools/                  # SDK tools and adapters
 ├── scripts/                    # Utility scripts
+│   ├── fetch_real_data.sh      # Fetch Adult, COMPAS, UCI Student Performance
+│   ├── convert_adult_to_csv.py # Adult → data/adult.csv
+│   ├── process_student_to_exam_cheating.py  # UCI Student → data/exam_cheating_cases.csv
+│   └── generate_synthetic_sexual_abuse.py   # Fallback → data/sexual_abuse_cases.csv
 ├── docs/                       # Documentation files
 ├── tests/                      # Test files
 ├── ethical_riemann_hypothesis.tex  # Main research paper (LaTeX)
@@ -212,29 +216,37 @@ agent = AdversarialAgent(n_actions=500)
 agent.run(max_steps=100)
 ```
 
-### Real-World Data (Adult Income, COMPAS)
+### Real-World Data (Adult, Exam Cheating, Sexual Abuse, COMPAS)
 
-To run real-data case studies (`adult_income_case_study`, `compas_case_study`), fetch and prepare datasets:
+To run real-data case studies (`adult_income_case_study`, `exam_cheating_case_study`, `sexual_abuse_case_study`, `compas_case_study`), fetch and prepare datasets:
 
 ```bash
-# 1. Download Adult (UCI) and COMPAS (ProPublica)
+# 1. Download all datasets (Adult, COMPAS, UCI Student Performance)
 bash scripts/fetch_real_data.sh
 
-# 2. Convert UCI Adult to CSV (creates data/adult.csv)
+# 2. Convert and process to case-study CSV schema
 python scripts/convert_adult_to_csv.py
+python scripts/process_student_to_exam_cheating.py   # UCI Student Performance → exam cheating proxy
+python scripts/generate_synthetic_sexual_abuse.py    # Fallback when no public case-level source
 ```
 
 Expected outputs:
 
 - `data/adult.csv` – Adult Income (from UCI adult.data/test)
+- `data/exam_cheating_cases.csv` – Exam cheating proxy (from UCI Student Performance)
+- `data/sexual_abuse_cases.csv` – Sexual abuse reporting (synthetic fallback)
 - `data/compas-scores-two-years.csv` – COMPAS (from ProPublica GitHub)
 
 Then run:
 
 ```bash
 python -m simulation.real_data.adult_income_case_study
+python -m simulation.real_data.exam_cheating_case_study
+python -m simulation.real_data.sexual_abuse_case_study
 python -m simulation.real_data.compas_case_study   # or run_compas_alpha
 ```
+
+**CI workflow**: The `build_thesis_gated.yml` pipeline fetches and processes these CSV files on every run before executing case studies.
 
 ---
 
@@ -355,7 +367,7 @@ The ERH framework provides:
 
 ### Implemented Extensions
 
-- **Real-world case studies:** Adult Income, COMPAS; script `scripts/calculate_alpha_comparison.py` compares real vs simulated α.
+- **Real-world case studies:** Adult Income, Exam Cheating (UCI Student Performance), Sexual Abuse (synthetic fallback), COMPAS; `scripts/fetch_real_data.sh` fetches public sources; `scripts/process_student_to_exam_cheating.py` maps UCI data to exam-cheating schema; `scripts/calculate_alpha_comparison.py` compares real vs simulated α.
 - **Quantum judgment:** Optional `simulation/quantum/` (local simulator or IBM Quantum); NumPy fallback when qiskit is unavailable.
 - **Health monitor:** E(x) vs Riemann bound monitoring (see `erh-security-app` backend `/analysis/health` and frontend).
 - **Adversarial agent:** `simulation/adversarial.py` for red-team testing (maximizing ethical-prime discovery).
