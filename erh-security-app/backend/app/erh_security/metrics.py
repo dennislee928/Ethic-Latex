@@ -5,16 +5,22 @@ from typing import Callable, Dict, List, Tuple
 from .mapping import ErhSample
 
 try:  # pragma: no cover - import wiring, behaviour tested via injected callables
-    from simulation.core.ethical_primes import (
+    from erh_core.core.ethical_primes import (
         select_ethical_primes,
         compute_Pi_and_error,
         analyze_error_growth,
     )
 except Exception:  # noqa: BLE001
-    # In pure-backend environments the simulation package may not be installed.
-    select_ethical_primes = None  # type: ignore[assignment]
-    compute_Pi_and_error = None  # type: ignore[assignment]
-    analyze_error_growth = None  # type: ignore[assignment]
+    try:
+        from simulation.core.ethical_primes import (
+            select_ethical_primes,
+            compute_Pi_and_error,
+            analyze_error_growth,
+        )
+    except Exception:
+        select_ethical_primes = None  # type: ignore[assignment]
+        compute_Pi_and_error = None  # type: ignore[assignment]
+        analyze_error_growth = None  # type: ignore[assignment]
 
 
 def compute_delta(sample: ErhSample) -> float:

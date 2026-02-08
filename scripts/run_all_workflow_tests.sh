@@ -139,6 +139,10 @@ run_step_allow_fail "simulation: run_simulation_batch zipf" $PY scripts/run_simu
 run_step_allow_fail "simulation: run_simulation_batch uniform" $PY scripts/run_simulation_batch.py --num-actions 30 --complexity-dist uniform --output-dir results 2>/dev/null || true
 run_step_allow_fail "simulation: calculate_alpha_comparison" $PY scripts/calculate_alpha_comparison.py 2>/dev/null || true
 run_step_allow_fail "simulation: generate_comprehensive_report" $PY scripts/generate_comprehensive_report.py --input-dir results --output-dir final_report 2>/dev/null || true
+run_step_allow_fail "simulation: phase_transition_exp" $PY scripts/run_phase_transition_exp.py --no-oracle --save-plot --output-dir simulation/output --n-points 5 2>/dev/null || true
+
+# --- 6b. Phase 4 verification (end-to-end) ---
+run_step_allow_fail "phase4: run_verification_phase4" $PY scripts/run_verification_phase4.py 2>/dev/null || true
 
 # --- 7. psychohistory (build_thesis / single_sh) ---
 run_step_allow_fail "psychohistory: quick" $PY scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests 2>/dev/null || true

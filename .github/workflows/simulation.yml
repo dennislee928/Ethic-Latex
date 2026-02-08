@@ -1,6 +1,7 @@
 name: Simulation Pipeline
 
 on:
+  workflow_call:
   push:
     branches: ["main", "dev"]
   pull_request:
@@ -20,24 +21,41 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-py310-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ runner.os }}-py310-
+
       - name: Create data directories
         run: mkdir -p data data/real_world
 
-      - name: Download Adult Income Dataset (UCI)
+      - name: Fetch real-world datasets
         run: |
-          wget -q https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data -O data/real_world/adult.data || true
-          wget -q https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test -O data/real_world/adult.test || true
+          bash scripts/fetch_real_data.sh || true
 
-      - name: Generate synthetic Adult CSV for case study
+      - name: Convert Adult to CSV or generate synthetic
         run: |
           pip install pandas numpy
-          python scripts/generate_synthetic_adult.py || true
+          if [ -f data/real_world/adult.data ]; then
+            python scripts/convert_adult_to_csv.py
+          else
+            python scripts/generate_synthetic_adult.py || true
+          fi
 
-      - name: Download COMPAS (Git LFS or secret)
+      - name: Download COMPAS (fallback from ProPublica if needed)
         run: |
-          git lfs pull --include="data/compas-scores-two-years.csv" 2>/dev/null || true
-          if [ -n "${{ secrets.COMPAS_DATA_URL }}" ]; then
-            curl -sL "${{ secrets.COMPAS_DATA_URL }}" -o data/compas-scores-two-years.csv || true
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            git lfs pull --include="data/compas-scores-two-years.csv" 2>/dev/null || true
+          fi
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            if [ -n "${{ secrets.COMPAS_DATA_URL }}" ]; then
+              curl -sL "${{ secrets.COMPAS_DATA_URL }}" -o data/compas-scores-two-years.csv || true
+            fi
+          fi
+          if [ ! -f data/compas-scores-two-years.csv ] || [ ! -s data/compas-scores-two-years.csv ]; then
+            curl -sL "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv" -o data/compas-scores-two-years.csv || true
           fi
 
       - name: Upload Real Data artifact
@@ -51,33 +69,45 @@ jobs:
   simulate:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
+        python-version: ["3.10", "3.11"]
         complexity_dist: ["zipf", "uniform", "power_law"]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-${{ matrix.python-version }}-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Simulation
+      - name: Run Simulation (parallel)
         run: |
           export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          mkdir -p results
           python scripts/run_simulation_batch.py \
             --complexity-dist ${{ matrix.complexity_dist }} \
-            --output-dir results
+            --output-dir results \
+            --instances 4
 
       - name: Upload Simulation Results
         uses: actions/upload-artifact@v4
         with:
-          name: simulation-results-${{ matrix.complexity_dist }}
+          name: simulation-results-${{ matrix.complexity_dist }}-py${{ matrix.python-version }}
           path: results/
           retention-days: 5
 
@@ -92,6 +122,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-py310-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ runner.os }}-py310-
 
       - name: Install dependencies
         run: |
@@ -123,8 +160,8 @@ jobs:
           path: simulation/output/figures/alpha_comparison_real_vs_simulated.png
         continue-on-error: true
 
-  report:
-    needs: [simulate, alpha-comparison]
+  phase-transition:
+    name: Phase Transition Experiment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -136,7 +173,52 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas matplotlib seaborn tabulate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt numpy scipy
+
+      - name: Run Phase Transition Experiment
+        run: |
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          mkdir -p simulation/output/figures
+          python scripts/run_phase_transition_exp.py --no-oracle --save-plot
+        continue-on-error: true
+
+      - name: Upload Phase Transition Figure
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-transition-figure
+          path: simulation/output/figures/phase_transition.png
+          if-no-files-found: ignore
+          retention-days: 30
+
+  report:
+    needs: [simulate, alpha-comparison, phase-transition]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-py310-report-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ runner.os }}-py310-report-
+
+      - name: Install dependencies
+        run: |
+          pip install pandas matplotlib seaborn tabulate numpy scipy
+
+      - name: Download Phase Transition Figure
+        uses: actions/download-artifact@v4
+        with:
+          name: phase-transition-figure
+          path: simulation/output/figures
+        continue-on-error: true
 
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
@@ -164,6 +246,7 @@ jobs:
 
       - name: Generate Report
         run: |
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
           python scripts/generate_comprehensive_report.py \
             --input-dir combined_results \
             --output-dir final_report
@@ -203,4 +286,13 @@ jobs:
         with:
           name: simulation-figures
           path: final_report/*.png
+          retention-days: 30
+
+      - name: Upload Simulation Figures
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantum-figures
+          path: simulation/output/figures/*.png
+          if-no-files-found: ignore
           retention-days: 30

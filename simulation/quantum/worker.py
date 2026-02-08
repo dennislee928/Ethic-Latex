@@ -57,12 +57,14 @@ def get_redis():
 def get_judge(use_cloud: bool = False):
     """Return LocalQuantumJudge or CloudQuantumJudge when token is set."""
     if use_cloud and _CLOUD_AVAILABLE and CloudQuantumJudge is not None and os.environ.get("IBM_QUANTUM_TOKEN"):
-        return CloudQuantumJudge(shots=64)
+        return CloudQuantumJudge()
     return LocalQuantumJudge(shots=256, seed=42)
 
 
 def process_batch(judge, difficulties: list[float]) -> list[float]:
     """Run quantum judgment for each difficulty; return list of judgments."""
+    if hasattr(judge, "batch_judge"):
+        return judge.batch_judge(difficulties)
     return [judge.judge_action(difficulty=d) for d in difficulties]
 
 

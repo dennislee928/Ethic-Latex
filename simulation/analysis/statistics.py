@@ -10,6 +10,10 @@ from erh_core.analysis.statistics import (
     compare_judges,
     detect_structural_bias,
     generate_report,
+    calculate_evs,
+    calculate_von_neumann_entropy,
+    compute_dual_metrics,
+    analyze_conservative_judge_anomaly,
 )
 
 __all__ = [
@@ -17,4 +21,8 @@ __all__ = [
     "compare_judges",
     "detect_structural_bias",
     "generate_report",
+    "calculate_evs",
+    "calculate_von_neumann_entropy",
+    "compute_dual_metrics",
+    "analyze_conservative_judge_anomaly",
 ]
