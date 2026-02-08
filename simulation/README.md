@@ -128,14 +128,23 @@ simulation/
 │   └── statistics.py     # Statistical analysis
 ├── visualization/         # Plotting utilities
 │   └── plots.py          # All visualization functions
-├── notebooks/            # Jupyter notebooks
+├── real_data/             # Real-world case studies
+│   ├── adult_income_case_study.py
+│   ├── exam_cheating_case_study.py
+│   ├── sexual_abuse_case_study.py
+│   ├── compas_case_study.py
+│   ├── huggingface_loader.py   # HuggingFace datasets (ethics_commonsense, social_i_qa, moral_stories)
+│   ├── aita_loader.py          # Reddit r/AmItheAsshole (Firecrawl)
+│   └── github_pr_loader.py     # GitHub PR merge/reject as moral signal
+├── quantum/               # Quantum oracle (optional qiskit)
+├── notebooks/             # Jupyter notebooks
 │   ├── 01_basic_simulation.ipynb
 │   ├── 02_judge_comparison.ipynb
 │   ├── 03_zeta_zeros.ipynb
 │   ├── 04_parameter_sensitivity.ipynb
 │   └── 05_generate_paper_figures.ipynb
-└── output/               # Generated outputs
-    └── figures/          # Saved figures
+└── output/                # Generated outputs
+    └── figures/           # Saved figures
 ```
 
 ## Notebooks
@@ -179,6 +188,19 @@ This framework is inspired by:
 - Error terms in analytic number theory
 - Signal processing (Fourier analysis)
 - AI Ethics and fairness in judgment systems
+
+## Real-Data Case Studies
+
+To run case studies, fetch datasets from the project root:
+
+```bash
+bash scripts/fetch_real_data.sh
+python scripts/convert_adult_to_csv.py
+python scripts/process_student_to_exam_cheating.py
+python scripts/generate_synthetic_sexual_abuse.py
+```
+
+Then run `python -m simulation.real_data.adult_income_case_study` (and similarly for exam_cheating, sexual_abuse, compas).
 
 ## References
 
