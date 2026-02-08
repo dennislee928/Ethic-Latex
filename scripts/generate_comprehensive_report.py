@@ -38,7 +38,8 @@ def _generate_expand_plots(output_dir: str) -> None:
             plot_prime_ladder,
             plot_von_neumann_entropy_over_time,
         )
-    except ImportError:
+    except ImportError as e:
+        print(f"Expand plots skipped (import error): {e}")
         return
     import numpy as np
     fig_dir = Path(output_dir) / "figures"
