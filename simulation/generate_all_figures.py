@@ -333,32 +333,35 @@ with open(results_summary_path, 'w') as f:
 print(f"\nNumerical results saved to: {results_summary_path}")
 
 # Write LaTeX table rows for tab:comparison (Judge | Mistake Rate | MAE | F1 | α | ERH | Interpretation)
+# Last row must NOT end with \\ (causes "Missing \cr" in tabular)
 table_path = os.path.join(output_base, 'figures', 'comparison_table_rows.tex')
 os.makedirs(os.path.dirname(table_path), exist_ok=True)
+rows = []
+for name in ('Biased', 'Noisy', 'Conservative', 'Radical'):
+    if name not in comparison or 'error' in comparison[name]:
+        rows.append(f"{name} & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD]")
+        continue
+    m = comparison[name]
+    mr = m.get('mistake_rate', 0)
+    mae = m.get('mae', 0)
+    f1 = m.get('f1_score')
+    f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
+    alpha = m.get('estimated_exponent', 0.5)
+    erh = "Yes" if m.get('erh_satisfied', False) else "No"
+    interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
+    rows.append(f"{name} & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp}")
+if 'Quantum' in comparison and 'error' not in comparison['Quantum']:
+    m = comparison['Quantum']
+    mr = m.get('mistake_rate', 0)
+    mae = m.get('mae', 0)
+    f1 = m.get('f1_score')
+    f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
+    alpha = m.get('estimated_exponent', 0.5)
+    erh = "Yes" if m.get('erh_satisfied', False) else "No"
+    interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
+    rows.append(f"Quantum & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp}")
 with open(table_path, 'w') as f:
-    for name in ('Biased', 'Noisy', 'Conservative', 'Radical'):
-        if name not in comparison or 'error' in comparison[name]:
-            f.write(f"{name} & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\\\\n")
-            continue
-        m = comparison[name]
-        mr = m.get('mistake_rate', 0)
-        mae = m.get('mae', 0)
-        f1 = m.get('f1_score')
-        f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
-        alpha = m.get('estimated_exponent', 0.5)
-        erh = "Yes" if m.get('erh_satisfied', False) else "No"
-        interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
-        f.write(f"{name} & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp} \\\\\n")
-    if 'Quantum' in comparison and 'error' not in comparison['Quantum']:
-        m = comparison['Quantum']
-        mr = m.get('mistake_rate', 0)
-        mae = m.get('mae', 0)
-        f1 = m.get('f1_score')
-        f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
-        alpha = m.get('estimated_exponent', 0.5)
-        erh = "Yes" if m.get('erh_satisfied', False) else "No"
-        interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
-        f.write(f"Quantum & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp} \\\\\n")
+    f.write(" \\\\\n".join(rows) + "\n")
 print(f"LaTeX table rows saved to: {table_path}")
 print("\nDone!")
 

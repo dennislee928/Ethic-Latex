@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-02-08T18:39:58.697316",
+  "config": {
+    "id": 1,
+    "num_actions": 1000,
+    "complexity_dist": "zipf",
+    "seed": 43
+  },
+  "metrics": {
+    "duration_seconds": 0.03338885307312012,
+    "total_actions": 1000,
+    "mistakes_count": 117,
+    "mistake_rate": 0.117,
+    "ethical_primes_count": 10,
+    "erh_satisfied": false,
+    "estimated_exponent": 0.35437122514981784
+  }
+}
