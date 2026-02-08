@@ -1,9 +1,18 @@
+---
+name: ""
+overview: ""
+todos: []
+isProject: false
+---
+
 # Cursor Agent Execution Plan: Ethic-Latex Enhancement
 
 ## Objective
+
 Upgrade the simulation core, optimize the CI/CD pipeline, and enhance scientific output generation.
 
 ## Skills & Tools
+
 - **Python/Science**: `python.mdc`, `numpy.mdc`, `scipy.mdc` (for metrics)
 - **Quantum**: `qiskit` (implied via python)
 - **DevOps**: `github-actions.mdc`, `docker.md`
@@ -20,7 +29,7 @@ Upgrade the simulation core, optimize the CI/CD pipeline, and enhance scientific
 - **Entangling layers** → represent social interactions
 - **Goal** → search for "stable" ethical states
 
-**Replace/Update `simulation/quantum/simulator.py`** with:
+**Replace/Update `simulation/quantum/simulator.py**` with:
 
 ```python
 import numpy as np
@@ -61,13 +70,16 @@ class AdvancedEthicalCircuit:
 
 ## 2. GitHub Pipeline & Output Review — Critical Analysis
 
-| Issue | Description |
-|-------|-------------|
-| **Critical** | `scripts/run_simulation_batch.py` is empty → pipeline skips heavy work or runs "dry run" with no meaningful data |
-| **Test Summary** | `test_summary.txt` captures stdout; if sparse, confirms simulations aren't scaling |
-| **Workflow** | `.github/workflows/simulation.yml` runs sequentially → inefficient for simulation projects |
+
+| Issue            | Description                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Critical**     | `scripts/run_simulation_batch.py` is empty → pipeline skips heavy work or runs "dry run" with no meaningful data |
+| **Test Summary** | `test_summary.txt` captures stdout; if sparse, confirms simulations aren't scaling                               |
+| **Workflow**     | `.github/workflows/simulation.yml` runs sequentially → inefficient for simulation projects                       |
+
 
 **Improvements Required**:
+
 - Implement the Batch Runner: populate the empty script to run parallel simulations
 - Artifact Caching: cache `node_modules` and pip dependencies (currently fetches every run)
 - LaTeX: use `latexmk` for reliable builds, ensuring bibliographies are generated correctly
@@ -78,7 +90,7 @@ class AdvancedEthicalCircuit:
 
 ### 3A. Pipeline Efficiency — Parallel Batch Script
 
-**Fill `scripts/run_simulation_batch.py`** with:
+**Fill `scripts/run_simulation_batch.py**` with:
 
 ```python
 # scripts/run_simulation_batch.py
@@ -120,7 +132,7 @@ if __name__ == '__main__':
 **Formula**:
 $$EVS = \frac{2 \cdot \text{Stability} \cdot \text{Fairness}}{\text{Stability} + \text{Fairness}} \cdot (1 - \text{Polarization})$$
 
-**Add to `simulation/analysis/statistics.py`**:
+**Add to `simulation/analysis/statistics.py**`:
 
 ```python
 def calculate_evs(stability, fairness, polarization):
@@ -139,24 +151,29 @@ def calculate_evs(stability, fairness, polarization):
 ## Execution Steps (Phased)
 
 ### Phase 1: Quantum Core Upgrade
-1. **Refactor `simulation/quantum/simulator.py`**:
-   - Replace basic circuit with `AdvancedEthicalCircuit` (EfficientSU2 ansatz).
-   - Support `entanglement` options: `linear`, `full`, `circular`.
-   - Add `_analyze_consensus` to compute stability from shot counts.
+
+1. **Refactor `simulation/quantum/simulator.py**`:
+  - Replace basic circuit with `AdvancedEthicalCircuit` (EfficientSU2 ansatz).
+  - Support `entanglement` options: `linear`, `full`, `circular`.
+  - Add `_analyze_consensus` to compute stability from shot counts.
 
 ### Phase 2: Pipeline Repair & Optimization
-1. **Fix `scripts/run_simulation_batch.py`**:
-   - Implement `multiprocessing.Pool` logic (see 3A above).
-   - CLI: `--instances`, `--configs`, `--output-dir`.
-2. **Optimize `.github/workflows/simulation.yml`**:
-   - Add `strategy.matrix` for Python 3.10 and 3.11.
-   - Use `actions/cache@v3` for `~/.cache/pip` and `node_modules`.
-   - Upload `simulation/output/` as build artifact.
+
+1. **Fix `scripts/run_simulation_batch.py**`:
+  - Implement `multiprocessing.Pool` logic (see 3A above).
+  - CLI: `--instances`, `--configs`, `--output-dir`.
+2. **Optimize `.github/workflows/simulation.yml**`:
+  - Add `strategy.matrix` for Python 3.10 and 3.11.
+  - Use `actions/cache@v3` for `~/.cache/pip` and `node_modules`.
+  - Upload `simulation/output/` as build artifact.
 
 ### Phase 3: Metrics & Reporting
+
 1. **Enhance Metrics**: Implement `calculate_evs` (see 3B); update `generate_comprehensive_report.py`.
 2. **LaTeX**: Use `latexmk -pdf -interaction=nonstopmode`; add "EVS over Time" subfigure.
 
 ### Phase 4: Verification
+
 1. Run `./scripts/run_simulation_batch.py` locally to verify core utilization.
 2. Run `pytest tests/` to ensure new quantum circuit doesn't break interfaces.
+
