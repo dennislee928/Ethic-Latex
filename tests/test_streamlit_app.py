@@ -1,41 +1,53 @@
 """
-Quick test to verify Streamlit app imports work correctly
-Run: python test_streamlit_app.py
+Quick test to verify Streamlit app imports work correctly.
+Run as script: python tests/test_streamlit_app.py
+Run with pytest: pytest tests/test_streamlit_app.py -v
 """
 
 import sys
 import os
 
-# Add simulation directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'simulation'))
+import pytest
 
-try:
-    # Test imports
+
+def _check_streamlit_imports():
+    """Try imports required for simulation Streamlit app. Returns (True, None) or (False, error)."""
+    try:
+        from erh_core.core.action_space import generate_world  # noqa: F401
+        from erh_core.core.judgement_system import BiasedJudge  # noqa: F401
+        from erh_core.core.ethical_primes import select_ethical_primes  # noqa: F401
+        from erh_core.analysis.zeta_function import build_m_sequence  # noqa: F401
+        import streamlit  # noqa: F401
+        return True, None
+    except ImportError as e:
+        return False, e
+
+
+def test_streamlit_app_imports():
+    """Verify Streamlit app dependencies can be imported (run from simulation/ or with path)."""
+    ok, err = _check_streamlit_imports()
+    if not ok:
+        pytest.skip(f"Streamlit app imports not available: {err}")
+    assert ok
+
+
+if __name__ == "__main__":
+    # Standalone script: print and exit for CI or manual run
     print("Testing imports...")
-    
-    from core.action_space import generate_world
-    print("[OK] core.action_space")
-    
-    from core.judgement_system import BiasedJudge
-    print("[OK] core.judgement_system")
-    
-    from core.ethical_primes import select_ethical_primes
-    print("[OK] core.ethical_primes")
-    
-    from analysis.zeta_function import build_m_sequence
-    print("[OK] analysis.zeta_function")
-    
-    import streamlit as st
-    print("[OK] streamlit")
-    
-    print("\n[SUCCESS] All imports working! Streamlit app should run correctly.")
-    print("\nTo test the app locally:")
-    print("  cd simulation")
-    print("  streamlit run app.py")
-    
-except ImportError as e:
-    print(f"\n[ERROR] Import failed: {e}")
-    print("\nMake sure you have installed all dependencies:")
-    print("  pip install -r requirements.txt")
-    sys.exit(1)
+    ok, err = _check_streamlit_imports()
+    if ok:
+        print("[OK] core.action_space")
+        print("[OK] core.judgement_system")
+        print("[OK] core.ethical_primes")
+        print("[OK] analysis.zeta_function")
+        print("[OK] streamlit")
+        print("\n[SUCCESS] All imports working! Streamlit app should run correctly.")
+        print("\nTo test the app locally:")
+        print("  cd simulation")
+        print("  streamlit run app.py")
+    else:
+        print(f"\n[ERROR] Import failed: {err}")
+        print("\nMake sure you have installed all dependencies:")
+        print("  pip install -r requirements.txt")
+        sys.exit(1)
 

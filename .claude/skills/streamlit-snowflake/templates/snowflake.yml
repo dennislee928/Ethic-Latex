@@ -1,0 +1,51 @@
+# Snowflake Project Definition
+# Documentation: https://docs.snowflake.com/en/developer-guide/snowflake-cli/streamlit-apps/manage-apps/initialize-app
+
+definition_version: 2
+
+entities:
+  # Streamlit Application
+  streamlit_app:
+    type: streamlit
+
+    # App identifier in Snowflake (replace with your app name)
+    identifier: my_streamlit_app
+
+    # Stage for storing app files (will be created if doesn't exist)
+    stage: my_app_stage
+
+    # Warehouse for running the app (required)
+    query_warehouse: my_warehouse
+
+    # Entry point file
+    main_file: streamlit_app.py
+
+    # Multi-page apps directory
+    pages_dir: pages/
+
+    # Files to deploy with the app
+    artifacts:
+      - common/
+      - environment.yml
+
+    # Optional: External access for API calls
+    # external_access_integrations:
+    #   - my_external_access
+
+    # Optional: Secrets from Snowflake
+    # secrets:
+    #   api_key: "my_database.my_schema.my_secret"
+
+    # Optional: Import files from stages
+    # imports:
+    #   - "@my_stage/shared_lib.py"
+
+    # Optional: Grant access to roles
+    # grants:
+    #   - privilege: USAGE
+    #     role: my_app_role
+
+# Environment defaults (optional)
+# env:
+#   default_database: MY_DATABASE
+#   default_schema: MY_SCHEMA

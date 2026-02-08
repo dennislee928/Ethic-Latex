@@ -4,15 +4,58 @@ from collections import defaultdict
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from ..core.schemas import AnalysisCurves, AnalysisSummary, CurvePoint, HeatmapCell, HeatmapResponse
 from ..deps import get_db
+from ..erh_security.code_complexity import calculate_code_complexity
 from ..erh_security.mapping import build_erh_dataset
 from ..erh_security.metrics import analyze_erh_structure, compute_delta
 
 
+class CodeComplexityRequest(BaseModel):
+    """Request body for code complexity analysis."""
+
+    code_snippet: str
+    method: Literal["cyclomatic", "halstead", "auto"] = "auto"
+
+
+class CodeComplexityResponse(BaseModel):
+    """Response with concrete complexity score c ∈ [1, 100]."""
+
+    complexity: float
+    method_used: str
+
+
+class HealthMonitorResponse(BaseModel):
+    """E(x) vs Riemann bound x^{1/2} for Health Monitor."""
+
+    error_curve: list[CurvePoint]
+    riemann_bound: list[CurvePoint]
+    violation: bool
+    violation_points: list[CurvePoint]
+
+
 router = APIRouter()
+
+
+@router.post("/complexity", response_model=CodeComplexityResponse, tags=["analysis"])
+def analyze_code_complexity(request: CodeComplexityRequest) -> CodeComplexityResponse:
+    """
+    Compute Cyclomatic or Halstead complexity for a code snippet.
+
+    Returns concrete x value in [1, 100] for use in ERH Security PoC.
+    Use this instead of abstract MR-size complexity when code content is available.
+    """
+    complexity = calculate_code_complexity(
+        request.code_snippet,
+        method=request.method,
+    )
+    return CodeComplexityResponse(
+        complexity=complexity,
+        method_used=request.method,
+    )
 
 
 def _load_and_analyze(db: Session, judge_type: str) -> dict:
@@ -58,6 +101,44 @@ def get_curves(
     error_curve = [CurvePoint(x=float(e[0]), y=float(e[1])) for e in err_raw]
 
     return AnalysisCurves(pi_curve=pi_curve, error_curve=error_curve)
+
+
+@router.get("/health", response_model=HealthMonitorResponse, tags=["analysis"])
+def get_health_monitor(
+    judge_type: Literal["PIPELINE", "HUMAN", "COMBINED"] = Query("COMBINED"),
+    db: Session = Depends(get_db),
+) -> HealthMonitorResponse:
+    """
+    Health Monitor: E(x) vs Riemann bound x^{1/2}.
+    Triggers alert if |E(x)| > C·x^{1/2} (structural hallucination).
+    """
+    result = _load_and_analyze(db, judge_type=judge_type)
+    err_raw = result.get("error_curve") or []
+    error_curve = [CurvePoint(x=float(e[0]), y=float(e[1])) for e in err_raw]
+    if not error_curve:
+        return HealthMonitorResponse(
+            error_curve=[],
+            riemann_bound=[],
+            violation=False,
+            violation_points=[],
+        )
+    x_max = max(p.x for p in error_curve)
+    scale = max(1e-6, max(abs(p.y) for p in error_curve) / max(1e-6, x_max**0.5))
+    riemann_bound = [
+        CurvePoint(x=float(x), y=float(scale * (x**0.5)))
+        for x in [p.x for p in error_curve]
+    ]
+    violation_points = [
+        p for p, b in zip(error_curve, riemann_bound)
+        if abs(p.y) > b.y + 1e-6
+    ]
+    violation = len(violation_points) > 0
+    return HealthMonitorResponse(
+        error_curve=error_curve,
+        riemann_bound=riemann_bound,
+        violation=violation,
+        violation_points=violation_points,
+    )
 
 
 @router.get("/heatmap", response_model=HeatmapResponse, tags=["analysis"])

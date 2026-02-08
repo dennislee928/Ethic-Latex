@@ -22,11 +22,19 @@ erh_core_path = os.path.join(project_root, 'erh_core')
 if os.path.exists(erh_core_path) and erh_core_path not in sys.path:
     sys.path.insert(0, erh_core_path)
 
-from simulation.core.action_space import generate_world, Action
-from simulation.core.judgement_system import BiasedJudge, evaluate_judgement
-from simulation.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
-
-from simulation.core.output_writer import save_json_result
+from simulation.core import (
+    generate_world,
+    Action,
+    BiasedJudge,
+    evaluate_judgement,
+    select_ethical_primes,
+    compute_Pi_and_error,
+    analyze_error_growth,
+)
+try:
+    from simulation.core.output_writer import save_json_result
+except ImportError:
+    from erh_core.core.output_writer import save_json_result
 
 def run_simulation(args):
     """Run a single simulation configuration."""

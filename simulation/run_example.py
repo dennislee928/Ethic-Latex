@@ -9,9 +9,9 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
-from core.action_space import generate_world, get_action_statistics
-from core.judgement_system import BiasedJudge, evaluate_judgement
-from core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
+from erh_core.core.action_space import generate_world, get_action_statistics
+from erh_core.core.judgement_system import BiasedJudge, evaluate_judgement
+from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth
 
 # Set seed for reproducibility
 np.random.seed(42)

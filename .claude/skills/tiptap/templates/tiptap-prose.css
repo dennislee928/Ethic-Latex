@@ -1,0 +1,304 @@
+/**
+ * Tiptap Prose Styling with Tailwind v4
+ *
+ * Two approaches:
+ * 1. Tailwind Typography plugin (@tailwindcss/typography) - Recommended
+ * 2. Custom utility classes - Full control
+ *
+ * Installation:
+ * npm install @tailwindcss/typography
+ *
+ * Add to tailwind.config.ts:
+ * import typography from '@tailwindcss/typography'
+ * export default {
+ *   plugins: [typography],
+ * }
+ */
+
+/* ============================================
+   APPROACH 1: Tailwind Typography (Recommended)
+   ============================================ */
+
+/**
+ * Apply prose classes directly to editor container:
+ *
+ * <EditorContent
+ *   editor={editor}
+ *   className="prose prose-sm sm:prose-base lg:prose-lg dark:prose-invert max-w-none"
+ * />
+ *
+ * Benefits:
+ * - Automatic dark mode support (dark:prose-invert)
+ * - Responsive sizing (prose-sm, prose-base, prose-lg)
+ * - Consistent styling across all elements
+ * - Community-maintained best practices
+ */
+
+/* ============================================
+   APPROACH 2: Custom Utility Classes
+   ============================================ */
+
+/**
+ * Use .tiptap selector for full control over styling
+ *
+ * Apply to editor:
+ * <div className="tiptap">
+ *   <EditorContent editor={editor} />
+ * </div>
+ */
+
+.tiptap {
+  /* Base prose styling */
+  @apply max-w-none;
+
+  /* Typography */
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--foreground);
+}
+
+/* Headings */
+.tiptap h1 {
+  @apply text-4xl font-bold mt-8 mb-4;
+  color: var(--foreground);
+}
+
+.tiptap h2 {
+  @apply text-3xl font-semibold mt-6 mb-3;
+  color: var(--foreground);
+}
+
+.tiptap h3 {
+  @apply text-2xl font-semibold mt-5 mb-2;
+  color: var(--foreground);
+}
+
+.tiptap h4 {
+  @apply text-xl font-semibold mt-4 mb-2;
+  color: var(--foreground);
+}
+
+/* Paragraphs */
+.tiptap p {
+  @apply my-4 text-base leading-7;
+}
+
+.tiptap p:first-child {
+  @apply mt-0;
+}
+
+.tiptap p:last-child {
+  @apply mb-0;
+}
+
+/* Lists */
+.tiptap ul,
+.tiptap ol {
+  @apply my-4 ml-6;
+}
+
+.tiptap ul {
+  @apply list-disc;
+}
+
+.tiptap ol {
+  @apply list-decimal;
+}
+
+.tiptap li {
+  @apply my-2;
+}
+
+.tiptap li p {
+  @apply my-0;
+}
+
+/* Links */
+.tiptap a {
+  @apply text-primary underline underline-offset-2;
+  @apply hover:text-primary/80 transition-colors;
+}
+
+/* Code */
+.tiptap code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+  @apply before:content-[''] after:content-[''];
+  color: var(--foreground);
+}
+
+.tiptap pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
+  @apply border border-border;
+}
+
+.tiptap pre code {
+  @apply bg-transparent p-0;
+  @apply text-sm leading-relaxed;
+}
+
+/* Blockquotes */
+.tiptap blockquote {
+  @apply border-l-4 border-primary pl-4 italic my-4;
+  @apply text-muted-foreground;
+}
+
+/* Horizontal Rule */
+.tiptap hr {
+  @apply my-8 border-t border-border;
+}
+
+/* Images */
+.tiptap img {
+  @apply rounded-lg max-w-full h-auto my-4;
+  @apply border border-border;
+}
+
+/* Tables (if using table extension) */
+.tiptap table {
+  @apply border-collapse w-full my-4;
+}
+
+.tiptap th,
+.tiptap td {
+  @apply border border-border px-4 py-2 text-left;
+}
+
+.tiptap th {
+  @apply bg-muted font-semibold;
+}
+
+/* Task Lists (if using task list extension) */
+.tiptap ul[data-type="taskList"] {
+  @apply list-none ml-0;
+}
+
+.tiptap li[data-type="taskItem"] {
+  @apply flex items-start gap-2;
+}
+
+.tiptap input[type="checkbox"] {
+  @apply mt-1;
+}
+
+/* ============================================
+   PLACEHOLDER STYLING
+   ============================================ */
+
+/**
+ * Style empty editor placeholder
+ *
+ * Configure in useEditor():
+ * editorProps: {
+ *   attributes: {
+ *     'data-placeholder': 'Start writing...'
+ *   }
+ * }
+ */
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
+.tiptap:focus {
+  @apply outline-none;
+}
+
+.tiptap.ProseMirror-focused {
+  @apply outline-none;
+}
+
+/* ============================================
+   SELECTION STYLES
+   ============================================ */
+
+.tiptap ::selection {
+  @apply bg-primary/20;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+  .tiptap h1 {
+    @apply text-3xl;
+  }
+
+  .tiptap h2 {
+    @apply text-2xl;
+  }
+
+  .tiptap h3 {
+    @apply text-xl;
+  }
+
+  .tiptap pre {
+    @apply text-xs;
+  }
+}
+
+/* ============================================
+   DARK MODE OVERRIDES
+   ============================================ */
+
+/**
+ * If not using dark:prose-invert, add dark mode styles:
+ */
+
+.dark .tiptap {
+  color: var(--foreground);
+}
+
+.dark .tiptap h1,
+.dark .tiptap h2,
+.dark .tiptap h3,
+.dark .tiptap h4 {
+  color: var(--foreground);
+}
+
+.dark .tiptap code {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.dark .tiptap pre {
+  background-color: var(--muted);
+  border-color: var(--border);
+}
+
+.dark .tiptap blockquote {
+  color: var(--muted-foreground);
+  border-color: var(--primary);
+}
+
+/* ============================================
+   UTILITY: Remove default margins
+   ============================================ */
+
+/**
+ * Use this class to remove default margins for compact layouts
+ */
+
+.tiptap-compact p,
+.tiptap-compact h1,
+.tiptap-compact h2,
+.tiptap-compact h3,
+.tiptap-compact h4,
+.tiptap-compact ul,
+.tiptap-compact ol,
+.tiptap-compact blockquote {
+  @apply my-2;
+}
+
+.tiptap-compact h1 {
+  @apply mt-4;
+}

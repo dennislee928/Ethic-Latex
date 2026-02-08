@@ -1,0 +1,62 @@
+# Snowflake CLI
+.snowflake/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+ENV/
+env/
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# RSA Keys (from key-pair authentication setup)
+*.p8
+*.pub
+rsa_key*
+
+# Local snowflake.yml overrides (may contain credentials)
+snowflake.yml.local
+snowflake.local.yml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit local config
+.streamlit/
+secrets.toml
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+dist/
+build/
+
+# Container Runtime specific
+pyproject.toml.local
+requirements.local.txt
