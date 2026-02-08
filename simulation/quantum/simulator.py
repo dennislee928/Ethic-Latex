@@ -8,11 +8,14 @@ AdvancedEthicalCircuit: VQE-style ansatz for Ethical Riemann Hypothesis simulati
 modeling entangled states of social consensus with parametrized rotations and
 entangling layers.
 
+SocialDynamicsQuantumSimulator: Physics-informed VQE using Quantum Ising Hamiltonian
+(SparsePauliOp) and TwoLocal ansatz for social consensus energy estimation.
+
 When qiskit-aer is unavailable (e.g., Python 3.14 or AppleClang 17 build failure),
 a NumPy-based fallback is used so the quantum module still works.
 """
 
-from typing import Tuple, Dict, Any, Union
+from typing import Tuple, Dict, Any, Union, TYPE_CHECKING
 
 import numpy as np
 
@@ -26,6 +29,22 @@ except ImportError:
     _QISKIT_AVAILABLE = False
     transpile = None
     EfficientSU2 = None
+
+# VQE/Hamiltonian support (optional, for SocialDynamicsQuantumSimulator)
+try:
+    from qiskit.quantum_info import SparsePauliOp
+    from qiskit.circuit.library import TwoLocal
+    from qiskit.primitives import Estimator
+
+    _VQE_AVAILABLE = True
+except ImportError:
+    _VQE_AVAILABLE = False
+    SparsePauliOp = None
+    TwoLocal = None
+    Estimator = None
+
+if TYPE_CHECKING:
+    import matplotlib
 
 from .interface import QuantumOracle
 
