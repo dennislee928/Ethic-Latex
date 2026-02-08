@@ -1,11 +1,13 @@
 """
-Tests for features added in update.plan.md (Phase 1–3).
+Tests for features added in update.plan.md (Phase 1–3) and enriched quantum core.
 
 Covers:
 - AdvancedEthicalCircuit (VQE-style quantum circuit)
+- SocialDynamicsQuantumSimulator (VQE with Ising Hamiltonian)
 - calculate_evs (Ethical Viability Score)
 - run_simulation_batch parallel execution
 - generate_comprehensive_report EVS integration
+- HybridPsychohistoryModel with enable_quantum
 """
 
 import json
@@ -43,6 +45,100 @@ class TestAdvancedEthicalCircuit:
             circuit = AdvancedEthicalCircuit(n_qubits=2, entanglement=ent, seed=0)
             r = circuit.run_social_simulation()
             assert r["stability_index"] >= 0
+
+
+class TestSocialDynamicsQuantumSimulator:
+    """Tests for SocialDynamicsQuantumSimulator (enriched quantum core)."""
+
+    def test_social_dynamics_import(self):
+        """SocialDynamicsQuantumSimulator can be imported from simulation.quantum."""
+        from simulation.quantum import SocialDynamicsQuantumSimulator
+
+        assert SocialDynamicsQuantumSimulator is not None
+
+    def test_construct_hamiltonian_returns_op_or_none(self):
+        """construct_hamiltonian returns SparsePauliOp or None (fallback)."""
+        import numpy as np
+        from simulation.quantum.simulator import SocialDynamicsQuantumSimulator
+
+        sim = SocialDynamicsQuantumSimulator(num_agents=3, topology="full")
+        matrix = np.array([[0, 0.5, 0.3], [0.5, 0, 0.2], [0.3, 0.2, 0]])
+        biases = np.array([0.1, -0.2, 0.0])
+        ham = sim.construct_hamiltonian(matrix, biases)
+        # Either SparsePauliOp (if VQE available) or None (fallback)
+        assert ham is None or hasattr(ham, "simplify")
+
+    def test_run_simulation_returns_expected_keys(self):
+        """run_simulation returns social_tension_energy, is_stable, circuit_depth."""
+        import numpy as np
+        from simulation.quantum import SocialDynamicsQuantumSimulator
+
+        sim = SocialDynamicsQuantumSimulator(num_agents=3, topology="full", seed=42)
+        matrix = np.array([[0, 0.5, 0.3], [0.5, 0, 0.2], [0.3, 0.2, 0]])
+        biases = np.array([0.1, -0.2, 0.0])
+        result = sim.run_simulation(matrix, biases)
+        assert "social_tension_energy" in result
+        assert "is_stable" in result
+        assert "circuit_depth" in result
+        assert isinstance(result["social_tension_energy"], (int, float))
+        assert isinstance(result["is_stable"], bool)
+        assert isinstance(result["circuit_depth"], (int, float))
+
+    def test_run_simulation_with_save_path_does_not_raise(self):
+        """run_simulation with save_path does not raise."""
+        import numpy as np
+        from simulation.quantum import SocialDynamicsQuantumSimulator
+
+        sim = SocialDynamicsQuantumSimulator(num_agents=2, topology="linear", seed=0)
+        matrix = np.array([[0, 0.5], [0.5, 0]])
+        biases = np.array([0.0, 0.0])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "circuit.png")
+            result = sim.run_simulation(matrix, biases, save_path=path)
+            assert "social_tension_energy" in result
+
+
+class TestHybridModelQuantumIntegration:
+    """Tests for HybridPsychohistoryModel with enable_quantum."""
+
+    def test_hybrid_model_with_quantum_enabled(self):
+        """HybridPsychohistoryModel with enable_quantum=True runs and returns quantum_stability."""
+        from erh_core.core.hybrid_model import HybridPsychohistoryModel
+
+        model = HybridPsychohistoryModel(
+            num_agents=6,
+            enable_temporal=False,
+            enable_network_dynamics=False,
+            enable_fluid_model=False,
+            enable_meta_monitor=False,
+            enable_quantum=True,
+            quantum_agents_subsample=4,
+        )
+        results = model.run_simulation(
+            num_time_steps=1,
+            actions_per_step=50,
+            network_dynamics_model="degroot",
+        )
+        assert "quantum_stability" in results
+        qs = results["quantum_stability"]
+        assert qs is not None
+        if isinstance(qs, dict) and "error" not in qs:
+            assert "social_tension_energy" in qs
+            assert "is_stable" in qs
+            assert "circuit_depth" in qs
+
+    def test_get_summary_includes_quantum_feature(self):
+        """get_summary includes quantum in features_enabled."""
+        from erh_core.core.hybrid_model import HybridPsychohistoryModel
+
+        model = HybridPsychohistoryModel(
+            num_agents=4,
+            enable_quantum=True,
+            quantum_agents_subsample=4,
+        )
+        summary = model.get_summary()
+        assert "features_enabled" in summary
+        assert summary["features_enabled"]["quantum"] is True
 
 
 class TestCalculateEvs:
