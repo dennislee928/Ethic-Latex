@@ -598,7 +598,18 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
 \subsection{Empirical Feasibility (Real-Data Integration Plan)}
 \label{sec:empirical}
 
-Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks.
+Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks. API endpoints \texttt{POST /ingestion/huggingface} and \texttt{POST /ingestion/aita} enable integration with the erh-security-app backend.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
+    \label{fig:von_neumann_entropy}
+\end{figure}
 
 \subsection{Spectrum Analysis}
 
@@ -608,10 +619,20 @@ The Fourier spectrum reveals:
     \item [Interpretation]
 \end{itemize}
 
-\section{Implications for AI Ethics}
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Philosophical Implications: Free Will vs.\ Quantum Randomness}
+\label{sec:free-will}
+
+若道德判斷由量子過程（疊加態、測量塌縮）建模，則量子結果的「隨機性」可能為自由意志辯論提供形式化框架。本模型不試圖解決此哲學爭議，但提供一個正式架構：道德不確定性以量子不確定性表示。若 Agent 的選擇由測量結果決定，則「自由意志」與「量子隨機」的邊界成為可形式化探討的對象。
+
+A philosophical implication: if moral judgment is modeled by quantum processes (superposition, measurement collapse), the ``randomness'' of quantum outcomes may inform debates on free will. The model does not resolve this debate but offers a formal framework where moral uncertainty is represented as quantum indeterminacy.
+
+\subsection{Implications for AI Ethics}
 \label{sec:implications}
 
-\subsection{Design Criteria for Ethical AI}
+\subsubsection{Design Criteria for Ethical AI}
 
 The ERH provides a quantitative criterion: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This suggests:
 
@@ -621,7 +642,7 @@ The ERH provides a quantitative criterion: an AI judgment system should be desig
     \item \textbf{Predictable Reliability}: The error rate should be forecastable
 \end{itemize}
 
-\subsection{Detecting Systematic Bias}
+\subsubsection{Detecting Systematic Bias}
 
 Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
 \begin{itemize}
@@ -631,7 +652,7 @@ Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
 
 Such violations warrant investigation into structural biases in training data, model architecture, or evaluation protocols.
 
-\subsection{Fairness and Accountability}
+\subsubsection{Fairness and Accountability}
 
 The concept of ethical primes highlights that \emph{not all errors are equal}. High-importance misjudgments on marginalized groups may be underrepresented in aggregate metrics but dominate the set of ethical primes.
 
@@ -641,11 +662,6 @@ ERH-based analysis can:
     \item Quantify whether error patterns differ across demographic groups
     \item Guide targeted interventions to reduce structural inequality
 \end{itemize}
-
-\subsection{Free Will and Quantum Randomness}
-\label{sec:free-will}
-
-A philosophical implication: if moral judgment is modeled by quantum processes (superposition, measurement collapse), the ``randomness'' of quantum outcomes may inform debates on free will. The model does not resolve this debate but offers a formal framework where moral uncertainty is represented as quantum indeterminacy.
 
 \subsection{Future Work}
 
