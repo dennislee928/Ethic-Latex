@@ -236,13 +236,8 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
                 old_row = "量子判斷者       & [待填入] & [待填入] & [待填入] & [待填入] & [待填入] & 量子疊加態判斷；數值由模擬腳本填入。"
                 new_row = f"量子判斷者       & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_zh} & {overall} & 量子疊加態判斷；數值由模擬腳本填入。"
                 updated_content = updated_content.replace(old_row, new_row)
-                _debug_log("Table 5 row replaced", {"row_updated": old_row not in updated_content})
-            except (ValueError, TypeError, IndexError) as e:
-                _debug_log("Table 5 row replace failed", {"error": str(e)})
-        
-        # H1: Check if Table 5 row for 量子判斷者 is replaced
-        table5_has_tbd = "量子判斷者       & [待填入]" in updated_content
-        _debug_log("Table 5 row check", {"table5_仍有待填入": table5_has_tbd})
+            except (ValueError, TypeError, IndexError):
+                pass
         
         with open(latex_path_zh, 'w', encoding='utf-8') as f:
             f.write(updated_content)
