@@ -593,12 +593,7 @@ Figure~\ref{fig:normalized_oscillation} shows the Riemann evidence: $E(x)/\sqrt{
 \subsection{Phase Transition Analysis}
 \label{sec:phase-transition}
 
-We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function. Figure~\ref{fig:phase_transition_h} illustrates this quantum phase transition.
-
-\subsection{Empirical Feasibility (Real-Data Integration Plan)}
-\label{sec:empirical}
-
-Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks. API endpoints \texttt{POST /ingestion/huggingface} and \texttt{POST /ingestion/aita} enable integration with the erh-security-app backend.
+We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function. Figure~\ref{fig:phase_transition_h} illustrates this quantum phase transition. Figure~\ref{fig:von_neumann_entropy} shows Von Neumann entropy over time as an echo-chamber indicator.
 
 \begin{figure}[h!]
     \centering
@@ -610,6 +605,11 @@ Although this study primarily uses synthetic data to validate theoretical limits
     \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
     \label{fig:von_neumann_entropy}
 \end{figure}
+
+\subsection{Empirical Feasibility (Real-Data Integration Plan)}
+\label{sec:empirical}
+
+Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks. API endpoints \texttt{POST /ingestion/huggingface} and \texttt{POST /ingestion/aita} enable integration with the erh-security-app backend.
 
 \subsection{Spectrum Analysis}
 
