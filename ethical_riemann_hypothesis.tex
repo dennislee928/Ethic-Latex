@@ -395,11 +395,13 @@ As conflict density increases, the system cannot reach a stable ground state: gr
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/phase_transition_diagram.png}{%
+    \IfFileExists{simulation/output/figures/phase_transition.png}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/phase_transition.png}%
+    }{\IfFileExists{simulation/output/phase_transition_diagram.png}{%
         \includegraphics[width=0.85\textwidth]{simulation/output/phase_transition_diagram.png}%
     }{%
-        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_phase\_transition.py --save-plot} to generate this figure.}}
-    }
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_phase\_transition\_exp.py --save-plot} or \texttt{run\_quantum\_phase\_transition.py --save-plot} to generate this figure.}}
+    }}
     \caption{Moral phase transition: as conflict density (complexity) increases, ground-state fidelity drops. The collapse point marks the ``pole'' of the Ethical Zeta Function.}
     \label{fig:phase_transition}
 \end{figure}

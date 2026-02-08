@@ -43,6 +43,20 @@ except ImportError:
     TwoLocal = None
     Estimator = None
 
+# NumPyMinimumEigensolver for exact ground state (qiskit_algorithms or qiskit.algorithms)
+_NumPyMinimumEigensolver = None
+try:
+    from qiskit_algorithms import NumPyMinimumEigensolver
+
+    _NumPyMinimumEigensolver = NumPyMinimumEigensolver
+except ImportError:
+    try:
+        from qiskit.algorithms.minimum_eigensolvers import NumPyMinimumEigensolver
+
+        _NumPyMinimumEigensolver = NumPyMinimumEigensolver
+    except ImportError:
+        pass
+
 # Visualization and error mitigation (optional)
 try:
     from qiskit.visualization import plot_histogram
@@ -307,6 +321,75 @@ class SocialDynamicsQuantumSimulator:
             return SparsePauliOp.from_list([("I" * self.num_qubits, 0.0)])
 
         return SparsePauliOp.from_list(pauli_list)
+
+    def compute_ground_state(
+        self,
+        adjacency_matrix: np.ndarray,
+        bias_vector: np.ndarray,
+    ) -> Tuple[float, float]:
+        """
+        Return (energy, entropy) using NumPyMinimumEigensolver (exact simulation).
+
+        Energy corresponds to social tension; entropy is Von Neumann entropy
+        of the half-chain reduced density matrix.
+
+        Parameters
+        ----------
+        adjacency_matrix : ndarray, shape (n, n)
+            Interaction matrix J_ij (coupling strengths).
+        bias_vector : array-like, length n
+            Individual biases h_i (transverse field).
+
+        Returns
+        -------
+        Tuple[float, float]
+            (energy, von_neumann_entropy)
+
+        Examples
+        --------
+        >>> sim = SocialDynamicsQuantumSimulator(num_agents=4, seed=42)
+        >>> J = np.array([[0, 0.5], [0.5, 0]])
+        >>> h = np.array([0.1, -0.1])
+        >>> energy, entropy = sim.compute_ground_state(J, h)
+        """
+        import logging
+
+        if not _VQE_AVAILABLE or SparsePauliOp is None:
+            logging.warning("compute_ground_state: VQE/SparsePauliOp unavailable")
+            return (0.0, 0.0)
+
+        if _NumPyMinimumEigensolver is None:
+            logging.warning("compute_ground_state: NumPyMinimumEigensolver unavailable")
+            return (0.0, 0.0)
+
+        hamiltonian = self.construct_hamiltonian(adjacency_matrix, bias_vector)
+        if hamiltonian is None:
+            return (0.0, 0.0)
+
+        solver = _NumPyMinimumEigensolver()
+        result = solver.compute_minimum_eigenvalue(hamiltonian)
+        energy = float(result.eigenvalue.real)
+
+        gs = result.eigenstate
+        try:
+            from qiskit.quantum_info import Statevector
+
+            if hasattr(gs, "to_statevector"):
+                sv = gs.to_statevector()
+            else:
+                sv = Statevector(gs)
+            data = np.asarray(sv.data)
+        except ImportError:
+            data = np.asarray(gs) if hasattr(gs, "__iter__") else np.array([1.0])
+
+        nq = self.num_qubits
+        keep = max(1, nq // 2)
+        trace_out = list(range(keep, nq))
+        entropy = von_neumann_entropy_from_statevector(
+            data, trace_out_indices=trace_out if trace_out else None
+        )
+
+        return (energy, float(entropy))
 
     def run_simulation(
         self,

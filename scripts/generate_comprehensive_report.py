@@ -2,22 +2,50 @@
 """
 Comprehensive Report Generator
 Aggregates JSON simulation results and generates a summary report + visualizations.
-Includes Ethical Viability Score (EVS) and EVS over Time subfigure.
+Includes Ethical Viability Score (EVS), EVS over Time, and phase transition figure.
+Runs phase transition experiment at start to ensure phase_transition.png exists.
 """
 
 import argparse
 import json
 import os
 import glob
+import subprocess
+import sys
+from pathlib import Path
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 try:
     from erh_core.analysis.statistics import calculate_evs
 except ImportError:
     from simulation.analysis.statistics import calculate_evs
+
+
+def run_phase_transition_exp(output_dir: str) -> bool:
+    """Run phase transition experiment and save figure. Returns True on success."""
+    try:
+        script = ROOT / "scripts" / "run_phase_transition_exp.py"
+        if not script.exists():
+            return False
+        out = Path(output_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        result = subprocess.run(
+            [sys.executable, str(script), "--output-dir", str(out), "--no-oracle", "--save-plot"],
+            cwd=str(ROOT),
+            capture_output=True,
+            timeout=300,
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
 
 
 def load_results(input_dir):
@@ -142,7 +170,10 @@ def generate_markdown_report(df, output_dir):
         if "evs" in df.columns:
             cols.append("evs")
         stats = df.groupby("complexity_dist")[cols].mean()
-        f.write(stats.to_markdown())
+        try:
+            f.write(stats.to_markdown())
+        except ImportError:
+            f.write(stats.to_string())
         f.write("\n\n")
 
         f.write("## ERH Compliance\n")
@@ -170,21 +201,63 @@ def generate_markdown_report(df, output_dir):
 
     print(f"Report generated at {report_path}")
 
+def write_phase_transition_latex(output_dir: str) -> None:
+    """Append phase_transition.png LaTeX snippet to figures_latex_code.tex if present."""
+    fig_path = Path(output_dir) / "figures" / "phase_transition.png"
+    tex_path = ROOT / "simulation" / "output" / "figures_latex_code.tex"
+    if not fig_path.exists():
+        return
+    snippet = f"""
+% Phase transition figure (from run_phase_transition_exp.py)
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.85\\textwidth]{{figures/phase_transition.png}}
+  \\caption{{Phase transition: Ethical stability vs coupling strength $J$. Critical point $J_c$ marked.}}
+  \\label{{fig:phase_transition}}
+\\end{{figure}}
+"""
+    tex_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        existing = tex_path.read_text(encoding="utf-8") if tex_path.exists() else ""
+        if "phase_transition" not in existing:
+            with open(tex_path, "a", encoding="utf-8") as f:
+                f.write(snippet)
+    except Exception:
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate Comprehensive Report")
     parser.add_argument("--input-dir", required=True, help="Directory containing JSON results")
     parser.add_argument("--output-dir", default="report", help="Output directory for report")
-    
+    parser.add_argument("--skip-phase-transition", action="store_true", help="Skip phase transition run")
     args = parser.parse_args()
-    
+
+    output_dir = args.output_dir
+    sim_output = str(ROOT / "simulation" / "output")
+
+    if not args.skip_phase_transition:
+        print("Running phase transition experiment...")
+        if run_phase_transition_exp(sim_output):
+            print("Phase transition complete.")
+        else:
+            print("Phase transition skipped or failed.")
+        write_phase_transition_latex(sim_output)
+
     df = load_results(args.input_dir)
-    
+
     if df.empty:
-        print("No data found.")
+        print("No simulation data found; phase transition figure may still be available.")
+        os.makedirs(output_dir, exist_ok=True)
+        if (Path(sim_output) / "figures" / "phase_transition.png").exists():
+            import shutil
+            dest = Path(output_dir) / "phase_transition.png"
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(Path(sim_output) / "figures" / "phase_transition.png", dest)
         return
-        
-    generate_visualizations(df, args.output_dir)
-    generate_markdown_report(df, args.output_dir)
+
+    generate_visualizations(df, output_dir)
+    generate_markdown_report(df, output_dir)
 
 if __name__ == "__main__":
     main()

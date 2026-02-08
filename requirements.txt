@@ -36,6 +36,7 @@ robotframework-pythonlibcore>=2.1.0
 fastapi>=0.100.0
 uvicorn>=0.23.0
 requests>=2.28.0
+tabulate>=0.9.0
 
 # Type safety & validation
 pydantic>=2.0.0
@@ -44,3 +45,7 @@ pydantic>=2.0.0
 qiskit>=1.0.0
 qiskit-aer>=0.14.0
 # qiskit-ibm-runtime>=0.21.0  # Optional: for IBM Quantum hardware
+
+# Phase 2: HuggingFace Ethical Oracle (ground-truth proxy)
+transformers>=4.30.0
+torch>=2.0.0

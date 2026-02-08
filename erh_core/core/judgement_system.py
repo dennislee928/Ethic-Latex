@@ -3,10 +3,11 @@ Judgment System Module
 
 This module defines various judge classes that evaluate moral actions,
 introducing different types of biases, noise, and judgment strategies.
+Supports HuggingFaceEthicalOracle for ground-truth V(a) from model scoring.
 """
 
 import numpy as np
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Any
 from abc import ABC, abstractmethod
 from .action_space import Action
 
@@ -237,6 +238,44 @@ class RadicalJudge(BaseJudge):
         J += noise
         
         return np.clip(J, -1, 1)
+
+
+class OracleDrivenJudge(BaseJudge):
+    """
+    Judge that sets V(a) from HuggingFaceEthicalOracle before computing J(a).
+
+    Uses oracle.score(action.description) as ground truth V, then delegates
+    to an inner judge (e.g., BiasedJudge) for the actual judgment J.
+    E(x) = |J - V| where V comes from the oracle.
+
+    Parameters
+    ----------
+    oracle : HuggingFaceEthicalOracle
+        Oracle that scores action text to produce V.
+    inner_judge : BaseJudge, optional
+        Judge to use after V is set. If None, returns V (perfect judge).
+    name : str, optional
+        Name for this judge
+    """
+
+    def __init__(
+        self,
+        oracle: Any,
+        inner_judge: Optional[BaseJudge] = None,
+        name: str = "OracleDrivenJudge",
+    ):
+        super().__init__(name)
+        self.oracle = oracle
+        self.inner_judge = inner_judge
+
+    def judge(self, action: Action) -> float:
+        """Set V from oracle, then produce J via inner judge."""
+        text = getattr(action, "description", None) or ""
+        if text:
+            action.V = self.oracle.score(text)
+        if self.inner_judge is not None:
+            return self.inner_judge.judge(action)
+        return action.V
 
 
 class CustomJudge(BaseJudge):

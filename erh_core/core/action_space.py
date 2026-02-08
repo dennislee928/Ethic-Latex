@@ -41,7 +41,8 @@ class Action:
     delta: Optional[float] = None  # error
     mistake_flag: Optional[int] = None  # misjudgment indicator
     severity: Optional[float] = None  # fuzzy severity (0-1) for continuous error assessment
-    
+    description: Optional[str] = None  # text for HuggingFace Oracle scoring
+
     def __repr__(self):
         return f"Action(id={self.id}, c={self.c}, V={self.V:.2f}, w={self.w:.2f})"
 
@@ -155,6 +156,35 @@ def generate_world(
         actions.append(action)
     
     return actions
+
+
+def populate_action_descriptions(
+    actions: List[Action],
+    template: str = "minimal",
+    include_id: bool = True,
+) -> None:
+    """
+    Populate action.description using action_to_scenario_text for Oracle scoring.
+
+    Parameters
+    ----------
+    actions : List[Action]
+        Actions to populate (modified in place).
+    template : str, default='minimal'
+        Passed to action_to_scenario_text.
+    include_id : bool, default=True
+        Whether to include scenario ID in text.
+    """
+    try:
+        from erh.core.scenario_generator import action_to_scenario_text
+    except ImportError:
+        def action_to_scenario_text(a, template="minimal", include_id=True):
+            return f"Complexity: {a.c}, Importance: {a.w:.2f}."
+
+    for action in actions:
+        action.description = action_to_scenario_text(
+            action, template=template, include_id=include_id
+        )
 
 
 def sample_complexity(
