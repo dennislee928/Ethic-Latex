@@ -13,7 +13,9 @@ jobs:
 
   quantum:
     uses: ./.github/workflows/quantum_tests.yml
+    secrets: inherit
 
   thesis:
     needs: [simulation, quantum]
     uses: ./.github/workflows/build_thesis.yml
+    secrets: inherit

@@ -12,6 +12,8 @@ from erh_core.analysis.statistics import (
     generate_report,
     calculate_evs,
     calculate_von_neumann_entropy,
+    compute_dual_metrics,
+    analyze_conservative_judge_anomaly,
 )
 
 __all__ = [
@@ -21,4 +23,6 @@ __all__ = [
     "generate_report",
     "calculate_evs",
     "calculate_von_neumann_entropy",
+    "compute_dual_metrics",
+    "analyze_conservative_judge_anomaly",
 ]

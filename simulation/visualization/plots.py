@@ -10,6 +10,11 @@ import matplotlib as mpl
 from typing import Optional, Dict, List, Tuple
 import seaborn as sns
 
+try:
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+except ImportError:
+    Axes3D = None
+
 
 def setup_paper_style():
     """
@@ -665,6 +670,171 @@ def plot_complexity_distribution(
     else:
         plt.close(fig)
     
+    return fig
+
+
+def plot_critical_bound(
+    comparison: Dict[str, dict],
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot 1: The Critical Bound.
+
+    X-axis: Complexity x (Log Scale).
+    Y-axis: Error Magnitude |E(x)| (Log Scale).
+    Overlay: y = x^(1/2) (Riemann Bound).
+    Different agents (Conservative vs. Aggressive).
+    """
+    fig, ax = plt.subplots(figsize=(10, 7))
+    colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2"]
+
+    for idx, (name, data) in enumerate(comparison.items()):
+        if "error" in data or "x_values" not in data:
+            continue
+        x_vals = np.array(data["x_values"])
+        E_x = np.array(data["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x_vals > 1)
+        if np.sum(valid) < 2:
+            continue
+        x_v, y_v = x_vals[valid], abs_E[valid]
+        ax.loglog(x_v, y_v, "o-", label=name, alpha=0.7, color=colors[idx % len(colors)])
+
+    if len(comparison) > 0:
+        first = next((d for d in comparison.values() if "error" not in d and "x_values" in d), None)
+        if first is not None:
+            x_vals = np.array(first["x_values"])
+            x_ref = np.linspace(max(1, x_vals.min()), x_vals.max(), 100)
+            scale = 1.0
+            if np.max(np.abs(first["E_x"])) > 0:
+                scale = np.median(np.abs(first["E_x"])[np.abs(first["E_x"]) > 0]) / (
+                    np.median(x_vals[x_vals > 1]) ** 0.5
+                )
+            y_ref = scale * np.sqrt(x_ref)
+            ax.loglog(x_ref, y_ref, ":", color="gray", linewidth=2, label=r"$C \cdot x^{1/2}$ (ERH)")
+
+    ax.set_xlabel("Complexity $x$ (Log Scale)", fontsize=12)
+    ax.set_ylabel(r"Error Magnitude $|E(x)|$ (Log Scale)", fontsize=12)
+    ax.set_title("The Critical Bound: $|E(x)|$ vs. $x^{1/2}$")
+    ax.legend()
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_phase_transition_diagram(
+    conflict_densities: np.ndarray,
+    fidelities: np.ndarray,
+    coherences: Optional[np.ndarray] = None,
+    collapse_point: Optional[float] = None,
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot 2: Phase Transition Diagram.
+
+    X-axis: Conflict Density (Complexity).
+    Y-axis: Quantum State Fidelity (or System Coherence).
+    Highlight the "Collapse Point" (Pole).
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(conflict_densities, fidelities, "o-", label="Ground State Fidelity", linewidth=2)
+    if coherences is not None:
+        ax.plot(conflict_densities, coherences, "s--", label="Consensus Coherence", alpha=0.8)
+    ax.axhline(y=0.3, color="gray", linestyle=":", alpha=0.7)
+    if collapse_point is not None:
+        ax.axvline(
+            x=collapse_point,
+            color="red",
+            linestyle="--",
+            alpha=0.8,
+            label=f"Collapse point $\\approx$ {collapse_point:.2f}",
+        )
+    ax.set_xlabel("Conflict Density (Complexity)", fontsize=12)
+    ax.set_ylabel("Fidelity / Coherence", fontsize=12)
+    ax.set_title("Moral Phase Transition: Ethical Conflict → Spin Glass Frustration")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_ethical_primes_map(
+    primes: List,
+    x_attr: str = "c",
+    y_attr: str = "w",
+    z_attr: Optional[str] = None,
+    color_attr: Optional[str] = "delta",
+    title: str = "Ethical Primes Map: Irreducible Dilemmas",
+    save_path: Optional[str] = None,
+    show: bool = True,
+    use_3d: bool = False,
+) -> plt.Figure:
+    """
+    Plot 3: Ethical Primes Map.
+
+    2D or 3D scatter of "Irreducible Dilemmas" within the Action Space.
+    x_attr: typically complexity (c).
+    y_attr: typically importance (w).
+    z_attr: optional third dimension (e.g. id, V).
+    color_attr: typically delta (error magnitude).
+    """
+    if not primes:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, "No ethical primes", ha="center", va="center", fontsize=14)
+        return fig
+
+    x_vals = [getattr(p, x_attr, p.c) for p in primes]
+    y_vals = [getattr(p, y_attr, p.w) for p in primes]
+    if color_attr:
+        c_vals = [abs(getattr(p, color_attr, 0) or 0) for p in primes]
+    else:
+        c_vals = None
+
+    use_3d = use_3d and z_attr and len(primes) >= 3 and Axes3D is not None
+    if use_3d:
+        z_vals = [getattr(p, z_attr, 0) for p in primes]
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection="3d")
+        if c_vals:
+            sc = ax.scatter(x_vals, y_vals, z_vals, c=c_vals, cmap="viridis", alpha=0.7, s=50)
+            plt.colorbar(sc, ax=ax, label=f"|{color_attr}|")
+        else:
+            ax.scatter(x_vals, y_vals, z_vals, alpha=0.7, s=50)
+        ax.set_xlabel(x_attr)
+        ax.set_ylabel(y_attr)
+        ax.set_zlabel(z_attr)
+    else:
+        fig, ax = plt.subplots(figsize=(10, 8))
+        if c_vals:
+            sc = ax.scatter(x_vals, y_vals, c=c_vals, cmap="viridis", alpha=0.7, s=50)
+            plt.colorbar(sc, ax=ax, label=f"|{color_attr}|")
+        else:
+            ax.scatter(x_vals, y_vals, alpha=0.7, s=50)
+        ax.set_xlabel(x_attr)
+        ax.set_ylabel(y_attr)
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
     return fig
 
 

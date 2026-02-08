@@ -129,6 +129,22 @@ def update_latex_file(latex_path, results):
         # Update the main content
         updated_content = updated_content.replace(section_text, new_section_text)
         print(f"Updated section for {latex_name}")
+    
+    # Replace Table row for Quantum Judge (English)
+    if 'Quantum' in results:
+        qd = results['Quantum']
+        try:
+            err_rate = float(qd.get('Mistake rate', 0))
+            mae = float(qd.get('MAE', 0))
+            alpha = float(qd.get('Estimated exponent', 0))
+            erh_yes = 'Yes' in str(qd.get('Within ERH-style bound (α ≲ 0.5)?', 'No'))
+            erh_en = 'Yes' if erh_yes else 'No'
+            overall = 'Structurally safe but error rate too high' if err_rate > 0.5 else 'Structurally safe, acceptable'
+            old_row = "Quantum      & [TBD] & [TBD] & [TBD] & [TBD] & [TBD] &"
+            new_row = f"Quantum      & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_en} & {overall} &"
+            updated_content = updated_content.replace(old_row, new_row)
+        except (ValueError, TypeError):
+            pass
 
     with open(latex_path, 'w') as f:
         f.write(updated_content)
@@ -207,6 +223,21 @@ def update_latex_file_bilingual(latex_path_en, latex_path_zh, results):
             
             updated_content = updated_content.replace(section_text, new_section_text)
             print(f"Updated Chinese section for {zh_name}")
+        
+        # Replace Table 5 row for 量子判斷者 (was never replaced before)
+        if 'Quantum' in results:
+            qd = results['Quantum']
+            try:
+                err_rate = float(qd.get('Mistake rate', 0))
+                mae = float(qd.get('MAE', 0))
+                alpha = float(qd.get('Estimated exponent', 0))
+                erh_zh = '是' if any('Yes' in str(v) for k, v in qd.items() if 'bound' in k.lower() or 'ERH' in k) else '否'
+                overall = '結構安全但錯誤率過高' if err_rate > 0.5 else '結構安全，表現可接受'
+                old_row = "量子判斷者       & [待填入] & [待填入] & [待填入] & [待填入] & [待填入] & 量子疊加態判斷；數值由模擬腳本填入。"
+                new_row = f"量子判斷者       & {err_rate:.3f} & {mae:.3f} & ${alpha:.3f}$ & {erh_zh} & {overall} & 量子疊加態判斷；數值由模擬腳本填入。"
+                updated_content = updated_content.replace(old_row, new_row)
+            except (ValueError, TypeError, IndexError):
+                pass
         
         with open(latex_path_zh, 'w', encoding='utf-8') as f:
             f.write(updated_content)
