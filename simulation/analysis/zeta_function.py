@@ -232,7 +232,8 @@ def find_approximate_zeros(
     # #region agent log
     try:
         import json as _json
-        _p = __import__('os').path.join(__import__('os').path.dirname(__import__('os').path.dirname(__import__('os').path.dirname(__import__('os').path.abspath(__file__))), ".cursor", "debug.log")
+        import os as _os
+        _p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), ".cursor", "debug.log")
         with open(_p, "a", encoding="utf-8") as _f:
             _f.write(_json.dumps({"location": "zeta_function.find_approximate_zeros", "message": "zeros search", "data": {"threshold": threshold, "n_zeros": len(zeros), "min_abs_zeta": round(min_abs_zeta, 6), "n_checked": n_checked, "sample_abs": sample_abs}, "timestamp": __import__("time").time()}) + "\n")
     except Exception:
