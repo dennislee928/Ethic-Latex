@@ -64,6 +64,15 @@ jobs:
           mkdir -p simulation/output/figures
           python scripts/run_phase_transition_exp.py --no-oracle --save-plot --output-dir simulation/output || echo "⚠ Phase transition exp skipped."
 
+      - name: Fetch and Process Case Study CSV
+        run: |
+          mkdir -p data data/real_world
+          bash scripts/fetch_real_data.sh || true
+          python scripts/convert_adult_to_csv.py || true
+          python scripts/process_student_to_exam_cheating.py || true
+          python scripts/generate_synthetic_sexual_abuse.py || true
+        continue-on-error: true
+
       - name: Run Real-Data Case Study (optional)
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
