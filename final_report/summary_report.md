@@ -1,8 +1,8 @@
 # ERH Simulation Campaign Report
-**Generated:** 2026-02-08 18:22:52
+**Generated:** 2026-02-08 18:36:00
 
 ## Overview
-- Total Experiments: 6
+- Total Experiments: 8
 - Distributions Tested: zipf
 
 ## Aggregate Statistics

@@ -142,7 +142,8 @@ Since $V(a)$ is epistemically inaccessible in the real world, we operationalize 
 \begin{itemize}
     \item \textbf{RLHF and human annotation}: High-quality human-labeled datasets (e.g., pairwise preferences used in reinforcement learning from human feedback) provide a practical proxy. We use annotator agreement and confidence scores to define $V(a)$.
     \item \textbf{Bradley-Terry model}: From pairwise preferences $(a_i \succ a_j)$ we infer latent scores via the Bradley-Terry model, yielding a scalar $V(a) \in [-1, 1]$ per action.
-    \item \textbf{Implementation}: Our framework supports \texttt{GroundTruthProxy.from\_mock\_rlhf()} for simulation and \texttt{load\_from\_csv()} for empirical datasets.
+    \item \textbf{HuggingFace Oracle}: Pre-trained models (e.g., \texttt{unitary/toxic-bert}) score action text as $V(a)$; less toxic $\mapsto$ more ethical. \texttt{HuggingFaceEthicalOracle} maps toxicity to $[-1,1]$ with JSON cache.
+    \item \textbf{Implementation}: Our framework supports \texttt{GroundTruthProxy.from\_mock\_rlhf()} for simulation, \texttt{load\_from\_csv()} for empirical datasets, and \texttt{OracleDrivenJudge} with optional \texttt{csv\_proxy} (CSV-first, Oracle fallback).
 \end{itemize}
 
 \textbf{Limitations}: Different proxies introduce different biases. Annotator disagreement, sampling noise, and cultural variation affect the approximation quality. ERH analysis remains heuristic when $V(a)$ is proxy-based.
@@ -472,10 +473,14 @@ Both are needed to assess judgment system quality.
 \toprule
 \textbf{Judge} & \textbf{Mistake Rate} & \textbf{MAE} & \textbf{F1} & $\bm{\alpha}$ & \textbf{ERH} & \textbf{Interpretation} \\
 \midrule
+\IfFileExists{simulation/output/figures/comparison_table_rows.tex}{%
+    \input{simulation/output/figures/comparison_table_rows.tex}%
+}{%
 Biased & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 Noisy & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 Conservative & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 Radical & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
+}%
 \bottomrule
 \end{tabular}
 \end{table}
