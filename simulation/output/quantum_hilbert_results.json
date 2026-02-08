@@ -1,0 +1,7 @@
+{
+  "consensus_state": "11111111",
+  "system_coherence": 0.95703125,
+  "von_neumann_entropy": 0.252800289651422,
+  "circuit_image": "/Users/dennis_leedennis_lee/Documents/GitHub/Ethic-Latex/simulation/output/figures/latest_quantum_circuit.png",
+  "dist_image": "/Users/dennis_leedennis_lee/Documents/GitHub/Ethic-Latex/simulation/output/figures/latest_quantum_distribution.png"
+}

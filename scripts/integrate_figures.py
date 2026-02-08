@@ -96,6 +96,18 @@ def find_figures(figures_dir):
             'caption_en': 'LLM stress test: $\\Pi(x)$ and $E(x)$ from OpenAI/Anthropic API evaluation. Empirical curves from LLM-based moral judgment under repeated action evaluation.',
             'caption_zh': 'LLM 壓力測試：OpenAI/Anthropic API 評估的 $\\Pi(x)$ 與 $E(x)$。來自重複行動評估下 LLM 道德判斷的實證曲線。',
             'section': 'supplementary'
+        },
+        'latest_quantum_circuit.png': {
+            'label': 'fig:quantum_circuit_supp',
+            'caption_en': 'Quantum circuit representing ethical Hilbert space: $U3$ gates encode Bloch sphere positions, $R_{ZZ}$ gates model social entanglement.',
+            'caption_zh': '代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。',
+            'section': 'supplementary'
+        },
+        'latest_quantum_distribution.png': {
+            'label': 'fig:quantum_dist_supp',
+            'caption_en': 'Probability distribution of ethical states after quantum simulation. Peaks indicate highly probable societal configurations.',
+            'caption_zh': '量子模擬後倫理態的機率分布。峰值表示高機率社會配置。',
+            'section': 'supplementary'
         }
     }
     
@@ -104,7 +116,7 @@ def find_figures(figures_dir):
         fig_path = os.path.join(figures_dir, fig_file)
         if os.path.exists(fig_path):
             found_figures[fig_file] = info
-    
+
     return found_figures
 
 def insert_figure_latex(fig_file, info, lang='en'):
