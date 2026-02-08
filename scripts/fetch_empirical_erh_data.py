@@ -167,20 +167,29 @@ def main() -> int:
     use_firecrawl = bool(os.environ.get("FIRECRAWL_API_KEY")) and not args.skip_aita
 
     print("Fetching HuggingFace (social_i_qa, moral_stories)...")
-    hf = _fetch_huggingface(output_dir, args.max_samples)
-    print(f"  HuggingFace: {len(hf.get('datasets', {}))} datasets, J_matrix: {hf.get('J_matrix', {})}")
+    try:
+        hf = _fetch_huggingface(output_dir, args.max_samples)
+        print(f"  HuggingFace: {len(hf.get('datasets', {}))} datasets, J_matrix: {hf.get('J_matrix', {})}")
+    except Exception as e:
+        print(f"  ⚠ HuggingFace skipped (permission/network error): {e}")
 
     if not args.skip_aita:
         print("Fetching AITA (Firecrawl or stub)...")
-        aita = _fetch_aita(output_dir, args.aita_limit, use_firecrawl)
-        print(f"  AITA: {aita.get('count', 0)} rows, firecrawl={use_firecrawl}")
+        try:
+            aita = _fetch_aita(output_dir, args.aita_limit, use_firecrawl)
+            print(f"  AITA: {aita.get('count', 0)} rows, firecrawl={use_firecrawl}")
+        except Exception as e:
+            print(f"  ⚠ AITA skipped (permission/network error): {e}")
     else:
         print("Skipping AITA (--skip-aita)")
 
     if not args.skip_github:
         print("Fetching GitHub PR...")
-        pr = _fetch_github_pr(output_dir, args.repo, args.pr_limit)
-        print(f"  GitHub PR: {pr.get('count', 0)} rows, error={pr.get('error')}")
+        try:
+            pr = _fetch_github_pr(output_dir, args.repo, args.pr_limit)
+            print(f"  GitHub PR: {pr.get('count', 0)} rows, error={pr.get('error')}")
+        except Exception as e:
+            print(f"  ⚠ GitHub PR skipped (permission/network error): {e}")
     else:
         print("Skipping GitHub PR (--skip-github)")
 
@@ -189,4 +198,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception as e:
+        print(f"⚠ Empirical fetch failed (skipped, pipeline continues): {e}", file=sys.stderr)
+        sys.exit(0)  # Never fail pipeline; permission/network errors are non-fatal
