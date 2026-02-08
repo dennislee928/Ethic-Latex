@@ -212,7 +212,32 @@ class SocialNetwork:
         if self.graph.has_edge(node1, node2):
             return self.graph[node1][node2].get('weight', 1.0)
         return 0.0
-    
+
+    def get_adjacency_submatrix(self, n: int) -> np.ndarray:
+        """
+        Get n×n adjacency matrix for the first n nodes (0..n-1).
+
+        Parameters
+        ----------
+        n : int
+            Number of nodes (submatrix size).
+
+        Returns
+        -------
+        np.ndarray
+            Adjacency matrix; edge weight from graph or 0 if no edge.
+            Padded with zeros if n > num_nodes.
+        """
+        num_nodes = self.graph.number_of_nodes()
+        size = min(n, num_nodes)
+        matrix = np.zeros((n, n))
+        nodes = list(self.graph.nodes())[:size]
+        for i, ni in enumerate(nodes):
+            for j, nj in enumerate(nodes):
+                if i != j and self.graph.has_edge(ni, nj):
+                    matrix[i, j] = self.graph[ni][nj].get('weight', 1.0)
+        return matrix
+
     def update_node_attributes(self):
         """
         Update node attributes from current agent states.

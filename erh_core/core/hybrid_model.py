@@ -11,8 +11,11 @@ This module integrates all psychohistory components into a unified framework:
 Provides a unified API for running complete psychohistory-style simulations.
 """
 
+import hashlib
+import os
+
 import numpy as np
-from typing import List, Dict, Optional, Callable, Tuple
+from typing import List, Dict, Optional, Callable, Tuple, Any
 from .temporal_erh import track_error_evolution, compute_Pi_temporal, compute_E_temporal
 from .abm_simulator import ABMSimulator
 from .meta_monitor import MetaMonitor, ERHParameters
@@ -115,6 +118,7 @@ class HybridPsychohistoryModel:
         # Quantum state (lazy init)
         self._q_sim = None
         self._current_q_params = None
+        self._hamiltonian_cache: Dict[str, Any] = {}
 
         # State
         self.simulation_state = {
@@ -158,6 +162,22 @@ class HybridPsychohistoryModel:
             agents = list(agents)[:n]
         biases = np.array([np.clip(a.judgment_tendency, -1.0, 1.0) for a in agents])
         return biases
+
+    def _get_cache_key(self, adj_matrix: np.ndarray, agent_data: list) -> str:
+        """Generate unique hash for social state (adjacency + agent attributes)."""
+        adj_bytes = np.asarray(adj_matrix).tobytes()
+        arr = np.array(
+            [
+                [
+                    a.get("empathy", 0.5),
+                    a.get("flexibility", 0.5),
+                    a.get("resilience", 0.5),
+                ]
+                for a in agent_data
+            ],
+            dtype=np.float64,
+        )
+        return hashlib.md5(adj_bytes + arr.tobytes()).hexdigest()
 
     def run_simulation(
         self,
@@ -297,43 +317,50 @@ class HybridPsychohistoryModel:
         if self.meta_monitor:
             results['meta_monitoring'] = self.meta_monitor.get_monitoring_summary()
 
-        # Quantum VQE stability (lazy import)
+        # Quantum Ethical Hilbert Space (AdvancedEthicalQuantumEngine)
         if self.enable_quantum:
             try:
-                from simulation.quantum.simulator import SocialDynamicsQuantumSimulator
+                from simulation.quantum.simulator import AdvancedEthicalQuantumEngine
+
                 agents = self.abm_simulator.population.agents
                 if agents:
+                    n_q = min(len(agents), self.quantum_agents_subsample, 20)
+                    n_q = max(n_q, 2)
                     if self._q_sim is None:
-                        n_q = min(len(agents), self.quantum_agents_subsample)
-                        n_q = max(n_q, 2)  # need at least 2 qubits for meaningful circuit
-                        self._q_sim = SocialDynamicsQuantumSimulator(
-                            num_agents=n_q,
-                            topology='full',
+                        self._q_sim = AdvancedEthicalQuantumEngine(num_agents=n_q)
+
+                    active_agents = agents[:n_q] if len(agents) <= n_q else list(agents[i] for i in range(0, len(agents), max(1, len(agents) // n_q)))[:n_q]
+                    agent_data = [
+                        {
+                            "empathy": getattr(a, "empathy", 1.0 - a.error_rate),
+                            "flexibility": getattr(a, "flexibility", 0.5 + a.judgment_tendency / 2),
+                            "resilience": getattr(a, "resilience", 1.0 - a.error_rate),
+                        }
+                        for a in active_agents
+                    ]
+
+                    network = self.abm_simulator.network
+                    if hasattr(network, "get_adjacency_submatrix"):
+                        adj_matrix = network.get_adjacency_submatrix(n_q)
+                    else:
+                        adj_matrix = self._get_interaction_matrix(active_agents)
+
+                    cache_key = self._get_cache_key(adj_matrix, agent_data)
+                    if cache_key in self._hamiltonian_cache:
+                        q_results = self._hamiltonian_cache[cache_key]
+                    else:
+                        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                        fig_dir = os.path.join(root, "simulation", "output", "figures")
+                        q_results = self._q_sim.run_simulation(
+                            agent_data, adj_matrix, output_dir=fig_dir
                         )
-                        n_p = self._q_sim.ansatz.num_parameters if self._q_sim.ansatz is not None else 1
-                        self._current_q_params = np.random.default_rng().random(max(1, n_p))
-                    matrix = self._get_interaction_matrix(agents)
-                    biases = self._get_biases(agents)
-                    n_params = (
-                        self._q_sim.ansatz.num_parameters
-                        if self._q_sim.ansatz is not None else 1
-                    )
-                    params = np.asarray(self._current_q_params).flatten()
-                    params = params[:n_params] if len(params) >= n_params else np.resize(params, n_params)
-                    import os
-                    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                    fig_dir = os.path.join(root, 'simulation', 'output', 'figures')
-                    os.makedirs(fig_dir, exist_ok=True)
-                    save_path = os.path.join(fig_dir, 'quantum_circuit_step_latest.png')
-                    q_results = self._q_sim.run_simulation(
-                        matrix, biases, params, save_path=save_path
-                    )
-                    results['quantum_stability'] = q_results
-                    self._current_q_params = params
+                        self._hamiltonian_cache[cache_key] = q_results
+
+                    results["quantum_stability"] = q_results
             except ImportError:
-                results['quantum_stability'] = {'error': 'simulation.quantum not available'}
+                results["quantum_stability"] = {"error": "simulation.quantum not available"}
             except Exception as e:
-                results['quantum_stability'] = {'error': str(e)}
+                results["quantum_stability"] = {"error": str(e)}
 
         # Update state
         self.simulation_state['time'] = num_time_steps

@@ -331,27 +331,37 @@ To detect periodic patterns in misjudgments, we compute:
 \]
 Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific complexity scales.
 
-\section{Quantum Simulation of Ethical Stability}
+\section{Quantum Simulation of High-Dimensional Ethical States}
 \label{sec:quantum}
 
-To evaluate the stability of social consensus under the Ethical Riemann Hypothesis, we utilize a Variational Quantum Eigensolver (VQE) framework. The social interactions are mapped to a Quantum Ising Hamiltonian, and the system is evolved through a parameterized quantum circuit to find energy minima (consensus states).
+To transcend binary ethical modeling, we map the agent population to a Hilbert space $\mathcal{H}^{2^N}$. Each agent $i$ is represented by a qubit state
+$|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_i}{2}|1\rangle$, where $\theta$ represents ethical alignment and $\phi$ represents flexibility. Social interactions are modeled via entangling $R_{ZZ}(\gamma_{ij})$ gates, where $\gamma_{ij}$ corresponds to the interaction strength between agents $i$ and $j$.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/quantum_circuit_step_latest.png}{%
-        \includegraphics[width=0.8\textwidth]{simulation/output/figures/quantum_circuit_step_latest.png}%
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{simulation/output/figures/quantum_circuit_step_latest.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/quantum_circuit_step_latest.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
-    }
-    \caption{The parameterized quantum circuit (Ansatz) representing the entangled ethical states of $N$ agents. The $R_y$ gates represent fluctuating individual stances, while $C_Z$ gates model the entanglement (social influence) between agents.}
+    }}
+    \caption{Dynamically generated quantum circuit representing the social entanglement of the agent population. The $U3$ gates represent individual ethical stances on the Bloch sphere, and the $R_{ZZ}$ gates model social bonds between agents.}
     \label{fig:quantum_circuit}
 \end{figure}
 
-The ``Social Tension Energy'' $E_{\mathrm{soc}}$ is calculated as the expectation value of the Hamiltonian:
-\begin{equation}
-    E_{\mathrm{soc}} = \langle \psi(\theta) \mid H_{\mathrm{Ising}} \mid \psi(\theta) \rangle
-\end{equation}
-Minimizing this energy corresponds to locating the ``zeros'' in the ethical manifold.
+The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed'' societal states, where dominant basis states indicate the emergence of ethical consensus groups.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
+    }
+    \caption{Probability distribution of ethical states after simulation. Peaks represent highly probable societal configurations.}
+    \label{fig:quantum_dist}
+\end{figure}
 
 \section{Results and Discussion}
 \label{sec:results}
