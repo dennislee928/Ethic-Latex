@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -16,9 +17,11 @@ from ..ingestion.mock_data import generate_mock_data
 
 router = APIRouter()
 
-# Add project root for simulation imports
+# Add project root for simulation imports (monorepo: Ethic-Latex/erh-security-app/backend/...)
 _erh_root = Path(__file__).resolve().parents[4]
-if str(_erh_root) not in sys.path:
+if not (_erh_root / "simulation").exists():
+    _erh_root = Path(os.environ.get("ERH_PROJECT_ROOT", _erh_root))
+if str(_erh_root) not in sys.path and (_erh_root / "simulation").exists():
     sys.path.insert(0, str(_erh_root))
 
 
