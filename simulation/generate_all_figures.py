@@ -179,8 +179,8 @@ zeros = find_approximate_zeros(
     m,
     real_range=(0.3, 0.7),
     imag_range=(0, 30),
-    grid_size=50,
-    threshold=0.15
+    grid_size=80,
+    threshold=0.5,
 )
 plot_zero_distribution(
     zeros,
