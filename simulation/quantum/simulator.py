@@ -372,6 +372,32 @@ class SocialDynamicsQuantumSimulator:
             "circuit_depth": 0,
         }
 
+    def measure_social_tension(
+        self,
+        interaction_matrix: np.ndarray,
+        biases: np.ndarray | list,
+    ) -> float:
+        """
+        Measure social tension (ethical conflict energy) as a scalar.
+
+        Convenience API: runs VQE and returns the energy value directly.
+        Lower energy indicates less social tension / more consensus.
+
+        Parameters
+        ----------
+        interaction_matrix : ndarray
+            Agent interaction weights.
+        biases : array-like
+            Individual agent biases.
+
+        Returns
+        -------
+        float
+            social_tension_energy from run_simulation.
+        """
+        result = self.run_simulation(interaction_matrix, biases)
+        return float(result["social_tension_energy"])
+
     def _save_circuit_diagram(self, circuit: Any, path: str) -> None:
         """Render quantum circuit to PNG for LaTeX."""
         try:

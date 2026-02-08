@@ -772,6 +772,90 @@ def plot_phase_transition_diagram(
     return fig
 
 
+def plot_social_tension_vs_time(
+    time_steps: np.ndarray,
+    social_tension: np.ndarray,
+    title: str = "Social Tension (Energy) vs Time",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot social tension (quantum energy proxy for ethical conflict) over time.
+
+    X-axis: Time step.
+    Y-axis: Social Tension (Energy).
+
+    Parameters
+    ----------
+    time_steps : np.ndarray
+        Time step values.
+    social_tension : np.ndarray
+        Social tension (energy) values.
+    title : str
+        Plot title.
+    save_path : Optional[str]
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(time_steps, social_tension, "o-", linewidth=2)
+    ax.set_xlabel("Time Step", fontsize=12)
+    ax.set_ylabel("Social Tension (Energy)", fontsize=12)
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_phase_transition_error_vs_complexity(
+    complexities: np.ndarray,
+    error_rates: np.ndarray,
+    title: str = "Error Rate vs Complexity (Phase Transition)",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot error rate vs complexity to visualize phase transition (error spike).
+
+    X-axis: Complexity.
+    Y-axis: Error Rate.
+
+    Parameters
+    ----------
+    complexities : np.ndarray
+        Complexity values.
+    error_rates : np.ndarray
+        Error rate at each complexity.
+    title : str
+        Plot title.
+    save_path : Optional[str]
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(complexities, error_rates, "o-", linewidth=2)
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel("Error Rate", fontsize=12)
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def plot_ethical_primes_map(
     primes: List,
     x_attr: str = "c",
