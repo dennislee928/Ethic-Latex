@@ -362,6 +362,22 @@ class HybridPsychohistoryModel:
                         )
                         self._hamiltonian_cache[cache_key] = q_results
 
+                    # Add quantum_energy (social_tension) via SocialDynamicsQuantumSimulator
+                    biases = np.array([a.get("flexibility", 0.5) - 0.5 for a in agent_data], dtype=float)
+                    try:
+                        from simulation.quantum.simulator import SocialDynamicsQuantumSimulator
+
+                        q_sim_ising = SocialDynamicsQuantumSimulator(
+                            num_agents=adj_matrix.shape[0] if adj_matrix.size else 2,
+                            topology="full",
+                            seed=42,
+                        )
+                        quantum_energy = q_sim_ising.measure_social_tension(adj_matrix, biases)
+                        q_results["quantum_energy"] = quantum_energy
+                        q_results["social_tension_energy"] = quantum_energy
+                    except Exception:
+                        pass
+
                     if "raw_counts" in q_results:
                         try:
                             from erh_core.analysis.statistics import calculate_von_neumann_entropy
@@ -385,10 +401,22 @@ class HybridPsychohistoryModel:
             except Exception as e:
                 results["quantum_stability"] = {"error": str(e)}
 
-        # Update state
+        # Update state and simulation_history (C2.2)
         self.simulation_state['time'] = num_time_steps
         self.simulation_state['erh_history'] = abm_results.get('erh_history', [])
-        
+        if results.get('quantum_stability') and isinstance(results['quantum_stability'], dict):
+            qs = results['quantum_stability']
+            qe = qs.get('quantum_energy', qs.get('social_tension_energy'))
+            vne = qs.get('von_neumann_entropy')
+            self.simulation_state['quantum_energy'] = qe
+            self.simulation_state['von_neumann_entropy'] = vne
+            # Write to last simulation_history entry (C2.2)
+            if self.abm_simulator.simulation_history:
+                last = self.abm_simulator.simulation_history[-1]
+                if isinstance(last, dict):
+                    last['quantum_energy'] = qe
+                    last['von_neumann_entropy'] = vne
+
         return results
     
     def adaptive_adjustment(

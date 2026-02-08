@@ -283,6 +283,12 @@ def compare_judges(
         mistakes = [a.mistake_flag for a in actions if a.mistake_flag is not None]
         
         dual = compute_dual_metrics(actions, X_max=X_max, baseline=baseline)
+        stability = dual.get('stability', 0.0)
+        fairness = 1.0 - min(1.0, np.mean(np.abs(deltas)) if deltas else 0.0)
+        polarization = float(np.var(deltas)) if deltas and len(deltas) > 1 else 0.0
+        polarization = min(1.0, polarization)
+        evs = calculate_evs(stability, fairness, polarization)
+
         comparison[name] = {
             'num_actions': len(actions),
             'num_primes': len(primes),
@@ -297,8 +303,9 @@ def compare_judges(
             'growth_rate': growth_analysis['growth_rate'],
             'r_squared': growth_analysis['r_squared'],
             'accuracy': dual.get('accuracy', 0.0),
-            'stability': dual.get('stability', 0.0),
+            'stability': stability,
             'f1_score': dual.get('f1_score'),
+            'evs': evs,
         }
     
     return comparison

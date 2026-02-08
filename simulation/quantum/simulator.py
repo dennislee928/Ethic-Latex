@@ -261,6 +261,10 @@ class SocialDynamicsQuantumSimulator:
         """
         Construct the cost Hamiltonian from agent data.
 
+        Ising model: H = Σ_{i<j} J_ij Z_i Z_j + Σ_i h_i X_i.
+        - J_ij: interaction weight (from interaction_matrix)
+        - h_i: transverse field (from biases)
+
         Parameters
         ----------
         interaction_matrix : ndarray, shape (n, n)

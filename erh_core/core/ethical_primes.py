@@ -474,15 +474,19 @@ def analyze_error_growth(
     # We avoid fragile relative imports so that this module works both
     # when `simulation` is a package and when files are executed as scripts.
     try:
-        from simulation.analysis.erh_checks import check_erh_bound
-        from simulation.analysis.statistics import bootstrap_exponent_ci
+        from erh_core.analysis.erh_checks import check_erh_bound
+        from erh_core.analysis.statistics import bootstrap_exponent_ci
     except ImportError:
         try:
-            from erh.analysis.erh_checks import check_erh_bound  # type: ignore
-            from erh.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            from simulation.analysis.erh_checks import check_erh_bound
+            from simulation.analysis.statistics import bootstrap_exponent_ci
         except ImportError:
-            from analysis.erh_checks import check_erh_bound  # type: ignore
-            from analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            try:
+                from erh.analysis.erh_checks import check_erh_bound  # type: ignore
+                from erh.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            except ImportError:
+                from analysis.erh_checks import check_erh_bound  # type: ignore
+                from analysis.statistics import bootstrap_exponent_ci  # type: ignore
 
     bound_stats = check_erh_bound(E_x, x_values)
     ci_stats = bootstrap_exponent_ci(E_x, x_values)

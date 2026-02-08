@@ -7,7 +7,11 @@ which we compare to V for ERH analysis.
 """
 
 from typing import List, Optional
-from .action_space import Action
+
+try:
+    from erh_core.core.action_space import Action
+except ImportError:
+    from .action_space import Action  # fallback
 
 
 # Default system prompt for moral rating (no ground truth revealed)
