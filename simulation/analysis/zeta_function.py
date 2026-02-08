@@ -207,38 +207,16 @@ def find_approximate_zeros(
     imag_vals = np.linspace(imag_range[0], imag_range[1], grid_size)
     
     zeros = []
-    # #region agent log
-    min_abs_zeta = float('inf')
-    sample_abs = []
-    n_checked = 0
-    # #endregion
     
     for re in real_vals:
         for im in imag_vals:
             s = complex(re, im)
             try:
                 zeta_val = ethical_zeta_sum(m, s)
-                abs_z = abs(zeta_val)
-                n_checked += 1
-                if abs_z < min_abs_zeta:
-                    min_abs_zeta = abs_z
-                if len(sample_abs) < 10:
-                    sample_abs.append(round(abs_z, 4))
-                if abs_z < threshold:
+                if abs(zeta_val) < threshold:
                     zeros.append(s)
             except (OverflowError, RuntimeWarning):
                 continue
-    
-    # #region agent log
-    try:
-        import json as _json
-        import os as _os
-        _p = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), ".cursor", "debug.log")
-        with open(_p, "a", encoding="utf-8") as _f:
-            _f.write(_json.dumps({"location": "zeta_function.find_approximate_zeros", "message": "zeros search", "data": {"threshold": threshold, "n_zeros": len(zeros), "min_abs_zeta": round(min_abs_zeta, 6), "n_checked": n_checked, "sample_abs": sample_abs}, "timestamp": __import__("time").time()}) + "\n")
-    except Exception:
-        pass
-    # #endregion
     
     # Fallback: if no zeros below threshold, use points with smallest |ζ_E| (approximate zeros)
     if len(zeros) == 0:
