@@ -939,10 +939,23 @@ def plot_universal_error_growth(
                 "s-", label="COMPAS (real data)", linewidth=2.5, markersize=5,
                 color="#e74c3c", linestyle="-",
             )
-        C = compas_results.get("C", 1.0)
-        x_ref = np.linspace(max(1, x.min()), x.max(), 100)
-        y_bound = C * np.sqrt(x_ref)
-        ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
+    # Always add ERH bound overlay
+    C = compas_results.get("C", 1.0) if "error" not in compas_results else 1.0
+    x_min = 1.0
+    x_max = 100.0
+    if "error" not in compas_results and "x" in compas_results:
+        x_arr = np.array(compas_results["x"])
+        x_min = max(1, float(np.min(x_arr)))
+        x_max = float(np.max(x_arr))
+    else:
+        for data in error_comparison.values():
+            if "error" not in data and "x_values" in data:
+                x_arr = np.array(data["x_values"])
+                x_max = max(x_max, float(np.max(x_arr)))
+                break
+    x_ref = np.linspace(x_min, x_max, 100)
+    y_bound = C * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
 
     ax.set_xlabel("Complexity $x$ (log scale)", fontsize=12)
     ax.set_ylabel(r"$|E(x)|$ (log scale)", fontsize=12)
