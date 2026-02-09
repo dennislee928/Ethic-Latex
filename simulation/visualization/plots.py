@@ -25,7 +25,7 @@ def setup_paper_style():
     >>> setup_paper_style()
     >>> # All subsequent plots will use paper style
     """
-    # Use seaborn style as base
+    # Use seaborn style for publication quality
     sns.set_style("whitegrid")
     
     # Configure matplotlib for publication quality
@@ -818,6 +818,175 @@ def plot_phase_transition_diagram(
     ax.set_xlabel("Conflict Density (Complexity)", fontsize=12)
     ax.set_ylabel("Fidelity / Coherence", fontsize=12)
     ax.set_title("Moral Phase Transition: Ethical Conflict → Spin Glass Frustration")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_compas_erh_bound(
+    results: dict,
+    title: str = "COMPAS: Adherence to Riemann Bound",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot COMPAS ERH analysis: Complexity (log) vs |E(x)| (log) with theoretical bound.
+
+    X: Complexity (log scale).
+    Y: Cumulative Error |E(x)| (log scale).
+    Overlay: Theoretical bound y = C * x^0.5.
+    Overlay: Actual COMPAS error curve.
+
+    Parameters
+    ----------
+    results : dict
+        From run_compas_erh_analysis: keys 'x', 'E_x', 'alpha', 'C'.
+    """
+    setup_paper_style()
+    if "error" in results:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, f"Error: {results['error']}", ha="center", va="center")
+        return fig
+
+    x = np.array(results["x"])
+    E_x = np.array(results["E_x"])
+    abs_E = np.abs(E_x)
+    C = results.get("C", 1.0)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    valid = (abs_E > 0) & (x > 1)
+    if valid.sum() < 2:
+        ax.text(0.5, 0.5, "Insufficient data", ha="center", va="center")
+        return fig
+
+    ax.loglog(x[valid], abs_E[valid], "o-", label="COMPAS |E(x)|", linewidth=2, markersize=4)
+    x_ref = np.linspace(max(1, x.min()), x.max(), 100)
+    y_bound = C * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
+    ax.set_xlabel("Complexity $x$ (log scale)", fontsize=12)
+    ax.set_ylabel(r"$|E(x)|$ (log scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_alpha_comparison_bar(
+    synthetic_results: dict,
+    real_results: dict,
+    title: str = r"$\alpha$ Comparison: Synthetic vs Real-World",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Bar chart comparing alpha of Radical, Conservative, COMPAS, Adult.
+    Highlights COMPAS value (≈ -0.32).
+
+    Parameters
+    ----------
+    synthetic_results : dict
+        Keys like "Radical", "Conservative" with "alpha" value.
+    real_results : dict
+        Keys "compas", "adult" with "alpha" in nested dict.
+    """
+    setup_paper_style()
+    labels = []
+    values = []
+    colors = []
+
+    for name, data in synthetic_results.items():
+        if "alpha" in data:
+            labels.append(name)
+            values.append(data["alpha"])
+            colors.append("#3498db")
+
+    compas_alpha = real_results.get("compas", {}).get("alpha")
+    if compas_alpha is not None:
+        labels.append("COMPAS")
+        values.append(compas_alpha)
+        colors.append("#e74c3c")
+
+    adult_alpha = real_results.get("adult", {}).get("alpha")
+    if adult_alpha is not None:
+        labels.append("Adult")
+        values.append(adult_alpha)
+        colors.append("#2ecc71")
+
+    if not labels:
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.text(0.5, 0.5, "No alpha data", ha="center", va="center")
+        return fig
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    x_pos = np.arange(len(labels))
+    bars = ax.bar(x_pos, values, color=colors, edgecolor="black", linewidth=0.5)
+    ax.axhline(y=0.5, color="red", linestyle="--", alpha=0.7, label="ERH threshold (0.5)")
+    ax.axhline(y=-0.32, color="orange", linestyle=":", alpha=0.7, label="COMPAS ≈ -0.32")
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(labels, rotation=15, ha="right")
+    ax.set_ylabel(r"Growth exponent $\alpha$")
+    ax.set_title(title)
+    ax.legend(fontsize=9)
+    ax.grid(True, axis="y", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_normalized_error_oscillation(
+    x: np.ndarray,
+    error: np.ndarray,
+    confidence_interval: Optional[Tuple[float, float]] = None,
+    title: str = r"Normalized Oscillation: $E(x)/\sqrt{x}$",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot E(x) / sqrt(x). Add horizontal lines for confidence intervals.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Complexity values.
+    error : np.ndarray
+        E(x) values.
+    confidence_interval : tuple (low, high), optional
+        Horizontal lines for confidence band.
+    """
+    setup_paper_style()
+    sqrt_x = np.sqrt(np.maximum(x, 1e-6))
+    ratio = np.where(sqrt_x > 1e-9, error / sqrt_x, 0.0)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(x, ratio, "o-", linewidth=2, markersize=4, label=r"$E(x)/\sqrt{x}$")
+    ax.axhline(y=0, color="k", linestyle="-", linewidth=0.8, alpha=0.3)
+    if confidence_interval is not None:
+        low, high = confidence_interval
+        ax.axhline(y=low, color="gray", linestyle=":", alpha=0.7)
+        ax.axhline(y=high, color="gray", linestyle=":", alpha=0.7)
+        ax.fill_between(x, low, high, alpha=0.1, color="gray")
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel(r"$E(x) / \sqrt{x}$", fontsize=12)
+    ax.set_title(title)
     ax.legend()
     ax.grid(True, alpha=0.3)
     plt.tight_layout()

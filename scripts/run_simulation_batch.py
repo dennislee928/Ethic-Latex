@@ -208,8 +208,29 @@ def main():
         default=None,
         help="Path to JSON config file (list of configs). If not set, uses --num-actions/--complexity-dist/--seed with --instances runs.",
     )
+    parser.add_argument(
+        "--real-data-only",
+        action="store_true",
+        help="Run only empirical validation (COMPAS, Adult) and skip judge/ABM simulation.",
+    )
 
     args = parser.parse_args()
+
+    # Real-data-only mode: run empirical validation script
+    if args.real_data_only:
+        run_emp = project_root / "scripts" / "run_empirical_validation.py"
+        if run_emp.exists():
+            import subprocess
+            out_dir = args.output_dir or os.path.join(project_root, "simulation", "output")
+            result = subprocess.run(
+                [sys.executable, str(run_emp), "--output", str(Path(out_dir) / "real_world_results.json")],
+                cwd=str(project_root),
+                env={**os.environ, "PYTHONPATH": f"{project_root}:{os.path.join(project_root, 'erh_core')}"},
+            )
+            sys.exit(result.returncode)
+        else:
+            print("run_empirical_validation.py not found")
+            sys.exit(1)
 
     # ABM mode
     if args.mode == "abm":

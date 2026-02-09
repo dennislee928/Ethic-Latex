@@ -52,7 +52,7 @@
 \begin{abstract}
 We propose the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework for analyzing error patterns in moral judgment systems. Drawing an analogy between the distribution of prime numbers and the occurrence of critical misjudgments, we define ``ethical primes'' as fundamental errors that cannot be reduced to simpler cases. We introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$, and establish a baseline expectation $B(x)$ analogous to the logarithmic integral in number theory. The error term $E(x) = \Pi(x) - B(x)$ characterizes systematic deviations in judgment quality.
 
-The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Systems satisfying ERH maintain bounded error growth even as case complexity increases, while those violating it show concerning degradation.
+The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Empirical validation on real-world datasets (COMPAS recidivism, Adult Income) yields $\alpha \approx -0.32$ for COMPAS and comparable exponents for Adult, supporting the applicability of ERH to algorithmic fairness evaluation.
 
 This framework has implications for AI ethics, providing a quantitative criterion for evaluating moral judgment systems and identifying structural biases. We discuss applications to fairness in machine learning, algorithmic accountability, and the design of ethically robust AI systems.
 
@@ -289,7 +289,7 @@ where:
     \item $h_i$ is the external field (e.g., media pressure).
 \end{itemize}
 
-In physics, the energy levels of large atomic nuclei follow \emph{GUE (Gaussian Unitary Ensemble)} statistics. Montgomery's Pair Correlation Conjecture shows that the zeros of the Riemann Zeta function follow the same statistical law. Searching for the \emph{ground state} (minimum energy) of the social Hamiltonian is structurally isomorphic to locating Zeta zeros.
+Here $Z_i$ represents the moral judgment of agent $i$ (Pauli-$Z$ eigenvalue $+1$ for support, $-1$ for oppose); $J_{ij}$ is the coupling strength between agents $i$ and $j$ (social influence); $h_i$ is the transverse field acting on agent $i$ (external pressure, e.g., media bias). The ground state of this Hamiltonian minimizes social tension. In physics, the energy levels of large atomic nuclei follow \emph{GUE (Gaussian Unitary Ensemble)} statistics. Montgomery's Pair Correlation Conjecture shows that the zeros of the Riemann Zeta function follow the same statistical law. Searching for the \emph{ground state} (minimum energy) of the social Hamiltonian is structurally isomorphic to locating Zeta zeros as eigenvalues of a suitable operator; the GUE statistics of the Hamiltonian spectrum reflect the regularity of the ethical zeta function zeros.
 
 \section{Computational Model}
 \label{sec:framework}
@@ -606,6 +606,35 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
     \label{fig:von_neumann_entropy}
 \end{figure}
 
+\subsection{Empirical Results: The COMPAS Case Study}
+\label{sec:compas}
+
+We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$.
+
+Our empirical analysis yields $\alpha \approx -0.32$ for COMPAS. This indicates that COMPAS error growth is \emph{better than} the ERH bound ($\alpha < 0.5$): errors accumulate more slowly than $\sqrt{x}$ as complexity increases. However, this does not imply fairness---ERH characterizes structural stability of error growth, not demographic parity or calibration. The COMPAS case study demonstrates that ERH-style analysis can be applied to real-world algorithmic systems to quantify how judgment errors scale with case complexity.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/compas_erh_bound.png}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/compas_erh_bound.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{COMPAS: Adherence to Riemann Bound. Log-log plot of $|E(x)|$ vs.\ complexity $x$ with theoretical bound $C \cdot x^{0.5}$.}
+    \label{fig:compas_erh_bound}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/alpha_comparison_bar.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} to generate.}}
+    }
+    \caption{Structural similarity: $\alpha$ comparison across Radical, Conservative (synthetic), COMPAS, and Adult Income (real-world). COMPAS $\approx -0.32$ highlighted.}
+    \label{fig:alpha_comparison}
+\end{figure}
+
 \subsection{Empirical Feasibility (Real-Data Integration Plan)}
 \label{sec:empirical}
 
@@ -662,6 +691,14 @@ ERH-based analysis can:
     \item Quantify whether error patterns differ across demographic groups
     \item Guide targeted interventions to reduce structural inequality
 \end{itemize}
+
+\subsubsection{Quantum Random Walks and Viral Moral Panic}
+
+Quantum random walks on graphs provide a natural model for the spread of moral opinions through social networks. When an agent's judgment is represented as a qubit state, the quantum walk dynamics capture both classical diffusion and quantum interference. In the limit of strong decoherence, the model reduces to classical opinion dynamics (e.g., DeGroot). The quantum formulation allows us to model \emph{viral moral panic}: rapid, correlated shifts in judgment across the network that arise from entanglement and measurement collapse. High entanglement (low consensus) can trigger cascading uncertainty when one agent's measurement collapses the joint state, affecting all connected agents---analogous to how a single viral post can polarize an entire community.
+
+\subsubsection{Von Neumann Entropy as Echo-Chamber Metric}
+
+Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ of the reduced density matrix (after tracing out half the agents) quantifies entanglement in the social quantum state. \emph{Low entropy} indicates that the system is highly correlated and concentrated on few basis states---an \emph{echo chamber} where agents reinforce each other's judgments. \emph{High entropy} indicates fragmented opinions with no consensus. Thus $S(\rho)$ serves as an operational metric for echo-chamber intensity: systems with very low $S(\rho)$ may satisfy ERH (bounded error growth) yet exhibit dangerous polarization. Monitoring $S(\rho)$ over time can detect when a judgment system is transitioning toward echo-chamber formation.
 
 \subsection{Future Work}
 

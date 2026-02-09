@@ -515,6 +515,69 @@ class SocialDynamicsQuantumSimulator:
             pass
 
 
+def calculate_coupling_coefficients(agents: list) -> np.ndarray:
+    """
+    Convert social graph weights to interaction strength J_ij for the Ising Hamiltonian.
+
+    agents: List of agent-like objects with error_rate or similarity measures.
+    Returns: Symmetric coupling matrix J (n x n).
+    """
+    n = min(len(agents), 16)  # Limit for computational feasibility
+    if n < 2:
+        return np.zeros((1, 1))
+    if len(agents) > n:
+        step = max(1, len(agents) // n)
+        agents = [agents[i] for i in range(0, len(agents), step)][:n]
+    J = np.zeros((n, n))
+    for i in range(n):
+        for j in range(i + 1, n):
+            ai, aj = agents[i], agents[j]
+            err_i = getattr(ai, "error_rate", 0.5)
+            err_j = getattr(aj, "error_rate", 0.5)
+            w = 1.0 / (1.0 + abs(err_i - err_j))
+            J[i, j] = J[j, i] = w
+    return J
+
+
+def calculate_external_field(agents: list) -> np.ndarray:
+    """
+    Convert agent bias to transverse field strength h_i for the Ising Hamiltonian.
+
+    agents: List of agent-like objects with judgment_tendency or bias attribute.
+    Returns: 1D array of field strengths h (length n).
+    """
+    n = min(len(agents), 16)
+    if n < 1:
+        return np.array([0.0])
+    if len(agents) > n:
+        step = max(1, len(agents) // n)
+        agents = [agents[i] for i in range(0, len(agents), step)][:n]
+    h = np.array([np.clip(getattr(a, "judgment_tendency", 0.0), -1.0, 1.0) for a in agents])
+    return h
+
+
+def calculate_von_neumann_entropy(density_matrix: np.ndarray) -> float:
+    """
+    Von Neumann entropy S = -Tr(ρ log ρ) of a density matrix.
+
+    Used as Echo Chamber Index: low entropy = echo chamber; high = fragmented.
+
+    Parameters
+    ----------
+    density_matrix : np.ndarray, shape (d, d)
+        Density matrix (Hermitian, positive semi-definite, trace 1).
+
+    Returns
+    -------
+    float
+        Entropy in nats.
+    """
+    rho = np.asarray(density_matrix)
+    evals = np.linalg.eigvalsh(rho)
+    evals = np.clip(evals, 1e-15, 1.0)
+    return float(-np.sum(evals * np.log(evals)))
+
+
 def actions_to_conflict_matrix(
     actions: list,
     n_principles: int = 4,

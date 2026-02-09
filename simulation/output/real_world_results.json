@@ -1,0 +1,9 @@
+{
+  "compas": {
+    "error": "No module named 'pydantic'"
+  },
+  "adult": {
+    "error": "No module named 'pydantic'"
+  },
+  "synthetic": {}
+}

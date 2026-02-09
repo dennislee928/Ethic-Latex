@@ -246,7 +246,25 @@ python -m simulation.real_data.sexual_abuse_case_study
 python -m simulation.real_data.compas_case_study   # or run_compas_alpha
 ```
 
-**CI workflow**: The `build_thesis_gated.yml` pipeline fetches and processes these CSV files on every run before executing case studies.
+### Empirical Validation (COMPAS, Adult, α Values)
+
+Run the full empirical validation pipeline to compute ERH-style α values and save results:
+
+```bash
+# Run COMPAS, Adult, and synthetic (Radical/Conservative) analyses
+python scripts/run_empirical_validation.py
+
+# Output: simulation/output/real_world_results.json
+# Prints α values to stdout (e.g., COMPAS α ≈ -0.32)
+```
+
+Or use the batch runner in real-data-only mode:
+
+```bash
+python scripts/run_simulation_batch.py --real-data-only
+```
+
+**CI workflow**: The `simulation.yml` pipeline runs `run_empirical_validation.py` in the alpha-comparison job alongside `calculate_alpha_comparison.py`.
 
 ---
 

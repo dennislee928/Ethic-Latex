@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -222,6 +222,68 @@ def compute_erh_curves(
         "B": b_x,
         "E": e_x,
     }
+
+
+def run_adult_erh_analysis(data_path: Path | None = None) -> Dict[str, Any]:
+    """
+    Run ERH-style analysis on Adult Income: returns x, E_x, alpha, C.
+    Mirrors COMPAS logic for consistency in empirical validation.
+    """
+    path = (data_path or DEFAULT_DATA_PATH).resolve()
+    if not path.exists():
+        return {"error": "Adult CSV not found"}
+    if LogisticRegression is None or train_test_split is None or StandardScaler is None:
+        return {"error": "scikit-learn required"}
+    try:
+        df = load_adult_dataset(path)
+        X, y, _ = preprocess_adult(df)
+        x_train, x_test, y_train, y_test = train_test_split(
+            X.values, y, test_size=0.3, random_state=42, stratify=y
+        )
+        scaler = StandardScaler()
+        x_train_scaled = scaler.fit_transform(x_train)
+        x_test_scaled = scaler.transform(x_test)
+        base = LogisticRegression(max_iter=1000, n_jobs=None)
+        base.fit(x_train_scaled, y_train)
+        base_probs = base.predict_proba(x_test_scaled)[:, 1]
+        base_preds = (base_probs >= 0.5).astype(int)
+        base_err = (base_preds - y_test).astype(float)
+        base_complexities = compute_complexity_from_scores(
+            pd.DataFrame(x_test_scaled), base_probs
+        )
+        curves = compute_erh_curves(base_err, base_complexities, x_max=100)
+        x = np.array(curves["x"])
+        E_x = np.array(curves["E"])
+        alpha, C = _fit_power_law_adult(x, np.abs(E_x))
+        return {"x": x.tolist(), "E_x": E_x.tolist(), "alpha": alpha, "C": C}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _fit_power_law_adult(x: np.ndarray, abs_E: np.ndarray, x_min: int = 10) -> Tuple[float, float]:
+    """Fit |E(x)| ~ C x^alpha for Adult data."""
+    try:
+        from scipy.optimize import curve_fit
+    except ImportError:
+        mask = (x >= x_min) & (abs_E > 1e-12)
+        if mask.sum() < 2:
+            return 0.0, 1.0
+        log_x = np.log(x[mask])
+        log_e = np.log(abs_E[mask] + 1e-8)
+        coeffs = np.polyfit(log_x, log_e, 1)
+        return float(coeffs[0]), float(np.exp(coeffs[1]))
+
+    def _power(x_arr: np.ndarray, c: float, a: float) -> np.ndarray:
+        return c * np.power(x_arr, a)
+
+    mask = (x >= x_min) & (abs_E > 1e-12)
+    if mask.sum() < 2:
+        return 0.0, 1.0
+    try:
+        popt, _ = curve_fit(_power, x[mask], abs_E[mask] + 1e-8, p0=[1.0, 0.5], maxfev=5000)
+        return float(popt[1]), float(popt[0])
+    except Exception:
+        return 0.0, 1.0
 
 
 def compute_real_world_alpha(

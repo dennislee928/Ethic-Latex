@@ -14,12 +14,38 @@ import subprocess
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+_pandas_ok = False
+try:
+    __import__("pandas")
+    _pandas_ok = True
+except ImportError:
+    pass
+
+# #region agent log
+try:
+    _log_path = ROOT / ".cursor" / "debug.log"
+    _log_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(_log_path, "a") as _lf:
+        _lf.write(json.dumps({"id": "gen_report_entry", "message": "Python env", "data": {"executable": sys.executable, "pandas_ok": _pandas_ok, "venv_in_path": ".venv" in sys.executable}, "hypothesisId": "H1,H2,H4"}) + "\n")
+except Exception:
+    pass
+# #endregion
+
+# Auto-re-exec with project venv if pandas unavailable
+if not _pandas_ok:
+    for _venv in (ROOT / ".venv_erh", ROOT / ".venv"):
+        _venv_py = _venv / "bin" / "python"
+        if _venv_py.exists():
+            os.execv(str(_venv_py), [str(_venv_py), __file__] + sys.argv[1:])
+    print("ERROR: pandas not found. Activate the virtual environment first:\n  source .venv_erh/bin/activate\nOr run: .venv_erh/bin/python scripts/generate_comprehensive_report.py ...", file=sys.stderr)
+    sys.exit(1)
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
-ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -37,6 +63,9 @@ def _generate_expand_plots(output_dir: str) -> None:
             plot_quantum_phase_transition,
             plot_prime_ladder,
             plot_von_neumann_entropy_over_time,
+            plot_compas_erh_bound,
+            plot_alpha_comparison_bar,
+            plot_normalized_error_oscillation,
         )
     except ImportError as e:
         print(f"Expand plots skipped (import error): {e}")
@@ -64,6 +93,54 @@ def _generate_expand_plots(output_dir: str) -> None:
     t = np.arange(0, 20)
     S = 0.3 + 0.4 * (1 - np.exp(-t / 5))
     plot_von_neumann_entropy_over_time(t, S, save_path=str(fig_dir / "von_neumann_entropy_over_time.pdf"), show=False)
+
+    # Killer plots: COMPAS ERH bound, alpha comparison, normalized oscillation
+    try:
+        from simulation.real_data.compas_case_study import run_compas_erh_analysis
+        from simulation.real_data.adult_income_case_study import run_adult_erh_analysis
+
+        compas = run_compas_erh_analysis()
+        adult = run_adult_erh_analysis()
+        real_results = {"compas": compas, "adult": adult}
+
+        if "error" not in compas:
+            plot_compas_erh_bound(compas, save_path=str(fig_dir / "compas_erh_bound.png"), show=False)
+
+        # Synthetic alpha for bar chart
+        try:
+            from simulation.core.action_space import generate_world
+            from simulation.core.judgement_system import ConservativeJudge, RadicalJudge, batch_evaluate
+            from simulation.analysis.statistics import compare_judges
+        except ImportError:
+            from erh_core.core.action_space import generate_world
+            from erh_core.core.judgement_system import ConservativeJudge, RadicalJudge, batch_evaluate
+            from erh_core.analysis.statistics import compare_judges
+
+        synthetic = {}
+        for name, cls, kw in [("Radical", RadicalJudge, {"amplification": 1.5}), ("Conservative", ConservativeJudge, {"threshold": 0.5})]:
+            try:
+                actions = generate_world(num_actions=1000, complexity_dist="zipf", random_seed=42)
+                results = batch_evaluate(actions, {name: cls(**kw)}, tau=0.3)
+                comp = compare_judges(results, X_max=100)
+                if name in comp and "error" not in comp[name]:
+                    synthetic[name] = {"alpha": float(comp[name]["estimated_exponent"])}
+            except Exception:
+                pass
+
+        plot_alpha_comparison_bar(synthetic, real_results, save_path=str(fig_dir / "alpha_comparison_bar.png"), show=False)
+
+        # Normalized oscillation with confidence interval
+        if "error" not in compas and "x" in compas:
+            xx = np.array(compas["x"])
+            ee = np.array(compas["E_x"])
+            plot_normalized_error_oscillation(
+                xx, ee,
+                confidence_interval=(-2.0, 2.0),
+                save_path=str(fig_dir / "normalized_error_oscillation.png"),
+                show=False,
+            )
+    except Exception as e:
+        print(f"Killer plots skipped: {e}")
 
 
 def run_phase_transition_exp(output_dir: str) -> bool:
