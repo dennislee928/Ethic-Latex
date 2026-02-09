@@ -844,6 +844,37 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
   \label{fig:von_neumann_entropy}
 \end{figure}
 
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure paper_fig10_phase_transition_h.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{Quantum phase transition: magnetization vs. transverse field $h$. Critical $h_c$ marks ordered $\to$ disordered.}
+  \label{fig:phase_transition_h}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure von_neumann_entropy_over_time.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
+  \label{fig:von_neumann_entropy}
+\end{figure}
+
 \begin{table}[htbp]
 \centering
 \caption{Quantum Hilbert Space simulation metrics. Consensus state is the most frequently observed basis state; system coherence measures agreement strength; Von Neumann entropy quantifies social entanglement.}
@@ -1229,6 +1260,21 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
   \label{fig:quantum_dist_supp}
 \end{figure}
 
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest_quantum_distribution.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Probability distribution of ethical states after quantum simulation. Peaks indicate highly probable societal configurations.}
+  \label{fig:quantum_dist_supp}
+\end{figure}
 
 % ============================================
 % SECTION 7: PHILOSOPHICAL IMPLICATIONS
