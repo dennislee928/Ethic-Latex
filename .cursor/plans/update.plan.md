@@ -72,7 +72,7 @@ class AdvancedEthicalCircuit:
 
 
 | Issue            | Description                                                                                                      |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| ---------------- | -------------------------------------------c;--------------------------------------------------------------------- |
 | **Critical**     | `scripts/run_simulation_batch.py` is empty → pipeline skips heavy work or runs "dry run" with no meaningful data |
 | **Test Summary** | `test_summary.txt` captures stdout; if sparse, confirms simulations aren't scaling                               |
 | **Workflow**     | `.github/workflows/simulation.yml` runs sequentially → inefficient for simulation projects                       |
