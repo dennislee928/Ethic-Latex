@@ -885,6 +885,80 @@ def plot_compas_erh_bound(
     return fig
 
 
+def plot_universal_error_growth(
+    error_comparison: dict,
+    compas_results: dict,
+    title: str = "Universal Error Growth Laws",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot |E(x)| vs. complexity x in log-log scale for BOTH simulated agents AND COMPAS
+    on the same axes. When curves overlap, theory universality is visually proven.
+
+    Parameters
+    ----------
+    error_comparison : dict
+        From compare_error_distributions: judge name -> {x_values, E_x, analysis}.
+    compas_results : dict
+        From run_compas_erh_analysis: keys 'x', 'E_x', 'C'.
+    """
+    setup_paper_style()
+    colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"]
+    linestyles = ["-", "--", "-.", ":", "-", "--", "-."]
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    idx = 0
+    for name, data in error_comparison.items():
+        if "error" in data or "x_values" not in data:
+            continue
+        x_vals = np.array(data["x_values"])
+        E_x = np.array(data["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x_vals > 1)
+        if valid.sum() < 2:
+            continue
+        color = colors[idx % len(colors)]
+        ls = linestyles[idx % len(linestyles)]
+        ax.loglog(
+            x_vals[valid], abs_E[valid],
+            "o-", label=f"Simulated: {name}", linewidth=2, markersize=3,
+            color=color, linestyle=ls,
+        )
+        idx += 1
+
+    if "error" not in compas_results and "x" in compas_results:
+        x = np.array(compas_results["x"])
+        E_x = np.array(compas_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "s-", label="COMPAS (real data)", linewidth=2.5, markersize=5,
+                color="#e74c3c", linestyle="-",
+            )
+        C = compas_results.get("C", 1.0)
+        x_ref = np.linspace(max(1, x.min()), x.max(), 100)
+        y_bound = C * np.sqrt(x_ref)
+        ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
+
+    ax.set_xlabel("Complexity $x$ (log scale)", fontsize=12)
+    ax.set_ylabel(r"$|E(x)|$ (log scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend(loc="best", fontsize=9)
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def plot_alpha_comparison_bar(
     synthetic_results: dict,
     real_results: dict,

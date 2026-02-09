@@ -56,6 +56,7 @@ def _generate_expand_plots(output_dir: str) -> None:
             plot_compas_erh_bound,
             plot_alpha_comparison_bar,
             plot_normalized_error_oscillation,
+            plot_universal_error_growth,
         )
     except ImportError as e:
         print(f"Expand plots skipped (import error): {e}")
@@ -118,6 +119,31 @@ def _generate_expand_plots(output_dir: str) -> None:
                 pass
 
         plot_alpha_comparison_bar(synthetic, real_results, save_path=str(fig_dir / "alpha_comparison_bar.png"), show=False)
+
+        # Figure 6: Universal Error Growth Laws - simulated agents + COMPAS on same log-log plot
+        try:
+            from simulation.core.judgement_system import BiasedJudge
+            from erh_core.core.ethical_primes import compare_error_distributions
+        except ImportError:
+            try:
+                from erh_core.core.judgement_system import BiasedJudge
+                from erh_core.core.ethical_primes import compare_error_distributions
+            except ImportError:
+                BiasedJudge = None
+                compare_error_distributions = None
+        if BiasedJudge is not None and compare_error_distributions is not None:
+            try:
+                actions = generate_world(num_actions=1000, complexity_dist="zipf", random_seed=42)
+                sim_results = batch_evaluate(actions, {"Biased": BiasedJudge(bias_strength=0.2)}, tau=0.3)
+                error_comparison = compare_error_distributions(sim_results, X_max=100)
+                plot_universal_error_growth(
+                    error_comparison, compas,
+                    title="Universal Error Growth Laws",
+                    save_path=str(fig_dir / "universal_error_growth.png"),
+                    show=False,
+                )
+            except Exception as e:
+                print(f"Universal error growth plot skipped: {e}")
 
         # Normalized oscillation with confidence interval
         if "error" not in compas and "x" in compas:

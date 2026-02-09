@@ -232,11 +232,12 @@ jobs:
           find figures/expand -name "*.pdf" -exec cp {} figures/ \; 2>/dev/null || true
           # Copy quantum-figures (compas_erh_bound, alpha_comparison_bar, normalized_error_oscillation, etc.)
           find figures/quantum -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
-          # Copy comprehensive report figures (final_report contents)
+          # Copy comprehensive report figures (final_report contents, incl. universal_error_growth.png)
           if [ -d "figures/comprehensive" ] && [ "$(ls -A figures/comprehensive/*.png 2>/dev/null)" ]; then
             cp figures/comprehensive/*.png figures/ 2>/dev/null || true
             echo "Copied comprehensive report PNG figures"
           fi
+          find figures/comprehensive -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
           # Quantum Hilbert figures (circuit, distribution)
           if [ -d "simulation/output/figures" ]; then
             cp simulation/output/figures/latest_quantum_circuit.png figures/ 2>/dev/null || true
