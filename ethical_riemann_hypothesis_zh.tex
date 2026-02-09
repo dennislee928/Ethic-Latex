@@ -654,6 +654,37 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 表~\ref{tab:quantum_hilbert_stats_zh} 彙整量子 Hilbert 空間模擬的關鍵指標。
 
 % 量子流程圖表（相變、Von Neumann 熵）將由 integrate_figures.py 插入此處
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure paper_fig10_phase_transition_h.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
+  \label{fig:phase_transition_h}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure von_neumann_entropy_over_time.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
+  \label{fig:von_neumann_entropy}
+\end{figure}
+
 \begin{table}[htbp]
 \centering
 \caption{量子 Hilbert 空間模擬指標。共識態為最常觀測的基底態；系統一致性衡量同意強度；Von Neumann 熵量化社會糾纏度。}
@@ -829,6 +860,50 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
   \label{fig:quantum_judge}
 \end{figure}
 
+% 額外流程圖表（paper_fig7、paper_fig8_ethical_primes_map、paper_fig9-11、活動報告）
+\IfFileExists{figures/paper_fig7_critical_bound.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.9\textwidth]{figures/paper_fig7_critical_bound.pdf}
+\caption{臨界界線：$|E(x)|$ 與 $x$ 的對數-對數圖，含 ERH 參考線 $C\cdot x^{1/2}$。}
+\label{fig:critical_bound_zh}
+\end{figure}}{}
+\IfFileExists{figures/paper_fig8_ethical_primes_map.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.85\textwidth]{figures/paper_fig8_ethical_primes_map.pdf}
+\caption{行動空間中的倫理質數：二維散點圖（複雜度 vs. 重要性），依誤差大小著色。}
+\label{fig:ethical_primes_map_zh}
+\end{figure}}{}
+\IfFileExists{figures/paper_fig9_normalized_oscillation.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.9\textwidth]{figures/paper_fig9_normalized_oscillation.pdf}
+\caption{正規化振盪 $E(x)/\sqrt{x}$。若 ERH 成立，曲線保持有界。}
+\label{fig:normalized_oscillation_zh}
+\end{figure}}{}
+\IfFileExists{figures/paper_fig11_prime_ladder.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.9\textwidth]{figures/paper_fig11_prime_ladder.pdf}
+\caption{倫理質數階梯：$\Pi(x)$ 階梯函數與 $Li(x)$ 平滑疊加。}
+\label{fig:prime_ladder_zh}
+\end{figure}}{}
+\IfFileExists{figures/alpha_comparison.png}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.85\textwidth]{figures/alpha_comparison.png}
+\caption{各複雜度分布的誤差增長指數 $\alpha$ 分布。箱形圖，ERH 界限線為 $0.5$。}
+\label{fig:alpha_comparison_zh}
+\end{figure}}{}
+\IfFileExists{figures/mistake_rate_comparison.png}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.85\textwidth]{figures/mistake_rate_comparison.png}
+\caption{模擬活動中各複雜度分布的錯誤率。}
+\label{fig:mistake_rate_comparison_zh}
+\end{figure}}{}
+\IfFileExists{figures/evs_over_time.png}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.85\textwidth]{figures/evs_over_time.png}
+\caption{倫理可行性分數（EVS）隨時間與複雜度分布。}
+\label{fig:evs_over_time_zh}
+\end{figure}}{}
+
 % \input{figures/figures_content.tex}
 
 \subsection{人因與視覺化評估}
@@ -899,6 +974,22 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 
 建構流程（\texttt{build\_thesis\_gated.yml}）除了主論文圖表外，還會產生額外的補充圖表。這些圖表由模擬工作流程（真實資料與模擬 $\alpha$ 的比較、含錯誤率與倫理可行性分數的綜合報告）以及當 API 金鑰可用時的 LLM 壓力測試所產生。它們補充核心結果，提供跨複雜度分布（zipf、uniform、power-law）的活動級彙總、與 Adult Income 及 COMPAS 資料集的真實世界驗證，以及來自 LLM 道德判斷的實證 $\Pi(x)$ / $E(x)$ 曲線。若可用，將整合於下方最終 PDF。
 % 補充流程圖表將由 integrate_figures.py 插入此處
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest_quantum_distribution.png (run pipeline to generate).}}
+    }
+  }
+  \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
+  \label{fig:quantum_dist_supp}
+\end{figure}
+
 
 % ============================================
 % 第七節：哲學與倫理意涵
