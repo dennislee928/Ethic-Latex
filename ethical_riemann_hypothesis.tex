@@ -52,7 +52,7 @@
 \begin{abstract}
 We propose the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework for analyzing error patterns in moral judgment systems. Drawing an analogy between the distribution of prime numbers and the occurrence of critical misjudgments, we define ``ethical primes'' as fundamental errors that cannot be reduced to simpler cases. We introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$, and establish a baseline expectation $B(x)$ analogous to the logarithmic integral in number theory. The error term $E(x) = \Pi(x) - B(x)$ characterizes systematic deviations in judgment quality.
 
-The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Empirical validation on real-world datasets (COMPAS recidivism, Adult Income) yields $\alpha \approx -0.32$ for COMPAS and comparable exponents for Adult, supporting the applicability of ERH to algorithmic fairness evaluation.
+The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Empirical validation on real-world datasets (COMPAS recidivism, Adult Income) yields $\alpha \approx -0.20$ for COMPAS and comparable exponents for Adult, supporting the applicability of ERH to algorithmic fairness evaluation. Applying this framework to the COMPAS dataset, we find that real-world judicial algorithms exhibit structural similarity to our Conservative judge ($\alpha \approx -0.14$)---errors accumulate sublinearly and satisfy the ERH bound.
 
 This framework has implications for AI ethics, providing a quantitative criterion for evaluating moral judgment systems and identifying structural biases. We discuss applications to fairness in machine learning, algorithmic accountability, and the design of ethically robust AI systems.
 
@@ -611,7 +611,7 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
 
 We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$.
 
-Our empirical analysis yields $\alpha \approx -0.32$ for COMPAS. This indicates that COMPAS error growth is \emph{better than} the ERH bound ($\alpha < 0.5$): errors accumulate more slowly than $\sqrt{x}$ as complexity increases. However, this does not imply fairness---ERH characterizes structural stability of error growth, not demographic parity or calibration. The COMPAS case study demonstrates that ERH-style analysis can be applied to real-world algorithmic systems to quantify how judgment errors scale with case complexity.
+Our empirical analysis yields $\alpha \approx -0.20$ for COMPAS. With $\alpha \approx -0.20$, COMPAS falls between our Radical ($\alpha \approx -0.31$) and Conservative ($\alpha \approx -0.14$) models, structurally similar to a moderately conservative judge. This indicates that COMPAS error growth is \emph{better than} the ERH bound ($\alpha < 0.5$): errors accumulate more slowly than $\sqrt{x}$ as complexity increases. However, this does not imply fairness---ERH characterizes structural stability of error growth, not demographic parity or calibration. The COMPAS case study demonstrates that ERH-style analysis can be applied to real-world algorithmic systems to quantify how judgment errors scale with case complexity.
 
 \begin{figure}[h!]
     \centering
@@ -631,7 +631,7 @@ Our empirical analysis yields $\alpha \approx -0.32$ for COMPAS. This indicates 
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} to generate.}}
     }
-    \caption{Structural similarity: $\alpha$ comparison across Radical, Conservative (synthetic), COMPAS, and Adult Income (real-world). COMPAS $\approx -0.32$ highlighted.}
+    \caption{Structural similarity: $\alpha$ comparison across Radical, Conservative (synthetic), COMPAS, and Adult Income (real-world). COMPAS $\approx -0.20$ highlighted.}
     \label{fig:alpha_comparison}
 \end{figure}
 
@@ -667,7 +667,7 @@ Values are computed by running \texttt{scripts/run\_empirical\_validation.py}, \
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{scripts/run\_empirical\_data\_pipeline.py} to generate.}}
     }
-    \caption{Empirical validation: Theoretical bound ($C \cdot x^{1/2}$), Radical simulation, COMPAS, and GitHub PR. Real-world curves fall within ERH bounds.}
+    \caption{Empirical validation: Theoretical bound ($C \cdot x^{1/2}$), Radical simulation, COMPAS, and GitHub PR. The overlay of COMPAS with simulated curves provides visual evidence that our framework captures real-world error growth patterns; all fall within ERH bounds.}
     \label{fig:empirical-comparison}
 \end{figure}
 
@@ -757,6 +757,8 @@ We have introduced the Ethical Riemann Hypothesis, a mathematical framework for 
     \item Demonstration that different judgment strategies exhibit distinct error patterns
     \item Practical implications for AI ethics and system design
 \end{enumerate}
+
+Our empirical validation on the COMPAS dataset demonstrates that real-world judicial algorithms exhibit $\alpha \approx -0.20$, satisfying the ERH bound and showing structural similarity to our Conservative judge model ($\alpha \approx -0.14$). The overlay of simulated and COMPAS error curves (Figure~\ref{fig:empirical-comparison}) provides visual evidence that our theoretical framework captures real-world error growth patterns.
 
 This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
 

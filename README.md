@@ -255,7 +255,7 @@ Run the full empirical validation pipeline to compute ERH-style α values and sa
 python scripts/run_empirical_validation.py
 
 # Output: simulation/output/real_world_results.json
-# Prints α values to stdout (e.g., COMPAS α ≈ -0.32)
+# Prints α values to stdout (e.g., COMPAS α ≈ -0.20)
 ```
 
 Or use the batch runner in real-data-only mode:

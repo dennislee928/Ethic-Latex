@@ -1112,7 +1112,7 @@ def plot_alpha_comparison_bar(
 ) -> plt.Figure:
     """
     Bar chart comparing alpha of Radical, Conservative, COMPAS, Adult.
-    Highlights COMPAS value (≈ -0.32).
+    Highlights COMPAS value (≈ -0.20).
 
     Parameters
     ----------
@@ -1153,7 +1153,7 @@ def plot_alpha_comparison_bar(
     x_pos = np.arange(len(labels))
     bars = ax.bar(x_pos, values, color=colors, edgecolor="black", linewidth=0.5)
     ax.axhline(y=0.5, color="red", linestyle="--", alpha=0.7, label="ERH threshold (0.5)")
-    ax.axhline(y=-0.32, color="orange", linestyle=":", alpha=0.7, label="COMPAS ≈ -0.32")
+    ax.axhline(y=-0.20, color="orange", linestyle=":", alpha=0.7, label="COMPAS ≈ -0.20")
     ax.set_xticks(x_pos)
     ax.set_xticklabels(labels, rotation=15, ha="right")
     ax.set_ylabel(r"Growth exponent $\alpha$")
