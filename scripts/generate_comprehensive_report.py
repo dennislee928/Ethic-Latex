@@ -22,23 +22,13 @@ try:
 except ImportError:
     pass
 
-# #region agent log
-try:
-    _log_path = ROOT / ".cursor" / "debug.log"
-    _log_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(_log_path, "a") as _lf:
-        _lf.write(json.dumps({"id": "gen_report_entry", "message": "Python env", "data": {"executable": sys.executable, "pandas_ok": _pandas_ok, "venv_in_path": ".venv" in sys.executable}, "hypothesisId": "H1,H2,H4"}) + "\n")
-except Exception:
-    pass
-# #endregion
-
 # Auto-re-exec with project venv if pandas unavailable
 if not _pandas_ok:
     for _venv in (ROOT / ".venv_erh", ROOT / ".venv"):
         _venv_py = _venv / "bin" / "python"
         if _venv_py.exists():
             os.execv(str(_venv_py), [str(_venv_py), __file__] + sys.argv[1:])
-    print("ERROR: pandas not found. Activate the virtual environment first:\n  source .venv_erh/bin/activate\nOr run: .venv_erh/bin/python scripts/generate_comprehensive_report.py ...", file=sys.stderr)
+    print("ERROR: pandas not found. Activate the venv and install deps:\n  source .venv_erh/bin/activate\n  pip install -r requirements.txt\nOr run: .venv_erh/bin/python scripts/generate_comprehensive_report.py ...", file=sys.stderr)
     sys.exit(1)
 
 import pandas as pd
@@ -233,7 +223,7 @@ def generate_visualizations(df, output_dir):
         valid = df.dropna(subset=["estimated_exponent"])
         order = valid["complexity_dist"].unique()
         data = [valid[valid["complexity_dist"] == g]["estimated_exponent"].values for g in order]
-        plt.boxplot(data, tick_labels=order.tolist(), patch_artist=True, orientation="vertical")
+        plt.boxplot(data, tick_labels=order.tolist(), patch_artist=True)
         plt.axhline(y=0.5, color="r", linestyle="--", label="ERH limit (0.5)")
         plt.title("Error Growth Exponent (α) Distribution")
         plt.ylabel("α (Exponent)")

@@ -26,23 +26,13 @@ try:
 except ImportError:
     pass
 
-# #region agent log
-try:
-    _log_path = PROJECT_ROOT / ".cursor" / "debug.log"
-    _log_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(_log_path, "a") as _log:
-        _log.write(json.dumps({"id": "run_emp_entry", "message": "Python env", "data": {"executable": sys.executable, "numpy_ok": _np_ok, "venv_in_path": ".venv" in sys.executable}, "hypothesisId": "H1,H2,H4"}) + "\n")
-except Exception:
-    pass
-# #endregion
-
 # Auto-re-exec with project venv if numpy unavailable (user ran without activating venv)
 if not _np_ok:
     for _venv in (PROJECT_ROOT / ".venv_erh", PROJECT_ROOT / ".venv"):
         _venv_py = _venv / "bin" / "python"
         if _venv_py.exists():
             os.execv(str(_venv_py), [str(_venv_py), __file__] + sys.argv[1:])
-    print("ERROR: numpy not found. Activate the virtual environment first:\n  source .venv_erh/bin/activate\nOr run: .venv_erh/bin/python scripts/run_empirical_validation.py", file=sys.stderr)
+    print("ERROR: numpy not found. Activate the venv and install deps:\n  source .venv_erh/bin/activate\n  pip install -r requirements.txt\nOr run: .venv_erh/bin/python scripts/run_empirical_validation.py", file=sys.stderr)
     sys.exit(1)
 DEFAULT_OUTPUT = PROJECT_ROOT / "simulation" / "output" / "real_world_results.json"
 
