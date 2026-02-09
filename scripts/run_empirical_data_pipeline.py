@@ -123,18 +123,40 @@ def main() -> int:
     else:
         print("  Warning: Could not run Radical simulation")
 
-    # 4. Generate plot
-    print("\n[4/4] Generating empirical comparison plot...")
+    # 4. Process HuggingFace + LLM (optional, uses free local DistilGPT-2)
+    print("\n[4/6] Processing HuggingFace + LLM (Moral Stories)...")
+    hf_results = {"error": "not run"}
+    try:
+        from simulation.real_data.process_huggingface_llm import process_huggingface_llm
+
+        hf_results = process_huggingface_llm(
+            dataset="moral_stories",
+            max_samples=30,
+            model_name="distilgpt2",
+            output_path=output_dir / "huggingface_llm_error_rates.json",
+        )
+        if "error" in hf_results:
+            print(f"  Warning: {hf_results['error']}")
+        else:
+            print(f"  HuggingFace LLM: α ≈ {hf_results['alpha']:.4f} (acc={hf_results.get('accuracy', 0):.1%}, model={hf_results.get('model_used', '?')})")
+    except Exception as e:
+        print(f"  Skipped: {e}")
+        hf_results = {"error": str(e)}
+
+    # 5. Generate plot
+    print("\n[5/6] Generating empirical comparison plot...")
     try:
         import matplotlib
         matplotlib.use("Agg")
         from simulation.visualization.plots import plot_empirical_comparison
 
         fig_path = figures_dir / "empirical_comparison.png"
+        hf_for_plot = hf_results if "error" not in hf_results else None
         plot_empirical_comparison(
             error_comparison=error_comparison if error_comparison else None,
             compas_results=compas_results if "error" not in compas_results else None,
             github_results=github_results if "error" not in github_results else None,
+            huggingface_results=hf_for_plot,
             save_path=str(fig_path),
             show=False,
         )
@@ -142,26 +164,36 @@ def main() -> int:
     except ImportError as e:
         print(f"  Warning: Could not generate plot ({e})")
 
-    # Update real_world_results.json with github
+    # 6. Update real_world_results.json with github and huggingface
     rwr_path = output_dir / "real_world_results.json"
-    if rwr_path.exists() and "error" not in github_results:
-        try:
+    try:
+        rwr = {}
+        if rwr_path.exists():
             with open(rwr_path, encoding="utf-8") as f:
                 rwr = json.load(f)
+        if "error" not in github_results:
             rwr.setdefault("github", {})
             rwr["github"]["alpha"] = github_results.get("alpha")
             rwr["github"]["n_prs"] = github_results.get("n_prs")
+        if "error" not in hf_results:
+            rwr.setdefault("huggingface_llm", {})
+            rwr["huggingface_llm"]["alpha"] = hf_results.get("alpha")
+            rwr["huggingface_llm"]["accuracy"] = hf_results.get("accuracy")
+            rwr["huggingface_llm"]["model_used"] = hf_results.get("model_used")
+        if rwr:
             with open(rwr_path, "w", encoding="utf-8") as f:
                 json.dump(rwr, f, indent=2)
-            print(f"\n  Updated {rwr_path} with GitHub alpha")
-        except (json.JSONDecodeError, IOError):
-            pass
+            print(f"\n  Updated {rwr_path}")
+    except (json.JSONDecodeError, IOError):
+        pass
 
     print("\n" + "=" * 60)
     print("Pipeline complete.")
     print("  - github_error_rates.json")
     print("  - compas_error_rates.json")
+    print("  - huggingface_llm_error_rates.json")
     print("  - figures/empirical_comparison.png")
+    print("\nFor real LLM (DistilGPT-2): pip install transformers torch")
     print("=" * 60)
     return 0
 

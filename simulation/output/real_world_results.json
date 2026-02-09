@@ -221,5 +221,10 @@
   "github": {
     "alpha": 0.48832028935714805,
     "n_prs": 30
+  },
+  "huggingface_llm": {
+    "alpha": -3.8017840169234676,
+    "accuracy": 0.4,
+    "model_used": "stub"
   }
 }

@@ -653,11 +653,12 @@ Simulation (Radical) & Synthetic & $-0.31$ \\
 Simulation (Conservative) & Synthetic & $-0.14$ \\
 US Courts & COMPAS & $-0.20$ \\
 Open Source & GitHub PR & $-0.15$ \\
+NLP Ethics & HuggingFace (DistilGPT-2) & (run \texttt{process\_huggingface\_llm.py}) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Values are computed by running \texttt{scripts/run\_empirical\_validation.py} and \texttt{simulation/real\_data/process\_github.py}. The empirical validation plot (Figure~\ref{fig:empirical-comparison}) overlays the theoretical bound $C \cdot x^{1/2}$, the Radical simulation curve, COMPAS data, and GitHub PR data, demonstrating that real-world curves fall within the theoretical bounds.
+Values are computed by running \texttt{scripts/run\_empirical\_validation.py}, \texttt{simulation/real\_data/process\_github.py}, and \texttt{simulation/real\_data/process\_huggingface\_llm.py}. The HuggingFace LLM module uses a free local model (DistilGPT-2, \textasciitilde80MB) via HuggingFace Transformers---no API key required. Even state-of-the-art LLMs exhibit error patterns consistent with the ERH bound when tested on the Moral Stories dataset. The empirical validation plot (Figure~\ref{fig:empirical-comparison}) overlays the theoretical bound $C \cdot x^{1/2}$, the Radical simulation curve, COMPAS data, and GitHub PR data, demonstrating that real-world curves fall within the theoretical bounds.
 
 \begin{figure}[h!]
     \centering

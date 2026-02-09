@@ -976,17 +976,19 @@ def plot_empirical_comparison(
     error_comparison: Optional[Dict[str, dict]] = None,
     compas_results: Optional[dict] = None,
     github_results: Optional[dict] = None,
+    huggingface_results: Optional[dict] = None,
     title: str = "Empirical Validation: Real-World vs Theoretical Bound",
     save_path: Optional[str] = None,
     show: bool = True,
 ) -> plt.Figure:
     """
-    Plot empirical comparison: Theoretical bound, Radical simulation, COMPAS, GitHub.
+    Plot empirical comparison: Theoretical bound, Radical simulation, COMPAS, GitHub, HuggingFace LLM.
 
     Layer 1: Theoretical Bound ($C \\cdot x^{0.5}$).
     Layer 2: Radical Agent Simulation curve.
     Layer 3: COMPAS Data curve.
     Layer 4: GitHub Data curve.
+    Layer 5: HuggingFace LLM (Moral Stories) curve.
     Goal: Show real-world curves fall within theoretical bounds.
 
     Parameters
@@ -997,6 +999,8 @@ def plot_empirical_comparison(
         From run_compas_erh_analysis: x, E_x, alpha, C.
     github_results : dict, optional
         From process_github: x, E_x, alpha, C.
+    huggingface_results : dict, optional
+        From process_huggingface_llm: x, E_x, alpha, C.
     title : str
         Plot title.
     save_path : str, optional
@@ -1005,7 +1009,7 @@ def plot_empirical_comparison(
         Whether to display.
     """
     setup_paper_style()
-    colors = ["#E69F00", "#56B4E9", "#e74c3c", "#2ecc71"]
+    colors = ["#E69F00", "#56B4E9", "#e74c3c", "#2ecc71", "#9b59b6"]
     fig, ax = plt.subplots(figsize=(10, 7))
 
     x_min, x_max = 1.0, 100.0
@@ -1060,6 +1064,23 @@ def plot_empirical_comparison(
             x_max = max(x_max, float(x[valid].max()))
             if C_ref == 1.0:
                 C_ref = github_results.get("C", C_ref)
+
+    # Layer 5: HuggingFace LLM
+    if huggingface_results and "error" not in huggingface_results and "x" in huggingface_results:
+        x = np.array(huggingface_results["x"])
+        E_x = np.array(huggingface_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "d-", label="HuggingFace LLM (Moral Stories)", linewidth=2, markersize=3,
+                color=colors[4], alpha=0.8,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            if C_ref == 1.0:
+                C_ref = huggingface_results.get("C", C_ref)
 
     # Layer 1: Theoretical Bound
     x_ref = np.linspace(max(1.0, x_min), x_max, 100)
