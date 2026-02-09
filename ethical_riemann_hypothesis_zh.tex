@@ -672,7 +672,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure paper_fig10_phase_transition_h.pdf (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
     }
   }
   \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
@@ -687,7 +687,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure von_neumann_entropy_over_time.pdf (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
     }
   }
   \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
@@ -695,61 +695,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \end{figure}
 
 
-\begin{figure}[htbp]
-  \centering
-  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
-  }{
-    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
-    }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure paper_fig10_phase_transition_h.pdf (run pipeline to generate).}}
-    }
-  }
-  \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
-  \label{fig:phase_transition_h}
-\end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
-  }{
-    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
-    }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure von_neumann_entropy_over_time.pdf (run pipeline to generate).}}
-    }
-  }
-  \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
-  \label{fig:von_neumann_entropy}
-\end{figure}
-
-
-\begin{table}[htbp]
-\centering
-\caption{量子 Hilbert 空間模擬指標。共識態為最常觀測的基底態；系統一致性衡量同意強度；Von Neumann 熵量化社會糾纏度。}
-\label{tab:quantum_hilbert_stats_zh}
-\begin{tabular}{lc}
-\toprule
-\textbf{指標} & \textbf{數值} \\
-\midrule
-共識態 & 11111111 \\
-系統一致性 & 0.9570 \\
-Von Neumann 熵 $H(\rho)$ & 0.2528 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ============================================
-% 第六節：實驗結果與分析
-% ============================================
-\section{實驗結果與分析}
-\label{sec:results}
-
-\subsection{誤差行為總覽表}
-
-在進入各個判斷者的詳細敘述之前，表~\ref{tab:summary_judges_zh} 統整了每種類型在主要指標上的表現。
 
 \begin{table}[htbp]
 \centering
@@ -1039,7 +985,7 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
     \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure latest_quantum_distribution.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
     }
   }
   \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
@@ -1047,73 +993,7 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 \end{figure}
 
 
-\begin{figure}[htbp]
-  \centering
-  \IfFileExists{figures/latest_quantum_distribution.png}{
-    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
-  }{
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
-    }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure latest_quantum_distribution.png (run pipeline to generate).}}
-    }
-  }
-  \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
-  \label{fig:quantum_dist_supp}
-\end{figure}
 
-
-% ============================================
-% 第七節：哲學與倫理意涵
-% ============================================
-\section{哲學與倫理意涵}
-\label{sec:philosophy}
-
-\subsection{結構性偏見識別}
-
-ERH 框架為識別道德判斷系統中的結構性偏見提供了新的透鏡。與關注個別案例或聚合統計的傳統方法不同，ERH 揭示了錯誤如何隨複雜度增加而累積。這種結構性視角與羅爾斯對系統性不公正的關注一致，這種不公正可能在個別案例中不明顯 \citep{rawls1971}。
-
-\textbf{應用情境反思}：ERH 框架特別適合應用於需要處理複雜度變化較大的場景，例如內容審核系統（從簡單的垃圾郵件到複雜的政治言論）或信貸審核系統（從標準申請到邊緣案例）。然而，對於複雜度變化較小或難以量化的情境（例如純粹的推薦系統，其中複雜度主要反映用戶偏好而非道德複雜性），ERH 的診斷價值可能有限。在此類情境中，ERH 主要作為一種\emph{診斷工具}，幫助識別系統是否在面對日益複雜的決策時出現結構性退化，而非作為直接的設計準則。
-
-\subsection{道德模糊性與不確定性}
-
-倫理質數的概念強調並非所有道德錯誤都是相等的。某些誤判是「基本的」，因為它們無法簡化為更簡單的組件錯誤。這與義務論倫理學產生共鳴，其中某些道德原則被認為是不可約的。
-
-\textbf{應用情境反思}：倫理質數的概念在 AI 系統審計中最為有用，例如在累犯預測或醫療診斷系統中，某些關鍵誤判（如對特定人口群體的高重要性誤判）可能導致結構性不平等，即使整體誤差率較低。然而，在高度情境依賴的道德判斷中（例如自動駕駛的道德困境），「不可約性」的定義本身可能受到質疑，因為這些判斷往往涉及多個相互競爭的道德原則。在此情境下，ERH 框架主要提供一種\emph{隱喻框架}，幫助我們思考哪些誤判最值得優先處理，而非提供精確的數學分類。
-
-\subsection{倫理質數作為關鍵失敗的指標}
-
-倫理質數的識別為優先處理哪些錯誤提供了定量方法。這對 AI 系統審計和改進具有實際意涵，引導資源朝向最結構性重要的失敗。
-
-\textbf{應用情境反思}：在實際的 AI 系統開發與維護中，ERH 框架可作為資源分配的定量工具。例如，在內容審核系統中，識別出導致大量後續誤判的「倫理質數」錯誤（如對特定語言或文化背景內容的系統性誤判），可以優先分配人力與計算資源進行修正。然而，需要注意的是，實驗結果顯示即使是「不健康」的系統（如高錯誤率的保守判斷者）也可能在誤差增長模式上優於 ERH 預測，因此倫理質數識別應與整體誤差水平評估相結合，而非單獨依賴。在此意義上，ERH 框架提供的是\emph{診斷工具}與\emph{優先排序機制}，而非全面的品質評估標準。
-
-\subsection{ERH 作為 AI 信任的標準}
-
-ERH 為判斷 AI 判斷系統何時可被視為「結構性健康」提供了定量標準。滿足 ERH 的系統維持有界的錯誤增長，表明即使面對日益複雜的決策，它們也可以被信任。這與美德倫理學聯繫起來，其中系統的品格（結構）與其個別行動同樣重要。
-
-\textbf{應用情境反思}：ERH 作為信任標準的適用性取決於具體應用情境。在高度標準化的決策環境中（例如自動化的信貸審核，其中複雜度主要反映申請材料的複雜性），ERH 可以提供可操作的設計準則：系統應設計為在複雜度增加時保持次線性的誤差增長。然而，在道德價值高度多元化的情境中（例如跨文化內容審核），「結構性健康」的定義本身可能受到質疑，因為不同文化背景對「錯誤」的理解可能存在根本性差異。在此情況下，ERH 主要作為一種\emph{啟發式框架}，幫助我們思考系統的可信任性，而非提供絕對的判斷標準。此外，實驗結果提醒我們，滿足 ERH 僅是必要而非充分條件：一個誤差增長優於 ERH 預測但整體錯誤率極高的系統（如保守判斷者）仍然不可信任。
-
-\subsection{與古典道德哲學的聯繫}
-
-ERH 框架可以透過多個哲學透鏡理解：
-\begin{itemize}
-    \item \textbf{結果主義}：ERH 限制了錯誤的累積後果，呼應功利主義對整體結果的強調 \citep{mill1863}
-    \item \textbf{義務論}：倫理質數代表不可約的道德原則，對應康德式義務論中不可違反的道德律 \citep{kant1785}
-    \item \textbf{美德倫理學}：ERH 測量判斷系統的「品格」，即系統在面對不同複雜度挑戰時的一致性與穩定性
-\end{itemize}
-
-\textbf{應用情境反思}：ERH 框架的哲學意義在於它提供了一個跨理論的定量工具，可以同時服務於結果主義、義務論與美德倫理學的目標。在實際應用中，這意味著 ERH 可以在不同倫理框架下使用：結果主義者可能關注 ERH 如何限制整體誤差累積，義務論者可能關注倫理質數的識別與修正，而美德倫理學的支持者可能關注系統「品格」的測量。然而，我們必須認識到 ERH 框架本身並不解決這些哲學立場之間的根本分歧，而是提供一種共同的定量語言來討論系統性倫理問題。在資源分配或推薦系統等實際應用中，ERH 主要作為一種\emph{分析框架}，幫助決策者從不同哲學角度評估系統品質，而非作為單一的倫理判斷標準。
-
-\subsection{限制與效度威脅}
-
-我們承認幾個限制與對效度的潛在威脅：
-\begin{itemize}
-    \item \textbf{高度理想化的模型}：我們使用合成行動、風格化的判斷者與明確給定的真實值 $V(a)$ 來建構框架，這些設定在真實世界中往往無法完全滿足。
-    \item \textbf{與質數的類比是啟發性的而非精確對應}：倫理質數僅在結構層面借用了質數的語言，並不主張道德錯誤真的服從與數論相同的定理。
-    \item \textbf{複雜度與倫理質數定義具主觀性}：框架假設複雜度可以量化，且倫理質數的選取依賴設計好的重要性分位數與結構性判準，這些選擇在哲學與實務上都具有爭議空間。
-    \item \textbf{ERH 僅為必要條件}：ERH 類型的結構性誤差上界最多只能視為倫理系統的必要條件，而非道德可接受性的充分條件；如高錯誤率的保守判斷者即便在誤差增長上優於 ERH 界限，仍在實務上不可接受。
-    \item \textbf{心理史學整合的層級限制}：心理史學的使用僅停留在概念與模擬層級，是一種幫助思考宏觀誤差結構與危機動力學的隱喻，而非對真實社會歷程的可驗證預測理論。
-\end{itemize}
 
 % ============================================
 % 第八節：AI 倫理應用

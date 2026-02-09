@@ -76,6 +76,8 @@ def _insert_figure_if_exists(fig_file, info, lang):
     """Generate LaTeX with \\IfFileExists for optional figures."""
     caption = info['caption_en'] if lang == 'en' else info['caption_zh']
     label = info['label']
+    # Escape underscores in fallback text for LaTeX (avoids "Missing $ inserted")
+    fig_file_safe = fig_file.replace('_', r'\_')
     return f"""\\begin{{figure}}[htbp]
   \\centering
   \\IfFileExists{{figures/{fig_file}}}{{
@@ -84,7 +86,7 @@ def _insert_figure_if_exists(fig_file, info, lang):
     \\IfFileExists{{simulation/output/figures/{fig_file}}}{{
       \\includegraphics[width=0.8\\textwidth]{{simulation/output/figures/{fig_file}}}
     }}{{
-      \\fbox{{\\parbox{{0.7\\textwidth}}{{\\centering Figure {fig_file} (run pipeline to generate).}}}}
+      \\fbox{{\\parbox{{0.7\\textwidth}}{{\\centering Figure {fig_file_safe} (run pipeline to generate).}}}}
     }}
   }}
   \\caption{{{caption}}}
@@ -125,27 +127,31 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
         print(f"Inserted {len(framework_figures)} figures into framework section")
 
     # Insert quantum figures (phase transition, von Neumann entropy, etc.)
+    # Replace entire block (marker + any prior insertions) to avoid duplicates on re-run
     quantum_marker = r"% Quantum pipeline figures (phase transition, von Neumann entropy) will be inserted here by integrate_figures.py" if lang == 'en' else r"% 量子流程圖表（相變、Von Neumann 熵）將由 integrate_figures.py 插入此處"
     quantum_figures = [(f, i) for f, i in figures.items() if i.get('section') == 'quantum']
     if quantum_figures and quantum_marker in content:
         quantum_insertions = "\n".join(_insert_figure_if_exists(f, i, lang) for f, i in quantum_figures)
-        content = content.replace(quantum_marker, quantum_marker + "\n\n" + quantum_insertions)
+        quantum_block = re.escape(quantum_marker) + r'\n\n.*?(?=\n\n\\begin\{table\})'
+        content = re.sub(quantum_block, lambda m: quantum_marker + "\n\n" + quantum_insertions + "\n\n", content, flags=re.DOTALL)
         print(f"Inserted {len(quantum_figures)} quantum figures")
 
-    # Insert COMPAS figures
+    # Insert COMPAS figures (replace block to avoid duplicates)
     compas_marker = r"% COMPAS pipeline figures will be inserted here by integrate_figures.py" if lang == 'en' else r"% COMPAS 流程圖表將由 integrate_figures.py 插入此處"
     compas_figures = [(f, i) for f, i in figures.items() if i.get('section') == 'compas']
     if compas_figures and compas_marker in content:
         compas_insertions = "\n".join(_insert_figure_if_exists(f, i, lang) for f, i in compas_figures)
-        content = content.replace(compas_marker, compas_marker + "\n\n" + compas_insertions)
+        compas_block = re.escape(compas_marker) + r'\n\n.*?(?=\n\n% =====|\n\n\\subsection\{)'
+        content = re.sub(compas_block, lambda m: compas_marker + "\n\n" + compas_insertions + "\n\n", content, flags=re.DOTALL)
         print(f"Inserted {len(compas_figures)} COMPAS figures")
 
-    # Insert supplementary pipeline figures
+    # Insert supplementary pipeline figures (replace block to avoid duplicates)
     supp_marker = r"% Supplementary pipeline figures will be inserted here by integrate_figures.py" if lang == 'en' else r"% 補充流程圖表將由 integrate_figures.py 插入此處"
     supp_figures = [(f, i) for f, i in figures.items() if i.get('section') == 'supplementary']
     if supp_figures and supp_marker in content:
         supp_insertions = "\n".join(_insert_figure_if_exists(f, i, lang) for f, i in supp_figures)
-        content = content.replace(supp_marker, supp_marker + "\n\n" + supp_insertions)
+        supp_block = re.escape(supp_marker) + r'\n\n.*?(?=\n\n% =====)'
+        content = re.sub(supp_block, lambda m: supp_marker + "\n\n" + supp_insertions + "\n\n", content, flags=re.DOTALL)
         print(f"Inserted {len(supp_figures)} supplementary pipeline figures")
 
     with open(latex_path, 'w', encoding='utf-8') as f:
