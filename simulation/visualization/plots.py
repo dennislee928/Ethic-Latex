@@ -972,6 +972,116 @@ def plot_universal_error_growth(
     return fig
 
 
+def plot_empirical_comparison(
+    error_comparison: Optional[Dict[str, dict]] = None,
+    compas_results: Optional[dict] = None,
+    github_results: Optional[dict] = None,
+    title: str = "Empirical Validation: Real-World vs Theoretical Bound",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot empirical comparison: Theoretical bound, Radical simulation, COMPAS, GitHub.
+
+    Layer 1: Theoretical Bound ($C \\cdot x^{0.5}$).
+    Layer 2: Radical Agent Simulation curve.
+    Layer 3: COMPAS Data curve.
+    Layer 4: GitHub Data curve.
+    Goal: Show real-world curves fall within theoretical bounds.
+
+    Parameters
+    ----------
+    error_comparison : dict, optional
+        From compare_error_distributions; used for Radical judge.
+    compas_results : dict, optional
+        From run_compas_erh_analysis: x, E_x, alpha, C.
+    github_results : dict, optional
+        From process_github: x, E_x, alpha, C.
+    title : str
+        Plot title.
+    save_path : str, optional
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    setup_paper_style()
+    colors = ["#E69F00", "#56B4E9", "#e74c3c", "#2ecc71"]
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    x_min, x_max = 1.0, 100.0
+    C_ref = 1.0
+
+    # Layer 2: Radical Agent Simulation
+    if error_comparison and "Radical" in error_comparison:
+        data = error_comparison["Radical"]
+        if "error" not in data and "x_values" in data:
+            x_vals = np.array(data["x_values"])
+            E_x = np.array(data["E_x"])
+            abs_E = np.abs(E_x)
+            valid = (abs_E > 0) & (x_vals > 1)
+            if valid.sum() >= 2:
+                ax.loglog(
+                    x_vals[valid], abs_E[valid],
+                    "o-", label="Simulation (Radical)", linewidth=2, markersize=3,
+                    color=colors[0], alpha=0.8,
+                )
+                x_min = min(x_min, float(x_vals[valid].min()))
+                x_max = max(x_max, float(x_vals[valid].max()))
+
+    # Layer 3: COMPAS
+    if compas_results and "error" not in compas_results and "x" in compas_results:
+        x = np.array(compas_results["x"])
+        E_x = np.array(compas_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "s-", label="COMPAS (US Courts)", linewidth=2.5, markersize=4,
+                color=colors[2], alpha=0.9,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            C_ref = compas_results.get("C", C_ref)
+
+    # Layer 4: GitHub
+    if github_results and "error" not in github_results and "x" in github_results:
+        x = np.array(github_results["x"])
+        E_x = np.array(github_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "^-", label="GitHub (Open Source)", linewidth=2, markersize=3,
+                color=colors[3], alpha=0.8,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            if C_ref == 1.0:
+                C_ref = github_results.get("C", C_ref)
+
+    # Layer 1: Theoretical Bound
+    x_ref = np.linspace(max(1.0, x_min), x_max, 100)
+    y_bound = C_ref * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2.5,
+              label=r"$C \cdot x^{1/2}$ (ERH bound)")
+
+    ax.set_xlabel("Complexity $x$ (Log Scale)", fontsize=12)
+    ax.set_ylabel(r"Error Magnitude $|E(x)|$ (Log Scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend(loc="best", fontsize=10)
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
 def plot_alpha_comparison_bar(
     synthetic_results: dict,
     real_results: dict,

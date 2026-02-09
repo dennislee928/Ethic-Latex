@@ -7,6 +7,7 @@ to work; implementation lives in erh_core.analysis.statistics.
 
 from erh_core.analysis.statistics import (
     fit_error_growth,
+    fit_power_law_to_data,
     compare_judges,
     detect_structural_bias,
     generate_report,
@@ -18,6 +19,7 @@ from erh_core.analysis.statistics import (
 
 __all__ = [
     "fit_error_growth",
+    "fit_power_law_to_data",
     "compare_judges",
     "detect_structural_bias",
     "generate_report",
