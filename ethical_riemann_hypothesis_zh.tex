@@ -653,6 +653,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 表~\ref{tab:quantum_hilbert_stats_zh} 彙整量子 Hilbert 空間模擬的關鍵指標。
 
+% 量子流程圖表（相變、Von Neumann 熵）將由 integrate_figures.py 插入此處
 \begin{table}[htbp]
 \centering
 \caption{量子 Hilbert 空間模擬指標。共識態為最常觀測的基底態；系統一致性衡量同意強度；Von Neumann 熵量化社會糾纏度。}
@@ -884,6 +885,12 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 
 實驗顯示，緩解模型在整體錯誤率上略有下降，同時其 ERH 誤差增長指數 $\alpha$ 亦較小，表示不僅點對點精度有所提升，結構性誤差在高複雜度區域的累積亦較為平穩。
 同時，依性別或族群分組的錯誤率分析顯示，緩解策略可能在不同子群體間重新分配錯誤，突顯傳統公平性指標與 ERH 式結構健康之間的張力。
+
+\subsection{實證案例研究：COMPAS 累犯預測}
+\label{subsec:compas_zh}
+
+我們將 ERH 框架應用於 ProPublica COMPAS 累犯資料集。定義 Ground Truth $V(a)$：\texttt{two\_year\_recid}（0 $\mapsto$ +1，1 $\mapsto$ -1），智能體判斷：\texttt{decile\_score}（1--10）正規化至 $[-1,+1]$，複雜度 $x$：\texttt{priors\_count} 加上特徵密度。累積誤差 $E(x) = \sum (\text{判斷} - \text{真相})$ 對複雜度 $\leq x$ 的案例擬合冪律 $|E(x)| \sim C x^\alpha$。實證分析顯示 COMPAS 的 $\alpha \approx -0.32$，表示次線性誤差增長，與 ERH 界線一致。當 COMPAS 曲線與模擬偏見智能體曲線對齊時，理論的普適性得以視覺化驗證。
+% COMPAS 流程圖表將由 integrate_figures.py 插入此處
 
 除了 Adult Income 之外，我們還設計了兩個方法論層面的延伸案例：其一是「大學入學考試作弊」情境，用於分析高風險測驗環境中的誠信偵測結構性風險；其二是「性侵／性騷擾通報」情境，用於探討在高度敏感領域中，通報與未通報之間的結構性脆弱性。\footnote{對應程式分別位於 \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} 與 \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}，僅適用於匿名化或合成資料。}
 在這兩個案例中，ERH 式分析同樣不取代傳統精度與公平性指標，而是補充了一個「錯誤如何隨案例複雜化而結構性累積」的宏觀視角，特別適合用於評估全球考試誠信與敏感社會議題中的高風險決策支援系統。
