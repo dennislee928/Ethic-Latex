@@ -695,6 +695,37 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \end{figure}
 
 
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure paper_fig10_phase_transition_h.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
+  \label{fig:phase_transition_h}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
+  }{
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure von_neumann_entropy_over_time.pdf (run pipeline to generate).}}
+    }
+  }
+  \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
+  \label{fig:von_neumann_entropy}
+\end{figure}
+
+
 \begin{table}[htbp]
 \centering
 \caption{量子 Hilbert 空間模擬指標。共識態為最常觀測的基底態；系統一致性衡量同意強度；Von Neumann 熵量化社會糾纏度。}
@@ -999,6 +1030,22 @@ Von Neumann 熵 $H(\rho)$ & 0.2528 \\
 
 建構流程（\texttt{build\_thesis\_gated.yml}）除了主論文圖表外，還會產生額外的補充圖表。這些圖表由模擬工作流程（真實資料與模擬 $\alpha$ 的比較、含錯誤率與倫理可行性分數的綜合報告）以及當 API 金鑰可用時的 LLM 壓力測試所產生。它們補充核心結果，提供跨複雜度分布（zipf、uniform、power-law）的活動級彙總、與 Adult Income 及 COMPAS 資料集的真實世界驗證，以及來自 LLM 道德判斷的實證 $\Pi(x)$ / $E(x)$ 曲線。若可用，將整合於下方最終 PDF。
 % 補充流程圖表將由 integrate_figures.py 插入此處
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest_quantum_distribution.png (run pipeline to generate).}}
+    }
+  }
+  \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
+  \label{fig:quantum_dist_supp}
+\end{figure}
+
 
 \begin{figure}[htbp]
   \centering
