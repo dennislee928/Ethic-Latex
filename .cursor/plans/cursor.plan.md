@@ -89,214 +89,97 @@ todos:
 isProject: true
 ---
 
-# Cursor Plan: ERH 架構重整、量子升級與論文中期改進
-
-## Context
-
-本計畫依據審稿者對實用性 (3/5) 的批評，結合架構與程式碼改進需求：
-
-1. **Code duplication**: Core logic distributed across `erh/`, `erh_core/`, and `erh-security-app/backend/app/erh_security/`
-2. **Quantum model**: 目前 quantum simulation 使用 rotation gates (Maps difficulty to θ)；需 physics-based Ising Hamiltonian 以對齊 ERH 論述
-3. **Pipeline gaps**: 部分腳本使用不同流程；GitHub Actions 可能未充分利用平行執行
-4. **Paper feedback**: 審稿者要求強化 V(a)/c(a) 操作型定義、深化 ERH 分析、ζ_E(s) 解釋、視覺化改進
-
-## Goals
-
-1. **Refactor**: Consolidate core logic into `erh_core` as Single Source of Truth
-2. **Quantum**: 確保 SocialDynamicsQuantumSimulator (Ising model) 完整整合；新增 `measure_social_tension()` API
-3. **Pipeline**: 增強 `run_simulation_batch.py` 支援 ABMSimulator 模式；新增 EVS 指標
-4. **Paper**: 實作審稿意見（V(a)/c(a) 操作定義、ERH 必要 vs 充分、ζ_E 零點/極點、圖表）
+這是一份為 **Cursor** 或其他 AI 編輯器準備的 `cursor.plan.md` 開發計畫書。這份文件針對您要求的「純前端 Next.js 實作」與「身分認證串聯」進行了模組化拆解。
 
 ---
 
-## Part A: 論文審稿意見改進
+# Project Plan: AI-Powered Male Biometric Measurement & Certification System
 
-### 現況
+## 1. 專案概述 (Project Overview)
 
-- 論文已有 [Section 3.4 操作定義](ethical_riemann_hypothesis.tex)（第 328–337 行），簡述 principle conflict count、token-length proxy、ground truth proxy
-- 程式已實作 `GroundTruthProxy`（[judgement_system.py](simulation/core/judgement_system.py)）、`calculate_complexity`（[action_space.py](simulation/core/action_space.py)）
-- 結論（第 511 行）已點出 ERH 為必要非充分條件及雙指標
-- [zeta_function.py](simulation/analysis/zeta_function.py) 已有 `detect_zeros`、`detect_poles`
-- `generate_all_figures.py` 產出 `paper_fig2_error_growth.pdf`、`paper_fig7_critical_bound.pdf`、`paper_fig8_ethical_primes_map.pdf`
+建構一個基於 Next.js 的純前端應用，利用瀏覽器端 AI 進行男性生殖器尺寸測量，並結合第三方身份驗證（如 Persona）進行「真人屬性認證」。
 
-### A1. 強化 V(a) 與 c(a) 的操作型定義
-
-- **A1.1** 在 [ethical_riemann_hypothesis.tex](ethical_riemann_hypothesis.tex) Formalization 後新增獨立小節「近似真實道德值 V(a)」
-  - **問題**：$V(a)$ 為「上帝視角」，實務上不可直接取得
-  - **代理方案**：RLHF 人類標註、Bradley-Terry 從 pairwise 推估、`GroundTruthProxy.from_mock_rlhf()` / `load_from_csv()` 對應流程
-  - **限制**：代理偏差、不同 proxy 的影響
-- **A1.2** 擴充 Section 3.4「Operationalizing Complexity」中的 c(a) 計算
-  - 以條列明文化：$c(a)$ = 道德原則衝突數量（例如誠實 vs 不傷害 = 2）
-  - Token-length proxy: $\log(1 + \text{word count})$ 作為推理複雜度
-  - 引用 [simulation/core/action_space.py](simulation/core/action_space.py) 的 `count_principle_conflicts()`、`calculate_complexity()`
-
-### A2. 深化實驗分析（ERH 必要非充分）
-
-- **A2.1** 在 Results 章節新增小節「ERH 作為必要條件的含義」
-  - 說明 ERH 為結構穩定性必要條件，非充分條件
-  - 以 Conservative Judge 為例：可滿足 ERH 但準確度低
-  - 強調雙重指標：準確度（MAE、F1、Mistake Rate）+ 結構穩定性（α、ERH 滿足與否）
-- **A2.2** 在 Comparative Analysis 中擴充 Table 欄位
-  - 欄位：Judge | Mistake Rate | MAE | F1 | α | ERH | 綜合解讀
-  - 使用 [erh_core/analysis/statistics.py](erh_core/analysis/statistics.py) `compare_judges()` 輸出
-
-### A3. 擴充倫理 Zeta 函數 ζ_E(s) 解釋
-
-- **A3.1** 在 Ethical Zeta Function 小節（約第 247–261 行）後新增 1–2 段
-  - **零點 (zeros)**：$E(x) \approx 0$ 的複雜度點，對應判斷系統在該層級的結構性修正
-  - **極點 (poles)**：$|E(x)|$ 突增點，對應「道德相變」(Moral Phase Transition)
-  - 相變意涵：複雜度跨過臨界點時錯誤可能崩潰式爆發，類似 spin glass frustration
-- **A3.2** 連結 Section 3.6 量子相變內容與 ζ_E(s) 極點
-  - 引用 `detect_poles()` 定義：$|E(x)| > 3 \times \text{median}(|E|)$ 視為 spike
-
-### A4. 視覺化改進
-
-- **A4.1** 在 Results 章節插入三張關鍵圖
-
-
-| 圖表                  | 內容                          | 檔案路徑                                |
-| ------------------- | --------------------------- | ----------------------------------- |
-| 誤差 vs 複雜度 log-log 圖 | $                           | E(x)                                |
-| 倫理質數分佈圖             | 行動空間中倫理質數 2D 散佈（複雜度 vs 重要性） | `paper_fig8_ethical_primes_map.pdf` |
-| Judge 比較圖           | 多 Judge 的 E(x) 比較           | `paper_fig3_judge_comparison.pdf`   |
-
-
-- **A4.2** 補齊 `fig:comparison` 引用：將上述其一包成 figure 並設 `\label{fig:comparison}`
-- **A4.3** 確保 `generate_all_figures` 在 LaTeX 編譯前執行；LaTeX 使用 `\IfFileExists` 做 fallback
-
-### A5. 論文改進驗證標準
-
-- 論文包含「近似 V(a)」的獨立討論與 proxy 說明
-- c(a) 的計算方式以公式或條列明確寫出
-- Results 章節包含 ERH 必要非充分與雙指標討論
-- ζ_E(s) 零點、極點與道德相變的對應已在正文說明
-- 三張關鍵圖已納入並正確引用
-- `fig:comparison` 已定義且無未解析引用
+- **核心技術：** Next.js 14+ (App Router), TensorFlow.js / MediaPipe, Persona SDK.
+- **隱私原則：** 影像不離開用戶設備（On-device Processing），僅傳輸測量結果。
 
 ---
 
-## Part B: 架構重整（三重冗餘修復）
+## 2. 階段一：環境初始化與相機模組 (Environment & Camera Setup)
 
-### B1. 確立 erh_core 為 Single Source of Truth
-
-- **B1.1** 分析 `erh/` vs `erh_core/` 差異
-- **B1.2** 確保 [pyproject.toml](pyproject.toml) 的 `packages.find` 包含 `erh_core`
-
-### B2. 處理 erh/ 與 erh_core 重疊
-
-- **B2.1** 將 `erh/core/` 改為 thin re-export 或刪除重複
-- **B2.2** 保留 `erh/tools/`、`erh/client.py` 等非重疊模組
-
-### B3. 重構 erh-security-app 依賴
-
-- **B3.1** 修改 [erh-security-app/backend/requirements.txt](erh-security-app/backend/requirements.txt) 新增 `-e ../..`
-- **B3.2** 審查 [erh_security/](erh-security-app/backend/app/erh_security/)
-- **B3.3** 更新 [metrics.py](erh-security-app/backend/app/erh_security/metrics.py) import 為 `erh_core`
-
-### B4. 驗證架構重整
-
-- 執行 `pytest erh-security-app/backend/tests/` 與 `pytest tests/`
+- **初始化專案**
+- 使用 `npx create-next-app@latest` 建立專案。
+- 安裝必要依賴：`@tensorflow/tfjs`, `@mediapipe/selfie_segmentation`, `lucide-react`, `canvas-confetti` (用於成功認證動畫)。
+- **開發相機引導組件 (`CameraCapture.tsx`)**
+- 實作 `getUserMedia` API 調用。
+- 建立 UI 遮罩（Overlay），引導用戶將「參考物」（如信用卡）與目標物放置在正確位置。
+- 實作「環境光線檢測」與「模糊檢測」邏輯。
 
 ---
 
-## Part C: 量子模擬器「物理化」升級
+## 3. 階段二：瀏覽器端 AI 運算 (On-device AI Engine)
 
-### C1. SocialDynamicsQuantumSimulator 增強
-
-- **C1.1** 新增 `measure_social_tension(self, interaction_matrix, biases) -> float`
-- **C1.2** 確認 Hamiltonian 符合 $H = \sum J_{ij} Z_i Z_j + \sum h_i X_i$
-
-### C2. Hybrid Model 整合
-
-- **C2.1** 將 `social_tension_energy` 寫入 `results['quantum_stability']`
-- **C2.2** 新增 `quantum_energy`、`von_neumann_entropy` 至 simulation history
-
-### C3. 視覺化與 LaTeX
-
-- **C3.1** 新增 `plot_social_tension_vs_time()`
-- **C3.2** 新增「Quantum Ising Model of Social Conflict」小節
+- **模型加載與熱啟動**
+- 配置 TensorFlow.js 的 WASM 後端以提升運算效能。
+- 載入語義分割模型（Semantic Segmentation），用於區分背景、參考物與目標。
+- **尺寸測量邏輯實作 (`measurementEngine.ts`)**
+- **步驟 A：參考物標定**
+- 辨識標準卡片邊緣，計算 $Pixels Per Metric (PPM)$。
+- **步驟 B：目標分割與特徵點提取**
+- 使用 Mask R-CNN 或自定義節點模型識別目標邊界。
+- **步驟 C：幾何修正**
+- 實作透視變換（Perspective Transform）校正拍攝角度造成的縮短效應（Foreshortening）。
+- **步驟 D：物理單位轉換**
+- 根據 $PPM$ 公式計算長度與周長。
 
 ---
 
-## Part D: 自動化腳本與 Pipeline
+## 4. 階段三：身份驗證與數據簽名 (Identity & Certification)
 
-### D1. run_simulation_batch.py 增強
-
-- **D1.1** 新增 `--mode judge|abm`（預設 `judge`）
-- **D1.2** 實作 ABMSimulator worker
-- **D1.3** 支援 `--output` 指定輸出 JSON 路徑
-
-### D2. Ethical Viability Score (EVS)
-
-- **D2.1** 新增 `calculate_evs(stability, fairness, polarization)`
-- **D2.2** 在 `compare_judges()` 中納入 EVS
-
-### D3–D4. Phase Transition 圖與 GitHub Actions
-
-- **D3.1** 新增 `plot_phase_transition_error_vs_complexity()`
-- **D4.1** 確認 simulation.yml 使用 `run_simulation_batch.py --instances 4`
+- **串接 Persona 客戶端 SDK**
+- 在前端嵌入 `Persona.Inquiry` 流程。
+- 用戶完成政府證件與人臉掃描，獲取 `inquiry_id`。
+- **數據加簽模組 (`certificationProvider.ts`)**
+- 實作「數位簽名」邏輯：將 `inquiry_id` + `measurement_result` + `timestamp` 進行哈希運算（HMAC/SHA256）。
+- 模擬生成「數位認證證書」JSON 檔案供用戶下載或展示。
+- **防作弊機制**
+- 實作 Liveness Detection，確保測量過程為即時動態而非靜態照片。
 
 ---
 
-## Part E: 文檔與最終驗證
+## 5. 階段四：隱私與合規防禦 (Privacy & Compliance)
 
-- **E1** 更新 README：新架構、安裝方式、ABMSimulator vs judge 模式
-- **E2** 更新 LaTeX：引用 batch 產生的新圖表
-- **E3** 端到端驗證：batch → 圖表 → LaTeX 編譯
-- **E4** pytest 全數通過
+- **端點脫敏處理**
+- 實作 `Client-side Blur`：在 UI 展示時，除了測量邊框外，對敏感部位進行像素化處理。
+- **零存儲架構確認**
+- 確保 `useEffect` 清除緩存，瀏覽器關閉後影像數據不留存於 `localStorage` 或 `IndexedDB`。
 
 ---
 
-## 檔案變更總覽
+## 6. 技術指標與驗證 (Technical Specs & Validation)
 
 
-| 類型    | 檔案                                                                   | 變更                                                |
-| ----- | -------------------------------------------------------------------- | ------------------------------------------------- |
-| LaTeX | ethical_riemann_hypothesis.tex                                       | A1–A4 論文改進                                        |
-| LaTeX | ethical_riemann_hypothesis_en.tex, ethical_riemann_hypothesis_zh.tex | 同步改動（若有）                                          |
-| 腳本    | scripts/integrate_figures.py, scripts/update_latex.py                | 圖表整合（若需）                                          |
-| 架構    | erh-security-app/backend/requirements.txt                            | 新增 `-e ../..`                                     |
-| 架構    | erh-security-app/backend/app/erh_security/metrics.py                 | import 改為 erh_core                                |
-| 架構    | erh/core/ 或 erh/                                                     | B1–B2 重整                                          |
-| 量子    | simulation/quantum/simulator.py                                      | measure_social_tension()                          |
-| 量子    | erh_core/core/hybrid_model.py                                        | quantum_energy 寫入 history                         |
-| 腳本    | scripts/run_simulation_batch.py                                      | ABMSimulator 模式、EVS                               |
-| 分析    | erh_core/analysis/statistics.py                                      | calculate_evs()                                   |
-| 視覺    | simulation/visualization/plots.py                                    | plot_social_tension_vs_time、plot_phase_transition |
-| 文檔    | README.md                                                            | 架構說明                                              |
+| 項目         | 目標規格                        | 驗證方式                    |
+| ---------- | --------------------------- | ----------------------- |
+| **運算延遲**   | < 500ms / frame             | 效能分析器 (Chrome Profiler) |
+| **測量誤差**   | $\pm 0.3 \text{ cm}$        | 物理對比測試 (Standard Ruler) |
+| **瀏覽器相容性** | iOS Safari / Android Chrome | 行動裝置實機測試                |
+| **認證可靠度**  | Persona Verified Status     | Webhook 回調驗證            |
 
 
 ---
 
-## 執行順序建議
+## 7. 下一步行動 (Next Steps)
 
-```mermaid
-flowchart TD
-    subgraph paper [論文改進]
-        A1[1. 新增 V(a) 近似小節] --> A2[2. 擴充 c(a) 操作定義]
-        A2 --> A3[3. 深化 ERH 必要非充分討論]
-        A3 --> A4[4. 擴充 Zeta 零點/極點解釋]
-        A4 --> A5[5. 補齊 LaTeX 圖表與 fig:comparison]
-    end
-    subgraph arch [架構重整]
-        B1[B1 分析 erh vs erh_core] --> B2[B2 重整 erh/]
-        B2 --> B3[B3 更新 erh-security-app]
-        B3 --> B4[B4 驗證架構]
-    end
-    subgraph quantum [量子升級]
-        C1[C1 measure_social_tension] --> C2[C2 Hybrid 整合]
-        C2 --> C3[C3 視覺化與 LaTeX]
-    end
-    subgraph pipeline [Pipeline]
-        D1[D1 run_simulation_batch] --> D2[D2 EVS]
-        D2 --> D3[D3 Phase Transition 圖]
-        D3 --> D4[D4 GitHub Actions]
-    end
-    A5 --> E[E 文檔與驗證]
-    B4 --> E
-    C3 --> E
-    D4 --> E
-```
+1. **實作相機取景框：** 建立一個能精確提示用戶對齊參考物與目標物的 UI。
+2. **原型測試：** 使用非生物物件（如圓柱體與卡片）測試像素與公分轉換的準確性。
 
+---
 
+### 資料來源 (Data Sources)
 
+> 1. **Next.js Documentation:** App Router and Server Components architecture.
+> 2. **TensorFlow.js API Reference:** Real-time object detection and segmentation in the browser.
+> 3. **Persona Developer Guide:** Identity verification and inquiry workflow integration.
+> 4. **OpenCV.js (Geometric Transformations):** Standard algorithms for perspective correction.
+
+**你想先從哪一部分開始？我可以為你撰寫 `measurementEngine.ts` 的核心計算邏輯。**
