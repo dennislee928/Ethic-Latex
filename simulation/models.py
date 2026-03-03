@@ -7,9 +7,20 @@ and Judgment per Phase 1 of the ERH enhancement plan.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from pydantic import BaseModel, Field
+
+
+# Canonical ethical principles ontology (Deontology, Utilitarianism, etc.)
+# Used for principled conflict counting in calculate_complexity.
+ETHICAL_PRINCIPLES: List[str] = [
+    "Deontology",           # Rule/duty-based
+    "Utilitarianism",       # Consequence-based
+    "Virtue_Ethics",       # Character-based
+    "Care_Ethics",         # Relationship-based
+    "Rights_Theory",       # Entitlement-based
+]
 
 
 class Action(BaseModel):
@@ -47,6 +58,23 @@ class Action(BaseModel):
     delta: Optional[float] = Field(None, description="Error: J - V")
     mistake_flag: Optional[int] = Field(None, ge=0, le=1, description="Misjudgment indicator")
     severity: Optional[float] = Field(None, ge=0.0, le=1.0, description="Fuzzy severity")
+    conflicting_principles: Optional[int] = Field(
+        None,
+        ge=0,
+        description="Number of conflicting ethical principles (e.g. Deontology vs Utilitarianism)",
+    )
+    description: Optional[str] = Field(
+        None,
+        description="Optional text description for token-length complexity proxy",
+    )
+    active_principles: Optional[List[int]] = Field(
+        None,
+        description="Indices into ETHICAL_PRINCIPLES; which principles apply to this action.",
+    )
+    principle_conflict_pairs: Optional[List[Tuple[int, int]]] = Field(
+        None,
+        description="List of (i,j) principle indices that conflict for this action.",
+    )
 
     def __repr__(self) -> str:
         return f"Action(id={self.id}, c={self.c}, V={self.V:.2f}, w={self.w:.2f})"

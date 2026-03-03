@@ -7,7 +7,7 @@ logical completeness and consistency.
 
 import numpy as np
 from typing import List, Dict, Optional
-from ..core.action_space import Action
+from erh_core.core.action_space import Action
 try:
     from erh_core.core.ethical_primes import compute_Pi_and_error, analyze_error_growth
     from erh_core.core.judgement_system import BaseJudge
@@ -282,4 +282,8 @@ def run_all_edge_case_tests(actions: List[Action], tau: float = 0.3) -> Dict:
     results['edge_complexities'] = test_edge_complexities(actions, judge, tau)
     
     return results
+
+
+# Public API alias expected by erh_core.analysis and callers (e.g. erh_service)
+analyze_edge_cases = run_all_edge_case_tests
 

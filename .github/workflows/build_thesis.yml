@@ -1,8 +1,9 @@
 name: Build Thesis
 
 on:
+  workflow_call:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "dev"]
   pull_request:
     branches: ["main", "master"]
   workflow_dispatch:
@@ -26,15 +27,51 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install papermill ipykernel nbconvert
 
+      - name: Run LLM stress test (ERH)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          pip install requests
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          if [ -n "$OPENAI_API_KEY" ] || [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "Running small-scale LLM stress test (100 actions, OpenAI or Anthropic)..."
+            if [ -n "$OPENAI_API_KEY" ]; then
+              python scripts/llm_stress_test.py --num-actions 100 --provider openai --output-dir llm_stress_test_results
+            else
+              python scripts/llm_stress_test.py --num-actions 100 --provider anthropic --output-dir llm_stress_test_results
+            fi
+          else
+            echo "No API key set; running dry-run (no API calls)."
+            python scripts/llm_stress_test.py --num-actions 20 --dry-run --output-dir llm_stress_test_results
+          fi
+
       - name: Run Simulation and Generate Figures
         run: |
-          # Set PYTHONPATH to include the current directory and simulation directory
-          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
-          # Ensure output directory exists
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           mkdir -p simulation/output/figures
           mkdir -p simulation/output
-          # Run from project root with explicit path to script
-          python simulation/generate_all_figures.py
+          python -m simulation.generate_all_figures
+
+      - name: Run Quantum Phase Transition (optional)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python scripts/run_quantum_phase_transition.py --save-plot --n-points 10 || echo "⚠ Quantum phase transition skipped."
+
+      - name: Run Phase Transition Experiment (J vs stability)
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/erh_core
+          mkdir -p simulation/output/figures
+          python scripts/run_phase_transition_exp.py --no-oracle --save-plot --output-dir simulation/output || echo "⚠ Phase transition exp skipped."
+
+      - name: Fetch and Process Case Study CSV
+        run: |
+          mkdir -p data data/real_world
+          bash scripts/fetch_real_data.sh || true
+          python scripts/convert_adult_to_csv.py || true
+          python scripts/process_student_to_exam_cheating.py || true
+          python scripts/generate_synthetic_sexual_abuse.py || true
+        continue-on-error: true
 
       - name: Run Real-Data Case Study (optional)
         run: |
@@ -106,6 +143,13 @@ jobs:
           # Run quick tests in CI to save time
           python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
 
+      - name: Run Quantum Hilbert Space Simulation
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
+          mkdir -p simulation/output/figures
+          python scripts/run_quantum_hilbert_figures.py || echo "⚠ Quantum Hilbert figures step failed, continuing..."
+
       - name: Download Simulation Figures (if available)
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -125,11 +169,22 @@ jobs:
             echo "⚠ Warning: No PDF figures found in simulation/output/figures"
             ls -la simulation/output/figures/ || echo "Directory does not exist"
           fi
+          # Copy LLM stress test figure (Π(x), E(x)) if available
+          if [ -f "llm_stress_test_results/llm_stress_test_Pi_E.png" ]; then
+            cp llm_stress_test_results/llm_stress_test_Pi_E.png figures/
+            echo "Copied llm_stress_test_Pi_E.png to figures/"
+          fi
           # Copy PNG figures from simulation workflow if available
           if [ -d "figures/simulation" ] && [ "$(ls -A figures/simulation/*.png 2>/dev/null)" ]; then
             cp figures/simulation/*.png figures/ 2>/dev/null || true
             echo "Copied PNG figures from simulation workflow:"
             ls -l figures/*.png || echo "No PNG figures found"
+          fi
+          # Copy quantum Hilbert figures (circuit, distribution) for thesis PDF
+          if [ -d "simulation/output/figures" ]; then
+            cp simulation/output/figures/latest_quantum_circuit.png figures/ 2>/dev/null || true
+            cp simulation/output/figures/latest_quantum_distribution.png figures/ 2>/dev/null || true
+            ls -la simulation/output/figures/*.png 2>/dev/null || true
           fi
 
       - name: Integrate Figures into LaTeX
@@ -158,10 +213,40 @@ jobs:
           name: simulation_output_raw
           path: simulation/output/
           retention-days: 14
-      - name: Install TeX Live
+
+      - name: Upload LLM stress test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: llm_stress_test_results
+          path: llm_stress_test_results/
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Free disk space (GitHub Actions runner)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Install TeX Live (minimal, not texlive-full)
         run: |
-          # Install a reasonably complete TeX Live and latexmk
-          sudo apt-get install -y texlive-full latexmk
+          # Use minimal TeX Live (~1GB) instead of texlive-full (~5–7GB) to avoid "No space left on device"
+          # texlive-lang-cjk provides xeCJK.sty (required for ethical_riemann_hypothesis_zh.tex)
+          # texlive-lang-chinese provides ctex and Chinese fonts
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-xetex \
+            texlive-lang-cjk \
+            texlive-lang-chinese \
+            latexmk
 
       - name: Compile English LaTeX Document
         run: |

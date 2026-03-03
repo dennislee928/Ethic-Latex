@@ -1,8 +1,9 @@
 name: Quantum Tests
 
 on:
+  workflow_call:
   push:
-    branches: ["main"]
+    branches: ["main","dev"]
     paths:
       - "simulation/quantum/**"
       - "tests/test_quantum_*.py"
@@ -32,7 +33,7 @@ jobs:
       - name: Install dependencies (with quantum)
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[quantum]" pytest
+          pip install -e ".[quantum]" pytest networkx
           pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
 
       - name: Run quantum entanglement tests
@@ -54,15 +55,15 @@ jobs:
       - name: Install dependencies (no quantum)
         run: |
           python -m pip install --upgrade pip
-          pip install -e . pytest numpy
+          pip install -e . pytest numpy networkx
 
       - name: Run quantum tests (NumPy fallback)
         run: |
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           pytest tests/test_quantum_entanglement.py -v --tb=short
 
-  cloud-backend:
-    name: Cloud Quantum Judge (optional)
+  ibm-complex-circuit:
+    name: IBM Complex Circuit (AdvancedEthicalQuantumEngine)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
@@ -76,18 +77,20 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[quantum]" pytest
+          pip install -e ".[quantum]" pytest networkx
+          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
 
-      - name: Test CloudQuantumJudge connectivity
+      - name: Test complex circuit on IBM Quantum
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
+          USE_IBM_QUANTUM: "1"
+          IBM_QUANTUM_BACKEND: ibm_fez
         run: |
+          if [ -z "$IBM_QUANTUM_TOKEN" ]; then
+            echo "Skipped: IBM_QUANTUM_TOKEN not set (normal on fork PRs)"
+            exit 0
+          fi
           export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          python -c "
-          from simulation.quantum.cloud import CloudQuantumJudge
-          judge = CloudQuantumJudge(shots=64)
-          j = judge.judge_action(difficulty=0.5)
-          assert -1 <= j <= 1, f'judgment {j} out of range'
-          print('CloudQuantumJudge OK')
-          "
+          python scripts/run_quantum_hilbert_figures.py
+          echo "AdvancedEthicalQuantumEngine OK (IBM)"
         continue-on-error: true

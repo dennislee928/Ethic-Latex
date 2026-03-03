@@ -11,9 +11,14 @@ sys.path.insert(0, str(simulation_dir))
 
 import numpy as np
 import pytest
-from core.agent import EthicalAgent, AgentPopulation, SimpleEthicalAgent
-from core.judgement_system import BiasedJudge
-from core.action_space import Action, generate_world
+from erh.core import (
+    EthicalAgent,
+    AgentPopulation,
+    SimpleEthicalAgent,
+    BiasedJudge,
+    Action,
+    generate_world,
+)
 
 
 class TestEthicalAgent:

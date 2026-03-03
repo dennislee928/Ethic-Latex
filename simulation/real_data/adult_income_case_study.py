@@ -224,6 +224,49 @@ def compute_erh_curves(
     }
 
 
+def compute_real_world_alpha(
+    data_path: Path | None = None,
+) -> float | None:
+    """
+    Compute baseline alpha for Adult Income dataset (real-world error growth).
+
+    Returns None if dataset or scikit-learn unavailable.
+    Used by alpha comparison scripts.
+    """
+    if LogisticRegression is None or train_test_split is None or StandardScaler is None:
+        return None
+    path = (data_path or DEFAULT_DATA_PATH).resolve()
+    if not path.exists():
+        return None
+    try:
+        df = load_adult_dataset(path)
+        X, y, _ = preprocess_adult(df)
+        x_train, x_test, y_train, y_test = train_test_split(
+            X.values, y, test_size=0.3, random_state=42, stratify=y
+        )
+        scaler = StandardScaler()
+        x_train_scaled = scaler.fit_transform(x_train)
+        x_test_scaled = scaler.transform(x_test)
+        base = LogisticRegression(max_iter=1000, n_jobs=None)
+        base.fit(x_train_scaled, y_train)
+        base_probs = base.predict_proba(x_test_scaled)[:, 1]
+        base_preds = (base_probs >= 0.5).astype(int)
+        base_err = base_preds - y_test
+        base_complexities = compute_complexity_from_scores(
+            pd.DataFrame(x_test), base_probs
+        )
+        curves = compute_erh_curves(base_err, base_complexities, x_max=100)
+        x, e = curves["x"], np.abs(curves["E"])
+        mask = x >= 10
+        if e[mask].sum() == 0:
+            return 0.0
+        log_x = np.log(x[mask])
+        log_e = np.log(e[mask] + 1e-8)
+        return float(np.polyfit(log_x, log_e, 1)[0])
+    except Exception:
+        return None
+
+
 def summarize_case_study(
     base_errors: np.ndarray,
     mit_errors: np.ndarray,

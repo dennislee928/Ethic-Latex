@@ -1,3 +1,5 @@
+# Ethical Riemann Hypothesis — Streamlit simulation app
+# See README.md and docs/CLOUD_DEPLOYMENT.md for alternatives (Binder, Docker).
 services:
   - type: web
     name: ethical-riemann-hypothesis
@@ -7,4 +9,7 @@ services:
     envVars:
       - key: PYTHONUNBUFFERED
         value: 1
+      # Optional: for quantum cloud backend (IBM Quantum Runtime)
+      # - key: IBM_QUANTUM_TOKEN
+      #   sync: false
 

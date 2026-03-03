@@ -3,13 +3,15 @@ import { Layout } from '../components/Layout';
 import { ErrorSummaryCard } from '../components/ErrorSummaryCard';
 import { ErhCurveChart } from '../components/ErhCurveChart';
 import { ComplexityHeatmap } from '../components/ComplexityHeatmap';
+import { HealthMonitorChart } from '../components/HealthMonitorChart';
 import type {
   AnalysisCurves,
   AnalysisSummary,
   HeatmapResponse,
+  HealthMonitorResponse,
   JudgeType
 } from '../lib/api';
-import { getCurves, getHeatmap, getSummary } from '../lib/api';
+import { getCurves, getHeatmap, getSummary, getHealth } from '../lib/api';
 
 const judgeTypes: JudgeType[] = ['PIPELINE', 'HUMAN', 'COMBINED'];
 
@@ -28,6 +30,10 @@ const IndexPage: React.FC = () => {
   const [heatmapLoading, setHeatmapLoading] = useState(false);
   const [heatmapError, setHeatmapError] = useState<string | null>(null);
 
+  const [health, setHealth] = useState<HealthMonitorResponse | null>(null);
+  const [healthLoading, setHealthLoading] = useState(false);
+  const [healthError, setHealthError] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -35,20 +41,24 @@ const IndexPage: React.FC = () => {
       setSummaryLoading(true);
       setCurvesLoading(true);
       setHeatmapLoading(true);
+      setHealthLoading(true);
       setSummaryError(null);
       setCurvesError(null);
       setHeatmapError(null);
+      setHealthError(null);
 
       try {
-        const [s, c, h] = await Promise.all([
+        const [s, c, hm, hl] = await Promise.all([
           getSummary(judgeType),
           getCurves(judgeType),
-          getHeatmap(judgeType)
+          getHeatmap(judgeType),
+          getHealth(judgeType)
         ]);
         if (!cancelled) {
           setSummary(s);
           setCurves(c);
-          setHeatmap(h);
+          setHeatmap(hm);
+          setHealth(hl);
         }
       } catch (err) {
         if (!cancelled) {
@@ -57,12 +67,14 @@ const IndexPage: React.FC = () => {
           setSummaryError(message);
           setCurvesError(message);
           setHeatmapError(message);
+          setHealthError(message);
         }
       } finally {
         if (!cancelled) {
           setSummaryLoading(false);
           setCurvesLoading(false);
           setHeatmapLoading(false);
+          setHealthLoading(false);
         }
       }
     };
@@ -103,6 +115,15 @@ const IndexPage: React.FC = () => {
         <div className="md:col-span-2">
           <ErhCurveChart curves={curves} loading={curvesLoading} error={curvesError} />
         </div>
+      </div>
+
+      <div className="mt-4">
+        <HealthMonitorChart
+          data={health}
+          judgeType={judgeType}
+          loading={healthLoading}
+          error={healthError}
+        />
       </div>
 
       <div className="mt-4">

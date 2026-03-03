@@ -1,0 +1,26 @@
+[project]
+name = "my-flask-app"
+version = "0.1.0"
+description = "Flask web application"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.1.0",
+    "flask-sqlalchemy>=3.1.0",
+    "flask-login>=0.6.3",
+    "flask-wtf>=1.2.0",
+    "python-dotenv>=1.0.0",
+    "email-validator>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+prod = [
+    "gunicorn>=21.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

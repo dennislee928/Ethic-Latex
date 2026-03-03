@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>erh.core.hybrid_model &mdash; Ethical Riemann Hypothesis (ERH) SDK 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ethical Riemann Hypothesis (ERH) SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ethical Riemann Hypothesis (ERH) SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">erh.core.hybrid_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for erh.core.hybrid_model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Hybrid Model Module</span>
+
+<span class="sd">This module integrates all psychohistory components into a unified framework:</span>
+<span class="sd">- Temporal ERH</span>
+<span class="sd">- ABM simulation</span>
+<span class="sd">- Network dynamics</span>
+<span class="sd">- Fluid model</span>
+<span class="sd">- Meta-monitoring</span>
+
+<span class="sd">Provides a unified API for running complete psychohistory-style simulations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.temporal_erh</span><span class="w"> </span><span class="kn">import</span> <span class="n">track_error_evolution</span><span class="p">,</span> <span class="n">compute_Pi_temporal</span><span class="p">,</span> <span class="n">compute_E_temporal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.abm_simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABMSimulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.meta_monitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetaMonitor</span><span class="p">,</span> <span class="n">ERHParameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.social_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">SocialNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentPopulation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.action_space</span><span class="w"> </span><span class="kn">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">generate_world</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.judgement_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseJudge</span>
+
+<span class="c1"># Handle relative imports for both package and test environments</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.opinion_dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">degroot_model</span><span class="p">,</span> <span class="n">hegselmann_krause_model</span><span class="p">,</span> <span class="n">aggregate_beliefs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.fluid_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_error_density_pde</span><span class="p">,</span> <span class="n">fit_fluid_parameters</span><span class="p">,</span> <span class="n">detect_critical_phenomena</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.temporal_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_temporal_trends</span><span class="p">,</span> <span class="n">detect_anomalies</span><span class="p">,</span> <span class="n">forecast_error_growth</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># Fallback for test environments or direct execution</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">analysis.opinion_dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">degroot_model</span><span class="p">,</span> <span class="n">hegselmann_krause_model</span><span class="p">,</span> <span class="n">aggregate_beliefs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">analysis.fluid_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_error_density_pde</span><span class="p">,</span> <span class="n">fit_fluid_parameters</span><span class="p">,</span> <span class="n">detect_critical_phenomena</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">analysis.temporal_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_temporal_trends</span><span class="p">,</span> <span class="n">detect_anomalies</span><span class="p">,</span> <span class="n">forecast_error_growth</span>
+
+
+<div class="viewcode-block" id="HybridPsychohistoryModel">
+<a class="viewcode-back" href="../../../api.html#erh.core.HybridPsychohistoryModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HybridPsychohistoryModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integrated psychohistory model combining all components.</span>
+<span class="sd">    </span>
+<span class="sd">    This class provides a unified interface for running complete</span>
+<span class="sd">    psychohistory-style simulations with all features integrated.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    abm_simulator : ABMSimulator</span>
+<span class="sd">        ABM simulator component</span>
+<span class="sd">    meta_monitor : MetaMonitor</span>
+<span class="sd">        Meta-layer monitor</span>
+<span class="sd">    temporal_enabled : bool</span>
+<span class="sd">        Whether temporal tracking is enabled</span>
+<span class="sd">    network_dynamics_enabled : bool</span>
+<span class="sd">        Whether network dynamics are enabled</span>
+<span class="sd">    fluid_model_enabled : bool</span>
+<span class="sd">        Whether fluid model is enabled</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_agents</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">judge_factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">BaseJudge</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">network_topology</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;small_world&#39;</span><span class="p">,</span>
+        <span class="n">enable_temporal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_network_dynamics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">enable_fluid_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enable_meta_monitor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize hybrid model.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_agents : int, default=100</span>
+<span class="sd">            Number of agents</span>
+<span class="sd">        judge_factory : Optional[Callable[[int], BaseJudge]], default=None</span>
+<span class="sd">            Function to create judges</span>
+<span class="sd">        network_topology : str, default=&#39;small_world&#39;</span>
+<span class="sd">            Network topology</span>
+<span class="sd">        enable_temporal : bool, default=True</span>
+<span class="sd">            Enable temporal ERH tracking</span>
+<span class="sd">        enable_network_dynamics : bool, default=True</span>
+<span class="sd">            Enable network opinion dynamics</span>
+<span class="sd">        enable_fluid_model : bool, default=False</span>
+<span class="sd">            Enable fluid model (computationally expensive)</span>
+<span class="sd">        enable_meta_monitor : bool, default=True</span>
+<span class="sd">            Enable meta-layer monitoring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize ABM simulator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span> <span class="o">=</span> <span class="n">ABMSimulator</span><span class="p">(</span>
+            <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+            <span class="n">judge_factory</span><span class="o">=</span><span class="n">judge_factory</span><span class="p">,</span>
+            <span class="n">network_topology</span><span class="o">=</span><span class="n">network_topology</span><span class="p">,</span>
+            <span class="n">enable_meta_monitor</span><span class="o">=</span><span class="n">enable_meta_monitor</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">meta_monitor</span>
+        
+        <span class="c1"># Feature flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temporal_enabled</span> <span class="o">=</span> <span class="n">enable_temporal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_dynamics_enabled</span> <span class="o">=</span> <span class="n">enable_network_dynamics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluid_model_enabled</span> <span class="o">=</span> <span class="n">enable_fluid_model</span>
+        
+        <span class="c1"># State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;erh_history&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;network_history&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;fluid_history&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+    
+<div class="viewcode-block" id="HybridPsychohistoryModel.run_simulation">
+<a class="viewcode-back" href="../../../api.html#erh.core.HybridPsychohistoryModel.run_simulation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_time_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">actions_per_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">network_dynamics_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;degroot&#39;</span><span class="p">,</span>
+        <span class="n">fluid_model_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run complete hybrid simulation.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_time_steps : int, default=10</span>
+<span class="sd">            Number of time steps</span>
+<span class="sd">        actions_per_step : int, default=1000</span>
+<span class="sd">            Actions per time step</span>
+<span class="sd">        tau : float, default=0.3</span>
+<span class="sd">            Error threshold</span>
+<span class="sd">        X_max : int, default=100</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">        network_dynamics_model : str, default=&#39;degroot&#39;</span>
+<span class="sd">            Network dynamics model: &#39;degroot&#39; or &#39;hegselmann_krause&#39;</span>
+<span class="sd">        fluid_model_params : Optional[Dict], default=None</span>
+<span class="sd">            Parameters for fluid model</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Complete simulation results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Run ABM simulation</span>
+        <span class="n">abm_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">(</span>
+            <span class="n">num_time_steps</span><span class="o">=</span><span class="n">num_time_steps</span><span class="p">,</span>
+            <span class="n">actions_per_step</span><span class="o">=</span><span class="n">actions_per_step</span><span class="p">,</span>
+            <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span>
+            <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">,</span>
+            <span class="n">track_erh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal_enabled</span>
+        <span class="p">)</span>
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;abm_results&#39;</span><span class="p">:</span> <span class="n">abm_results</span><span class="p">,</span>
+            <span class="s1">&#39;temporal_erh&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;network_dynamics&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;fluid_model&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;meta_monitoring&#39;</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Temporal ERH analysis</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_enabled</span> <span class="ow">and</span> <span class="s1">&#39;actions_history&#39;</span> <span class="ow">in</span> <span class="n">abm_results</span><span class="p">:</span>
+            <span class="n">temporal_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">compute_temporal_erh</span><span class="p">(</span>
+                <span class="n">abm_results</span><span class="p">[</span><span class="s1">&#39;actions_history&#39;</span><span class="p">],</span>
+                <span class="n">tau</span><span class="o">=</span><span class="n">tau</span><span class="p">,</span>
+                <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span>
+            <span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;temporal_erh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temporal_results</span>
+            
+            <span class="c1"># Temporal analysis</span>
+            <span class="k">if</span> <span class="s1">&#39;E_xt&#39;</span> <span class="ow">in</span> <span class="n">temporal_results</span><span class="p">:</span>
+                <span class="n">E_xt</span> <span class="o">=</span> <span class="n">temporal_results</span><span class="p">[</span><span class="s1">&#39;E_xt&#39;</span><span class="p">]</span>
+                <span class="n">time_steps</span> <span class="o">=</span> <span class="n">E_xt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                
+                <span class="c1"># Analyze trends</span>
+                <span class="n">trends</span> <span class="o">=</span> <span class="n">analyze_temporal_trends</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
+                <span class="n">results</span><span class="p">[</span><span class="s1">&#39;temporal_trends&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trends</span>
+                
+                <span class="c1"># Detect anomalies</span>
+                <span class="n">anomalies</span> <span class="o">=</span> <span class="n">detect_anomalies</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;combined&#39;</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">)</span>
+                <span class="n">results</span><span class="p">[</span><span class="s1">&#39;anomalies&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">anomalies</span>
+                
+                <span class="c1"># Forecast</span>
+                <span class="n">forecast</span> <span class="o">=</span> <span class="n">forecast_error_growth</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">forecast_horizon</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">X_max</span><span class="o">=</span><span class="n">X_max</span><span class="p">)</span>
+                <span class="n">results</span><span class="p">[</span><span class="s1">&#39;forecast&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forecast</span>
+        
+        <span class="c1"># Network dynamics</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dynamics_enabled</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">network</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">agents</span>
+            
+            <span class="k">if</span> <span class="n">network_dynamics_model</span> <span class="o">==</span> <span class="s1">&#39;degroot&#39;</span><span class="p">:</span>
+                <span class="n">dynamics_result</span> <span class="o">=</span> <span class="n">degroot_model</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">network_dynamics_model</span> <span class="o">==</span> <span class="s1">&#39;hegselmann_krause&#39;</span><span class="p">:</span>
+                <span class="n">dynamics_result</span> <span class="o">=</span> <span class="n">hegselmann_krause_model</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dynamics_result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;final_opinions&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+            
+            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;network_dynamics&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dynamics_result</span>
+            
+            <span class="c1"># Aggregate beliefs</span>
+            <span class="n">individual_errors</span> <span class="o">=</span> <span class="p">{</span><span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span> <span class="n">agent</span><span class="o">.</span><span class="n">error_rate</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">}</span>
+            <span class="n">aggregated</span> <span class="o">=</span> <span class="n">aggregate_beliefs</span><span class="p">(</span><span class="n">individual_errors</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dynamics_model</span><span class="o">=</span><span class="n">network_dynamics_model</span><span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;aggregated_beliefs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aggregated</span>
+        
+        <span class="c1"># Fluid model (if enabled)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluid_model_enabled</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_enabled</span> <span class="ow">and</span> <span class="s1">&#39;E_xt&#39;</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;temporal_erh&#39;</span><span class="p">,</span> <span class="p">{}):</span>
+            <span class="n">E_xt</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;temporal_erh&#39;</span><span class="p">][</span><span class="s1">&#39;E_xt&#39;</span><span class="p">]</span>
+            <span class="n">time_steps</span> <span class="o">=</span> <span class="n">E_xt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="c1"># Fit fluid parameters from data</span>
+            <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">t_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_steps</span><span class="p">)</span>
+            <span class="n">fluid_params</span> <span class="o">=</span> <span class="n">fit_fluid_parameters</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">x_values</span><span class="p">,</span> <span class="n">t_values</span><span class="p">)</span>
+            
+            <span class="c1"># Solve fluid model</span>
+            <span class="k">if</span> <span class="n">fluid_model_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fluid_model_params</span> <span class="o">=</span> <span class="n">fluid_params</span>
+            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">u_xt</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">t_grid</span> <span class="o">=</span> <span class="n">solve_error_density_pde</span><span class="p">(</span>
+                    <span class="n">x_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span><span class="p">),</span>
+                    <span class="n">t_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">),</span>
+                    <span class="n">nx</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">X_max</span><span class="p">),</span>
+                    <span class="n">nt</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">),</span>
+                    <span class="n">v</span><span class="o">=</span><span class="n">fluid_model_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+                    <span class="n">D</span><span class="o">=</span><span class="n">fluid_model_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="n">fluid_model_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+                <span class="p">)</span>
+                
+                <span class="c1"># Detect critical phenomena</span>
+                <span class="n">critical_events</span> <span class="o">=</span> <span class="n">detect_critical_phenomena</span><span class="p">(</span><span class="n">u_xt</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">)</span>
+                
+                <span class="n">results</span><span class="p">[</span><span class="s1">&#39;fluid_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;u_xt&#39;</span><span class="p">:</span> <span class="n">u_xt</span><span class="p">,</span>
+                    <span class="s1">&#39;x_grid&#39;</span><span class="p">:</span> <span class="n">x_grid</span><span class="p">,</span>
+                    <span class="s1">&#39;t_grid&#39;</span><span class="p">:</span> <span class="n">t_grid</span><span class="p">,</span>
+                    <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="n">fluid_params</span><span class="p">,</span>
+                    <span class="s1">&#39;critical_events&#39;</span><span class="p">:</span> <span class="n">critical_events</span>
+                <span class="p">}</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="s1">&#39;fluid_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+        
+        <span class="c1"># Meta-monitoring summary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;meta_monitoring&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span><span class="o">.</span><span class="n">get_monitoring_summary</span><span class="p">()</span>
+        
+        <span class="c1"># Update state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_state</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_time_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_state</span><span class="p">[</span><span class="s1">&#39;erh_history&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">abm_results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;erh_history&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        
+        <span class="k">return</span> <span class="n">results</span></div>
+
+    
+<div class="viewcode-block" id="HybridPsychohistoryModel.adaptive_adjustment">
+<a class="viewcode-back" href="../../../api.html#erh.core.HybridPsychohistoryModel.adaptive_adjustment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adaptive_adjustment</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">simulation_results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">target_exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform adaptive adjustment based on simulation results.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        simulation_results : Dict</span>
+<span class="sd">            Results from run_simulation</span>
+<span class="sd">        target_exponent : float, default=0.5</span>
+<span class="sd">            Target ERH exponent</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Adjustment results and recommendations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adjustments</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Meta-monitor adaptive parameters</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="ow">and</span> <span class="s1">&#39;temporal_erh&#39;</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="n">temporal_erh</span> <span class="o">=</span> <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;temporal_erh&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;E_xt&#39;</span> <span class="ow">in</span> <span class="n">temporal_erh</span><span class="p">:</span>
+                <span class="n">E_xt</span> <span class="o">=</span> <span class="n">temporal_erh</span><span class="p">[</span><span class="s1">&#39;E_xt&#39;</span><span class="p">]</span>
+                <span class="c1"># Use meta-monitor&#39;s adaptive adjustment</span>
+                <span class="n">E_xt_history</span> <span class="o">=</span> <span class="p">[</span><span class="n">E_xt</span><span class="p">]</span>
+                <span class="n">new_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span><span class="o">.</span><span class="n">adaptive_erh_parameters</span><span class="p">(</span><span class="n">E_xt_history</span><span class="p">,</span> <span class="n">target_exponent</span><span class="p">)</span>
+                <span class="n">adjustments</span><span class="p">[</span><span class="s1">&#39;erh_parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">new_params</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+                    <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="n">new_params</span><span class="o">.</span><span class="n">epsilon</span>
+                <span class="p">}</span>
+        
+        <span class="c1"># ABM calibration</span>
+        <span class="k">if</span> <span class="s1">&#39;abm_results&#39;</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="n">calibration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">calibrate_erh_parameters</span><span class="p">(</span>
+                <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;abm_results&#39;</span><span class="p">],</span>
+                <span class="n">target_exponent</span>
+            <span class="p">)</span>
+            <span class="n">adjustments</span><span class="p">[</span><span class="s1">&#39;abm_calibration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calibration</span>
+        
+        <span class="k">return</span> <span class="n">adjustments</span></div>
+
+    
+<div class="viewcode-block" id="HybridPsychohistoryModel.get_unified_metrics">
+<a class="viewcode-back" href="../../../api.html#erh.core.HybridPsychohistoryModel.get_unified_metrics">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_unified_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute unified metrics across all components.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        simulation_results : Dict</span>
+<span class="sd">            Simulation results</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Unified metrics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;temporal_stability&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;network_coherence&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;system_health&#39;</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># ERH satisfaction</span>
+        <span class="k">if</span> <span class="s1">&#39;temporal_erh&#39;</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="n">temporal_erh</span> <span class="o">=</span> <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;temporal_erh&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;erh_satisfaction&#39;</span> <span class="ow">in</span> <span class="n">temporal_erh</span><span class="p">:</span>
+                <span class="n">erh_sat</span> <span class="o">=</span> <span class="n">temporal_erh</span><span class="p">[</span><span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">]</span>
+                <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;satisfaction_rate&#39;</span><span class="p">:</span> <span class="n">erh_sat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;satisfaction_rate&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                    <span class="s1">&#39;violation_rate&#39;</span><span class="p">:</span> <span class="n">erh_sat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;violation_rate&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                    <span class="s1">&#39;worst_violation&#39;</span><span class="p">:</span> <span class="n">erh_sat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;worst_violation&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                <span class="p">}</span>
+        
+        <span class="c1"># Temporal stability</span>
+        <span class="k">if</span> <span class="s1">&#39;temporal_trends&#39;</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="n">trends</span> <span class="o">=</span> <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;temporal_trends&#39;</span><span class="p">]</span>
+            <span class="n">overall</span> <span class="o">=</span> <span class="n">trends</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;overall_trend&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;temporal_stability&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;volatility&#39;</span><span class="p">:</span> <span class="n">overall</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;volatility&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                <span class="s1">&#39;trend_direction&#39;</span><span class="p">:</span> <span class="n">overall</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;mean_error&#39;</span><span class="p">:</span> <span class="n">overall</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mean_error&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="p">}</span>
+        
+        <span class="c1"># Network coherence</span>
+        <span class="k">if</span> <span class="s1">&#39;network_dynamics&#39;</span> <span class="ow">in</span> <span class="n">simulation_results</span><span class="p">:</span>
+            <span class="n">network_dyn</span> <span class="o">=</span> <span class="n">simulation_results</span><span class="p">[</span><span class="s1">&#39;network_dynamics&#39;</span><span class="p">]</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;network_coherence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;converged&#39;</span><span class="p">:</span> <span class="n">network_dyn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;converged&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="s1">&#39;iterations&#39;</span><span class="p">:</span> <span class="n">network_dyn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="s1">&#39;clusters&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">network_dyn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;clusters&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="p">}</span>
+        
+        <span class="c1"># System health (composite metric)</span>
+        <span class="n">health_score</span> <span class="o">=</span> <span class="mf">1.0</span>
+        
+        <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">]:</span>
+            <span class="n">satisfaction_rate</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;erh_satisfaction&#39;</span><span class="p">][</span><span class="s1">&#39;satisfaction_rate&#39;</span><span class="p">]</span>
+            <span class="n">health_score</span> <span class="o">*=</span> <span class="n">satisfaction_rate</span>
+        
+        <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;temporal_stability&#39;</span><span class="p">]:</span>
+            <span class="n">volatility</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;temporal_stability&#39;</span><span class="p">][</span><span class="s1">&#39;volatility&#39;</span><span class="p">]</span>
+            <span class="c1"># Lower volatility is better</span>
+            <span class="n">health_score</span> <span class="o">*=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">volatility</span> <span class="o">/</span> <span class="mf">0.5</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;network_coherence&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;network_coherence&#39;</span><span class="p">][</span><span class="s1">&#39;converged&#39;</span><span class="p">]:</span>
+                <span class="n">health_score</span> <span class="o">*=</span> <span class="mf">1.1</span>  <span class="c1"># Bonus for convergence</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">health_score</span> <span class="o">*=</span> <span class="mf">0.9</span>
+        
+        <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;system_health&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">health_score</span><span class="p">)),</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;healthy&#39;</span> <span class="k">if</span> <span class="n">health_score</span> <span class="o">&gt;</span> <span class="mf">0.7</span> <span class="k">else</span> <span class="s1">&#39;degraded&#39;</span> <span class="k">if</span> <span class="n">health_score</span> <span class="o">&gt;</span> <span class="mf">0.4</span> <span class="k">else</span> <span class="s1">&#39;critical&#39;</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">metrics</span></div>
+
+    
+<div class="viewcode-block" id="HybridPsychohistoryModel.get_summary">
+<a class="viewcode-back" href="../../../api.html#erh.core.HybridPsychohistoryModel.get_summary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get summary of hybrid model state.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Model summary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;num_agents&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">population</span><span class="p">),</span>
+            <span class="s1">&#39;network_topology&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_network_statistics</span><span class="p">(),</span>
+            <span class="s1">&#39;features_enabled&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;temporal&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_enabled</span><span class="p">,</span>
+                <span class="s1">&#39;network_dynamics&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dynamics_enabled</span><span class="p">,</span>
+                <span class="s1">&#39;fluid_model&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluid_model_enabled</span><span class="p">,</span>
+                <span class="s1">&#39;meta_monitor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;simulation_state&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_state</span><span class="p">,</span>
+            <span class="s1">&#39;abm_summary&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">abm_simulator</span><span class="o">.</span><span class="n">get_simulation_summary</span><span class="p">()</span>
+        <span class="p">}</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethical AI Research Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -91,7 +91,7 @@ def select_ethical_primes(
             min_c = all_complexities[len(all_complexities) // 10]
             max_c = all_complexities[9 * len(all_complexities) // 10]
             mistakes = [a for a in mistakes if min_c <= a.c <= max_c]
-    
+
     if len(mistakes) == 0:
         return []
     
@@ -104,16 +104,19 @@ def select_ethical_primes(
         
     elif strategy == 'complexity':
         # Prefer mid-range complexity (most interesting cases)
-        # Score by distance from median complexity
+        if not mistakes:
+            return []
         complexities = [a.c for a in mistakes]
         median_c = np.median(complexities)
-        
-        # Score: high importance, moderate complexity deviation
+        max_w = max(a.w for a in mistakes)
+        if max_w <= 0:
+            max_w = 1.0
+
         def score(a):
             c_score = 1.0 / (1.0 + abs(a.c - median_c) / median_c)
-            w_score = a.w / max(act.w for act in mistakes)
+            w_score = a.w / max_w
             return 0.3 * c_score + 0.7 * w_score
-        
+
         mistakes.sort(key=score, reverse=True)
         cutoff_idx = int(len(mistakes) * (1 - importance_quantile))
         primes = mistakes[:max(cutoff_idx, 1)]
@@ -471,15 +474,19 @@ def analyze_error_growth(
     # We avoid fragile relative imports so that this module works both
     # when `simulation` is a package and when files are executed as scripts.
     try:
-        from simulation.analysis.erh_checks import check_erh_bound
-        from simulation.analysis.statistics import bootstrap_exponent_ci
+        from erh_core.analysis.erh_checks import check_erh_bound
+        from erh_core.analysis.statistics import bootstrap_exponent_ci
     except ImportError:
         try:
-            from erh.analysis.erh_checks import check_erh_bound  # type: ignore
-            from erh.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            from simulation.analysis.erh_checks import check_erh_bound
+            from simulation.analysis.statistics import bootstrap_exponent_ci
         except ImportError:
-            from analysis.erh_checks import check_erh_bound  # type: ignore
-            from analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            try:
+                from erh.analysis.erh_checks import check_erh_bound  # type: ignore
+                from erh.analysis.statistics import bootstrap_exponent_ci  # type: ignore
+            except ImportError:
+                from analysis.erh_checks import check_erh_bound  # type: ignore
+                from analysis.statistics import bootstrap_exponent_ci  # type: ignore
 
     bound_stats = check_erh_bound(E_x, x_values)
     ci_stats = bootstrap_exponent_ci(E_x, x_values)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ActionBase(BaseModel):
@@ -14,11 +14,10 @@ class ActionBase(BaseModel):
 
 
 class ActionRead(ActionBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-
-    class Config:
-        orm_mode = True
 
 
 class JudgmentBase(BaseModel):
@@ -29,12 +28,11 @@ class JudgmentBase(BaseModel):
 
 
 class JudgmentRead(JudgmentBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     action_id: int
     created_at: datetime
-
-    class Config:
-        orm_mode = True
 
 
 class GroundTruthBase(BaseModel):
@@ -44,11 +42,10 @@ class GroundTruthBase(BaseModel):
 
 
 class GroundTruthRead(GroundTruthBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     action_id: int
-
-    class Config:
-        orm_mode = True
 
 
 class ImportanceBase(BaseModel):
@@ -58,14 +55,15 @@ class ImportanceBase(BaseModel):
 
 
 class ImportanceRead(ImportanceBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     action_id: int
 
-    class Config:
-        orm_mode = True
-
 
 class DerivedMetricsRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     action_id: int
     complexity: float
@@ -75,9 +73,6 @@ class DerivedMetricsRead(BaseModel):
     delta: float
     is_mistake: bool
     is_prime: bool
-
-    class Config:
-        orm_mode = True
 
 
 class AnalysisSummary(BaseModel):
@@ -127,13 +122,12 @@ class LatexRuleUpdate(BaseModel):
 
 
 class LatexRuleRead(LatexRuleBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     owner_id: int
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Verification Schemas
@@ -184,6 +178,8 @@ class SimulationCreate(BaseModel):
 
 
 class SimulationRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     status: str
     result_path: Optional[str] = None
@@ -191,20 +187,16 @@ class SimulationRead(BaseModel):
     created_at: datetime
     completed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-
 
 # Security Report Schemas
 class SecurityReportRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     rule_id: int
     risk_score: float
     violations: Optional[dict] = None
     verified_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Settings Schemas
@@ -216,14 +208,13 @@ class UserPreferences(BaseModel):
 
 
 class UserSettingsRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: int
     preferences: dict
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Dashboard Schemas

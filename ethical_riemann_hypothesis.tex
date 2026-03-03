@@ -9,8 +9,7 @@
 \usepackage{geometry}
 \usepackage{natbib}
 \usepackage{booktabs}
-\usepackage{algorithm}
-\usepackage{algorithmic}
+% algorithm, algorithmic: optional; require tlmgr install algorithms. Omitted for BasicTeX minimal install.
 
 % Page geometry
 \geometry{
@@ -114,12 +113,15 @@ This paper makes the following contributions:
 
 \subsection{Paper Organization}
 
-The remainder of this paper is organized as follows. Section~\ref{sec:formalization} develops the mathematical formalization. Section~\ref{sec:erh} states the Ethical Riemann Hypothesis and its variants. Section~\ref{sec:framework} describes our computational framework. Section~\ref{sec:results} presents experimental results. Section~\ref{sec:implications} discusses implications for AI ethics. Section~\ref{sec:conclusion} concludes and outlines future work.
+The remainder of this paper is organized as follows. Section~\ref{sec:theoretical} (Theoretical Framework) presents the mathematical definition and the quantum isomorphism. Section~\ref{sec:framework} (Computational Model) describes classical agent logic and quantum solver implementation. Section~\ref{sec:results} (Experiments \& Results) presents synthetic simulation, phase transition analysis, and empirical feasibility. Section~\ref{sec:discussion} (Discussion) addresses philosophical implications. Section~\ref{sec:conclusion} concludes.
 
-\section{Mathematical Formalization}
+\section{Theoretical Framework}
+\label{sec:theoretical}
+
+\subsection{Mathematical Definition (Zeta, Primes)}
 \label{sec:formalization}
 
-\subsection{Action Space}
+\subsubsection{Action Space}
 
 \begin{definition}[Action Space]
 An \emph{action space} is a finite set $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$ where each action $a_i$ has the following attributes:
@@ -134,7 +136,21 @@ An \emph{action space} is a finite set $\mathcal{A} = \{a_1, a_2, \ldots, a_N\}$
 The true moral value $V(a)$ represents an idealized ``god's-eye view'' or consensus among perfect moral reasoners. In practice, this is inaccessible and must be approximated. In our simulations, we define $V(a)$ explicitly as ground truth.
 \end{remark}
 
-\subsection{Judgment Systems}
+\subsubsection{Approximating True Moral Value $V(a)$}
+\label{sec:approximating-v}
+
+Since $V(a)$ is epistemically inaccessible in the real world, we operationalize it via proxies:
+
+\begin{itemize}
+    \item \textbf{RLHF and human annotation}: High-quality human-labeled datasets (e.g., pairwise preferences used in reinforcement learning from human feedback) provide a practical proxy. We use annotator agreement and confidence scores to define $V(a)$.
+    \item \textbf{Bradley-Terry model}: From pairwise preferences $(a_i \succ a_j)$ we infer latent scores via the Bradley-Terry model, yielding a scalar $V(a) \in [-1, 1]$ per action.
+    \item \textbf{HuggingFace Oracle}: Pre-trained models (e.g., \texttt{unitary/toxic-bert}) score action text as $V(a)$; less toxic $\mapsto$ more ethical. \texttt{HuggingFaceEthicalOracle} maps toxicity to $[-1,1]$ with JSON cache.
+    \item \textbf{Implementation}: Our framework supports \texttt{GroundTruthProxy.from\_mock\_rlhf()} for simulation, \texttt{load\_from\_csv()} for empirical datasets, and \texttt{OracleDrivenJudge} with optional \texttt{csv\_proxy} (CSV-first, Oracle fallback).
+\end{itemize}
+
+\textbf{Limitations}: Different proxies introduce different biases. Annotator disagreement, sampling noise, and cultural variation affect the approximation quality. ERH analysis remains heuristic when $V(a)$ is proxy-based.
+
+\subsubsection{Judgment Systems}
 
 \begin{definition}[Judgment System]
 A \emph{judgment system} $\mathcal{J}$ is a function that assigns a moral evaluation to each action:
@@ -160,7 +176,7 @@ M(a) = \begin{cases}
 \end{cases}
 \]
 
-\subsection{Ethical Primes}
+\subsubsection{Ethical Primes}
 
 \begin{definition}[Ethical Prime]
 An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
@@ -173,7 +189,7 @@ An action $a \in \mathcal{A}$ is an \emph{ethical prime} if:
 
 Let $\mathcal{P} \subseteq \mathcal{A}$ denote the set of ethical primes. In practice, we select $\mathcal{P}$ by filtering misjudged actions by importance quantile and complexity range.
 
-\subsection{Counting Functions}
+\subsubsection{Counting Functions}
 
 \begin{definition}[Ethical Prime Counting Function]
 Define $\Pi(x)$ as the number of ethical primes with complexity at most $x$:
@@ -198,10 +214,10 @@ E(x) = \Pi(x) - B(x)
 This measures how the actual distribution of ethical primes deviates from the baseline expectation.
 \end{definition}
 
-\section{The Ethical Riemann Hypothesis}
+\subsubsection{The Ethical Riemann Hypothesis}
 \label{sec:erh}
 
-\subsection{Statement of ERH}
+\paragraph{Statement of ERH.}
 
 \begin{theorem}[Ethical Riemann Hypothesis (ERH)]
 \label{thm:erh}
@@ -212,8 +228,7 @@ Let $\mathcal{J}$ be a judgment system and let $E(x) = \Pi(x) - B(x)$ be the err
 for all $x$ in the complexity range.
 \end{theorem}
 
-\subsection{Intuitive Interpretation}
-
+\paragraph{Intuitive Interpretation.}
 The ERH states that the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$ (up to a small factor $x^\varepsilon$). This is a \emph{sublinear} growth rate, meaning:
 
 \begin{itemize}
@@ -222,7 +237,7 @@ The ERH states that the cumulative error in predicting critical misjudgments gro
     \item The system maintains structural integrity across scales
 \end{itemize}
 
-\subsection{Comparison with Classical Riemann Hypothesis}
+\paragraph{Comparison with Classical Riemann Hypothesis.}
 
 \begin{table}[h]
 \centering
@@ -244,8 +259,7 @@ Zeros of $\zeta(s)$ & Zeros of $\zeta_E(s)$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Ethical Zeta Function (Optional Extension)}
-
+\paragraph{Ethical Zeta Function (Optional Extension).}
 We can define an ``ethical zeta function'' via generating functions:
 
 \begin{definition}[Ethical Zeta Function]
@@ -258,12 +272,34 @@ for $s \in \mathbb{C}$ with $\text{Re}(s) > 1$.
 
 The distribution of zeros of $\zeta_E(s)$ in the complex plane encodes information about the ``periodicity'' or ``regularity'' of ethical prime distribution. If zeros cluster near a critical line (analogous to $\text{Re}(s) = 1/2$ for the Riemann zeta), this suggests deep structural regularity in the judgment errors.
 
-\section{Computational Framework}
+\textbf{Interpretation of zeros and poles}: (1) \emph{Zeros}---complexity levels $x$ where $E(x) \approx 0$---correspond to points where the judgment system structurally corrects its cumulative error; the system ``resolves'' that complexity. (2) \emph{Poles}---points where $|E(x)|$ spikes sharply---correspond to \emph{moral phase transitions}: when complexity crosses a critical threshold, errors may collapse catastrophically, analogous to spin-glass frustration in physics. We detect poles when $|E(x)| > 3 \times \text{median}(|E|)$; see \texttt{detect\_poles()} in our implementation.
+
+\subsection{The Quantum Isomorphism (Hamiltonian \& Ising Model)}
+\label{sec:quantum-isomorphism}
+
+We model the social moral consensus system as a \emph{Transverse-Field Ising Model}. The total energy (Social Tension Hamiltonian) is:
+\[
+H = -\sum_{\langle i,j \rangle} J_{ij} Z_i Z_j - \sum_{i} h_i X_i
+\]
+where:
+\begin{itemize}
+    \item $Z_i, Z_j$ are Pauli-$Z$ operators representing Agent $i$ and $j$ moral judgment ($+1$ support, $-1$ oppose).
+    \item $J_{ij}$ is social coupling: $J_{ij} > 0$ (ferromagnetic) indicates tendency toward consensus; $J_{ij} < 0$ (frustration) indicates conflict.
+    \item $X_i$ is Pauli-$X$ (uncertainty / quantum tunneling).
+    \item $h_i$ is the external field (e.g., media pressure).
+\end{itemize}
+
+In physics, the energy levels of large atomic nuclei follow \emph{GUE (Gaussian Unitary Ensemble)} statistics. Montgomery's Pair Correlation Conjecture shows that the zeros of the Riemann Zeta function follow the same statistical law. Searching for the \emph{ground state} (minimum energy) of the social Hamiltonian is structurally isomorphic to locating Zeta zeros.
+
+\section{Computational Model}
 \label{sec:framework}
+
+\subsection{Classical Agent Logic}
+\label{sec:classical-agent}
 
 We have implemented a Python simulation framework with the following components:
 
-\subsection{Action Space Generation}
+\subsubsection{Action Space Generation}
 
 Actions are generated with complexity sampled from:
 \begin{itemize}
@@ -280,7 +316,7 @@ True moral values $V(a)$ are generated with \emph{complexity-dependent ambiguity
 
 This reflects the intuition that simple moral cases are often clear-cut, while complex cases involve multiple competing considerations.
 
-\subsection{Judgment System Models}
+\subsubsection{Judgment System Models}
 
 We implement four archetypal judges:
 
@@ -310,7 +346,7 @@ We implement four archetypal judges:
     where $\alpha > 1$.
 \end{enumerate}
 
-\subsection{Analysis Pipeline}
+\subsubsection{Analysis Pipeline}
 
 For each judgment system:
 \begin{enumerate}
@@ -323,7 +359,25 @@ For each judgment system:
     \item Test if $\alpha \approx 0.5$ (ERH satisfied)
 \end{enumerate}
 
-\subsection{Fourier Spectrum Analysis}
+\subsubsection{Operationalizing Complexity in Large Language Models}
+\label{sec:operationalizing}
+
+To make ERH applicable to real systems, we operationalize complexity $c(a)$ concretely:
+
+\begin{enumerate}
+    \item \textbf{Principle conflict count}: $c(a) = \#\{\text{conflicting ethical principles}\}$. Example: honesty vs.\ non-harm $\Rightarrow c = 2$. High $c$ indicates moral dilemmas with incommensurable values. Implemented as \texttt{count\_principle\_conflicts()} and \texttt{calculate\_complexity()} in our codebase.
+    \item \textbf{Token-length proxy}: When action descriptions are available (e.g., from RLHF prompts), $c(a) \propto \log(1 + \text{word count})$ serves as a proxy for reasoning complexity.
+    \item \textbf{Ground truth proxy}: Instead of random ``God view'' $V(a)$, we support loading human consensus or RLHF-weighted datasets where $V(a)$ is defined by annotator agreement and confidence scores. Real-world datasets (Adult Income, COMPAS) can be obtained via \texttt{scripts/fetch\_real\_data.sh} and \texttt{scripts/convert\_adult\_to\_csv.py}; see README for instructions.
+\end{enumerate}
+
+Judges can output both a decision $J(a)$ and a confidence interval $[J_{\text{low}}, J_{\text{high}}]$, enabling calibration analysis and dual-metric evaluation (Accuracy vs.\ Structural Stability).
+
+\subsection{Quantum Solver Implementation (QAOA/VQE)}
+\label{sec:quantum-solver}
+
+We use \texttt{NumPyMinimumEigensolver} for exact ground-state computation on small systems, and \texttt{VQE} (Variational Quantum Eigensolver) or \texttt{QAOA} for larger systems. The Hamiltonian is constructed via \texttt{construct\_ising\_hamiltonian()} mapping agent interactions to $J_{ij}$ and biases to $h_i$. The ground state yields minimal social tension; we also compute Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ as an echo-chamber indicator.
+
+\subsubsection{Fourier Spectrum Analysis}
 
 To detect periodic patterns in misjudgments, we compute:
 \[
@@ -331,10 +385,71 @@ To detect periodic patterns in misjudgments, we compute:
 \]
 Peaks in $|\hat{m}(k)|$ indicate periodic clustering of errors at specific complexity scales.
 
-\section{Results and Discussion}
+\subsection{Quantum Simulation of High-Dimensional Ethical States}
+\label{sec:quantum}
+
+To transcend binary ethical modeling, we map the agent population to a Hilbert space $\mathcal{H}^{2^N}$. Each agent $i$ is represented by a qubit state
+$|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_i}{2}|1\rangle$, where $\theta$ represents ethical alignment and $\phi$ represents flexibility. Social interactions are modeled via entangling $R_{ZZ}(\gamma_{ij})$ gates, where $\gamma_{ij}$ corresponds to the interaction strength between agents $i$ and $j$.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{simulation/output/figures/quantum_circuit_step_latest.png}{%
+        \includegraphics[width=1.0\textwidth]{simulation/output/figures/quantum_circuit_step_latest.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
+    }}
+    \caption{Dynamically generated quantum circuit representing the social entanglement of the agent population. The $U3$ gates represent individual ethical stances on the Bloch sphere, and the $R_{ZZ}$ gates model social bonds between agents.}
+    \label{fig:quantum_circuit}
+\end{figure}
+
+The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed'' societal states, where dominant basis states indicate the emergence of ethical consensus groups.
+
+\subsubsection{Quantum Simulation of Ethical Frustration and Phase Transitions}
+\label{sec:quantum_phase}
+
+\subsubsection{Quantum Ising Model of Social Conflict}
+
+We map moral principle conflicts to a \emph{quantum spin glass} Hamiltonian:
+\[
+H = -\sum_{i<j} J_{ij} \sigma_i \sigma_j + \sum_i h_i \sigma_i^x
+\]
+where $J_{ij}$ encodes the conflict weight between principles $i$ and $j$, and $\sigma_i$ are Pauli-$Z$ operators. When multiple principles cannot be simultaneously satisfied (e.g., honesty vs.\ non-harm), the system exhibits \emph{frustration}---analogous to spin glass physics.
+
+As conflict density increases, the system cannot reach a stable ground state: ground-state fidelity drops, and coherence collapses. This ``moral phase transition'' corresponds to the \emph{poles} of the Ethical Zeta Function $\zeta_E(s)$---points where $|E(x)|$ spikes, i.e., $|E(x)| > 3 \times \text{median}(|E|)$ as in \texttt{detect\_poles()}. We run this on IBM Quantum (or Aer simulator) and measure fidelity and Von Neumann entropy across conflict sweeps.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/phase_transition.png}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/phase_transition.png}%
+    }{\IfFileExists{simulation/output/phase_transition_diagram.png}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/phase_transition_diagram.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_phase\_transition\_exp.py --save-plot} or \texttt{run\_quantum\_phase\_transition.py --save-plot} to generate this figure.}}
+    }}
+    \caption{Moral phase transition: as conflict density (complexity) increases, ground-state fidelity drops. The collapse point marks the ``pole'' of the Ethical Zeta Function.}
+    \label{fig:phase_transition}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
+    }
+    \caption{Probability distribution of ethical states after simulation. Peaks represent highly probable societal configurations.}
+    \label{fig:quantum_dist}
+\end{figure}
+
+\section{Experiments and Results}
 \label{sec:results}
 
-\subsection{Representative Results}
+\subsection{Synthetic Simulation (Zipf Distribution)}
+\label{sec:synthetic}
+
+\subsubsection{Representative Results}
 
 [This section will be filled with actual experimental results from running the simulations]
 
@@ -366,7 +481,50 @@ We present results for four judgment systems evaluated on 1000 actions with Zipf
 
 [Similar structure]
 
+\subsection{ERH as a Necessary (Not Sufficient) Condition}
+\label{sec:erh-necessary}
+
+ERH characterizes \emph{structural stability}: error growth $|E(x)| = O(\sqrt{x})$ implies the system does not catastrophically degrade with complexity. However, satisfying ERH does \emph{not} imply high accuracy. A Conservative Judge may satisfy ERH (low $\alpha$, bounded error) yet underperform on raw metrics by tending toward neutral judgments. We therefore require \emph{dual metrics}:
+\begin{itemize}
+    \item \textbf{Accuracy}: MAE, F1, Mistake Rate---traditional measures of correctness.
+    \item \textbf{Stability}: Exponent $\alpha$, ERH satisfaction---structural health of error growth.
+\end{itemize}
+Both are needed to assess judgment system quality.
+
 \subsection{Comparative Analysis}
+
+\begin{table}[h]
+\centering
+\caption{Comparative metrics across judgment systems: Accuracy vs.\ Stability (ERH)}
+\label{tab:comparison}
+\begin{tabular}{lcccccl}
+\toprule
+\textbf{Judge} & \textbf{Mistake Rate} & \textbf{MAE} & \textbf{F1} & $\bm{\alpha}$ & \textbf{ERH} & \textbf{Interpretation} \\
+\midrule
+\IfFileExists{simulation/output/figures/comparison_table_rows.tex}{%
+    \input{simulation/output/figures/comparison_table_rows.tex}%
+}{%
+Biased & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
+Noisy & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
+Conservative & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
+Radical & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
+}%
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig7_critical_bound.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig7_critical_bound.pdf}%
+    }{\IfFileExists{simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig3_judge_comparison.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate comparison figures.}}
+    }}
+    \caption{Error growth $|E(x)|$ vs.\ complexity $x$ across judges. Reference line $x^{1/2}$ (ERH bound) shown.}
+    \label{fig:comparison}
+\end{figure}
 
 Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 \begin{itemize}
@@ -374,6 +532,84 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
     \item [Observation 2]
     \item [Observation 3]
 \end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig2_error_growth.pdf}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig2_error_growth.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
+    }
+    \caption{Error growth in log-log scale: $|E(x)|$ vs.\ $x$ with fitted power law and ERH reference $x^{1/2}$.}
+    \label{fig:error_growth}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Riemann evidence: $E(x)/\sqrt{x}$ normalized oscillation. If ERH holds, the curve remains bounded.}
+    \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Quantum phase transition: magnetization vs transverse field $h$. Critical $h_c$ marks ordered $\to$ disordered.}
+    \label{fig:phase_transition_h}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
+        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig11_prime_ladder.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Ethical prime ladder: $\Pi(x)$ step function with $Li(x)$ smooth overlay.}
+    \label{fig:prime_ladder}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
+    }
+    \caption{Ethical primes in action space: 2D scatter (complexity vs.\ importance), colored by error magnitude.}
+    \label{fig:ethical_primes_map}
+\end{figure}
+
+Figure~\ref{fig:normalized_oscillation} shows the Riemann evidence: $E(x)/\sqrt{x}$ normalized oscillation. When ERH holds, the curve remains bounded. Figure~\ref{fig:prime_ladder} displays the ethical prime ladder with $\Pi(x)$ step function and $Li(x)$ smooth overlay.
+
+\subsection{Phase Transition Analysis}
+\label{sec:phase-transition}
+
+We sweep the transverse field strength $h$ and measure magnetization (consensus). When $h$ exceeds a critical value $h_c$, the system undergoes a phase transition from ordered (high consensus) to disordered (low consensus). This corresponds to the poles of the Ethical Zeta Function. Figure~\ref{fig:phase_transition_h} illustrates this quantum phase transition. Figure~\ref{fig:von_neumann_entropy} shows Von Neumann entropy over time as an echo-chamber indicator.
+
+\begin{figure}[h!]
+    \centering
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
+        \includegraphics[width=0.85\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}%
+    }{%
+        \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
+    }
+    \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
+    \label{fig:von_neumann_entropy}
+\end{figure}
+
+\subsection{Empirical Feasibility (Real-Data Integration Plan)}
+\label{sec:empirical}
+
+Although this study primarily uses synthetic data to validate theoretical limits, our model supports parameter extraction from real NLP datasets. We use pre-trained models (e.g., BERT) on HuggingFace datasets (\texttt{ethics\_commonsense}, \texttt{social\_i\_qa}, \texttt{moral\_stories}) to map semantic distance to $J_{ij}$. Reddit r/AmItheAsshole provides crowd judgments (YTA/NTA) mapped to $V(a)$. GitHub PR merge/reject decisions serve as moral signals for developer networks. API endpoints \texttt{POST /ingestion/huggingface} and \texttt{POST /ingestion/aita} enable integration with the erh-security-app backend.
 
 \subsection{Spectrum Analysis}
 
@@ -383,10 +619,20 @@ The Fourier spectrum reveals:
     \item [Interpretation]
 \end{itemize}
 
-\section{Implications for AI Ethics}
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Philosophical Implications: Free Will vs.\ Quantum Randomness}
+\label{sec:free-will}
+
+若道德判斷由量子過程（疊加態、測量塌縮）建模，則量子結果的「隨機性」可能為自由意志辯論提供形式化框架。本模型不試圖解決此哲學爭議，但提供一個正式架構：道德不確定性以量子不確定性表示。若 Agent 的選擇由測量結果決定，則「自由意志」與「量子隨機」的邊界成為可形式化探討的對象。
+
+A philosophical implication: if moral judgment is modeled by quantum processes (superposition, measurement collapse), the ``randomness'' of quantum outcomes may inform debates on free will. The model does not resolve this debate but offers a formal framework where moral uncertainty is represented as quantum indeterminacy.
+
+\subsection{Implications for AI Ethics}
 \label{sec:implications}
 
-\subsection{Design Criteria for Ethical AI}
+\subsubsection{Design Criteria for Ethical AI}
 
 The ERH provides a quantitative criterion: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This suggests:
 
@@ -396,7 +642,7 @@ The ERH provides a quantitative criterion: an AI judgment system should be desig
     \item \textbf{Predictable Reliability}: The error rate should be forecastable
 \end{itemize}
 
-\subsection{Detecting Systematic Bias}
+\subsubsection{Detecting Systematic Bias}
 
 Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
 \begin{itemize}
@@ -406,7 +652,7 @@ Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
 
 Such violations warrant investigation into structural biases in training data, model architecture, or evaluation protocols.
 
-\subsection{Fairness and Accountability}
+\subsubsection{Fairness and Accountability}
 
 The concept of ethical primes highlights that \emph{not all errors are equal}. High-importance misjudgments on marginalized groups may be underrepresented in aggregate metrics but dominate the set of ethical primes.
 
@@ -420,7 +666,7 @@ ERH-based analysis can:
 \subsection{Future Work}
 
 \begin{itemize}
-    \item \textbf{Real-world datasets}: Apply ERH analysis to actual AI systems (e.g., recidivism prediction, content moderation)
+    \item \textbf{Real-world datasets}: The framework includes real-data case studies on Adult Income (UCI) and COMPAS (ProPublica). Data can be obtained via \texttt{scripts/fetch\_real\_data.sh} and \texttt{scripts/convert\_adult\_to\_csv.py}; see README for instructions. Future work may extend ERH analysis to additional AI systems (e.g., content moderation).
     \item \textbf{Causal analysis}: Connect ERH violations to specific model components
     \item \textbf{Theoretical foundations}: Prove conditions under which ERH must hold
     \item \textbf{Multi-objective extension}: Generalize to multiple ethical dimensions
@@ -440,6 +686,8 @@ We have introduced the Ethical Riemann Hypothesis, a mathematical framework for 
 \end{enumerate}
 
 This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
+
+We emphasize that ERH is a \emph{necessary} condition for safety (structural stability): systems violating ERH exhibit unbounded error growth and are thus unreliable at scale. ERH is \emph{not sufficient} for correctness: a Conservative Judge may satisfy ERH (low $\alpha$, bounded error) yet underperform on raw accuracy (tendency toward neutral). The dual metrics---Accuracy and Stability---address this distinction.
 
 The fundamental question remains: \emph{Can we design AI systems that satisfy ERH?} And if not, what does that tell us about the inherent limitations of automated moral reasoning?
 

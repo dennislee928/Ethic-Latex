@@ -1,0 +1,51 @@
+{
+  // TEMPLATE: MCP Server with OAuth
+  // Copy and customize for your project
+
+  "name": "my-mcp-server",  // TODO: Change this
+  "main": "src/index.ts",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // KV namespace for OAuth state management
+  // Create with: npx wrangler kv:namespace create OAUTH_KV
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "YOUR_KV_NAMESPACE_ID"  // TODO: Replace with actual ID
+    }
+  ],
+
+  // Durable Objects for MCP session management
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "MyMcpServer",  // TODO: Match your class name
+        "name": "MCP_OBJECT"
+      }
+    ]
+  },
+
+  // Migrations for Durable Objects SQLite
+  "migrations": [
+    {
+      "new_sqlite_classes": ["MyMcpServer"],  // TODO: Match your class name
+      "tag": "v1"
+    }
+  ],
+
+  // Optional: Enable observability
+  "observability": {
+    "enabled": true
+  },
+
+  // Development server config
+  "dev": {
+    "port": 8787
+  }
+
+  // ===== Required Secrets (set via wrangler secret put) =====
+  // GOOGLE_CLIENT_ID     - From Google Cloud Console
+  // GOOGLE_CLIENT_SECRET - From Google Cloud Console
+  // COOKIE_ENCRYPTION_KEY - Generate with: python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+}

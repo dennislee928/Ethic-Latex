@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import os
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -12,8 +15,14 @@ from ..ingestion.gitlab_client import GitLabClient, GitLabClientError
 from ..ingestion.gitlab_ingest import ingest_from_gitlab
 from ..ingestion.mock_data import generate_mock_data
 
-
 router = APIRouter()
+
+# Add project root for simulation imports (monorepo: Ethic-Latex/erh-security-app/backend/...)
+_erh_root = Path(__file__).resolve().parents[4]
+if not (_erh_root / "simulation").exists():
+    _erh_root = Path(os.environ.get("ERH_PROJECT_ROOT", _erh_root))
+if str(_erh_root) not in sys.path and (_erh_root / "simulation").exists():
+    sys.path.insert(0, str(_erh_root))
 
 
 @router.post(
@@ -70,5 +79,57 @@ def run_ingestion(
         "mode": "gitlab",
         "actions_processed": processed,
     }
+
+
+def _load_huggingface(max_samples: int = 50, dataset: str = "ethics_commonsense") -> dict:
+    """Load HuggingFace dataset and build J_ij matrix."""
+    try:
+        from simulation.real_data.huggingface_loader import load_and_build_J
+        J, V = load_and_build_J(dataset=dataset, max_samples=max_samples)
+        return {
+            "dataset": dataset,
+            "J_shape": list(J.shape),
+            "V_shape": list(V.shape) if V is not None else None,
+        }
+    except ImportError:
+        return {"error": "simulation.real_data.huggingface_loader not available"}
+
+
+def _load_aita(limit: int = 20, use_firecrawl: bool = False) -> dict:
+    """Load AITA-style data."""
+    try:
+        from simulation.real_data.aita_loader import load_aita_empirical
+        rows = load_aita_empirical(limit=limit, use_firecrawl=use_firecrawl)
+        return {"count": len(rows), "samples": [{"V": r.get("V"), "verdict": r.get("verdict")} for r in rows[:5]]}
+    except ImportError:
+        return {"error": "simulation.real_data.aita_loader not available"}
+
+
+@router.post(
+    "/huggingface",
+    summary="Ingest HuggingFace ethics dataset",
+    tags=["ingestion"],
+)
+def ingest_huggingface(
+    dataset: Literal["ethics_commonsense", "social_i_qa", "moral_stories"] = Query(
+        "ethics_commonsense", description="Dataset name"
+    ),
+    max_samples: int = Query(50, ge=1, le=500),
+) -> dict:
+    """Load HuggingFace dataset and build interaction matrix J_ij for Ising model."""
+    return _load_huggingface(max_samples=max_samples, dataset=dataset)
+
+
+@router.post(
+    "/aita",
+    summary="Ingest Reddit r/AmItheAsshole data (Firecrawl or stub)",
+    tags=["ingestion"],
+)
+def ingest_aita(
+    limit: int = Query(20, ge=1, le=100),
+    use_firecrawl: bool = Query(False, description="Use Firecrawl for live scrape"),
+) -> dict:
+    """Load AITA-style empirical moral values V(a)."""
+    return _load_aita(limit=limit, use_firecrawl=use_firecrawl)
 
 

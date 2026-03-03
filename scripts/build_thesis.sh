@@ -47,9 +47,8 @@ echo "[4/9] Running simulation and generating figures..."
 # Ensure output directory exists before running
 mkdir -p simulation/output/figures
 mkdir -p simulation/output
-# Run from project root with explicit path to script
-export PYTHONPATH="$PYTHONPATH:$PROJECT_ROOT:$PROJECT_ROOT/simulation"
-python "$PROJECT_ROOT/simulation/generate_all_figures.py"
+export PYTHONPATH="$PYTHONPATH:$PROJECT_ROOT"
+python -m simulation.generate_all_figures
 echo "✓ Figures generated"
 echo ""
 

@@ -19,14 +19,12 @@ import json
 from datetime import datetime
 from typing import Dict, List, Tuple
 
-# Add simulation to path
+# Add project root to path
 project_root = Path(__file__).parent.parent
-simulation_dir = project_root / "simulation"
-sys.path.insert(0, str(simulation_dir))
 sys.path.insert(0, str(project_root))
 
-from core.hybrid_model import HybridPsychohistoryModel
-from core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge
+from erh_core.core.hybrid_model import HybridPsychohistoryModel
+from erh_core.core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge
 
 
 class PsychohistoryTestRunner:

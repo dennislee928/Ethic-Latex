@@ -2,10 +2,10 @@
 Generate All Figures for the Paper
 
 This script runs all simulations and generates publication-quality figures.
-Run this before compiling the LaTeX paper to ensure all figures are up-to-date.
+Run from repo root: python -m simulation.generate_all_figures
 
 Usage:
-    python generate_all_figures.py
+    python -m simulation.generate_all_figures
 """
 
 import sys
@@ -15,23 +15,37 @@ import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 
-# Add simulation directory and project root to path to allow imports
+# Ensure project root is on path (for erh_core when run as -m simulation.generate_all_figures)
 script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)  # Parent of simulation directory
-if script_dir not in sys.path:
-    sys.path.insert(0, script_dir)
+project_root = os.path.dirname(script_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from core.action_space import generate_world
-from core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
-from core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth, compare_error_distributions
-from analysis.zeta_function import build_m_sequence, compute_spectrum, find_approximate_zeros, analyze_spectrum_peaks
-from analysis.statistics import compare_judges, generate_report
-from visualization.plots import (
-    setup_paper_style, plot_Pi_B_E, plot_error_growth,
-    plot_multi_judge_errors, plot_spectrum, plot_zero_distribution,
-    plot_complexity_distribution, plot_judge_comparison
+from erh_core.core.action_space import generate_world
+from erh_core.core.judgement_system import BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge, batch_evaluate
+from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error, analyze_error_growth, compare_error_distributions
+from simulation.analysis.zeta_function import (
+    build_m_sequence,
+    compute_spectrum,
+    find_approximate_zeros,
+    analyze_spectrum_peaks,
+    fit_error_to_zeta_critical_line,
+    detect_zeros,
+    detect_poles,
+)
+from simulation.analysis.statistics import compare_judges, generate_report
+from simulation.visualization.plots import (
+    setup_paper_style,
+    plot_Pi_B_E,
+    plot_error_growth,
+    plot_multi_judge_errors,
+    plot_spectrum,
+    plot_zero_distribution,
+    plot_complexity_distribution,
+    plot_judge_comparison,
+    plot_critical_bound,
+    plot_phase_transition_diagram,
+    plot_ethical_primes_map,
 )
 
 # Setup
@@ -64,6 +78,14 @@ judges = {
     'Conservative': ConservativeJudge(threshold=0.5),
     'Radical': RadicalJudge(amplification=1.5)
 }
+try:
+    from simulation.quantum import LocalQuantumJudge
+    from simulation.core.judgement_system import QuantumJudge
+    oracle = LocalQuantumJudge(shots=512, seed=42)
+    judges['Quantum'] = QuantumJudge(quantum_oracle=oracle)
+    print("      Added Quantum Judge (qiskit or NumPy fallback)")
+except Exception as e:
+    print(f"      Quantum Judge skipped: {e}")
 print(f"      Created {len(judges)} judges")
 
 print("\n[3/10] Evaluating all judges...")
@@ -101,7 +123,7 @@ print("GENERATING FIGURES")
 print("=" * 70)
 
 # Figure 1: Basic Π(x), B(x), E(x) for Biased Judge
-print("\n[4/10] Figure 1: Π(x), B(x), E(x) curves (Biased Judge)...")
+print("\n[4/11] Figure 1: Π(x), B(x), E(x) curves (Biased Judge)...")
 primes_biased = select_ethical_primes(results['Biased'], importance_quantile=0.9)
 Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes_biased, X_max=100, baseline='prime_theorem')
 plot_Pi_B_E(
@@ -113,7 +135,7 @@ plot_Pi_B_E(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig1_pi_b_e.pdf')}")
 
 # Figure 2: Error growth analysis
-print("\n[5/10] Figure 2: Error growth in log-log scale...")
+print("\n[5/11] Figure 2: Error growth in log-log scale...")
 analysis = analyze_error_growth(E_x, x_vals)
 plot_error_growth(
     x_vals, E_x, analysis,
@@ -124,7 +146,7 @@ plot_error_growth(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig2_error_growth.pdf')}")
 
 # Figure 3: Multi-judge comparison
-print("\n[6/10] Figure 3: Multi-judge error comparison...")
+print("\n[6/11] Figure 3: Multi-judge error comparison...")
 error_comparison = compare_error_distributions(results, X_max=100)
 plot_multi_judge_errors(
     error_comparison,
@@ -134,7 +156,7 @@ plot_multi_judge_errors(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
 
 # Figure 4: Judge metric comparison (bar chart)
-print("\n[7/10] Figure 4: Judge exponent comparison...")
+print("\n[7/11] Figure 4: Judge exponent comparison...")
 plot_judge_comparison(
     comparison,
     metric='estimated_exponent',
@@ -145,7 +167,7 @@ plot_judge_comparison(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 
 # Figure 5: Spectrum analysis
-print("\n[8/10] Figure 5: Frequency spectrum...")
+print("\n[8/11] Figure 5: Frequency spectrum...")
 m = build_m_sequence(primes_biased, X_max=200, mode='count')
 freqs, amps = compute_spectrum(m, normalize=True)
 peaks = analyze_spectrum_peaks(freqs, amps, num_peaks=5)
@@ -158,13 +180,13 @@ plot_spectrum(
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 
 # Figure 6: Zero distribution
-print("\n[9/10] Figure 6: Ethical zeta function zeros...")
+print("\n[9/11] Figure 6: Ethical zeta function zeros...")
 zeros = find_approximate_zeros(
     m,
     real_range=(0.3, 0.7),
     imag_range=(0, 30),
-    grid_size=50,
-    threshold=0.15
+    grid_size=80,
+    threshold=0.5,
 )
 plot_zero_distribution(
     zeros,
@@ -175,15 +197,66 @@ plot_zero_distribution(
 print(f"      Found {len(zeros)} approximate zeros")
 print(f"      Saved: {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
 
-# Figure 7: Complexity distribution
-print("\n[10/10] Figure 7: Complexity distribution...")
+# Figure 7: Critical Bound (Log-Log |E(x)| vs x with x^1/2 overlay)
+print("\n[10/13] Figure 7: Critical Bound (dual agents)...")
+plot_critical_bound(
+    error_comparison,
+    save_path=os.path.join(output_dir, 'paper_fig7_critical_bound.pdf'),
+    show=False
+)
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_critical_bound.pdf')}")
+
+# Figure 8: Ethical Primes Map (2D/3D irreducible dilemmas)
+print("\n[11/13] Figure 8: Ethical Primes Map...")
+plot_ethical_primes_map(
+    primes_biased,
+    x_attr='c',
+    y_attr='w',
+    color_attr='delta',
+    title='Ethical Primes: Irreducible Dilemmas in Action Space',
+    save_path=os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf'),
+    show=False
+)
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf')}")
+
+# Figure 9: Zeta zeros/poles analysis
+print("\n[12/13] Figure 9: Zeta zeros and poles...")
+zeta_fit = fit_error_to_zeta_critical_line(E_x, x_vals)
+zeros_x = detect_zeros(E_x, x_vals, threshold=0.15)
+poles_x = detect_poles(E_x, x_vals, spike_factor=2.5)
+if "error" not in zeta_fit:
+    print(f"      Zeta fit: α={zeta_fit.get('fitted_exponent', 0):.3f}, ERH satisfied={zeta_fit.get('erh_satisfied', False)}")
+print(f"      Zeros (E≈0): {len(zeros_x)}; Poles (error spikes): {len(poles_x)}")
+
+# Figure 10: Complexity distribution
+print("\n[13/13] Figure 10: Complexity distribution...")
 plot_complexity_distribution(
     actions,
     title="Action Complexity Distribution (Zipf)",
-    save_path=os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf'),
+    save_path=os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf'),
     show=False
 )
-print(f"      Saved: {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+print(f"      Saved: {os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf')}")
+
+# Figure 11: Phase Transition (if quantum phase script run)
+phase_transition_path = os.path.join(script_dir, 'output', 'phase_transition_diagram.png')
+if os.path.exists(phase_transition_path):
+    print("\n      Phase transition diagram found (run scripts/run_quantum_phase_transition.py --save-plot for full pipeline)")
+
+# Figure 12: Π(x), B(x), E(x) for Quantum Judge
+if 'Quantum' in results:
+    print("\n[14/14] Figure 12: Π(x), B(x), E(x) curves (Quantum Judge)...")
+    primes_quantum = select_ethical_primes(results['Quantum'], importance_quantile=0.9)
+    Pi_x_q, B_x_q, E_x_q, x_vals_q = compute_Pi_and_error(primes_quantum, X_max=100, baseline='prime_theorem')
+    plot_Pi_B_E(
+        x_vals_q, Pi_x_q, B_x_q, E_x_q,
+        title="Ethical Prime Distribution (Quantum Judge)",
+        save_path=os.path.join(output_dir, 'paper_fig8_quantum_judge.pdf'),
+        show=False
+    )
+    print(f"      Saved: {os.path.join(output_dir, 'paper_fig12_quantum_judge.pdf')}")
+else:
+    print("\n[14/14] Figure 12: Skipped (Quantum Judge not available)")
 
 # Generate detailed report
 print("\n" + "=" * 70)
@@ -217,7 +290,11 @@ print(f"  - {os.path.join(output_dir, 'paper_fig3_judge_comparison.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig4_exponent_comparison.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig5_spectrum.pdf')}")
 print(f"  - {os.path.join(output_dir, 'paper_fig6_zeros.pdf')}")
-print(f"  - {os.path.join(output_dir, 'paper_fig7_complexity_dist.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig7_critical_bound.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig8_ethical_primes_map.pdf')}")
+print(f"  - {os.path.join(output_dir, 'paper_fig10_complexity_dist.pdf')}")
+if 'Quantum' in results:
+    print(f"  - {os.path.join(output_dir, 'paper_fig12_quantum_judge.pdf')}")
 print(f"  - {report_path}")
 print("\nNext steps:")
 print("  1. Review generated figures")
@@ -254,5 +331,37 @@ with open(results_summary_path, 'w') as f:
         f.write("\n")
 
 print(f"\nNumerical results saved to: {results_summary_path}")
+
+# Write LaTeX table rows for tab:comparison (Judge | Mistake Rate | MAE | F1 | α | ERH | Interpretation)
+# Last row must NOT end with \\ (causes "Missing \cr" in tabular)
+table_path = os.path.join(output_base, 'figures', 'comparison_table_rows.tex')
+os.makedirs(os.path.dirname(table_path), exist_ok=True)
+rows = []
+for name in ('Biased', 'Noisy', 'Conservative', 'Radical'):
+    if name not in comparison or 'error' in comparison[name]:
+        rows.append(f"{name} & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD]")
+        continue
+    m = comparison[name]
+    mr = m.get('mistake_rate', 0)
+    mae = m.get('mae', 0)
+    f1 = m.get('f1_score')
+    f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
+    alpha = m.get('estimated_exponent', 0.5)
+    erh = "Yes" if m.get('erh_satisfied', False) else "No"
+    interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
+    rows.append(f"{name} & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp}")
+if 'Quantum' in comparison and 'error' not in comparison['Quantum']:
+    m = comparison['Quantum']
+    mr = m.get('mistake_rate', 0)
+    mae = m.get('mae', 0)
+    f1 = m.get('f1_score')
+    f1_str = f"{f1:.3f}" if f1 is not None else "N/A"
+    alpha = m.get('estimated_exponent', 0.5)
+    erh = "Yes" if m.get('erh_satisfied', False) else "No"
+    interp = "ERH OK" if m.get('erh_satisfied') else "Violates bound"
+    rows.append(f"Quantum & {mr:.3f} & {mae:.3f} & {f1_str} & {alpha:.3f} & {erh} & {interp}")
+with open(table_path, 'w') as f:
+    f.write(" \\\\\n".join(rows) + "\n")
+print(f"LaTeX table rows saved to: {table_path}")
 print("\nDone!")
 
