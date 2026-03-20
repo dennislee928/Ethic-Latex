@@ -89,33 +89,93 @@ todos:
 isProject: true
 ---
 
-# Cursor 實作計畫：支援 App
+# 🚀  Cursor AI 開發指引：MediCanna AI 實作計畫
 
-## 第一階段：環境初始化
+## Phase 1: 專案基礎建設與版本控制 (Project Setup)
 
-1. 初始化 `server` (Rust):
-  - 使用 `cargo init server`
-  - 安裝依賴: `axum`, `tokio`, `redis (with tokio-comp)`, `serde`, `tower-http`
-2. 初始化 `web` (Next.js):
-  - `npx create-next-app@latest web --tailwind --typescript`
-  - 安裝 `lucide-react`, `leaflet`, `react-leaflet`
+- 1. 建立根目錄 `medicanna-ai-system` 並執行 `git init`。
+- 1. 建立根目錄下的 `.gitignore` 檔案，忽略 node_modules, target, venv, .env 等檔案。
+- 1. 建立 `ml-python-engine` 資料夾。
+- 1. 建立 `backend-rust-gateway` 資料夾。
+- 1. 建立 `frontend-angular` 資料夾。
+- 1. 在根目錄建立空白的 `docker-compose.yml` 為日後部署做準備。
 
-## 第二階段：後端 Redis Geo 邏輯 (Rust)
+## Phase 2: AI 大腦 - Python 數據預處理 (Data Preprocessing)
 
-1. 實作 `GEOADD` 邏輯，將用戶發出的 `Signal` 存入 Redis，Key 設定 TTL (過期時間)。
-2. 建立 WebSocket Handler：
-  - 用戶連線時，根據其座標加入對應的 Redis Pub/Sub Channel。
-  - 當新信號產生，使用 `GEORADIUS` 找出附近用戶並推播訊息。
+- 1. 進入 `ml-python-engine`，建立 Python 虛擬環境 (`python -m venv venv`)。
+- 1. 建立 `requirements.txt`：加入 `pandas`, `scikit-learn`, `spacy`, `fastapi`, `uvicorn`, `joblib`。
+- 1. 在 `data/` 內放入 Kaggle 下載的大麻品種資料集 (`strains_dataset.csv`)。
+- 1. 建立 `train_pipeline.py` 腳本，引入 pandas 讀取 CSV 檔案。
+- 1. 實作缺失值填補：針對數值欄位（如 Rating）填補平均值或中位數。
+- 1. 提取文本特徵：將 `Effects` (療效) 和 `Flavor` (風味) 欄位的字串合併為新的 `combined_text` 欄位。
+- 1. 下載並載入 SpaCy 的英文語言模型 (`en_core_web_sm`) 用於文本標註。
+- 1. 撰寫 NLP 清洗函式：將 `combined_text` 轉小寫、去除標點符號與停用詞 (Stop Words)。
 
-## 第三階段：前端地圖與即時通訊 (Next.js)
+## Phase 3: AI 大腦 - 機器學習與分群模型 (Model Training)
 
-1. 整合 Leaflet 地圖，獲取用戶當前位置。
-2. 實作 WebSocket 客戶端：
-  - 監聽 `NEW_SIGNAL` 事件，在地圖上渲染「斧頭幫煙花」動畫。
-  - 實作 `sendSignal` 函式。
+- 1. 在 `train_pipeline.py` 中引入 `TfidfVectorizer`，將清洗後的文字轉換為 TF-IDF 矩陣。
+- 1. 針對化學成分分類（Type: Indica/Sativa/Hybrid），使用 One-Hot Encoding 進行轉換。
+- 1. 將 TF-IDF 特徵矩陣與類別數值矩陣合併，形成最終的訓練資料矩陣。
+- 1. 引入 `KMeans` 演算法，設定初始的分群數 (例如 `n_clusters=5`)。
+- 1. 將訓練資料餵入 KMeans 模型進行擬合 (Fit)。
+- 1. 撰寫評估腳本：計算每個 Cluster 的特徵中心，並列印出各群集最常出現的關鍵字（療效/副作用）以驗證邏輯。
+- 1. 使用 `joblib` 將訓練好的 KMeans 模型儲存至 `models/kmeans_model.pkl`。
+- 1. 使用 `joblib` 將配置好的 TfidfVectorizer 儲存至 `models/tfidf_vectorizer.pkl`。
+- 1. 將帶有 Cluster Label 的新資料集匯出為 `data/clustered_strains.csv`。
 
-## 第四階段：優化與視覺效果
+## Phase 4: AI 大腦 - FastAPI 服務化 (Python API)
 
-1. 增加煙花動畫效果（CSS Keyframes）。
-2. 加入地圖聚合（Marker Clustering）防止信號過多。
+- 1. 建立 `main.py` 並初始化 FastAPI 應用程式 (`app = FastAPI()`)。
+- 1. 在應用程式啟動事件 (Lifespan) 中，載入那兩個 `.pkl` 模型檔案以及分類好的 CSV 資料。
+- 1. 建立 Pydantic 模型 `SymptomRequest`，包含 `symptoms` (字串) 與 `avoid_effects` (字串列表)。
+- 1. 建立 Pydantic 模型 `RecommendationResponse` 作為回傳格式。
+- 1. 實作 POST 路由 `/api/predict`：接收前端症狀，利用 TF-IDF 將症狀轉為向量。
+- 1. 計算該症狀向量屬於哪一個 KMeans 群集 (Cluster)。
+- 1. 從該群集中篩選出排除 `avoid_effects` 且評分最高的 Top 3 品種，格式化為 JSON 回傳。
+
+## Phase 5: 強力中樞 - Rust API Gateway 建置 (Rust Setup)
+
+- 1. 進入 `backend-rust-gateway`，執行 `cargo init`。
+- 1. 在 `Cargo.toml` 中加入依賴：`axum`, `tokio`, `serde`, `serde_json`, `reqwest`, `tower-http` (CORS)。
+- 1. 建立 `src/models.rs`，定義與 Python FastAPI 對接的 Request/Response 結構 (Structs)，並加上 `#[derive(Serialize, Deserialize)]`。
+- 1. 建立 `src/services.rs`，撰寫一個非同步函式 `fetch_recommendations_from_ml`。
+- 1. 在該函式中使用 `reqwest::Client` 打向 Python 的 `http://localhost:8000/api/predict` 端點。
+
+## Phase 6: 強力中樞 - Rust 路由與邏輯 (Rust Routing)
+
+- 1. 建立 `src/handlers.rs`，實作處理前端請求的 Handler 函式 `get_recommendation_handler`。
+- 1. 在 Handler 中接收 JSON Payload，進行基礎資料驗證 (如字串不可為空)。
+- 1. 呼叫 `services::fetch_recommendations_from_ml`，並處理網路超時或目標服務離線的錯誤 (Error Handling)。
+- 1. 在 `src/main.rs` 中設定 Axum 路由 (Router)，綁定 `/api/v1/recommend` 到剛剛的 Handler。
+- 1. 設定 CORS (Cross-Origin Resource Sharing)，允許來自 Angular 開發伺服器 (`http://localhost:4200`) 的請求。
+- 1. 啟動 Tokio 運行時，讓 Rust 監聽在 Port 8080。
+
+## Phase 7: 前端體驗 - Angular 專案初始化與結構 (Angular Setup)
+
+- 1. 在根目錄外層，使用 Angular CLI 建立專案：`ng new frontend-angular --routing --style=scss`。
+- 1. 進入專案，安裝 Material UI：`ng add @angular/material`。
+- 1. 建立核心服務：`ng generate service services/api`，負責與 Rust Gateway 通訊。
+- 1. 建立介面 (Interface) 定義檔 `src/app/models/strain.interface.ts`，對齊 Rust 回傳的資料結構。
+
+## Phase 8: 前端體驗 - 介面實作 (UI Components)
+
+- 1. 建立組件：`ng generate component components/symptom-form` (輸入表單區塊)。
+- 1. 建立組件：`ng generate component components/recommendation-list` (結果展示區塊)。
+- 1. 建立組件：`ng generate component components/strain-card` (單一藥品卡片)。
+- 1. 在 `symptom-form` 中，使用 Angular Reactive Forms 建立包含「所需療效」與「避免副作用(Checkboxes)」的表單。
+- 1. 實作表單提交流輯：在組件層級訂閱 `ApiService`，發送資料至 Rust (Port 8080)。
+- 1. 在發送請求期間，實作一個 Loading 狀態標數 (Spinner)。
+- 1. 將回傳的 Top 3 藥品資料透過 `@Input()` 傳遞給 `recommendation-list` 與 `strain-card` 進行渲染。
+- 1. 美化 UI：使用 Angular Material 的 Card 組件展示藥品名稱、評分、主要療效與化學成分標籤。
+
+## Phase 9: 整合與部署準備 (Integration & Docker)
+
+- 1. 測試連線：啟動 Python (8000), Rust (8080), Angular (4200)，從網頁送出請求，確認端到端 (End-to-End) 資料流暢通。
+- 1. 在 Python 目錄下撰寫 `Dockerfile` (基於 `python:3.10-slim`)，開放 Port 8000。
+- 1. 在 Rust 目錄下撰寫 `Dockerfile` (使用 Multi-stage build 以縮小體積)，開放 Port 8080。
+- 1. 在 Angular 目錄下撰寫 `Dockerfile` (基於 Nginx 編譯靜態資源)，開放 Port 80。
+- 1. 回到根目錄的 `docker-compose.yml`，定義 `frontend`, `gateway`, `ml-engine` 三個服務，並設定對應的 Ports 與內部網路 (Network)。
+- 1. 執行 `docker-compose up --build` 確保整個微服務集群能夠一鍵順利啟動。
+- 1. 撰寫簡單的測試腳本 (Shell 或 Postman Collection) 驗證生產環境 API 端點是否正常回應。
+- 1. 整理root folder的readme.md
 
