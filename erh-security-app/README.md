@@ -8,6 +8,7 @@ Hypothesis (ERH) framework.
 
 - `backend/`: FastAPI application, database models, ingestion, and ERH analysis.
 - `frontend/`: Next.js dashboard for visualising ERH metrics.
+- `frontend-vite/`: React + Vite dashboard (alternative).
 
 ### Backend (FastAPI)
 
@@ -21,6 +22,8 @@ uvicorn app.main:app --reload
 Key endpoints:
 
 - `POST /ingestion/run?mode=mock` – generate synthetic DevSecOps data.
+- `POST /ingestion/huggingface` – ingest HuggingFace ethics datasets (ethics_commonsense, social_i_qa, moral_stories).
+- `POST /ingestion/aita` – ingest Reddit r/AmItheAsshole data (Firecrawl or stub).
 - `GET /analysis/summary` – high-level ERH summary.
 - `GET /analysis/curves` – Pi(x) and E(x) curves.
 - `GET /analysis/heatmap` – complexity vs average Δ heatmap.

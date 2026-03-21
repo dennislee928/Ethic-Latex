@@ -375,8 +375,10 @@ class HybridPsychohistoryModel:
                         quantum_energy = q_sim_ising.measure_social_tension(adj_matrix, biases)
                         q_results["quantum_energy"] = quantum_energy
                         q_results["social_tension_energy"] = quantum_energy
+                        q_results["system_energy"] = quantum_energy
                     except Exception:
                         pass
+                    q_results["magnetization"] = q_results.get("magnetization", q_results.get("system_coherence", 0.0))
 
                     if "raw_counts" in q_results:
                         try:

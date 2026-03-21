@@ -58,6 +58,27 @@ jobs:
             curl -sL "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv" -o data/compas-scores-two-years.csv || true
           fi
 
+      - name: Fetch Empirical ERH Data (HuggingFace, AITA, GitHub PR)
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pip install -q datasets sentence-transformers PyGithub firecrawl-py 2>/dev/null || true
+          pip install -q -r requirements.txt 2>/dev/null || true
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          # Skip AITA/GitHub when secrets not set; never fail pipeline
+          EXTRA_ARGS=""
+          [ -z "$FIRECRAWL_API_KEY" ] && EXTRA_ARGS="$EXTRA_ARGS --skip-aita"
+          [ -z "$GITHUB_TOKEN" ] && EXTRA_ARGS="$EXTRA_ARGS --skip-github"
+          python scripts/fetch_empirical_erh_data.py \
+            --output-dir data/empirical \
+            --max-samples 30 \
+            --aita-limit 15 \
+            --pr-limit 20 \
+            --repo dennislee928/Ethic-Latex \
+            $EXTRA_ARGS
+        continue-on-error: true
+
       - name: Upload Real Data artifact
         uses: actions/upload-artifact@v4
         with:
@@ -225,6 +246,13 @@ jobs:
         with:
           path: all_results
 
+      - name: Download Real Data (incl. Empirical HuggingFace/AITA/GitHub PR)
+        uses: actions/download-artifact@v4
+        with:
+          name: real-world-datasets
+          path: data
+        continue-on-error: true
+
       - name: Download Alpha Comparison Plot
         uses: actions/download-artifact@v4
         with:
@@ -249,7 +277,8 @@ jobs:
           export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
           python scripts/generate_comprehensive_report.py \
             --input-dir combined_results \
-            --output-dir final_report
+            --output-dir final_report \
+            --empirical-dir data
         continue-on-error: true
 
       - name: Install R
@@ -294,5 +323,18 @@ jobs:
         with:
           name: quantum-figures
           path: simulation/output/figures/*.png
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload Expand Plan Figures
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: expand-plan-figures
+          path: |
+            simulation/output/figures/paper_fig9_normalized_oscillation.pdf
+            simulation/output/figures/paper_fig10_phase_transition_h.pdf
+            simulation/output/figures/paper_fig11_prime_ladder.pdf
+            simulation/output/figures/von_neumann_entropy_over_time.pdf
           if-no-files-found: ignore
           retention-days: 30

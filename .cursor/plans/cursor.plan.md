@@ -89,214 +89,93 @@ todos:
 isProject: true
 ---
 
-# Cursor Plan: ERH 架構重整、量子升級與論文中期改進
+# 🚀  Cursor AI 開發指引：MediCanna AI 實作計畫
 
-## Context
+## Phase 1: 專案基礎建設與版本控制 (Project Setup)
 
-本計畫依據審稿者對實用性 (3/5) 的批評，結合架構與程式碼改進需求：
+- 1. 建立根目錄 `medicanna-ai-system` 並執行 `git init`。
+- 1. 建立根目錄下的 `.gitignore` 檔案，忽略 node_modules, target, venv, .env 等檔案。
+- 1. 建立 `ml-python-engine` 資料夾。
+- 1. 建立 `backend-rust-gateway` 資料夾。
+- 1. 建立 `frontend-angular` 資料夾。
+- 1. 在根目錄建立空白的 `docker-compose.yml` 為日後部署做準備。
 
-1. **Code duplication**: Core logic distributed across `erh/`, `erh_core/`, and `erh-security-app/backend/app/erh_security/`
-2. **Quantum model**: 目前 quantum simulation 使用 rotation gates (Maps difficulty to θ)；需 physics-based Ising Hamiltonian 以對齊 ERH 論述
-3. **Pipeline gaps**: 部分腳本使用不同流程；GitHub Actions 可能未充分利用平行執行
-4. **Paper feedback**: 審稿者要求強化 V(a)/c(a) 操作型定義、深化 ERH 分析、ζ_E(s) 解釋、視覺化改進
+## Phase 2: AI 大腦 - Python 數據預處理 (Data Preprocessing)
 
-## Goals
+- 1. 進入 `ml-python-engine`，建立 Python 虛擬環境 (`python -m venv venv`)。
+- 1. 建立 `requirements.txt`：加入 `pandas`, `scikit-learn`, `spacy`, `fastapi`, `uvicorn`, `joblib`。
+- 1. 在 `data/` 內放入 Kaggle 下載的大麻品種資料集 (`strains_dataset.csv`)。
+- 1. 建立 `train_pipeline.py` 腳本，引入 pandas 讀取 CSV 檔案。
+- 1. 實作缺失值填補：針對數值欄位（如 Rating）填補平均值或中位數。
+- 1. 提取文本特徵：將 `Effects` (療效) 和 `Flavor` (風味) 欄位的字串合併為新的 `combined_text` 欄位。
+- 1. 下載並載入 SpaCy 的英文語言模型 (`en_core_web_sm`) 用於文本標註。
+- 1. 撰寫 NLP 清洗函式：將 `combined_text` 轉小寫、去除標點符號與停用詞 (Stop Words)。
 
-1. **Refactor**: Consolidate core logic into `erh_core` as Single Source of Truth
-2. **Quantum**: 確保 SocialDynamicsQuantumSimulator (Ising model) 完整整合；新增 `measure_social_tension()` API
-3. **Pipeline**: 增強 `run_simulation_batch.py` 支援 ABMSimulator 模式；新增 EVS 指標
-4. **Paper**: 實作審稿意見（V(a)/c(a) 操作定義、ERH 必要 vs 充分、ζ_E 零點/極點、圖表）
+## Phase 3: AI 大腦 - 機器學習與分群模型 (Model Training)
 
----
+- 1. 在 `train_pipeline.py` 中引入 `TfidfVectorizer`，將清洗後的文字轉換為 TF-IDF 矩陣。
+- 1. 針對化學成分分類（Type: Indica/Sativa/Hybrid），使用 One-Hot Encoding 進行轉換。
+- 1. 將 TF-IDF 特徵矩陣與類別數值矩陣合併，形成最終的訓練資料矩陣。
+- 1. 引入 `KMeans` 演算法，設定初始的分群數 (例如 `n_clusters=5`)。
+- 1. 將訓練資料餵入 KMeans 模型進行擬合 (Fit)。
+- 1. 撰寫評估腳本：計算每個 Cluster 的特徵中心，並列印出各群集最常出現的關鍵字（療效/副作用）以驗證邏輯。
+- 1. 使用 `joblib` 將訓練好的 KMeans 模型儲存至 `models/kmeans_model.pkl`。
+- 1. 使用 `joblib` 將配置好的 TfidfVectorizer 儲存至 `models/tfidf_vectorizer.pkl`。
+- 1. 將帶有 Cluster Label 的新資料集匯出為 `data/clustered_strains.csv`。
 
-## Part A: 論文審稿意見改進
+## Phase 4: AI 大腦 - FastAPI 服務化 (Python API)
 
-### 現況
+- 1. 建立 `main.py` 並初始化 FastAPI 應用程式 (`app = FastAPI()`)。
+- 1. 在應用程式啟動事件 (Lifespan) 中，載入那兩個 `.pkl` 模型檔案以及分類好的 CSV 資料。
+- 1. 建立 Pydantic 模型 `SymptomRequest`，包含 `symptoms` (字串) 與 `avoid_effects` (字串列表)。
+- 1. 建立 Pydantic 模型 `RecommendationResponse` 作為回傳格式。
+- 1. 實作 POST 路由 `/api/predict`：接收前端症狀，利用 TF-IDF 將症狀轉為向量。
+- 1. 計算該症狀向量屬於哪一個 KMeans 群集 (Cluster)。
+- 1. 從該群集中篩選出排除 `avoid_effects` 且評分最高的 Top 3 品種，格式化為 JSON 回傳。
 
-- 論文已有 [Section 3.4 操作定義](ethical_riemann_hypothesis.tex)（第 328–337 行），簡述 principle conflict count、token-length proxy、ground truth proxy
-- 程式已實作 `GroundTruthProxy`（[judgement_system.py](simulation/core/judgement_system.py)）、`calculate_complexity`（[action_space.py](simulation/core/action_space.py)）
-- 結論（第 511 行）已點出 ERH 為必要非充分條件及雙指標
-- [zeta_function.py](simulation/analysis/zeta_function.py) 已有 `detect_zeros`、`detect_poles`
-- `generate_all_figures.py` 產出 `paper_fig2_error_growth.pdf`、`paper_fig7_critical_bound.pdf`、`paper_fig8_ethical_primes_map.pdf`
+## Phase 5: 強力中樞 - Rust API Gateway 建置 (Rust Setup)
 
-### A1. 強化 V(a) 與 c(a) 的操作型定義
+- 1. 進入 `backend-rust-gateway`，執行 `cargo init`。
+- 1. 在 `Cargo.toml` 中加入依賴：`axum`, `tokio`, `serde`, `serde_json`, `reqwest`, `tower-http` (CORS)。
+- 1. 建立 `src/models.rs`，定義與 Python FastAPI 對接的 Request/Response 結構 (Structs)，並加上 `#[derive(Serialize, Deserialize)]`。
+- 1. 建立 `src/services.rs`，撰寫一個非同步函式 `fetch_recommendations_from_ml`。
+- 1. 在該函式中使用 `reqwest::Client` 打向 Python 的 `http://localhost:8000/api/predict` 端點。
 
-- **A1.1** 在 [ethical_riemann_hypothesis.tex](ethical_riemann_hypothesis.tex) Formalization 後新增獨立小節「近似真實道德值 V(a)」
-  - **問題**：$V(a)$ 為「上帝視角」，實務上不可直接取得
-  - **代理方案**：RLHF 人類標註、Bradley-Terry 從 pairwise 推估、`GroundTruthProxy.from_mock_rlhf()` / `load_from_csv()` 對應流程
-  - **限制**：代理偏差、不同 proxy 的影響
-- **A1.2** 擴充 Section 3.4「Operationalizing Complexity」中的 c(a) 計算
-  - 以條列明文化：$c(a)$ = 道德原則衝突數量（例如誠實 vs 不傷害 = 2）
-  - Token-length proxy: $\log(1 + \text{word count})$ 作為推理複雜度
-  - 引用 [simulation/core/action_space.py](simulation/core/action_space.py) 的 `count_principle_conflicts()`、`calculate_complexity()`
+## Phase 6: 強力中樞 - Rust 路由與邏輯 (Rust Routing)
 
-### A2. 深化實驗分析（ERH 必要非充分）
+- 1. 建立 `src/handlers.rs`，實作處理前端請求的 Handler 函式 `get_recommendation_handler`。
+- 1. 在 Handler 中接收 JSON Payload，進行基礎資料驗證 (如字串不可為空)。
+- 1. 呼叫 `services::fetch_recommendations_from_ml`，並處理網路超時或目標服務離線的錯誤 (Error Handling)。
+- 1. 在 `src/main.rs` 中設定 Axum 路由 (Router)，綁定 `/api/v1/recommend` 到剛剛的 Handler。
+- 1. 設定 CORS (Cross-Origin Resource Sharing)，允許來自 Angular 開發伺服器 (`http://localhost:4200`) 的請求。
+- 1. 啟動 Tokio 運行時，讓 Rust 監聽在 Port 8080。
 
-- **A2.1** 在 Results 章節新增小節「ERH 作為必要條件的含義」
-  - 說明 ERH 為結構穩定性必要條件，非充分條件
-  - 以 Conservative Judge 為例：可滿足 ERH 但準確度低
-  - 強調雙重指標：準確度（MAE、F1、Mistake Rate）+ 結構穩定性（α、ERH 滿足與否）
-- **A2.2** 在 Comparative Analysis 中擴充 Table 欄位
-  - 欄位：Judge | Mistake Rate | MAE | F1 | α | ERH | 綜合解讀
-  - 使用 [erh_core/analysis/statistics.py](erh_core/analysis/statistics.py) `compare_judges()` 輸出
+## Phase 7: 前端體驗 - Angular 專案初始化與結構 (Angular Setup)
 
-### A3. 擴充倫理 Zeta 函數 ζ_E(s) 解釋
+- 1. 在根目錄外層，使用 Angular CLI 建立專案：`ng new frontend-angular --routing --style=scss`。
+- 1. 進入專案，安裝 Material UI：`ng add @angular/material`。
+- 1. 建立核心服務：`ng generate service services/api`，負責與 Rust Gateway 通訊。
+- 1. 建立介面 (Interface) 定義檔 `src/app/models/strain.interface.ts`，對齊 Rust 回傳的資料結構。
 
-- **A3.1** 在 Ethical Zeta Function 小節（約第 247–261 行）後新增 1–2 段
-  - **零點 (zeros)**：$E(x) \approx 0$ 的複雜度點，對應判斷系統在該層級的結構性修正
-  - **極點 (poles)**：$|E(x)|$ 突增點，對應「道德相變」(Moral Phase Transition)
-  - 相變意涵：複雜度跨過臨界點時錯誤可能崩潰式爆發，類似 spin glass frustration
-- **A3.2** 連結 Section 3.6 量子相變內容與 ζ_E(s) 極點
-  - 引用 `detect_poles()` 定義：$|E(x)| > 3 \times \text{median}(|E|)$ 視為 spike
+## Phase 8: 前端體驗 - 介面實作 (UI Components)
 
-### A4. 視覺化改進
+- 1. 建立組件：`ng generate component components/symptom-form` (輸入表單區塊)。
+- 1. 建立組件：`ng generate component components/recommendation-list` (結果展示區塊)。
+- 1. 建立組件：`ng generate component components/strain-card` (單一藥品卡片)。
+- 1. 在 `symptom-form` 中，使用 Angular Reactive Forms 建立包含「所需療效」與「避免副作用(Checkboxes)」的表單。
+- 1. 實作表單提交流輯：在組件層級訂閱 `ApiService`，發送資料至 Rust (Port 8080)。
+- 1. 在發送請求期間，實作一個 Loading 狀態標數 (Spinner)。
+- 1. 將回傳的 Top 3 藥品資料透過 `@Input()` 傳遞給 `recommendation-list` 與 `strain-card` 進行渲染。
+- 1. 美化 UI：使用 Angular Material 的 Card 組件展示藥品名稱、評分、主要療效與化學成分標籤。
 
-- **A4.1** 在 Results 章節插入三張關鍵圖
+## Phase 9: 整合與部署準備 (Integration & Docker)
 
-
-| 圖表                  | 內容                          | 檔案路徑                                |
-| ------------------- | --------------------------- | ----------------------------------- |
-| 誤差 vs 複雜度 log-log 圖 | $                           | E(x)                                |
-| 倫理質數分佈圖             | 行動空間中倫理質數 2D 散佈（複雜度 vs 重要性） | `paper_fig8_ethical_primes_map.pdf` |
-| Judge 比較圖           | 多 Judge 的 E(x) 比較           | `paper_fig3_judge_comparison.pdf`   |
-
-
-- **A4.2** 補齊 `fig:comparison` 引用：將上述其一包成 figure 並設 `\label{fig:comparison}`
-- **A4.3** 確保 `generate_all_figures` 在 LaTeX 編譯前執行；LaTeX 使用 `\IfFileExists` 做 fallback
-
-### A5. 論文改進驗證標準
-
-- 論文包含「近似 V(a)」的獨立討論與 proxy 說明
-- c(a) 的計算方式以公式或條列明確寫出
-- Results 章節包含 ERH 必要非充分與雙指標討論
-- ζ_E(s) 零點、極點與道德相變的對應已在正文說明
-- 三張關鍵圖已納入並正確引用
-- `fig:comparison` 已定義且無未解析引用
-
----
-
-## Part B: 架構重整（三重冗餘修復）
-
-### B1. 確立 erh_core 為 Single Source of Truth
-
-- **B1.1** 分析 `erh/` vs `erh_core/` 差異
-- **B1.2** 確保 [pyproject.toml](pyproject.toml) 的 `packages.find` 包含 `erh_core`
-
-### B2. 處理 erh/ 與 erh_core 重疊
-
-- **B2.1** 將 `erh/core/` 改為 thin re-export 或刪除重複
-- **B2.2** 保留 `erh/tools/`、`erh/client.py` 等非重疊模組
-
-### B3. 重構 erh-security-app 依賴
-
-- **B3.1** 修改 [erh-security-app/backend/requirements.txt](erh-security-app/backend/requirements.txt) 新增 `-e ../..`
-- **B3.2** 審查 [erh_security/](erh-security-app/backend/app/erh_security/)
-- **B3.3** 更新 [metrics.py](erh-security-app/backend/app/erh_security/metrics.py) import 為 `erh_core`
-
-### B4. 驗證架構重整
-
-- 執行 `pytest erh-security-app/backend/tests/` 與 `pytest tests/`
-
----
-
-## Part C: 量子模擬器「物理化」升級
-
-### C1. SocialDynamicsQuantumSimulator 增強
-
-- **C1.1** 新增 `measure_social_tension(self, interaction_matrix, biases) -> float`
-- **C1.2** 確認 Hamiltonian 符合 $H = \sum J_{ij} Z_i Z_j + \sum h_i X_i$
-
-### C2. Hybrid Model 整合
-
-- **C2.1** 將 `social_tension_energy` 寫入 `results['quantum_stability']`
-- **C2.2** 新增 `quantum_energy`、`von_neumann_entropy` 至 simulation history
-
-### C3. 視覺化與 LaTeX
-
-- **C3.1** 新增 `plot_social_tension_vs_time()`
-- **C3.2** 新增「Quantum Ising Model of Social Conflict」小節
-
----
-
-## Part D: 自動化腳本與 Pipeline
-
-### D1. run_simulation_batch.py 增強
-
-- **D1.1** 新增 `--mode judge|abm`（預設 `judge`）
-- **D1.2** 實作 ABMSimulator worker
-- **D1.3** 支援 `--output` 指定輸出 JSON 路徑
-
-### D2. Ethical Viability Score (EVS)
-
-- **D2.1** 新增 `calculate_evs(stability, fairness, polarization)`
-- **D2.2** 在 `compare_judges()` 中納入 EVS
-
-### D3–D4. Phase Transition 圖與 GitHub Actions
-
-- **D3.1** 新增 `plot_phase_transition_error_vs_complexity()`
-- **D4.1** 確認 simulation.yml 使用 `run_simulation_batch.py --instances 4`
-
----
-
-## Part E: 文檔與最終驗證
-
-- **E1** 更新 README：新架構、安裝方式、ABMSimulator vs judge 模式
-- **E2** 更新 LaTeX：引用 batch 產生的新圖表
-- **E3** 端到端驗證：batch → 圖表 → LaTeX 編譯
-- **E4** pytest 全數通過
-
----
-
-## 檔案變更總覽
-
-
-| 類型    | 檔案                                                                   | 變更                                                |
-| ----- | -------------------------------------------------------------------- | ------------------------------------------------- |
-| LaTeX | ethical_riemann_hypothesis.tex                                       | A1–A4 論文改進                                        |
-| LaTeX | ethical_riemann_hypothesis_en.tex, ethical_riemann_hypothesis_zh.tex | 同步改動（若有）                                          |
-| 腳本    | scripts/integrate_figures.py, scripts/update_latex.py                | 圖表整合（若需）                                          |
-| 架構    | erh-security-app/backend/requirements.txt                            | 新增 `-e ../..`                                     |
-| 架構    | erh-security-app/backend/app/erh_security/metrics.py                 | import 改為 erh_core                                |
-| 架構    | erh/core/ 或 erh/                                                     | B1–B2 重整                                          |
-| 量子    | simulation/quantum/simulator.py                                      | measure_social_tension()                          |
-| 量子    | erh_core/core/hybrid_model.py                                        | quantum_energy 寫入 history                         |
-| 腳本    | scripts/run_simulation_batch.py                                      | ABMSimulator 模式、EVS                               |
-| 分析    | erh_core/analysis/statistics.py                                      | calculate_evs()                                   |
-| 視覺    | simulation/visualization/plots.py                                    | plot_social_tension_vs_time、plot_phase_transition |
-| 文檔    | README.md                                                            | 架構說明                                              |
-
-
----
-
-## 執行順序建議
-
-```mermaid
-flowchart TD
-    subgraph paper [論文改進]
-        A1[1. 新增 V(a) 近似小節] --> A2[2. 擴充 c(a) 操作定義]
-        A2 --> A3[3. 深化 ERH 必要非充分討論]
-        A3 --> A4[4. 擴充 Zeta 零點/極點解釋]
-        A4 --> A5[5. 補齊 LaTeX 圖表與 fig:comparison]
-    end
-    subgraph arch [架構重整]
-        B1[B1 分析 erh vs erh_core] --> B2[B2 重整 erh/]
-        B2 --> B3[B3 更新 erh-security-app]
-        B3 --> B4[B4 驗證架構]
-    end
-    subgraph quantum [量子升級]
-        C1[C1 measure_social_tension] --> C2[C2 Hybrid 整合]
-        C2 --> C3[C3 視覺化與 LaTeX]
-    end
-    subgraph pipeline [Pipeline]
-        D1[D1 run_simulation_batch] --> D2[D2 EVS]
-        D2 --> D3[D3 Phase Transition 圖]
-        D3 --> D4[D4 GitHub Actions]
-    end
-    A5 --> E[E 文檔與驗證]
-    B4 --> E
-    C3 --> E
-    D4 --> E
-```
-
-
+- 1. 測試連線：啟動 Python (8000), Rust (8080), Angular (4200)，從網頁送出請求，確認端到端 (End-to-End) 資料流暢通。
+- 1. 在 Python 目錄下撰寫 `Dockerfile` (基於 `python:3.10-slim`)，開放 Port 8000。
+- 1. 在 Rust 目錄下撰寫 `Dockerfile` (使用 Multi-stage build 以縮小體積)，開放 Port 8080。
+- 1. 在 Angular 目錄下撰寫 `Dockerfile` (基於 Nginx 編譯靜態資源)，開放 Port 80。
+- 1. 回到根目錄的 `docker-compose.yml`，定義 `frontend`, `gateway`, `ml-engine` 三個服務，並設定對應的 Ports 與內部網路 (Network)。
+- 1. 執行 `docker-compose up --build` 確保整個微服務集群能夠一鍵順利啟動。
+- 1. 撰寫簡單的測試腳本 (Shell 或 Postman Collection) 驗證生產環境 API 端點是否正常回應。
+- 1. 整理root folder的readme.md
 

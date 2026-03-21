@@ -43,10 +43,18 @@ For complete reproduction of all experiments:
    jupyter notebook 04_parameter_sensitivity.ipynb
    ```
 
-3. **Run real-data case studies**:
+3. **Fetch and run real-data case studies**:
    ```bash
+   # Fetch public datasets (Adult, UCI Student Performance, COMPAS)
+   bash scripts/fetch_real_data.sh
+   python scripts/convert_adult_to_csv.py
+   python scripts/process_student_to_exam_cheating.py
+   python scripts/generate_synthetic_sexual_abuse.py
+
    cd simulation/real_data
    python adult_income_case_study.py
+   python exam_cheating_case_study.py
+   python sexual_abuse_case_study.py
    # COMPAS: python compas_case_study.py (if data available)
    ```
    Optional: **α comparison** (real vs simulated):
@@ -86,12 +94,15 @@ The following files and directories serve as the primary supplementary material 
    - `figures/`: All generated paper figures (PDF format)
 
 3. **`simulation/output/real_data/`**: Real-data case study results:
-   - Adult Income dataset analysis
-   - Exam cheating case study
-   - Sexual abuse reporting case study
-   - COMPAS case study (when data available)
+   - Adult Income (UCI)
+   - Exam cheating (UCI Student Performance → exam_cheating_cases.csv)
+   - Sexual abuse reporting (synthetic fallback → sexual_abuse_cases.csv)
+   - COMPAS (when data available)
 
-4. **`test_report/`** (after running `scripts/calculate_alpha_comparison.py`): α comparison (real vs simulated), e.g. `alpha_comparison.png`, `summary_report.md`.
+4. **`data/`**: Fetched datasets (after `bash scripts/fetch_real_data.sh`):
+   - `adult.csv`, `exam_cheating_cases.csv`, `sexual_abuse_cases.csv`, `compas-scores-two-years.csv`
+
+5. **`test_report/`** (after running `scripts/calculate_alpha_comparison.py`): α comparison (real vs simulated), e.g. `alpha_comparison.png`, `summary_report.md`.
 
 ### Additional Material
 
