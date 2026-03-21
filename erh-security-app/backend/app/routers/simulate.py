@@ -4,6 +4,7 @@ API routes for simulation management.
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 from pathlib import Path
@@ -16,7 +17,8 @@ from ..deps import get_db
 router = APIRouter()
 
 # Output directory for simulation results
-SIMULATION_OUTPUT_DIR = Path(__file__).parent.parent.parent.parent / "simulation" / "output"
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
+SIMULATION_OUTPUT_DIR = PROJECT_ROOT / "simulation" / "output"
 
 
 def run_simulation_task(
@@ -185,13 +187,36 @@ def get_simulation_figures(
     for fig_file in figures_dir.glob("*.png"):
         figures.append({
             "name": fig_file.name,
-            "path": f"/api/simulations/{simulation_id}/figures/{fig_file.name}",
+            "path": f"/api/v1/simulations/{simulation_id}/figures/{fig_file.name}",
         })
     for fig_file in figures_dir.glob("*.pdf"):
         figures.append({
             "name": fig_file.name,
-            "path": f"/api/simulations/{simulation_id}/figures/{fig_file.name}",
+            "path": f"/api/v1/simulations/{simulation_id}/figures/{fig_file.name}",
         })
 
     return {"figures": figures}
 
+
+@router.get("/{simulation_id}/figures/{filename}", tags=["simulate"])
+def get_simulation_figure_file(
+    simulation_id: int,
+    filename: str,
+    db: Session = Depends(get_db),
+):
+    """Serve an individual simulation figure file."""
+    sim = db.query(Simulation).filter(Simulation.id == simulation_id).first()
+    if not sim:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+
+    figure_path = (SIMULATION_OUTPUT_DIR / "figures" / filename).resolve()
+
+    try:
+        figure_path.relative_to((SIMULATION_OUTPUT_DIR / "figures").resolve())
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Figure not found") from exc
+
+    if not figure_path.exists() or not figure_path.is_file():
+        raise HTTPException(status_code=404, detail="Figure not found")
+
+    return FileResponse(figure_path)

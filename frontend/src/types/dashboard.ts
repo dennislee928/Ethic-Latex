@@ -18,6 +18,13 @@ export interface AnalysisCurves {
   error_curve: CurvePoint[]
 }
 
+export interface HealthMonitorResponse {
+  error_curve: CurvePoint[]
+  riemann_bound: CurvePoint[]
+  violation: boolean
+  violation_points: CurvePoint[]
+}
+
 export interface HeatmapCell {
   complexity_bin: number
   delta_mean: number
@@ -44,4 +51,3 @@ export interface ActivityLog {
   message: string
   severity: 'info' | 'warning' | 'error'
 }
-

@@ -4,31 +4,31 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --background: 42 37% 96%;
+    --foreground: 218 29% 18%;
+    --card: 42 29% 99%;
+    --card-foreground: 218 29% 18%;
+    --popover: 42 29% 99%;
+    --popover-foreground: 218 29% 18%;
+    --primary: 214 33% 25%;
+    --primary-foreground: 45 38% 97%;
+    --secondary: 36 38% 90%;
+    --secondary-foreground: 220 21% 22%;
+    --muted: 35 32% 92%;
+    --muted-foreground: 218 14% 40%;
+    --accent: 25 53% 88%;
+    --accent-foreground: 219 28% 20%;
+    --destructive: 3 72% 54%;
+    --destructive-foreground: 45 38% 97%;
+    --border: 32 22% 82%;
+    --input: 32 22% 82%;
+    --ring: 208 33% 38%;
+    --radius: 1.25rem;
+    --chart-1: 19 74% 55%;
+    --chart-2: 208 48% 37%;
+    --chart-3: 45 68% 52%;
+    --chart-4: 154 37% 35%;
+    --chart-5: 356 58% 48%;
   }
 
   .dark {
@@ -65,6 +65,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    background-image:
+      radial-gradient(circle at top, rgba(181, 137, 80, 0.18), transparent 28rem),
+      linear-gradient(180deg, rgba(255, 252, 244, 0.96), rgba(246, 239, 226, 0.96));
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
 
+@layer components {
+  .paper-panel {
+    @apply rounded-[1.75rem] border border-border/80 bg-card/85 shadow-[0_24px_80px_rgba(35,40,52,0.12)] backdrop-blur;
+  }
+}

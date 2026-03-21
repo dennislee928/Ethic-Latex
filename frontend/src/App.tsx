@@ -10,6 +10,7 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/editor" element={<Editor />} />
         <Route path="/simulation" element={<Simulation />} />
         <Route path="/settings" element={<Settings />} />
@@ -19,4 +20,3 @@ function App() {
 }
 
 export default App
-
