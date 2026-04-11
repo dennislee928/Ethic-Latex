@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from pathlib import Path
 
+from ..core.db import SessionLocal
 from ..core.schemas import SimulationCreate, SimulationRead, SimulationResult
 from ..core.models import Simulation, SimulationStatus
 from ..services.simulation_service import run_simulation, save_simulation_results
@@ -24,9 +25,10 @@ def run_simulation_task(
     num_actions: int,
     complexity_dist: str,
     tau: float,
-    db: Session,
+    db_session_factory=SessionLocal,
 ):
     """Background task to run simulation."""
+    db = db_session_factory()
     try:
         # Update status to running
         sim = db.query(Simulation).filter(Simulation.id == simulation_id).first()
@@ -63,6 +65,8 @@ def run_simulation_task(
             sim.status = SimulationStatus.FAILED
             db.commit()
         raise e
+    finally:
+        db.close()
 
 
 @router.post("/", response_model=SimulationRead, tags=["simulate"])
@@ -110,7 +114,7 @@ def create_simulation(
         sim_config.num_actions,
         sim_config.complexity_dist,
         sim_config.tau,
-        db,
+        SessionLocal,
     )
 
     return db_sim
@@ -194,4 +198,3 @@ def get_simulation_figures(
         })
 
     return {"figures": figures}
-

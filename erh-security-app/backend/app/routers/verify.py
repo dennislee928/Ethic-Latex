@@ -19,27 +19,17 @@ class VerifyRequest(BaseModel):
     latex_content: str
 
 
-@router.post("/", response_model=ValidationResult, tags=["verify"])
-def verify_rule(
-    request: VerifyRequest,
-    rule_id: int | None = None,
-    db: Session = Depends(get_db),
-):
-    """
-    Verify a LaTeX rule string against ethical security constraints.
-    
-    Args:
-        request: Request body containing latex_content
-        rule_id: Optional rule ID to associate verification with
-    """
-    latex_content = request.latex_content
+def _verify_latex_content(
+    latex_content: str,
+    *,
+    rule_id: int | None,
+    db: Session,
+) -> ValidationResult:
     if not latex_content:
         raise HTTPException(status_code=400, detail="LaTeX content cannot be empty")
 
-    # Perform verification
     verification_result = verify_latex_rule(latex_content)
 
-    # Convert violations to schema format
     violations = [
         Violation(
             type=v.get("type", "unknown"),
@@ -51,13 +41,11 @@ def verify_rule(
         for v in verification_result.get("violations", [])
     ]
 
-    # If rule_id is provided, save the report
-    if rule_id:
+    if rule_id is not None:
         rule = db.query(LatexRule).filter(LatexRule.id == rule_id).first()
         if not rule:
             raise HTTPException(status_code=404, detail="Rule not found")
 
-        # Create or update security report
         report = db.query(SecurityReport).filter(SecurityReport.rule_id == rule_id).first()
         if report:
             report.risk_score = verification_result["risk_score"]
@@ -89,6 +77,26 @@ def verify_rule(
     )
 
 
+@router.post("/", response_model=ValidationResult, tags=["verify"])
+def verify_rule(
+    request: VerifyRequest,
+    rule_id: int | None = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Verify a LaTeX rule string against ethical security constraints.
+    
+    Args:
+        request: Request body containing latex_content
+        rule_id: Optional rule ID to associate verification with
+    """
+    return _verify_latex_content(
+        request.latex_content,
+        rule_id=rule_id,
+        db=db,
+    )
+
+
 @router.post("/rule/{rule_id}", response_model=ValidationResult, tags=["verify"])
 def verify_rule_by_id(
     rule_id: int,
@@ -99,7 +107,7 @@ def verify_rule_by_id(
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    return verify_rule(rule.content, rule_id=rule_id, db=db)
+    return _verify_latex_content(rule.content, rule_id=rule_id, db=db)
 
 
 @router.get("/rule/{rule_id}/validate", response_model=ValidationResult, tags=["verify"])
@@ -138,4 +146,3 @@ def get_validation_result(
         is_valid=report.risk_score < 0.5,  # Simplified: low risk = valid
         warnings=violations_data.get("warnings", []),
     )
-
