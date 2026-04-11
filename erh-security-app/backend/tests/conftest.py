@@ -16,8 +16,6 @@ from app.config import get_settings  # noqa: E402
 get_settings.cache_clear()
 
 from app.core.db import Base, SessionLocal, engine  # noqa: E402
-from app.deps import get_db  # noqa: E402
-from app.main import app  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -39,6 +37,9 @@ def db_session():
 
 @pytest.fixture
 def client(db_session):
+    from app.deps import get_db
+    from app.main import app
+
     def override_get_db():
         yield db_session
 
