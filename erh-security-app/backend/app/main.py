@@ -10,10 +10,10 @@ def create_app() -> FastAPI:
     """
     Create and configure the FastAPI application.
     """
-    settings = get_settings()
+    app_settings = get_settings()
 
     app = FastAPI(
-        title="ERH-on-Security API",
+        title=app_settings.app_name,
         version="0.1.0",
         description=(
             "Proof-of-concept API for mapping GitLab DevSecOps data into the "
@@ -46,5 +46,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-

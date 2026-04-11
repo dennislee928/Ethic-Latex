@@ -8,6 +8,9 @@ import enum
 from .db import Base
 
 
+JSON_COMPAT = JSON().with_variant(JSONB, "postgresql")
+
+
 class Action(Base):
     """
     Represents a merge request (MR) or change action extracted from GitLab.
@@ -43,10 +46,10 @@ class Judgment(Base):
     action_id: Mapped[int] = mapped_column(ForeignKey("actions.id"), index=True, unique=True)
 
     judge_type: Mapped[str] = mapped_column(String(32), index=True)  # PIPELINE / HUMAN / COMBINED
-    pipeline_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
-    human_review_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    pipeline_status: Mapped[str] = mapped_column(String(32), nullable=True)
+    human_review_status: Mapped[str] = mapped_column(String(32), nullable=True)
 
-    findings_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    findings_json: Mapped[dict] = mapped_column(JSON, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -65,7 +68,7 @@ class GroundTruth(Base):
 
     unresolved_high_count: Mapped[int] = mapped_column(Integer, default=0)
     post_incident_flag: Mapped[bool] = mapped_column(Boolean, default=False)
-    incident_severity: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    incident_severity: Mapped[str] = mapped_column(String(32), nullable=True)
 
     action: Mapped[Action] = relationship(back_populates="ground_truth")
 
@@ -82,7 +85,7 @@ class Importance(Base):
 
     asset_criticality: Mapped[int] = mapped_column(Integer, default=1)  # e.g., 1–5
     internet_exposed: Mapped[bool] = mapped_column(Boolean, default=False)
-    service_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    service_name: Mapped[str] = mapped_column(String(128), nullable=True)
 
     action: Mapped[Action] = relationship(back_populates="importance")
 
@@ -155,7 +158,7 @@ class SecurityReport(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     rule_id: Mapped[int] = mapped_column(ForeignKey("latex_rules.id"), index=True)
     risk_score: Mapped[float] = mapped_column(Float)
-    violations: Mapped[dict] = mapped_column(JSONB, nullable=True)  # JSONB for PostgreSQL, falls back to JSON for SQLite
+    violations: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
     verified_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     rule: Mapped["LatexRule"] = relationship(back_populates="security_reports")
@@ -179,10 +182,10 @@ class Simulation(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     status: Mapped[SimulationStatus] = mapped_column(Enum(SimulationStatus), default=SimulationStatus.PENDING, index=True)
-    result_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
-    config: Mapped[dict] = mapped_column(JSONB, nullable=True)  # Simulation configuration parameters
+    result_path: Mapped[str] = mapped_column(String(512), nullable=True)
+    config: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
 
 class UserSettings(Base):
@@ -194,10 +197,8 @@ class UserSettings(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, unique=True)
-    preferences: Mapped[dict] = mapped_column(JSONB, nullable=True)  # User preferences as JSON
+    preferences: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user: Mapped["User"] = relationship(back_populates="settings")
-
-
