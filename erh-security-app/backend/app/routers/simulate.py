@@ -11,6 +11,7 @@ from pathlib import Path
 from ..core.db import SessionLocal
 from ..core.schemas import SimulationCreate, SimulationRead, SimulationResult
 from ..core.models import Simulation, SimulationStatus
+from ..core.time import utc_now
 from ..services.simulation_service import run_simulation, save_simulation_results
 from ..deps import get_db
 
@@ -55,7 +56,7 @@ def run_simulation_task(
         if sim:
             sim.status = SimulationStatus.COMPLETED
             sim.result_path = result_path
-            sim.completed_at = datetime.utcnow()
+            sim.completed_at = utc_now()
             db.commit()
 
     except Exception as e:

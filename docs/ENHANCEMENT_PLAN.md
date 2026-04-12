@@ -45,6 +45,15 @@ Success criteria:
 - Simulation jobs can run asynchronously without session errors.
 - Security frontend builds cleanly.
 
+Progress update (2026-04-12):
+
+- The planned Phase 1 code fixes have been landed for the security backend/frontend surfaces.
+- Added backend regression coverage for config defaults, `POST /api/v1/verify/rule/{id}`, and simulation background-task session ownership.
+- Verified on 2026-04-12 with `10` passing security backend tests plus successful Next.js frontend build and lint.
+- The security frontend now also supports an explicit `typecheck` CI step, which starts landing the Phase 5 CI-signal cleanup for that surface.
+- Root dependency and workflow support files were aligned so the repo-level environment can execute the backend router tests.
+- Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
+
 ## Phase 2: Rationalize Repo Boundaries
 
 Target: 3-5 days

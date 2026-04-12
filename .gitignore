@@ -112,3 +112,4 @@ basement.md
 /.venv_erh/lib
 /.cursor/plans
 .worktrees/erh-hybrid-demo/
+*.tsbuildinfo

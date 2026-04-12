@@ -1,14 +1,16 @@
+from datetime import datetime
+
 """
 API routes for LaTeX rule verification.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from datetime import datetime
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from ..core.schemas import ValidationResult, Violation
 from ..core.models import LatexRule, SecurityReport
+from ..core.time import utc_now
 from ..services.erh_service import verify_latex_rule, analyze_rule_security
 from ..deps import get_db
 
@@ -53,7 +55,7 @@ def _verify_latex_content(
                 "violations": [v.model_dump() for v in violations],
                 "warnings": verification_result.get("warnings", []),
             }
-            report.verified_at = datetime.utcnow()
+            report.verified_at = utc_now()
         else:
             report = SecurityReport(
                 rule_id=rule_id,
@@ -71,7 +73,7 @@ def _verify_latex_content(
         rule_id=rule_id or 0,
         risk_score=verification_result["risk_score"],
         violations=violations,
-        verified_at=datetime.utcnow(),
+        verified_at=utc_now(),
         is_valid=verification_result.get("is_valid", False),
         warnings=verification_result.get("warnings", []),
     )

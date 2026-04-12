@@ -41,6 +41,7 @@ SQLAlchemy>=2.0.35
 
 # Type safety & validation
 pydantic>=2.0.0
+pydantic-settings>=2.0.0
 
 # Phase 3: Quantum Judgment (Advanced Ethical Hilbert Space)
 qiskit>=1.0.0

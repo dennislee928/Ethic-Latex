@@ -10,6 +10,29 @@
 
 ---
 
+## Progress Update (2026-04-12)
+
+**Status:** Phase 1 stabilization tranche implemented and verified for the security backend/frontend surfaces.
+
+**Completed in repository:**
+- Backend regression harness added with SQLite-backed tests for config, verify route, and simulation background-task session ownership.
+- Local backend defaults switched to SQLite, `app.main` naming collision removed, and JSON columns made portable across SQLite/PostgreSQL.
+- Verification logic now flows through a shared helper and `POST /api/v1/verify/rule/{id}` is covered by a smoke test.
+- Simulation background tasks now create and close their own SQLAlchemy session.
+- Next.js security frontend now exports `HealthMonitorResponse` and `getHealth()`.
+- `simulation/app.py` imports `json`, the root environment includes `SQLAlchemy` and `pydantic-settings`, and the security workflow no longer calls undefined `npm test`.
+- Nearby stale status language in documentation was reduced.
+
+**Verification run on 2026-04-12:**
+- `erh-security-app/backend/tests`: `10 passed`
+- `erh-security-app/frontend`: `npm run build` passed
+- `erh-security-app/frontend`: `npm run lint` passed
+- `simulation/app.py`: `py_compile` passed
+
+**Follow-up completed after verification:**
+- Replaced deprecated `datetime.utcnow()` usage in the security backend with a shared UTC helper to reduce warning noise in tests.
+- Added an explicit Next.js security frontend typecheck step (`tsc --noEmit`) so the CI workflow now checks build, typecheck, and lint separately.
+
 ### Task 1: Lock in backend regressions with tests
 
 **Files:**
