@@ -59,3 +59,50 @@ def test_run_simulation_task_uses_session_factory(monkeypatch, tmp_path) -> None
         assert sim is not None
         assert sim.status == SimulationStatus.COMPLETED
         assert sim.result_path is not None
+
+
+def test_create_simulation_route_runs_background_task_and_exposes_results(
+    client,
+    monkeypatch,
+    tmp_path,
+) -> None:
+    fake_results = {
+        "mistake_rate": 0.1,
+        "ethical_primes_count": 3,
+        "analysis": {
+            "estimated_exponent": 0.5,
+            "alpha_ci_low": 0.45,
+            "alpha_ci_high": 0.55,
+            "erh_satisfied": True,
+            "r_squared": 0.99,
+            "growth_rate": "square_root",
+        },
+        "config": {"num_actions": 100, "complexity_dist": "zipf", "tau": 0.3},
+    }
+
+    monkeypatch.setattr(simulate_router, "run_simulation", lambda **_: fake_results)
+
+    def fake_save_simulation_results(results, output_dir, simulation_id=None):
+        path = tmp_path / f"sim_result_{simulation_id}.json"
+        path.write_text(json.dumps(results), encoding="utf-8")
+        return str(path)
+
+    monkeypatch.setattr(simulate_router, "save_simulation_results", fake_save_simulation_results)
+
+    create_response = client.post(
+        "/api/v1/simulations/",
+        json={"num_actions": 100, "complexity_dist": "zipf", "tau": 0.3},
+    )
+
+    assert create_response.status_code == 200
+    simulation_id = create_response.json()["id"]
+
+    status_response = client.get(f"/api/v1/simulations/{simulation_id}")
+    assert status_response.status_code == 200
+    status_payload = status_response.json()
+    assert status_payload["status"] == SimulationStatus.COMPLETED.value
+    assert status_payload["result_path"]
+
+    results_response = client.get(f"/api/v1/simulations/{simulation_id}/results")
+    assert results_response.status_code == 200
+    assert results_response.json()["analysis"]["erh_satisfied"] is True

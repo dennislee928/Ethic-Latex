@@ -15,7 +15,7 @@
 **Status:** Phase 1 stabilization tranche implemented and verified for the security backend/frontend surfaces.
 
 **Completed in repository:**
-- Backend regression harness added with SQLite-backed tests for config, verify route, and simulation background-task session ownership.
+- Backend regression harness added with SQLite-backed tests for config, verify route, simulation background-task session ownership, and simulation create/status/results route flow.
 - Local backend defaults switched to SQLite, `app.main` naming collision removed, and JSON columns made portable across SQLite/PostgreSQL.
 - Verification logic now flows through a shared helper and `POST /api/v1/verify/rule/{id}` is covered by a smoke test.
 - Simulation background tasks now create and close their own SQLAlchemy session.
@@ -24,7 +24,7 @@
 - Nearby stale status language in documentation was reduced.
 
 **Verification run on 2026-04-12:**
-- `erh-security-app/backend/tests`: `10 passed`
+- `erh-security-app/backend/tests`: `11 passed`
 - `erh-security-app/frontend`: `npm run build` passed
 - `erh-security-app/frontend`: `npm run lint` passed
 - `simulation/app.py`: `py_compile` passed
@@ -32,6 +32,8 @@
 **Follow-up completed after verification:**
 - Replaced deprecated `datetime.utcnow()` usage in the security backend with a shared UTC helper to reduce warning noise in tests.
 - Added an explicit Next.js security frontend typecheck step (`tsc --noEmit`) so the CI workflow now checks build, typecheck, and lint separately.
+- Made the backend SQLite test database path process-specific so concurrent verification runs do not collide on the same temp database file.
+- Added a dated verified-surfaces snapshot and architecture map to `README.md` and `docs/IMPLEMENTATION_STATUS.md` so repository-facing docs now match the latest stabilization evidence.
 
 ### Task 1: Lock in backend regressions with tests
 
