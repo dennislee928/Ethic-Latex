@@ -2,6 +2,17 @@
 
 This document provides essential information for reviewers evaluating this paper submission.
 
+## Scope Note
+
+Status date: `2026-04-12`
+
+This reviewer guide is for the paper reproduction and research/simulation surfaces of the repository. It is not the operational guide for the separately stabilized security app path under `erh-security-app/`.
+
+Current verified surface split:
+
+- **Research / paper path:** `simulation/`, `erh_core/`, `erh/`, LaTeX sources, and the root SDK-style tests.
+- **Verified application path:** `erh-security-app/backend` and `erh-security-app/frontend`.
+
 ## Main Paper PDF
 
 The primary PDF is generated from the main LaTeX source:
@@ -149,6 +160,5 @@ If you have limited time, focus on:
 ## Contact
 
 For questions about reproducibility or supplementary material, please refer to the main repository README or open an issue at: https://github.com/dennislee928/Ethic-Latex
-
 
 

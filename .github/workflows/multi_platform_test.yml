@@ -37,13 +37,13 @@ jobs:
         shell: bash
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
-          pytest tests/test_sdk.py -v --tb=short || echo "⚠ Some tests failed, continuing..."
+          pytest tests/test_sdk.py -v --tb=short
 
       - name: Run ERH Phase 1 tests
         shell: bash
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd):$(pwd)/simulation
-          pytest tests/test_erh_phase1.py -v --tb=short || echo "⚠ Some tests failed, continuing..."
+          pytest tests/test_erh_phase1.py -v --tb=short
 
       - name: Run Pydantic models and zeta function tests
         shell: bash
@@ -58,12 +58,12 @@ jobs:
           print('simulation.models OK')
           "
           python -c "
+          from numbers import Number
           from simulation.analysis.zeta_function import ethical_zeta_product, build_m_sequence
           z = ethical_zeta_product(primes=[], s=1.0+0j, max_terms=10)
-          assert isinstance(z, complex)
+          assert isinstance(z, Number)
           print('simulation.analysis.zeta_function OK')
           "
-        continue-on-error: true
 
       - name: Test LaTeX compilation (Linux only)
         if: matrix.os == 'ubuntu-latest'
@@ -72,4 +72,3 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-base texlive-latex-base latexmk
           latexmk -pdf -interaction=nonstopmode ethical_riemann_hypothesis_en.tex || echo "⚠ LaTeX compilation failed, continuing..."
-

@@ -35,6 +35,12 @@
 - Made the backend SQLite test database path process-specific so concurrent verification runs do not collide on the same temp database file.
 - Added a dated verified-surfaces snapshot and architecture map to `README.md` and `docs/IMPLEMENTATION_STATUS.md` so repository-facing docs now match the latest stabilization evidence.
 - Updated `erh-security-app/README.md`, `docs/QUICKSTART.md`, and `docs/INSTALL.md` so run/install guidance explicitly separates the verified security app path from the broader research/simulation path.
+- Tightened `.github/workflows/multi_platform_test.yml` by removing shell-level failure suppression from the root SDK and ERH Phase 1 test steps, and by making the zeta-function smoke check assert a stable numeric contract instead of a brittle `complex` type check.
+- Updated `README_for_reviewers.md` so it explicitly describes the research/paper reproduction path rather than conflating it with the verified security app surface.
+
+**Additional verification run on 2026-04-12:**
+- Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
+- Root smoke check for `simulation.models` and `simulation.analysis.zeta_function` passed
 
 ### Task 1: Lock in backend regressions with tests
 

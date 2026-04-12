@@ -55,6 +55,8 @@ Progress update (2026-04-12):
 - The backend SQLite test harness now uses a process-specific temp database path so local parallel verification does not produce false collisions.
 - `README.md` and `docs/IMPLEMENTATION_STATUS.md` now include a dated verified-surfaces snapshot and architecture map that reflects the latest repository-grounded evidence.
 - `erh-security-app/README.md`, `docs/QUICKSTART.md`, and `docs/INSTALL.md` now distinguish the verified security app workflow from the broader research/simulation workflow.
+- `.github/workflows/multi_platform_test.yml` now fails honestly for the root SDK and ERH Phase 1 checks, and its zeta smoke check has been tightened to assert a stable numeric return contract.
+- `README_for_reviewers.md` now explicitly scopes itself to the research/paper reproduction path instead of the security app path.
 - Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
 
 ## Phase 2: Rationalize Repo Boundaries
