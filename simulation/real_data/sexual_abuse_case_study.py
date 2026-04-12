@@ -20,12 +20,15 @@ for methodological illustration.
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 try:
     from sklearn.linear_model import LogisticRegression
@@ -288,16 +291,17 @@ def run_real_data_case_study(
     output_markdown = output_markdown or DEFAULT_OUTPUT_MD
 
     if LogisticRegression is None:
-        print(
+        logger.info(
             "[Sexual Abuse ERH] scikit-learn not installed; skipping case study. "
             "Install scikit-learn>=1.0.0 to enable this experiment."
         )
         return
 
     if not data_path.exists():
-        print(
-            f"[Sexual Abuse ERH] Dataset not found at {data_path}; skipping case study. "
-            "Place an anonymized sexual_abuse_cases.csv file under data/ to enable this experiment."
+        logger.info(
+            "[Sexual Abuse ERH] Dataset not found at %s; skipping case study. "
+            "Place an anonymized sexual_abuse_cases.csv file under data/ to enable this experiment.",
+            data_path,
         )
         return
 
@@ -320,9 +324,9 @@ def run_real_data_case_study(
         )
 
         write_markdown_report(output_markdown, stats)
-        print(f"[Sexual Abuse ERH] Case study report written to {output_markdown}")
+        logger.info("[Sexual Abuse ERH] Case study report written to %s", output_markdown)
     except Exception as e:
-        print(f"[Sexual Abuse ERH] Case study failed with error: {e}. Skipping report generation.")
+        logger.error("[Sexual Abuse ERH] Case study failed: %s. Skipping report generation.", e, exc_info=True)
 
 
 if __name__ == "__main__":  # pragma: no cover

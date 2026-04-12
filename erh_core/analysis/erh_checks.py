@@ -65,16 +65,28 @@ def check_erh_bound(
         - 'violation_rate': fraction of x with |E(x)| > C x^(1/2 + ε)
         - 'num_points': number of valid (x, E(x)) pairs considered
     """
+    # ENH-008: Explicit parameter validation — raise on invalid inputs rather
+    # than silently returning NaN or incorrect results.
     if E_x is None or x_values is None:
-        return {
-            "erh_satisfied": False,
-            "max_ratio": float("nan"),
-            "violation_rate": float("nan"),
-            "num_points": 0,
-        }
+        raise ValueError("E_x and x_values must not be None.")
 
     E_x = np.asarray(E_x, dtype=float)
     x_values = np.asarray(x_values, dtype=float)
+
+    if E_x.shape != x_values.shape:
+        raise ValueError(
+            f"Shape mismatch: E_x has shape {E_x.shape} but x_values has shape {x_values.shape}."
+        )
+    if C <= 0:
+        raise ValueError(f"C must be positive, got C={C}.")
+    if epsilon < 0:
+        raise ValueError(f"epsilon must be non-negative, got epsilon={epsilon}.")
+    if not (0.0 <= allowed_violation_rate <= 1.0):
+        raise ValueError(
+            f"allowed_violation_rate must be in [0, 1], got {allowed_violation_rate}."
+        )
+    if slack_factor <= 0:
+        raise ValueError(f"slack_factor must be positive, got slack_factor={slack_factor}.")
 
     # Only consider positive complexities and finite errors
     valid_mask = (x_values > 0) & np.isfinite(E_x) & np.isfinite(x_values)

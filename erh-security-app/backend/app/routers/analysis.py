@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
+
+# VUL-007: Maximum code snippet size (50 KB)
+_MAX_CODE_SNIPPET_BYTES = 50_000
 
 from ..core.schemas import AnalysisCurves, AnalysisSummary, CurvePoint, HeatmapCell, HeatmapResponse
 from ..deps import get_db
@@ -48,6 +54,17 @@ def analyze_code_complexity(request: CodeComplexityRequest) -> CodeComplexityRes
     Returns concrete x value in [1, 100] for use in ERH Security PoC.
     Use this instead of abstract MR-size complexity when code content is available.
     """
+    # VUL-007: Validate input size to prevent DoS via large payloads.
+    if len(request.code_snippet.encode("utf-8")) > _MAX_CODE_SNIPPET_BYTES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Code snippet too large (limit: {_MAX_CODE_SNIPPET_BYTES // 1000} KB).",
+        )
+    if not request.code_snippet.strip():
+        raise HTTPException(status_code=400, detail="Code snippet cannot be empty.")
+
+    logger.debug("Analyzing code complexity with method=%s, size=%d bytes",
+                 request.method, len(request.code_snippet.encode("utf-8")))
     complexity = calculate_code_complexity(
         request.code_snippet,
         method=request.method,

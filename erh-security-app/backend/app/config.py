@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     # Logging
     log_level: str = "INFO"
 
+    # CORS: comma-separated list of allowed origins.
+    # Example: "http://localhost:3000,https://app.example.com"
+    # Defaults to localhost:3000 for local development only.
+    cors_allowed_origins: str = "http://localhost:3000"
+
 
 @lru_cache()
 def get_settings() -> Settings:

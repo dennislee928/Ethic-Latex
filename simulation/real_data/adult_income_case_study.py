@@ -20,12 +20,15 @@ script will log a message and exit without error.
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 try:
     from sklearn.linear_model import LogisticRegression
@@ -442,16 +445,17 @@ def run_real_data_case_study(
     output_markdown = output_markdown or DEFAULT_OUTPUT_MD
 
     if LogisticRegression is None:
-        print(
+        logger.info(
             "[Adult ERH] scikit-learn not installed; skipping real-data case study. "
             "Install scikit-learn>=1.0.0 to enable this experiment."
         )
         return
 
     if not data_path.exists():
-        print(
-            f"[Adult ERH] Dataset not found at {data_path}; skipping real-data case study. "
-            "Place an adult.csv file under data/ to enable this experiment."
+        logger.info(
+            "[Adult ERH] Dataset not found at %s; skipping real-data case study. "
+            "Place an adult.csv file under data/ to enable this experiment.",
+            data_path,
         )
         return
 
@@ -480,9 +484,9 @@ def run_real_data_case_study(
         )
 
         write_markdown_report(output_markdown, stats)
-        print(f"[Adult ERH] Real-data case study report written to {output_markdown}")
+        logger.info("[Adult ERH] Real-data case study report written to %s", output_markdown)
     except Exception as e:  # pragma: no cover - defensive guard for CI
-        print(f"[Adult ERH] Case study failed with error: {e}. Skipping report generation.")
+        logger.error("[Adult ERH] Case study failed with error: %s. Skipping report generation.", e, exc_info=True)
 
 
 if __name__ == "__main__":  # pragma: no cover

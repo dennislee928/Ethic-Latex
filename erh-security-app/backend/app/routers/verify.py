@@ -1,8 +1,9 @@
-from datetime import datetime
-
 """
 API routes for LaTeX rule verification.
 """
+
+from datetime import datetime
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -14,7 +15,44 @@ from ..core.time import utc_now
 from ..services.erh_service import verify_latex_rule, analyze_rule_security
 from ..deps import get_db
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
+
+# VUL-005: Maximum allowed LaTeX content size (100 KB)
+_MAX_LATEX_BYTES = 100_000
+
+# VUL-005: Dangerous LaTeX commands that could cause DoS or information
+# disclosure when processed by downstream LaTeX compilers.
+_DANGEROUS_LATEX_COMMANDS = [
+    r"\immediate\write18",
+    r"\write18",
+    r"\input",
+    r"\include",
+    r"\openin",
+    r"\openout",
+    r"\read",
+    r"\catcode",
+    r"\special",
+    r"\csname",
+]
+
+
+def _validate_latex_input(latex_content: str) -> None:
+    """Raise HTTPException if content exceeds size limit or contains dangerous commands."""
+    if len(latex_content.encode("utf-8")) > _MAX_LATEX_BYTES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"LaTeX content too large (limit: {_MAX_LATEX_BYTES // 1000} KB).",
+        )
+    content_lower = latex_content.lower()
+    for cmd in _DANGEROUS_LATEX_COMMANDS:
+        if cmd.lower() in content_lower:
+            logger.warning("Rejected LaTeX input containing dangerous command: %s", cmd)
+            raise HTTPException(
+                status_code=400,
+                detail=f"LaTeX content contains a disallowed command: {cmd}",
+            )
 
 
 class VerifyRequest(BaseModel):
@@ -29,6 +67,9 @@ def _verify_latex_content(
 ) -> ValidationResult:
     if not latex_content:
         raise HTTPException(status_code=400, detail="LaTeX content cannot be empty")
+
+    # VUL-005: Validate size and dangerous commands before processing.
+    _validate_latex_input(latex_content)
 
     verification_result = verify_latex_rule(latex_content)
 
