@@ -46,21 +46,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#core-modules">Core Modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#erh.core.action_space.Action"><code class="docutils literal notranslate"><span class="pre">Action</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.id"><code class="docutils literal notranslate"><span class="pre">Action.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.c"><code class="docutils literal notranslate"><span class="pre">Action.c</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.V"><code class="docutils literal notranslate"><span class="pre">Action.V</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.w"><code class="docutils literal notranslate"><span class="pre">Action.w</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.J"><code class="docutils literal notranslate"><span class="pre">Action.J</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.V"><code class="docutils literal notranslate"><span class="pre">Action.V</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.c"><code class="docutils literal notranslate"><span class="pre">Action.c</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.delta"><code class="docutils literal notranslate"><span class="pre">Action.delta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.id"><code class="docutils literal notranslate"><span class="pre">Action.id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.mistake_flag"><code class="docutils literal notranslate"><span class="pre">Action.mistake_flag</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Action.J</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Action.V</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Action.c</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Action.delta</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Action.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Action.mistake_flag</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.severity"><code class="docutils literal notranslate"><span class="pre">Action.severity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Action.w</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erh.core.action_space.Action.w"><code class="docutils literal notranslate"><span class="pre">Action.w</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#erh.core.action_space.generate_world"><code class="docutils literal notranslate"><span class="pre">generate_world()</span></code></a></li>
@@ -163,50 +156,16 @@ Adds scenario_generator (erh-only).</p>
 <p>Agent-Based Modeling simulator for ethical judgment systems.</p>
 <p>Manages large populations of agents, their interactions, and tracks
 ERH metrics dynamically throughout the simulation.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">population</span></span></dt>
-<dd><p>Population of agents</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>AgentPopulation</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>population</strong> (<em>AgentPopulation</em>) – Population of agents</p></li>
+<li><p><strong>network</strong> (<em>SocialNetwork</em>) – Social network structure</p></li>
+<li><p><strong>meta_monitor</strong> (<em>Optional</em><em>[</em><em>MetaMonitor</em><em>]</em>) – Meta-layer monitor (optional)</p></li>
+<li><p><strong>simulation_history</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – History of simulation states</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">network</span></span></dt>
-<dd><p>Social network structure</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>SocialNetwork</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">meta_monitor</span></span></dt>
-<dd><p>Meta-layer monitor (optional)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[MetaMonitor]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">simulation_history</span></span></dt>
-<dd><p>History of simulation states</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Dict]</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">calibrate_erh_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/erh_core/core/abm_simulator.html#ABMSimulator.calibrate_erh_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -299,84 +258,20 @@ ERH metrics dynamically throughout the simulation.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">Action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mistake_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/action_space.html#Action"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a single action/case in the moral judgment space.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">id</span></span></dt>
-<dd><p>Unique identifier for the action</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>int</em>) – Unique identifier for the action</p></li>
+<li><p><strong>c</strong> (<em>int</em>) – Complexity level (positive integer)</p></li>
+<li><p><strong>V</strong> (<em>float</em>) – True moral value (ground truth), typically in [-1, 1]
+-1 = extremely immoral, 0 = neutral, +1 = extremely moral</p></li>
+<li><p><strong>w</strong> (<em>float</em>) – Importance weight (e.g., number of people affected, severity)</p></li>
+<li><p><strong>J</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Judgment value assigned by a judge (initially None)</p></li>
+<li><p><strong>delta</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Error: Δ(a) = J(a) - V(a) (initially None)</p></li>
+<li><p><strong>mistake_flag</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Binary indicator: 1 if <code class="docutils literal notranslate"><span class="pre">|Δ|</span></code> &gt; τ, 0 otherwise (initially None)</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">c</span></span></dt>
-<dd><p>Complexity level (positive integer)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">V</span></span></dt>
-<dd><p>True moral value (ground truth), typically in [-1, 1]
--1 = extremely immoral, 0 = neutral, +1 = extremely moral</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">w</span></span></dt>
-<dd><p>Importance weight (e.g., number of people affected, severity)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">J</span></span></dt>
-<dd><p>Judgment value assigned by a judge (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delta</span></span></dt>
-<dd><p>Error: Δ(a) = J(a) - V(a) (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[float]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">mistake_flag</span></span></dt>
-<dd><p>Binary indicator: 1 if <code class="docutils literal notranslate"><span class="pre">|Δ|</span></code> &gt; τ, 0 otherwise (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[int]</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">J</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span></dt>
@@ -651,72 +546,18 @@ especially for complex or uncertain cases.</p>
 - State variables (current error rate, judgment tendency)
 - Interaction rules
 - Ability to learn and adapt</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">agent_id</span></span></dt>
-<dd><p>Unique identifier for the agent</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_id</strong> (<em>int</em>) – Unique identifier for the agent</p></li>
+<li><p><strong>judge</strong> (<a class="reference internal" href="#erh.core.judgement_system.BaseJudge" title="erh.core.judgement_system.BaseJudge"><em>BaseJudge</em></a>) – Judgment system used by this agent</p></li>
+<li><p><strong>error_rate</strong> (<em>float</em>) – Current error rate (fraction of misjudgments)</p></li>
+<li><p><strong>judgment_tendency</strong> (<em>float</em>) – Overall tendency in judgments (bias direction)</p></li>
+<li><p><strong>interaction_history</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – History of interactions with other agents</p></li>
+<li><p><strong>state</strong> (<em>Dict</em>) – Additional state variables</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">judge</span></span></dt>
-<dd><p>Judgment system used by this agent</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#erh.core.judgement_system.BaseJudge" title="erh.core.judgement_system.BaseJudge">BaseJudge</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">error_rate</span></span></dt>
-<dd><p>Current error rate (fraction of misjudgments)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">judgment_tendency</span></span></dt>
-<dd><p>Overall tendency in judgments (bias direction)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">interaction_history</span></span></dt>
-<dd><p>History of interactions with other agents</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Dict]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">state</span></span></dt>
-<dd><p>Additional state variables</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">adapt_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">performance_feedback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/agent.html#EthicalAgent.adapt_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -785,61 +626,17 @@ especially for complex or uncertain cases.</p>
 <p>Integrated psychohistory model combining all components.</p>
 <p>This class provides a unified interface for running complete
 psychohistory-style simulations with all features integrated.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">abm_simulator</span></span></dt>
-<dd><p>ABM simulator component</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ABMSimulator</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abm_simulator</strong> (<em>ABMSimulator</em>) – ABM simulator component</p></li>
+<li><p><strong>meta_monitor</strong> (<em>MetaMonitor</em>) – Meta-layer monitor</p></li>
+<li><p><strong>temporal_enabled</strong> (<em>bool</em>) – Whether temporal tracking is enabled</p></li>
+<li><p><strong>network_dynamics_enabled</strong> (<em>bool</em>) – Whether network dynamics are enabled</p></li>
+<li><p><strong>fluid_model_enabled</strong> (<em>bool</em>) – Whether fluid model is enabled</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">meta_monitor</span></span></dt>
-<dd><p>Meta-layer monitor</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>MetaMonitor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">temporal_enabled</span></span></dt>
-<dd><p>Whether temporal tracking is enabled</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">network_dynamics_enabled</span></span></dt>
-<dd><p>Whether network dynamics are enabled</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">fluid_model_enabled</span></span></dt>
-<dd><p>Whether fluid model is enabled</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">adaptive_adjustment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/erh_core/core/hybrid_model.html#HybridPsychohistoryModel.adaptive_adjustment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -925,50 +722,16 @@ psychohistory-style simulations with all features integrated.</p>
 <p>Continuously monitors E(x,t) and automatically adjusts parameters
 when violations are detected, similar to the Second Foundation’s
 secret guidance of civilization.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">erh_params</span></span></dt>
-<dd><p>Current ERH parameters</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ERHParameters</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>erh_params</strong> (<em>ERHParameters</em>) – Current ERH parameters</p></li>
+<li><p><strong>violation_history</strong> (<em>List</em><em>[</em><em>ViolationEvent</em><em>]</em>) – History of detected violations</p></li>
+<li><p><strong>correction_history</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – History of corrections applied</p></li>
+<li><p><strong>monitoring_active</strong> (<em>bool</em>) – Whether monitoring is active</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">violation_history</span></span></dt>
-<dd><p>History of detected violations</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[ViolationEvent]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_history</span></span></dt>
-<dd><p>History of corrections applied</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[Dict]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">monitoring_active</span></span></dt>
-<dd><p>Whether monitoring is active</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">adaptive_erh_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E_xt_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ERHParameters</span></span></span><a class="reference internal" href="_modules/erh_core/core/meta_monitor.html#MetaMonitor.adaptive_erh_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -1120,39 +883,15 @@ distraction, or lack of information.</p>
 <p>Social network for agent interactions.</p>
 <p>Nodes represent AI judgment agents, edges represent information/influence
 propagation. Supports multiple network topologies.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">graph</span></span></dt>
-<dd><p>NetworkX graph representing the network</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>nx.Graph</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>nx.Graph</em>) – NetworkX graph representing the network</p></li>
+<li><p><strong>agents</strong> (<em>List</em><em>[</em><em>EthicalAgent</em><em>]</em>) – List of agents in the network</p></li>
+<li><p><strong>agent_to_node</strong> (<em>Dict</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – Mapping from agent_id to node index</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">agents</span></span></dt>
-<dd><p>List of agents in the network</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[EthicalAgent]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">agent_to_node</span></span></dt>
-<dd><p>Mapping from agent_id to node index</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[int, int]</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">add_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EthicalAgent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/social_network.html#SocialNetwork.add_agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -1763,112 +1502,48 @@ with various complexity and value distributions.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">erh.core.action_space.</span></span><span class="sig-name descname"><span class="pre">Action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mistake_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh/core/action_space.html#Action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#erh.core.action_space.Action" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a single action/case in the moral judgment space.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="erh.core.action_space.Action.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#erh.core.action_space.Action.id" title="Link to this definition"></a></dt>
-<dd><p>Unique identifier for the action</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>int</em>) – Unique identifier for the action</p></li>
+<li><p><strong>c</strong> (<em>int</em>) – Complexity level (positive integer)</p></li>
+<li><p><strong>V</strong> (<em>float</em>) – True moral value (ground truth), typically in [-1, 1]
+-1 = extremely immoral, 0 = neutral, +1 = extremely moral</p></li>
+<li><p><strong>w</strong> (<em>float</em>) – Importance weight (e.g., number of people affected, severity)</p></li>
+<li><p><strong>J</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Judgment value assigned by a judge (initially None)</p></li>
+<li><p><strong>delta</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Error: Δ(a) = J(a) - V(a) (initially None)</p></li>
+<li><p><strong>mistake_flag</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Binary indicator: 1 if <code class="docutils literal notranslate"><span class="pre">|Δ|</span></code> &gt; τ, 0 otherwise (initially None)</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
 <dl class="py attribute">
-<dt class="sig sig-object py" id="erh.core.action_space.Action.c">
-<span class="sig-name descname"><span class="pre">c</span></span><a class="headerlink" href="#erh.core.action_space.Action.c" title="Link to this definition"></a></dt>
-<dd><p>Complexity level (positive integer)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="erh.core.action_space.Action.J">
+<span class="sig-name descname"><span class="pre">J</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#erh.core.action_space.Action.J" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="erh.core.action_space.Action.V">
-<span class="sig-name descname"><span class="pre">V</span></span><a class="headerlink" href="#erh.core.action_space.Action.V" title="Link to this definition"></a></dt>
-<dd><p>True moral value (ground truth), typically in [-1, 1]
--1 = extremely immoral, 0 = neutral, +1 = extremely moral</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">V</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#erh.core.action_space.Action.V" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="erh.core.action_space.Action.w">
-<span class="sig-name descname"><span class="pre">w</span></span><a class="headerlink" href="#erh.core.action_space.Action.w" title="Link to this definition"></a></dt>
-<dd><p>Importance weight (e.g., number of people affected, severity)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="erh.core.action_space.Action.J">
-<span class="sig-name descname"><span class="pre">J</span></span><a class="headerlink" href="#erh.core.action_space.Action.J" title="Link to this definition"></a></dt>
-<dd><p>Judgment value assigned by a judge (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[float]</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="erh.core.action_space.Action.c">
+<span class="sig-name descname"><span class="pre">c</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#erh.core.action_space.Action.c" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="erh.core.action_space.Action.delta">
-<span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#erh.core.action_space.Action.delta" title="Link to this definition"></a></dt>
-<dd><p>Error: Δ(a) = J(a) - V(a) (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[float]</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">delta</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#erh.core.action_space.Action.delta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="erh.core.action_space.Action.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#erh.core.action_space.Action.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="erh.core.action_space.Action.mistake_flag">
-<span class="sig-name descname"><span class="pre">mistake_flag</span></span><a class="headerlink" href="#erh.core.action_space.Action.mistake_flag" title="Link to this definition"></a></dt>
-<dd><p>Binary indicator: 1 if <code class="docutils literal notranslate"><span class="pre">|Δ|</span></code> &gt; τ, 0 otherwise (initially None)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[int]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">J</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">V</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">c</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">delta</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">mistake_flag</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mistake_flag</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#erh.core.action_space.Action.mistake_flag" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1877,8 +1552,8 @@ with various complexity and value distributions.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">w</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="erh.core.action_space.Action.w">
+<span class="sig-name descname"><span class="pre">w</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#erh.core.action_space.Action.w" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

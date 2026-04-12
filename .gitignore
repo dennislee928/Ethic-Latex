@@ -21,8 +21,12 @@ wheels/
 *.egg
 #node-modules
 ./frontend/node_modules
+js-sdk/node_modules/
 *node_modules
 .next/
+
+# Docs build output
+docs/_build/
 
 # Git ignore folder
 .gitignore-folder
@@ -71,20 +75,26 @@ Thumbs.db
 !ethical_riemann_hypothesis.pdf
 
 # Simulation outputs
-simulation/output/*.pdf
-simulation/output/*.png
-simulation/output/*.jpg
-simulation/output/*.txt
-simulation/output/*.md
-
-# Keep folder structure
+simulation/output/**
 !simulation/output/.gitkeep
+!simulation/output/figures/
+simulation/output/figures/**
 !simulation/output/figures/.gitkeep
+!simulation/output/psychohistory_tests/
+simulation/output/psychohistory_tests/**
+!simulation/output/psychohistory_tests/.gitkeep
 
 # Figures
 figures/*.pdf
 figures/*.png
 !figures/.gitkeep
+
+# Generated run outputs and reports
+results/
+test_results/
+tests/notebooks/output/
+test_report/
+final_report/
 
 # Data
 *.csv

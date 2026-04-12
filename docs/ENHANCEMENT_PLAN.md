@@ -61,6 +61,10 @@ Progress update (2026-04-12):
 - `docs/index.md` now links the supported-surfaces note and calls out the verified app/library/research paths on the docs landing page.
 - `.github/workflows/repo_smoke.yml` now provides a single smoke workflow across the root Python path, the security backend, the security frontend, and the docs build.
 - The docs build warning count has been reduced substantially, and `.github/workflows/docs.yml` now uses the same editable-install + `python -m sphinx` entrypoint as the repo smoke path.
+- The docs path is now clean enough to run as a strict `sphinx -W` gate in both docs-related workflows.
+- Generated documentation output under `docs/_build` and vendored `js-sdk/node_modules` content have been removed from Git tracking while being preserved locally and ignored going forward.
+- Additional generated outputs under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report/` have also been removed from Git tracking while being preserved locally and ignored going forward.
+- `simulation/output/` is now being treated consistently as generated output rather than checked-in source; the docs were updated accordingly and the generated files in that tree have been staged for removal so only placeholder structure remains intended for tracking.
 - Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
 
 ## Phase 2: Rationalize Repo Boundaries

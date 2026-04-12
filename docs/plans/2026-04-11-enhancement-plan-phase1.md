@@ -42,12 +42,20 @@
 - Added `.github/workflows/repo_smoke.yml` to run one repository-grounded smoke workflow covering the root Python path, the security backend, the security frontend, and the docs build.
 - Reduced Sphinx docs-build warning noise by adding the missing docs static directory, restoring the `erh.analysis.erh_checks` compatibility module, teaching Sphinx how to render the `|E(x)|`-style docstring text, and removing the top-level duplicate API package entries that were generating redundant object descriptions.
 - Aligned `.github/workflows/docs.yml` with the repo smoke docs path so it installs the project in editable mode and runs the same `python -m sphinx` build entrypoint.
+- Tightened both docs CI paths to use `sphinx -W` now that the docs build is warning-free.
+- Untracked generated documentation output under `docs/_build` and vendored dependencies under `js-sdk/node_modules` via `git rm --cached`, while tightening `.gitignore` so those generated trees stay out of the index without deleting local copies.
+- Untracked additional generated run outputs under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report/`, again preserving local files while removing them from Git tracking.
+- Reclassified `simulation/output/` as generated output in the research-facing docs, added a placeholder for `simulation/output/psychohistory_tests/`, and staged removal of the generated files in that tree so only `.gitkeep` structure remains intended for tracking.
 
 **Additional verification run on 2026-04-12:**
 - Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
 - Root smoke check for `simulation.models` and `simulation.analysis.zeta_function` passed
 - Docs build: `sphinx -b html docs docs/_build/html` succeeded with warnings
 - Docs build warning count reduced from `46` to `7`
+- Strict docs build: `sphinx -W -b html docs docs/_build/html` passed
+- Tracked generated files under `docs/_build` and `js-sdk/node_modules`: reduced from `248` to `0`
+- Tracked generated files under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report`: reduced from `30` to `0`
+- Intended tracked state for `simulation/output/`: reduced from `25` generated artifacts to `3` `.gitkeep` placeholders
 
 ### Task 1: Lock in backend regressions with tests
 

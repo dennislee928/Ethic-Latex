@@ -39,8 +39,8 @@ For reviewers with limited time, the minimal reproduction path focuses on the co
    ```
 
 3. **View key results**:
-   - Check `simulation/output/judge_comparison_report.md` for summary statistics
-   - Check `simulation/output/results_summary.txt` for numerical results
+   - Check the freshly generated files under `simulation/output/`
+   - Use `docs/EXPERIMENT_REPORTS.md` as the checked-in consolidated summary
 
 ### Full Reproduction Path
 
@@ -72,7 +72,7 @@ For complete reproduction of all experiments:
    ```bash
    python scripts/calculate_alpha_comparison.py
    ```
-   Outputs: `test_report/` (e.g. `alpha_comparison.png`, `summary_report.md`).
+   Outputs are generated locally under `test_report/` (for example `alpha_comparison.png`, `summary_report.md`).
 
 4. **Run psychohistory integration tests** (if interested):
    ```bash
@@ -87,7 +87,7 @@ For complete reproduction of all experiments:
 
 ## Supplementary Material
 
-The following files and directories serve as the primary supplementary material bundle:
+The following files and directories serve as the primary supplementary material bundle. Generated output directories below are reproduction outputs and may not be checked into a clean tree.
 
 ### Essential Files
 
@@ -97,14 +97,13 @@ The following files and directories serve as the primary supplementary material 
    - Parameter sensitivity analysis
    - Real-data case study results
 
-2. **`simulation/output/`**: Directory containing:
-   - `judge_comparison_report.md`: Detailed comparison of all judge types
-   - `results_summary.txt`: Numerical summary for all judges
-   - `spectrum_data.json` and `zeros_data.json`: Spectrum and zero analysis data
-   - `*.csv`: Parameter sensitivity analysis results
-   - `figures/`: All generated paper figures (PDF format)
+2. **`simulation/output/`**: Generated output directory containing:
+   - spectrum and zero analysis data
+   - real-data result summaries
+   - generated figures and psychohistory test outputs
+   - other local reproduction artifacts created by scripts and notebooks
 
-3. **`simulation/output/real_data/`**: Real-data case study results:
+3. **Real-data output files under `simulation/output/`**:
    - Adult Income (UCI)
    - Exam cheating (UCI Student Performance → exam_cheating_cases.csv)
    - Sexual abuse reporting (synthetic fallback → sexual_abuse_cases.csv)
@@ -113,7 +112,7 @@ The following files and directories serve as the primary supplementary material 
 4. **`data/`**: Fetched datasets (after `bash scripts/fetch_real_data.sh`):
    - `adult.csv`, `exam_cheating_cases.csv`, `sexual_abuse_cases.csv`, `compas-scores-two-years.csv`
 
-5. **`test_report/`** (after running `scripts/calculate_alpha_comparison.py`): α comparison (real vs simulated), e.g. `alpha_comparison.png`, `summary_report.md`.
+5. **`test_report/`** (after running `scripts/calculate_alpha_comparison.py`): locally generated α comparison outputs, e.g. `alpha_comparison.png`, `summary_report.md`.
 
 ### Additional Material
 
@@ -160,5 +159,4 @@ If you have limited time, focus on:
 ## Contact
 
 For questions about reproducibility or supplementary material, please refer to the main repository README or open an issue at: https://github.com/dennislee928/Ethic-Latex
-
 
