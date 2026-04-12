@@ -46,6 +46,7 @@
 - Untracked generated documentation output under `docs/_build` and vendored dependencies under `js-sdk/node_modules` via `git rm --cached`, while tightening `.gitignore` so those generated trees stay out of the index without deleting local copies.
 - Untracked additional generated run outputs under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report/`, again preserving local files while removing them from Git tracking.
 - Reclassified `simulation/output/` as generated output in the research-facing docs, added a placeholder for `simulation/output/psychohistory_tests/`, and staged removal of the generated files in that tree so only `.gitkeep` structure remains intended for tracking.
+- Tightened `.gitignore` for `.cursor/`, `.venv_erh/`, and `.worktrees/`, and staged Phase 3 cleanup of the tracked local editor workspace plus the checked-in virtual environment so those local-only trees stop polluting repository review state.
 
 **Additional verification run on 2026-04-12:**
 - Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
@@ -56,6 +57,7 @@
 - Tracked generated files under `docs/_build` and `js-sdk/node_modules`: reduced from `248` to `0`
 - Tracked generated files under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report`: reduced from `30` to `0`
 - Intended tracked state for `simulation/output/`: reduced from `25` generated artifacts to `3` `.gitkeep` placeholders
+- Additional tracked local-only trees now staged for removal from Git tracking: `.cursor/` (`306` files) and `.venv_erh/` (`657` files)
 
 ### Task 1: Lock in backend regressions with tests
 

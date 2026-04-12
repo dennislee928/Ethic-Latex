@@ -1,6 +1,0 @@
-#!/Users/dennis_leedennis_lee/Documents/GitHub/Ethic-Latex/.venv_erh/bin/python3
-import sys
-from transformers.commands.transformers_cli import main_cli
-if __name__ == '__main__':
-    sys.argv[0] = sys.argv[0].removesuffix('.exe')
-    sys.exit(main_cli())

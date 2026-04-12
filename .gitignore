@@ -42,6 +42,7 @@ ipython_config.py
 # Environment
 .env
 .venv
+.venv_erh/
 env/
 venv/
 ENV/
@@ -51,6 +52,7 @@ venv.bak/
 # IDEs
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -107,19 +109,9 @@ final_report/
 *.temp
 
 
-# Snyk Security Extension - AI Rules (auto-generated)
-.cursor\rules\snyk_rules.mdc
-
-# Snyk Security Extension - AI Rules (auto-generated)
-.cursor/rules/snyk_rules.mdc
+# Local workspace state
+.worktrees/
 basement.md
 /.ignore_ref
-.cursor/cursor-rules-cli/.plan1.md
-/.cursor/plan
 /Error_Log
-.cursor/plans/現代化_react_前端與後端擴展_5d32a3c1.plan.md
-.cursor/plan/cursor.plan.md
-/.venv_erh/lib
-/.cursor/plans
-.worktrees/erh-hybrid-demo/
 *.tsbuildinfo

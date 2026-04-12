@@ -65,6 +65,7 @@ Progress update (2026-04-12):
 - Generated documentation output under `docs/_build` and vendored `js-sdk/node_modules` content have been removed from Git tracking while being preserved locally and ignored going forward.
 - Additional generated outputs under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report/` have also been removed from Git tracking while being preserved locally and ignored going forward.
 - `simulation/output/` is now being treated consistently as generated output rather than checked-in source; the docs were updated accordingly and the generated files in that tree have been staged for removal so only placeholder structure remains intended for tracking.
+- The tracked local editor workspace under `.cursor/` and the checked-in virtual environment under `.venv_erh/` have now also been targeted for Phase 3 cleanup, with ignore rules tightened so those local-only trees stop re-entering the index once their staged removals are committed.
 - Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
 
 ## Phase 2: Rationalize Repo Boundaries

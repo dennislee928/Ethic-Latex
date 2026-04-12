@@ -39,7 +39,7 @@ For reviewers with limited time, the minimal reproduction path focuses on the co
    ```
 
 3. **View key results**:
-   - Check the freshly generated files under `simulation/output/`
+   - Check the freshly generated local files under `simulation/output/`
    - Use `docs/EXPERIMENT_REPORTS.md` as the checked-in consolidated summary
 
 ### Full Reproduction Path
@@ -97,13 +97,14 @@ The following files and directories serve as the primary supplementary material 
    - Parameter sensitivity analysis
    - Real-data case study results
 
-2. **`simulation/output/`**: Generated output directory containing:
+2. **`simulation/output/`**: Local generated output directory containing:
    - spectrum and zero analysis data
    - real-data result summaries
    - generated figures and psychohistory test outputs
    - other local reproduction artifacts created by scripts and notebooks
+   - in a clean tree, only placeholder structure may be tracked
 
-3. **Real-data output files under `simulation/output/`**:
+3. **Real-data output files generated under `simulation/output/` during reproduction**:
    - Adult Income (UCI)
    - Exam cheating (UCI Student Performance → exam_cheating_cases.csv)
    - Sexual abuse reporting (synthetic fallback → sexual_abuse_cases.csv)
@@ -159,4 +160,3 @@ If you have limited time, focus on:
 ## Contact
 
 For questions about reproducibility or supplementary material, please refer to the main repository README or open an issue at: https://github.com/dennislee928/Ethic-Latex
-
