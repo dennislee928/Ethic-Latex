@@ -29,6 +29,13 @@ export interface HeatmapResponse {
   cells: HeatmapCell[];
 }
 
+export interface HealthMonitorResponse {
+  error_curve: CurvePoint[];
+  riemann_bound: CurvePoint[];
+  violation: boolean;
+  violation_points: CurvePoint[];
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8000';
 
 async function fetchJson<T>(path: string): Promise<T> {
@@ -51,6 +58,9 @@ export async function getHeatmap(judgeType: JudgeType): Promise<HeatmapResponse>
   return fetchJson<HeatmapResponse>(`/analysis/heatmap?judge_type=${judgeType}`);
 }
 
+export async function getHealth(judgeType: JudgeType): Promise<HealthMonitorResponse> {
+  return fetchJson<HealthMonitorResponse>(`/analysis/health?judge_type=${judgeType}`);
+}
 
 
 

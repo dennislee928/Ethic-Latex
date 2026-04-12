@@ -4,6 +4,10 @@
 
 This document tracks the implementation status of the theoretical deepening plan. The plan includes 7 phases with multiple tasks each.
 
+## Status Note
+
+This document reflects the intended theoretical roadmap, but parts of the implementation have moved since it was written. Several file paths below still point at legacy `simulation/...` locations even though active code now lives in `erh_core/...` or has not been preserved at the documented path. Treat this document as a historical plan snapshot until the implementation inventory is fully reconciled.
+
 ## Completed Tasks
 
 ### Phase 1: Mathematical Metaphor Strengthening
@@ -160,5 +164,4 @@ The core theoretical framework is now significantly strengthened with:
 - Adaptive threshold systems
 - Quantified structural fundamentality
 
-All high-priority tasks from the plan have been completed, providing a solid foundation for further extensions.
-
+Many high-priority ideas from the plan influenced the current codebase, but the file inventory in this document is no longer fully trustworthy. Validate paths against the repository before using this page as an implementation source of truth.

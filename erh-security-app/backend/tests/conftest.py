@@ -1,11 +1,12 @@
 import os
+import tempfile
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 
-TEST_DB_PATH = Path(__file__).resolve().parent / "test_app.db"
+TEST_DB_PATH = Path(tempfile.gettempdir()) / "erh_security_backend_test.db"
 if TEST_DB_PATH.exists():
     TEST_DB_PATH.unlink()
 

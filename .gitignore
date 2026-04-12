@@ -22,6 +22,7 @@ wheels/
 #node-modules
 ./frontend/node_modules
 *node_modules
+.next/
 
 # Git ignore folder
 .gitignore-folder

@@ -50,7 +50,7 @@ def _verify_latex_content(
         if report:
             report.risk_score = verification_result["risk_score"]
             report.violations = {
-                "violations": [v.dict() for v in violations],
+                "violations": [v.model_dump() for v in violations],
                 "warnings": verification_result.get("warnings", []),
             }
             report.verified_at = datetime.utcnow()
@@ -59,7 +59,7 @@ def _verify_latex_content(
                 rule_id=rule_id,
                 risk_score=verification_result["risk_score"],
                 violations={
-                    "violations": [v.dict() for v in violations],
+                    "violations": [v.model_dump() for v in violations],
                     "warnings": verification_result.get("warnings", []),
                 },
             )

@@ -8,6 +8,7 @@ Run with: streamlit run app.py
 import streamlit as st
 import sys
 import os
+import json
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -264,4 +265,3 @@ with st.expander("About the Ethical Riemann Hypothesis"):
     - If α < 0.5: Better than ERH predicts
     - If α > 0.5: Worse than ERH, may indicate systematic problems
     """)
-
