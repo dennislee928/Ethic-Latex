@@ -13,7 +13,13 @@ This package contains the core simulation logic including:
 from erh_core.core.action_space import Action, generate_world
 from erh_core.core.judgement_system import (
     BaseJudge, BiasedJudge, NoisyJudge, ConservativeJudge, RadicalJudge,
-    evaluate_judgement
+    OracleDrivenJudge, CustomJudge,
+    IntersectionalJudge, TemporalJudge, CounterfactualJudge, FederatedJudge,
+    DecisionTrace,
+    evaluate_judgement, batch_evaluate, compute_judgment_metrics,
+)
+from erh_core.analysis.erh_checks import (
+    ERHCheckResult, check_erh_bound_structured, judge_and_check_erh,
 )
 from erh_core.core.ethical_primes import (
     select_ethical_primes, compute_Pi_and_error, analyze_error_growth
@@ -30,7 +36,11 @@ from erh_core.core.temporal_erh import (
 __all__ = [
     "Action", "generate_world",
     "BaseJudge", "BiasedJudge", "NoisyJudge", "ConservativeJudge", "RadicalJudge",
-    "evaluate_judgement",
+    "OracleDrivenJudge", "CustomJudge",
+    "IntersectionalJudge", "TemporalJudge", "CounterfactualJudge", "FederatedJudge",
+    "DecisionTrace",
+    "evaluate_judgement", "batch_evaluate", "compute_judgment_metrics",
+    "ERHCheckResult", "check_erh_bound_structured", "judge_and_check_erh",
     "select_ethical_primes", "compute_Pi_and_error", "analyze_error_growth",
     "EthicalAgent", "AgentPopulation", "SimpleEthicalAgent",
     "SocialNetwork",
