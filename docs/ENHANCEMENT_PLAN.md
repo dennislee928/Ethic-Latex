@@ -54,6 +54,7 @@ Progress update (2026-04-12):
 - Root dependency and workflow support files were aligned so the repo-level environment can execute the backend router tests.
 - The backend SQLite test harness now uses a process-specific temp database path so local parallel verification does not produce false collisions.
 - `README.md` and `docs/IMPLEMENTATION_STATUS.md` now include a dated verified-surfaces snapshot and architecture map that reflects the latest repository-grounded evidence.
+- `erh-security-app/README.md`, `docs/QUICKSTART.md`, and `docs/INSTALL.md` now distinguish the verified security app workflow from the broader research/simulation workflow.
 - Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
 
 ## Phase 2: Rationalize Repo Boundaries

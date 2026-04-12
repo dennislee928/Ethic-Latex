@@ -34,6 +34,7 @@
 - Added an explicit Next.js security frontend typecheck step (`tsc --noEmit`) so the CI workflow now checks build, typecheck, and lint separately.
 - Made the backend SQLite test database path process-specific so concurrent verification runs do not collide on the same temp database file.
 - Added a dated verified-surfaces snapshot and architecture map to `README.md` and `docs/IMPLEMENTATION_STATUS.md` so repository-facing docs now match the latest stabilization evidence.
+- Updated `erh-security-app/README.md`, `docs/QUICKSTART.md`, and `docs/INSTALL.md` so run/install guidance explicitly separates the verified security app path from the broader research/simulation path.
 
 ### Task 1: Lock in backend regressions with tests
 
