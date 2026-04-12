@@ -6,9 +6,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 import enum
 
 from .db import Base
+from .time import utc_now
 
 
-json_blob_type = JSONB().with_variant(JSON(), "sqlite")
+JSON_COMPAT = JSON().with_variant(JSONB, "postgresql")
 
 
 class Action(Base):
@@ -27,7 +28,7 @@ class Action(Base):
     files_changed: Mapped[int] = mapped_column(Integer, default=0)
     services_touched: Mapped[int] = mapped_column(Integer, default=0)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     judgment: Mapped["Judgment"] = relationship(back_populates="action", uselist=False)
     ground_truth: Mapped["GroundTruth"] = relationship(back_populates="action", uselist=False)
@@ -51,7 +52,7 @@ class Judgment(Base):
 
     findings_json: Mapped[dict] = mapped_column(JSON, nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     action: Mapped[Action] = relationship(back_populates="judgment")
 
@@ -122,8 +123,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
 
     latex_rules: Mapped[list["LatexRule"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
     settings: Mapped["UserSettings"] = relationship(back_populates="user", uselist=False, cascade="all, delete-orphan")
@@ -141,8 +142,8 @@ class LatexRule(Base):
     content: Mapped[str] = mapped_column(Text)  # LaTeX string
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
 
     owner: Mapped["User"] = relationship(back_populates="latex_rules")
     security_reports: Mapped[list["SecurityReport"]] = relationship(back_populates="rule", cascade="all, delete-orphan")
@@ -158,8 +159,8 @@ class SecurityReport(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     rule_id: Mapped[int] = mapped_column(ForeignKey("latex_rules.id"), index=True)
     risk_score: Mapped[float] = mapped_column(Float)
-    violations: Mapped[dict] = mapped_column(json_blob_type, nullable=True)
-    verified_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    violations: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
+    verified_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     rule: Mapped["LatexRule"] = relationship(back_populates="security_reports")
 
@@ -183,8 +184,8 @@ class Simulation(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     status: Mapped[SimulationStatus] = mapped_column(Enum(SimulationStatus), default=SimulationStatus.PENDING, index=True)
     result_path: Mapped[str] = mapped_column(String(512), nullable=True)
-    config: Mapped[dict] = mapped_column(json_blob_type, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    config: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
 
@@ -197,8 +198,8 @@ class UserSettings(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, unique=True)
-    preferences: Mapped[dict] = mapped_column(json_blob_type, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    preferences: Mapped[dict] = mapped_column(JSON_COMPAT, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
 
     user: Mapped["User"] = relationship(back_populates="settings")

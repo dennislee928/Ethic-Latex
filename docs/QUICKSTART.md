@@ -2,6 +2,49 @@
 
 This guide will help you get started with the Ethical Riemann Hypothesis framework in 5 minutes.
 
+## Choose a Surface
+
+Status date: `2026-04-12`
+
+This repository currently has two practical starting points:
+
+- **Verified application path:** `erh-security-app/backend` + `erh-security-app/frontend`
+- **Research / library path:** `simulation/`, `erh/`, `erh_core/`
+
+If you want the path that was revalidated most recently, start with the security app. If you want the original research demos and notebooks, use the simulation path below.
+
+## Verified Security App Quick Start
+
+### Backend
+
+```bash
+cd erh-security-app/backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Frontend
+
+In a second terminal:
+
+```bash
+cd erh-security-app/frontend
+npm install
+npm run dev
+```
+
+Optional verification commands:
+
+```bash
+cd erh-security-app/backend
+python -m pytest tests -q
+
+cd ../frontend
+npm run typecheck
+npm run build
+npm run lint
+```
+
 ## Installation
 
 ```bash
@@ -10,6 +53,8 @@ pip install -r requirements.txt
 ```
 
 ## Run a Simple Example
+
+This section is for the research / simulation path rather than the security app.
 
 ```bash
 cd simulation
@@ -183,4 +228,3 @@ If no → systematic problems as complexity increases
 ```bash
 cd simulation && python run_example.py
 ```
-

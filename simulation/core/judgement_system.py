@@ -660,3 +660,17 @@ def compute_judgment_metrics(actions: List[Action]) -> dict:
     
     return metrics
 
+
+# ---------------------------------------------------------------------------
+# Re-export new judge classes and data types from erh_core
+# ---------------------------------------------------------------------------
+try:
+    from erh_core.core.judgement_system import (
+        DecisionTrace,
+        IntersectionalJudge,
+        TemporalJudge,
+        CounterfactualJudge,
+        FederatedJudge,
+    )
+except ImportError:
+    pass  # erh_core not installed; new classes unavailable in this environment

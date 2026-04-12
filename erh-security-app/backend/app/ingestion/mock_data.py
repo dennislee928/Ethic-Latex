@@ -7,6 +7,7 @@ from typing import Tuple
 from sqlalchemy.orm import Session
 
 from ..core.models import Action, GroundTruth, Importance, Judgment
+from ..core.time import utc_now
 
 
 def _random_title(idx: int) -> str:
@@ -30,7 +31,7 @@ def generate_mock_data(
     if seed is not None:
         random.seed(seed)
 
-    now = datetime.utcnow()
+    now = utc_now()
     total_actions = 0
     total_judgments = 0
 
@@ -93,5 +94,4 @@ def generate_mock_data(
 
     db.commit()
     return total_actions, total_judgments
-
 

@@ -13,7 +13,7 @@ def create_app() -> FastAPI:
     app_settings = get_settings()
 
     app = FastAPI(
-        title="ERH-on-Security API",
+        title=app_settings.app_name,
         version="0.1.0",
         description=(
             "Proof-of-concept API for mapping GitLab DevSecOps data into the "
@@ -24,13 +24,21 @@ def create_app() -> FastAPI:
     # Ensure database schema exists (SQLite PoC; replace with migrations in production).
     Base.metadata.create_all(bind=engine)
 
-    # CORS configuration (open for PoC; tighten for production)
+    # CORS configuration — read allowed origins from settings (VUL-002 fix).
+    # Set CORS_ALLOWED_ORIGINS env var to a comma-separated list of trusted
+    # domains for production.  Credentials are disabled by default; enable
+    # only when cookie-based auth is fully deployed.
+    allowed_origins = [
+        o.strip()
+        for o in app_settings.cors_allowed_origins.split(",")
+        if o.strip()
+    ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=allowed_origins,
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
     )
 
     # Include routers

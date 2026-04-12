@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>erh_core.core.action_space &mdash; Ethical Riemann Hypothesis (ERH) SDK 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ethical Riemann Hypothesis (ERH) SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ethical Riemann Hypothesis (ERH) SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">erh_core.core.action_space</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for erh_core.core.action_space</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Action Space Module</span>
+
+<span class="sd">This module defines the Action class and functions for generating moral action spaces</span>
+<span class="sd">with various complexity and value distributions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<div class="viewcode-block" id="Action">
+<a class="viewcode-back" href="../../../api.html#erh.core.Action">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Action</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a single action/case in the moral judgment space.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id : int</span>
+<span class="sd">        Unique identifier for the action</span>
+<span class="sd">    c : int</span>
+<span class="sd">        Complexity level (positive integer)</span>
+<span class="sd">    V : float</span>
+<span class="sd">        True moral value (ground truth), typically in [-1, 1]</span>
+<span class="sd">        -1 = extremely immoral, 0 = neutral, +1 = extremely moral</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Importance weight (e.g., number of people affected, severity)</span>
+<span class="sd">    J : Optional[float]</span>
+<span class="sd">        Judgment value assigned by a judge (initially None)</span>
+<span class="sd">    delta : Optional[float]</span>
+<span class="sd">        Error: Δ(a) = J(a) - V(a) (initially None)</span>
+<span class="sd">    mistake_flag : Optional[int]</span>
+<span class="sd">        Binary indicator: 1 if |Δ| &gt; τ, 0 otherwise (initially None)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">c</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># complexity</span>
+    <span class="n">V</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1"># true moral value</span>
+    <span class="n">w</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1"># importance weight</span>
+    <span class="n">J</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># judgment</span>
+    <span class="n">delta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># error</span>
+    <span class="n">mistake_flag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># misjudgment indicator</span>
+    <span class="n">severity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fuzzy severity (0-1) for continuous error assessment</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># text for HuggingFace Oracle scoring</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Action(id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, c=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="si">}</span><span class="s2">, V=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, w=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="generate_world">
+<a class="viewcode-back" href="../../../api.html#erh.core.generate_world">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_world</span><span class="p">(</span>
+    <span class="n">num_actions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">complexity_dist</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span> <span class="s1">&#39;zipf&#39;</span><span class="p">,</span> <span class="s1">&#39;power_law&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;zipf&#39;</span><span class="p">,</span>
+    <span class="n">complexity_range</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">moral_ambiguity_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">importance_correlation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a moral action space with specified distributions.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_actions : int, default=1000</span>
+<span class="sd">        Number of actions to generate</span>
+<span class="sd">    complexity_dist : {&#39;uniform&#39;, &#39;zipf&#39;, &#39;power_law&#39;}, default=&#39;zipf&#39;</span>
+<span class="sd">        Distribution type for complexity values</span>
+<span class="sd">        - &#39;uniform&#39;: Uniform distribution</span>
+<span class="sd">        - &#39;zipf&#39;: Zipf distribution (realistic for real-world cases)</span>
+<span class="sd">        - &#39;power_law&#39;: Power law distribution</span>
+<span class="sd">    complexity_range : tuple, default=(1, 100)</span>
+<span class="sd">        (min_complexity, max_complexity)</span>
+<span class="sd">    moral_ambiguity_factor : float, default=0.3</span>
+<span class="sd">        Controls how complexity affects moral clarity</span>
+<span class="sd">        Higher values = more ambiguity for complex cases</span>
+<span class="sd">        0 = no effect, 1 = maximum effect</span>
+<span class="sd">    importance_correlation : float, default=0.5</span>
+<span class="sd">        Correlation between complexity and importance</span>
+<span class="sd">        0 = no correlation, 1 = perfect correlation</span>
+<span class="sd">    random_seed : Optional[int], default=None</span>
+<span class="sd">        Random seed for reproducibility</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[Action]</span>
+<span class="sd">        List of Action objects with initialized c, V, w values</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; actions = generate_world(num_actions=500, complexity_dist=&#39;zipf&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Generated {len(actions)} actions&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Complexity range: {min(a.c for a in actions)} to {max(a.c for a in actions)}&quot;)</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The moral value V(a) is generated such that:</span>
+<span class="sd">    - Low complexity cases tend to have clear values (closer to -1 or +1)</span>
+<span class="sd">    - High complexity cases tend to be more ambiguous (closer to 0)</span>
+<span class="sd">    </span>
+<span class="sd">    This reflects the intuition that simple moral cases are often clear-cut,</span>
+<span class="sd">    while complex cases involve multiple considerations and trade-offs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">random_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+    
+    <span class="n">min_c</span><span class="p">,</span> <span class="n">max_c</span> <span class="o">=</span> <span class="n">complexity_range</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># Generate complexity values</span>
+    <span class="k">if</span> <span class="n">complexity_dist</span> <span class="o">==</span> <span class="s1">&#39;uniform&#39;</span><span class="p">:</span>
+        <span class="n">complexities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_c</span><span class="p">,</span> <span class="n">max_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_actions</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">complexity_dist</span> <span class="o">==</span> <span class="s1">&#39;zipf&#39;</span><span class="p">:</span>
+        <span class="c1"># Zipf distribution: many simple cases, few complex ones</span>
+        <span class="c1"># a parameter controls the distribution shape</span>
+        <span class="n">zipf_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">zipf</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_actions</span><span class="p">)</span>
+        <span class="n">complexities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">zipf_samples</span><span class="p">,</span> <span class="n">min_c</span><span class="p">,</span> <span class="n">max_c</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">complexity_dist</span> <span class="o">==</span> <span class="s1">&#39;power_law&#39;</span><span class="p">:</span>
+        <span class="c1"># Power law with exponent</span>
+        <span class="n">uniform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_actions</span><span class="p">)</span>
+        <span class="n">complexities</span> <span class="o">=</span> <span class="n">min_c</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_c</span> <span class="o">-</span> <span class="n">min_c</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">uniform</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">complexities</span> <span class="o">=</span> <span class="n">complexities</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown complexity_dist: </span><span class="si">{</span><span class="n">complexity_dist</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_actions</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">complexities</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        
+        <span class="c1"># Generate true moral value with complexity-dependent ambiguity</span>
+        <span class="c1"># Ambiguity increases with complexity</span>
+        <span class="n">ambiguity</span> <span class="o">=</span> <span class="n">moral_ambiguity_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">min_c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_c</span> <span class="o">-</span> <span class="n">min_c</span><span class="p">)</span>
+        
+        <span class="c1"># Base moral value: random with tendency toward extremes for simple cases</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">ambiguity</span><span class="p">:</span>
+            <span class="c1"># Ambiguous case: closer to 0</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Clear case: closer to -1 or +1</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># skewed toward 1</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">magnitude</span>
+        
+        <span class="c1"># Clip to [-1, 1]</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Generate importance weight</span>
+        <span class="c1"># Partially correlated with complexity</span>
+        <span class="n">base_importance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">complexity_factor</span> <span class="o">=</span> <span class="n">importance_correlation</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">max_c</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">base_importance</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">complexity_factor</span><span class="p">)</span>
+        
+        <span class="n">action</span> <span class="o">=</span> <span class="n">Action</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+            <span class="n">V</span><span class="o">=</span><span class="n">V</span><span class="p">,</span>
+            <span class="n">w</span><span class="o">=</span><span class="n">w</span>
+        <span class="p">)</span>
+        <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">actions</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">populate_action_descriptions</span><span class="p">(</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">],</span>
+    <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;minimal&quot;</span><span class="p">,</span>
+    <span class="n">include_id</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Populate action.description using action_to_scenario_text for Oracle scoring.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    actions : List[Action]</span>
+<span class="sd">        Actions to populate (modified in place).</span>
+<span class="sd">    template : str, default=&#39;minimal&#39;</span>
+<span class="sd">        Passed to action_to_scenario_text.</span>
+<span class="sd">    include_id : bool, default=True</span>
+<span class="sd">        Whether to include scenario ID in text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">erh.core.scenario_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">action_to_scenario_text</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">action_to_scenario_text</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="s2">&quot;minimal&quot;</span><span class="p">,</span> <span class="n">include_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Complexity: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">c</span><span class="si">}</span><span class="s2">, Importance: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">w</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">action_to_scenario_text</span><span class="p">(</span>
+            <span class="n">action</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">include_id</span><span class="o">=</span><span class="n">include_id</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_complexity</span><span class="p">(</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;zipf&#39;</span><span class="p">,</span>
+    <span class="n">min_val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sample a single complexity value from a specified distribution.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    distribution : str, default=&#39;zipf&#39;</span>
+<span class="sd">        Distribution type</span>
+<span class="sd">    min_val : int, default=1</span>
+<span class="sd">        Minimum complexity</span>
+<span class="sd">    max_val : int, default=100</span>
+<span class="sd">        Maximum complexity</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional parameters for the distribution</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        Sampled complexity value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">distribution</span> <span class="o">==</span> <span class="s1">&#39;uniform&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">distribution</span> <span class="o">==</span> <span class="s1">&#39;zipf&#39;</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">zipf</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_action_statistics</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute summary statistics for a list of actions.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    actions : List[Action]</span>
+<span class="sd">        List of actions to analyze</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing various statistics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">complexities</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">V</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">w</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
+    
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;num_actions&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">),</span>
+        <span class="s1">&#39;complexity&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">complexities</span><span class="p">),</span>
+            <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">complexities</span><span class="p">),</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">complexities</span><span class="p">),</span>
+            <span class="s1">&#39;median&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">complexities</span><span class="p">),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">complexities</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;moral_value&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;median&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;positive_ratio&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;negative_ratio&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s1">&#39;neutral_ratio&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;importance&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span>
+            <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span>
+            <span class="s1">&#39;median&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Add judgment statistics if available</span>
+    <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">J</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">judgments</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">J</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">delta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">mistakes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        
+        <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;judgment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">judgments</span><span class="p">),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">judgments</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">deltas</span><span class="p">),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">deltas</span><span class="p">),</span>
+            <span class="s1">&#39;mae&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">deltas</span><span class="p">)),</span>
+            <span class="s1">&#39;rmse&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="p">}</span>
+        <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;mistakes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mistakes</span><span class="p">),</span>
+            <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mistakes</span><span class="p">)</span>
+        <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">stats</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethical AI Research Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

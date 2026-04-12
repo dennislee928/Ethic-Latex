@@ -20,12 +20,15 @@ script will log a message and exit without error.
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 try:
     from sklearn.linear_model import LogisticRegression
@@ -224,6 +227,68 @@ def compute_erh_curves(
     }
 
 
+def run_adult_erh_analysis(data_path: Path | None = None) -> Dict[str, Any]:
+    """
+    Run ERH-style analysis on Adult Income: returns x, E_x, alpha, C.
+    Mirrors COMPAS logic for consistency in empirical validation.
+    """
+    path = (data_path or DEFAULT_DATA_PATH).resolve()
+    if not path.exists():
+        return {"error": "Adult CSV not found"}
+    if LogisticRegression is None or train_test_split is None or StandardScaler is None:
+        return {"error": "scikit-learn required"}
+    try:
+        df = load_adult_dataset(path)
+        X, y, _ = preprocess_adult(df)
+        x_train, x_test, y_train, y_test = train_test_split(
+            X.values, y, test_size=0.3, random_state=42, stratify=y
+        )
+        scaler = StandardScaler()
+        x_train_scaled = scaler.fit_transform(x_train)
+        x_test_scaled = scaler.transform(x_test)
+        base = LogisticRegression(max_iter=1000, n_jobs=None)
+        base.fit(x_train_scaled, y_train)
+        base_probs = base.predict_proba(x_test_scaled)[:, 1]
+        base_preds = (base_probs >= 0.5).astype(int)
+        base_err = (base_preds - y_test).astype(float)
+        base_complexities = compute_complexity_from_scores(
+            pd.DataFrame(x_test_scaled), base_probs
+        )
+        curves = compute_erh_curves(base_err, base_complexities, x_max=100)
+        x = np.array(curves["x"])
+        E_x = np.array(curves["E"])
+        alpha, C = _fit_power_law_adult(x, np.abs(E_x))
+        return {"x": x.tolist(), "E_x": E_x.tolist(), "alpha": alpha, "C": C}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _fit_power_law_adult(x: np.ndarray, abs_E: np.ndarray, x_min: int = 10) -> Tuple[float, float]:
+    """Fit |E(x)| ~ C x^alpha for Adult data."""
+    try:
+        from scipy.optimize import curve_fit
+    except ImportError:
+        mask = (x >= x_min) & (abs_E > 1e-12)
+        if mask.sum() < 2:
+            return 0.0, 1.0
+        log_x = np.log(x[mask])
+        log_e = np.log(abs_E[mask] + 1e-8)
+        coeffs = np.polyfit(log_x, log_e, 1)
+        return float(coeffs[0]), float(np.exp(coeffs[1]))
+
+    def _power(x_arr: np.ndarray, c: float, a: float) -> np.ndarray:
+        return c * np.power(x_arr, a)
+
+    mask = (x >= x_min) & (abs_E > 1e-12)
+    if mask.sum() < 2:
+        return 0.0, 1.0
+    try:
+        popt, _ = curve_fit(_power, x[mask], abs_E[mask] + 1e-8, p0=[1.0, 0.5], maxfev=5000)
+        return float(popt[1]), float(popt[0])
+    except Exception:
+        return 0.0, 1.0
+
+
 def compute_real_world_alpha(
     data_path: Path | None = None,
 ) -> float | None:
@@ -380,16 +445,17 @@ def run_real_data_case_study(
     output_markdown = output_markdown or DEFAULT_OUTPUT_MD
 
     if LogisticRegression is None:
-        print(
+        logger.info(
             "[Adult ERH] scikit-learn not installed; skipping real-data case study. "
             "Install scikit-learn>=1.0.0 to enable this experiment."
         )
         return
 
     if not data_path.exists():
-        print(
-            f"[Adult ERH] Dataset not found at {data_path}; skipping real-data case study. "
-            "Place an adult.csv file under data/ to enable this experiment."
+        logger.info(
+            "[Adult ERH] Dataset not found at %s; skipping real-data case study. "
+            "Place an adult.csv file under data/ to enable this experiment.",
+            data_path,
         )
         return
 
@@ -418,9 +484,105 @@ def run_real_data_case_study(
         )
 
         write_markdown_report(output_markdown, stats)
-        print(f"[Adult ERH] Real-data case study report written to {output_markdown}")
+        logger.info("[Adult ERH] Real-data case study report written to %s", output_markdown)
     except Exception as e:  # pragma: no cover - defensive guard for CI
-        print(f"[Adult ERH] Case study failed with error: {e}. Skipping report generation.")
+        logger.error("[Adult ERH] Case study failed with error: %s. Skipping report generation.", e, exc_info=True)
+
+
+def run_intersectional_erh_analysis(
+    df: pd.DataFrame,
+    protected_cols: list | None = None,
+) -> Dict[str, Any]:
+    """Demonstrate IntersectionalJudge on Adult Income data.
+
+    For each combination of protected_cols values the function fits an
+    IntersectionalJudge around a BiasedJudge, evaluates ERH on the group's
+    actions, and returns the per-group ERHCheckResult.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Preprocessed Adult Income DataFrame.  Must contain the columns listed
+        in protected_cols as well as the columns expected by preprocess_adult().
+    protected_cols : list of str, optional
+        Demographic columns to intersect. Defaults to ["sex", "race"].
+
+    Returns
+    -------
+    dict
+        {"group_label": ERHCheckResult}  for each group with enough data.
+        Returns {} if required libraries are unavailable.
+    """
+    if protected_cols is None:
+        protected_cols = ["sex", "race"]
+
+    try:
+        from erh_core.core.judgement_system import (
+            BiasedJudge, IntersectionalJudge, evaluate_judgement,
+        )
+        from erh_core.core.action_space import Action
+        from erh_core.core.ethical_primes import select_ethical_primes, compute_Pi_and_error
+        from erh_core.analysis.erh_checks import check_erh_bound_structured, ERHCheckResult
+    except ImportError:
+        logger.warning(
+            "[Adult ERH] erh_core not available — skipping intersectional analysis."
+        )
+        return {}
+
+    try:
+        X, y, _ = preprocess_adult(df)
+    except Exception as exc:
+        logger.error("[Adult ERH] preprocess_adult failed: %s", exc, exc_info=True)
+        return {}
+
+    # Map rows to Action objects using row index as action id
+    # complexity ≈ L1 norm of row features (normalised), V = 2*y - 1 ∈ {-1, 1}
+    actions: list[Action] = []
+    for i, (idx, row) in enumerate(X.iterrows()):
+        c_val = max(1, int(np.linalg.norm(row.values) * 5))
+        V = 2.0 * float(y.iloc[i]) - 1.0
+        actions.append(Action(id=i, c=c_val, V=V, w=1.0))
+
+    # Attach protected-attribute string to each action via description field
+    for i, (idx, _) in enumerate(X.iterrows()):
+        parts = []
+        for col in protected_cols:
+            if col in df.columns:
+                parts.append(str(df.loc[idx, col]) if idx in df.index else "unknown")
+        actions[i].description = "_".join(parts) if parts else "unknown"
+
+    inner_judge = BiasedJudge(bias_strength=0.15, noise_scale=0.1)
+    group_key = lambda a: a.description or "unknown"  # noqa: E731
+    judge = IntersectionalJudge(group_key=group_key, inner_judge=inner_judge, name="IntersectionalERH")
+
+    evaluate_judgement(actions, judge, tau=0.3, inplace=True)
+    group_metrics = judge.get_group_error_rates(actions)
+
+    results: Dict[str, Any] = {}
+    # Group actions by label and compute per-group ERH
+    from collections import defaultdict
+    grouped: dict = defaultdict(list)
+    for a in actions:
+        grouped[group_key(a)].append(a)
+
+    for group_label, group_actions in grouped.items():
+        if len(group_actions) < 10:
+            continue
+        primes = select_ethical_primes(group_actions)
+        if not primes:
+            continue
+        x_values, _pi, E_x = compute_Pi_and_error(group_actions, primes)
+        if len(x_values) < 2:
+            continue
+        erh_result = check_erh_bound_structured(E_x, x_values, judge_name=group_label)
+        results[group_label] = erh_result
+        logger.info(
+            "[Adult ERH Intersectional] group=%s n=%d erh_satisfied=%s violation_rate=%.3f",
+            group_label, len(group_actions),
+            erh_result.erh_satisfied, erh_result.violation_rate,
+        )
+
+    return results
 
 
 if __name__ == "__main__":  # pragma: no cover

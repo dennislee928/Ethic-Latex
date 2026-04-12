@@ -417,7 +417,9 @@ class HybridPsychohistoryModel:
                 last = self.abm_simulator.simulation_history[-1]
                 if isinstance(last, dict):
                     last['quantum_energy'] = qe
+                    last['system_energy'] = qe
                     last['von_neumann_entropy'] = vne
+                    last['magnetization'] = qs.get('magnetization', qs.get('system_coherence', 0.0))
 
         return results
     

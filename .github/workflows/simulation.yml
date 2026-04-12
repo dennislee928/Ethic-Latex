@@ -171,14 +171,27 @@ jobs:
 
       - name: Calculate Alpha Comparison
         run: |
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
           python scripts/calculate_alpha_comparison.py
+
+      - name: Run Empirical Validation (COMPAS, Adult, Synthetic)
+        run: |
+          export PYTHONPATH="${{ github.workspace }}:${{ github.workspace }}/erh_core:$PYTHONPATH"
+          mkdir -p simulation/output
+          python scripts/run_empirical_validation.py --output simulation/output/real_world_results.json
 
       - name: Upload Alpha Comparison Plot
         uses: actions/upload-artifact@v4
         with:
           name: alpha-comparison-plot
           path: simulation/output/figures/alpha_comparison_real_vs_simulated.png
+        continue-on-error: true
+
+      - name: Upload Empirical Validation Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: empirical-validation-results
+          path: simulation/output/real_world_results.json
         continue-on-error: true
 
   phase-transition:

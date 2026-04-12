@@ -1,19 +1,23 @@
 # Ethical Riemann Hypothesis Simulation
+# VUL-008: Upper-bound constraints prevent automatic upgrades to versions with
+# unknown security posture. Run `pip-audit` in CI to catch known CVEs.
+# Update upper bounds intentionally after reviewing changelogs.
+
 # Core scientific computing
-numpy>=1.24.0
-scipy>=1.10.0
-pandas>=2.0.0
-scikit-learn>=1.0.0
-networkx>=3.0.0
+numpy>=1.24.0,<3.0.0
+scipy>=1.10.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scikit-learn>=1.0.0,<2.0.0
+networkx>=3.0.0,<4.0.0
 
 # Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
-plotly>=5.14.0
+matplotlib>=3.7.0,<4.0.0
+seaborn>=0.12.0,<1.0.0
+plotly>=5.14.0,<6.0.0
 
 # Jupyter notebook
-jupyter>=1.0.0
-ipywidgets>=8.0.0
+jupyter>=1.0.0,<3.0.0
+ipywidgets>=8.0.0,<9.0.0
 
 # For LaTeX rendering in plots (optional - requires system LaTeX)
 # Note: LaTeX rendering in matplotlib requires a system LaTeX installation
@@ -21,35 +25,37 @@ ipywidgets>=8.0.0
 # Install LaTeX separately: MiKTeX (Windows), MacTeX (macOS), or TeX Live (Linux)
 
 # Web application (for cloud deployment)
-streamlit>=1.28.0
+streamlit>=1.28.0,<2.0.0
 
 # Development tools
-black>=23.0.0
-pytest>=7.3.0
+black>=23.0.0,<25.0.0
+pytest>=7.3.0,<9.0.0
 
 # Testing framework
-robotframework>=6.0.0
-robotframework-jupyterlibrary>=0.5.0
-robotframework-pythonlibcore>=2.1.0
+robotframework>=6.0.0,<8.0.0
+robotframework-jupyterlibrary>=0.5.0,<2.0.0
+robotframework-pythonlibcore>=2.1.0,<5.0.0
 
 # API
-fastapi>=0.100.0
-uvicorn>=0.23.0
-requests>=2.28.0
-tabulate>=0.9.0
+fastapi>=0.100.0,<1.0.0
+uvicorn>=0.23.0,<1.0.0
+requests>=2.28.0,<3.0.0
+tabulate>=0.9.0,<1.0.0
+SQLAlchemy>=2.0.35,<3.0.0
 
 # Type safety & validation
-pydantic>=2.0.0
+pydantic>=2.0.0,<3.0.0
+pydantic-settings>=2.0.0,<3.0.0
 
 # Phase 3: Quantum Judgment (Advanced Ethical Hilbert Space)
-qiskit>=1.0.0
-qiskit-aer>=0.14.0
+qiskit>=1.0.0,<2.0.0
+qiskit-aer>=0.14.0,<1.0.0
 # qiskit-ibm-runtime>=0.21.0  # Optional: for IBM Quantum hardware
 
 # Phase 2: HuggingFace Ethical Oracle (ground-truth proxy)
-transformers>=4.30.0
-torch>=2.0.0
+transformers>=4.30.0,<5.0.0
+torch>=2.0.0,<3.0.0
 
 # Phase 3 expand: Real data ingestion
-datasets>=2.14.0
-sentence-transformers>=2.2.0
+datasets>=2.14.0,<4.0.0
+sentence-transformers>=2.2.0,<4.0.0

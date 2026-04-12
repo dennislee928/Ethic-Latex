@@ -22,12 +22,15 @@ This prototype assumes data is synthetic or anonymized.
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 try:
     from sklearn.linear_model import LogisticRegression
@@ -282,16 +285,17 @@ def run_real_data_case_study(
     output_markdown = output_markdown or DEFAULT_OUTPUT_MD
 
     if LogisticRegression is None:
-        print(
+        logger.info(
             "[Exam Cheating ERH] scikit-learn not installed; skipping case study. "
             "Install scikit-learn>=1.0.0 to enable this experiment."
         )
         return
 
     if not data_path.exists():
-        print(
-            f"[Exam Cheating ERH] Dataset not found at {data_path}; skipping case study. "
-            "Place an exam_cheating_cases.csv file under data/ to enable this experiment."
+        logger.info(
+            "[Exam Cheating ERH] Dataset not found at %s; skipping case study. "
+            "Place an exam_cheating_cases.csv file under data/ to enable this experiment.",
+            data_path,
         )
         return
 
@@ -314,9 +318,9 @@ def run_real_data_case_study(
         )
 
         write_markdown_report(output_markdown, stats)
-        print(f"[Exam Cheating ERH] Case study report written to {output_markdown}")
+        logger.info("[Exam Cheating ERH] Case study report written to %s", output_markdown)
     except Exception as e:
-        print(f"[Exam Cheating ERH] Case study failed with error: {e}. Skipping report generation.")
+        logger.error("[Exam Cheating ERH] Case study failed: %s. Skipping report generation.", e, exc_info=True)
 
 if __name__ == "__main__":  # pragma: no cover
     env_value = os.environ.get("ERH_EXAM_CHEATING_REPORT")

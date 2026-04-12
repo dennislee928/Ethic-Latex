@@ -14,12 +14,28 @@ import subprocess
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+_pandas_ok = False
+try:
+    __import__("pandas")
+    _pandas_ok = True
+except ImportError:
+    pass
+
+# Auto-re-exec with project venv if pandas unavailable
+if not _pandas_ok:
+    for _venv in (ROOT / ".venv_erh", ROOT / ".venv"):
+        _venv_py = _venv / "bin" / "python"
+        if _venv_py.exists():
+            os.execv(str(_venv_py), [str(_venv_py), __file__] + sys.argv[1:])
+    print("ERROR: pandas not found. Activate the venv and install deps:\n  source .venv_erh/bin/activate\n  pip install -r requirements.txt\nOr run: .venv_erh/bin/python scripts/generate_comprehensive_report.py ...", file=sys.stderr)
+    sys.exit(1)
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
-ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -37,6 +53,10 @@ def _generate_expand_plots(output_dir: str) -> None:
             plot_quantum_phase_transition,
             plot_prime_ladder,
             plot_von_neumann_entropy_over_time,
+            plot_compas_erh_bound,
+            plot_alpha_comparison_bar,
+            plot_normalized_error_oscillation,
+            plot_universal_error_growth,
         )
     except ImportError as e:
         print(f"Expand plots skipped (import error): {e}")
@@ -64,6 +84,79 @@ def _generate_expand_plots(output_dir: str) -> None:
     t = np.arange(0, 20)
     S = 0.3 + 0.4 * (1 - np.exp(-t / 5))
     plot_von_neumann_entropy_over_time(t, S, save_path=str(fig_dir / "von_neumann_entropy_over_time.pdf"), show=False)
+
+    # Killer plots: COMPAS ERH bound, alpha comparison, normalized oscillation
+    try:
+        from simulation.real_data.compas_case_study import run_compas_erh_analysis
+        from simulation.real_data.adult_income_case_study import run_adult_erh_analysis
+
+        compas = run_compas_erh_analysis()
+        adult = run_adult_erh_analysis()
+        real_results = {"compas": compas, "adult": adult}
+
+        if "error" not in compas:
+            plot_compas_erh_bound(compas, save_path=str(fig_dir / "compas_erh_bound.png"), show=False)
+
+        # Synthetic alpha for bar chart
+        try:
+            from simulation.core.action_space import generate_world
+            from simulation.core.judgement_system import ConservativeJudge, RadicalJudge, batch_evaluate
+            from simulation.analysis.statistics import compare_judges
+        except ImportError:
+            from erh_core.core.action_space import generate_world
+            from erh_core.core.judgement_system import ConservativeJudge, RadicalJudge, batch_evaluate
+            from erh_core.analysis.statistics import compare_judges
+
+        synthetic = {}
+        for name, cls, kw in [("Radical", RadicalJudge, {"amplification": 1.5}), ("Conservative", ConservativeJudge, {"threshold": 0.5})]:
+            try:
+                actions = generate_world(num_actions=1000, complexity_dist="zipf", random_seed=42)
+                results = batch_evaluate(actions, {name: cls(**kw)}, tau=0.3)
+                comp = compare_judges(results, X_max=100)
+                if name in comp and "error" not in comp[name]:
+                    synthetic[name] = {"alpha": float(comp[name]["estimated_exponent"])}
+            except Exception:
+                pass
+
+        plot_alpha_comparison_bar(synthetic, real_results, save_path=str(fig_dir / "alpha_comparison_bar.png"), show=False)
+
+        # Figure 6: Universal Error Growth Laws - simulated agents + COMPAS on same log-log plot
+        try:
+            from simulation.core.judgement_system import BiasedJudge
+            from erh_core.core.ethical_primes import compare_error_distributions
+        except ImportError:
+            try:
+                from erh_core.core.judgement_system import BiasedJudge
+                from erh_core.core.ethical_primes import compare_error_distributions
+            except ImportError:
+                BiasedJudge = None
+                compare_error_distributions = None
+        if BiasedJudge is not None and compare_error_distributions is not None:
+            try:
+                actions = generate_world(num_actions=1000, complexity_dist="zipf", random_seed=42)
+                sim_results = batch_evaluate(actions, {"Biased": BiasedJudge(bias_strength=0.2)}, tau=0.3)
+                error_comparison = compare_error_distributions(sim_results, X_max=100)
+                plot_universal_error_growth(
+                    error_comparison, compas,
+                    title="Universal Error Growth Laws",
+                    save_path=str(fig_dir / "universal_error_growth.png"),
+                    show=False,
+                )
+            except Exception as e:
+                print(f"Universal error growth plot skipped: {e}")
+
+        # Normalized oscillation with confidence interval
+        if "error" not in compas and "x" in compas:
+            xx = np.array(compas["x"])
+            ee = np.array(compas["E_x"])
+            plot_normalized_error_oscillation(
+                xx, ee,
+                confidence_interval=(-2.0, 2.0),
+                save_path=str(fig_dir / "normalized_error_oscillation.png"),
+                show=False,
+            )
+    except Exception as e:
+        print(f"Killer plots skipped: {e}")
 
 
 def run_phase_transition_exp(output_dir: str) -> bool:
@@ -156,7 +249,7 @@ def generate_visualizations(df, output_dir):
         valid = df.dropna(subset=["estimated_exponent"])
         order = valid["complexity_dist"].unique()
         data = [valid[valid["complexity_dist"] == g]["estimated_exponent"].values for g in order]
-        plt.boxplot(data, tick_labels=order.tolist(), patch_artist=True, orientation="vertical")
+        plt.boxplot(data, tick_labels=order.tolist(), patch_artist=True)
         plt.axhline(y=0.5, color="r", linestyle="--", label="ERH limit (0.5)")
         plt.title("Error Growth Exponent (α) Distribution")
         plt.ylabel("α (Exponent)")

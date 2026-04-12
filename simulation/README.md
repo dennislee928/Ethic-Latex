@@ -143,8 +143,9 @@ simulation/
 │   ├── 03_zeta_zeros.ipynb
 │   ├── 04_parameter_sensitivity.ipynb
 │   └── 05_generate_paper_figures.ipynb
-└── output/                # Generated outputs
-    └── figures/           # Saved figures
+└── output/                # Generated outputs (kept local, mostly not tracked)
+    ├── figures/           # Saved figures
+    └── psychohistory_tests/ # Generated psychohistory test reports
 ```
 
 ## Notebooks
@@ -225,4 +226,3 @@ If you use this framework in your research, please cite:
   year={2025}
 }
 ```
-
