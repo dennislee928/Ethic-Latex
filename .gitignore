@@ -25,6 +25,7 @@ wheels/
 
 # Git ignore folder
 .gitignore-folder
+.worktrees/
 
 # Jupyter Notebook
 .ipynb_checkpoints

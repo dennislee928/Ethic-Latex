@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { Simulation, SimulationCreate, SimulationResult } from '@/types/simulation'
+import type { Simulation, SimulationCreate, SimulationFigure, SimulationResult } from '@/types/simulation'
 
 export const simulateApi = {
   // Create a new simulation
@@ -28,8 +28,7 @@ export const simulateApi = {
 
   // Get simulation figures
   getFigures: async (id: number): Promise<{ figures: Array<{ name: string; path: string }> }> => {
-    const response = await apiClient.get(`/api/v1/simulations/${id}/figures`)
+    const response = await apiClient.get<{ figures: SimulationFigure[] }>(`/api/v1/simulations/${id}/figures`)
     return response.data
   },
 }
-

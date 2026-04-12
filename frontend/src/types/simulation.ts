@@ -28,6 +28,11 @@ export interface SimulationResult {
   config: SimulationConfig
 }
 
+export interface SimulationFigure {
+  name: string
+  path: string
+}
+
 export interface SimulationAnalysis {
   estimated_exponent: number
   alpha_ci_low: number
@@ -36,4 +41,3 @@ export interface SimulationAnalysis {
   r_squared: number
   growth_rate: string
 }
-
