@@ -40,11 +40,14 @@
 - Added `docs/SUPPORTED_SURFACES.md` as the project-level architecture decision note naming the official backend/frontend surfaces, the canonical library surface, and provisional ownership.
 - Updated `docs/index.md` so the docs landing page points directly to the supported-surfaces note, installation, quickstart, and the current verified paths.
 - Added `.github/workflows/repo_smoke.yml` to run one repository-grounded smoke workflow covering the root Python path, the security backend, the security frontend, and the docs build.
+- Reduced Sphinx docs-build warning noise by adding the missing docs static directory, restoring the `erh.analysis.erh_checks` compatibility module, teaching Sphinx how to render the `|E(x)|`-style docstring text, and removing the top-level duplicate API package entries that were generating redundant object descriptions.
+- Aligned `.github/workflows/docs.yml` with the repo smoke docs path so it installs the project in editable mode and runs the same `python -m sphinx` build entrypoint.
 
 **Additional verification run on 2026-04-12:**
 - Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
 - Root smoke check for `simulation.models` and `simulation.analysis.zeta_function` passed
 - Docs build: `sphinx -b html docs docs/_build/html` succeeded with warnings
+- Docs build warning count reduced from `46` to `7`
 
 ### Task 1: Lock in backend regressions with tests
 

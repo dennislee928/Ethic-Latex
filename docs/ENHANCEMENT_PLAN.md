@@ -60,6 +60,7 @@ Progress update (2026-04-12):
 - `docs/SUPPORTED_SURFACES.md` now records the official backend/frontend surfaces, the canonical library surface, the research-path status, and provisional ownership by the repository maintainer.
 - `docs/index.md` now links the supported-surfaces note and calls out the verified app/library/research paths on the docs landing page.
 - `.github/workflows/repo_smoke.yml` now provides a single smoke workflow across the root Python path, the security backend, the security frontend, and the docs build.
+- The docs build warning count has been reduced substantially, and `.github/workflows/docs.yml` now uses the same editable-install + `python -m sphinx` entrypoint as the repo smoke path.
 - Remaining work after this tranche belongs primarily to the Phase 5/Phase 6 follow-up areas rather than the original known-breakage list.
 
 ## Phase 2: Rationalize Repo Boundaries
