@@ -1,4 +1,4 @@
-“””
+"""
 ERH Consistency Checks
 
 This module centralizes the operational definition of when a simulated
@@ -18,7 +18,7 @@ finite-sample simulations, we allow a small slack in two ways:
 
 All high-level reporting (CSV, Markdown reports, notebooks) should rely
 on this module so that the ERH decision logic stays consistent.
-“””
+"""
 
 import logging
 from dataclasses import dataclass
@@ -35,12 +35,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ERHCheckResult:
-    “””Structured result from an ERH bound check.
+    """Structured result from an ERH bound check.
 
     Replaces the anonymous dict previously returned by check_erh_bound(),
     adding confidence_level, bound_value, bound_type, and an optional
     judge_name so callers always know the full provenance of the result.
-    “””
+    """
 
     erh_satisfied: bool
     violation_rate: float
