@@ -56,3 +56,10 @@ autodoc_default_options = {
     'show-inheritance': True,
 }
 
+rst_prolog = """
+.. |Δ| replace:: ``|Δ|``
+.. |E(x)| replace:: ``|E(x)|``
+.. |α - 0.5| replace:: ``|α - 0.5|``
+.. |E(x,t)| replace:: ``|E(x,t)|``
+.. |Δ(a)| replace:: ``|Δ(a)|``
+"""

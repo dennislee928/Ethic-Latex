@@ -39,10 +39,12 @@
 - Updated `README_for_reviewers.md` so it explicitly describes the research/paper reproduction path rather than conflating it with the verified security app surface.
 - Added `docs/SUPPORTED_SURFACES.md` as the project-level architecture decision note naming the official backend/frontend surfaces, the canonical library surface, and provisional ownership.
 - Updated `docs/index.md` so the docs landing page points directly to the supported-surfaces note, installation, quickstart, and the current verified paths.
+- Added `.github/workflows/repo_smoke.yml` to run one repository-grounded smoke workflow covering the root Python path, the security backend, the security frontend, and the docs build.
 
 **Additional verification run on 2026-04-12:**
 - Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
 - Root smoke check for `simulation.models` and `simulation.analysis.zeta_function` passed
+- Docs build: `sphinx -b html docs docs/_build/html` succeeded with warnings
 
 ### Task 1: Lock in backend regressions with tests
 

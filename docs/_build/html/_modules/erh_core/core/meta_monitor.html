@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>erh_core.core.meta_monitor &mdash; Ethical Riemann Hypothesis (ERH) SDK 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ethical Riemann Hypothesis (ERH) SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ethical Riemann Hypothesis (ERH) SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">erh_core.core.meta_monitor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for erh_core.core.meta_monitor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Meta-Monitor Module</span>
+
+<span class="sd">This module implements the &quot;Second Foundation&quot; meta-layer monitoring system</span>
+<span class="sd">that continuously tracks ERH error evolution and automatically adjusts parameters</span>
+<span class="sd">when deviations are detected, analogous to Asimov&#39;s Second Foundation that secretly</span>
+<span class="sd">guides civilization.</span>
+
+<span class="sd">Key features:</span>
+<span class="sd">- Continuous monitoring of E(x,t) trajectories</span>
+<span class="sd">- Detection of ERH violations</span>
+<span class="sd">- Automatic parameter adjustment</span>
+<span class="sd">- Correction mechanism triggers</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CorrectionAction</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Types of correction actions.&quot;&quot;&quot;</span>
+    <span class="n">ADJUST_PARAMETERS</span> <span class="o">=</span> <span class="s2">&quot;adjust_parameters&quot;</span>
+    <span class="n">INTRODUCE_HUMAN_OVERSIGHT</span> <span class="o">=</span> <span class="s2">&quot;introduce_human_oversight&quot;</span>
+    <span class="n">RESTRICT_ALGORITHM</span> <span class="o">=</span> <span class="s2">&quot;restrict_algorithm&quot;</span>
+    <span class="n">ALERT</span> <span class="o">=</span> <span class="s2">&quot;alert&quot;</span>
+    <span class="n">NO_ACTION</span> <span class="o">=</span> <span class="s2">&quot;no_action&quot;</span>
+
+
+<div class="viewcode-block" id="ERHParameters">
+<a class="viewcode-back" href="../../../api.html#erh.core.ERHParameters">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ERHParameters</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ERH parameters that can be adjusted.&quot;&quot;&quot;</span>
+    <span class="n">C</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># ERH constant</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># ERH epsilon</span>
+    <span class="n">baseline_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;prime_theorem&#39;</span>
+    <span class="n">baseline_params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="ERHParameters.copy">
+<a class="viewcode-back" href="../../../api.html#erh.core.ERHParameters.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a copy of parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ERHParameters</span><span class="p">(</span>
+            <span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+            <span class="n">epsilon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span>
+            <span class="n">baseline_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_type</span><span class="p">,</span>
+            <span class="n">baseline_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ViolationEvent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Record of an ERH violation event.&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">complexity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">error_magnitude</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">erh_bound</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">violation_ratio</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">severity</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">correction_action</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CorrectionAction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="MetaMonitor">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetaMonitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Meta-layer monitor for ERH error evolution.</span>
+<span class="sd">    </span>
+<span class="sd">    Continuously monitors E(x,t) and automatically adjusts parameters</span>
+<span class="sd">    when violations are detected, similar to the Second Foundation&#39;s</span>
+<span class="sd">    secret guidance of civilization.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    erh_params : ERHParameters</span>
+<span class="sd">        Current ERH parameters</span>
+<span class="sd">    violation_history : List[ViolationEvent]</span>
+<span class="sd">        History of detected violations</span>
+<span class="sd">    correction_history : List[Dict]</span>
+<span class="sd">        History of corrections applied</span>
+<span class="sd">    monitoring_active : bool</span>
+<span class="sd">        Whether monitoring is active</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">initial_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ERHParameters</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">violation_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+        <span class="n">correction_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize meta-monitor.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        initial_params : Optional[ERHParameters], default=None</span>
+<span class="sd">            Initial ERH parameters. If None, uses defaults.</span>
+<span class="sd">        violation_threshold : float, default=1.5</span>
+<span class="sd">            Threshold multiplier for violation detection (1.5 = 50% above bound)</span>
+<span class="sd">        correction_enabled : bool, default=True</span>
+<span class="sd">            Whether automatic correction is enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span> <span class="o">=</span> <span class="n">initial_params</span> <span class="k">if</span> <span class="n">initial_params</span> <span class="k">else</span> <span class="n">ERHParameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">violation_threshold</span> <span class="o">=</span> <span class="n">violation_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_enabled</span> <span class="o">=</span> <span class="n">correction_enabled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring_active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_exponent</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Target for ERH exponent</span>
+    
+<div class="viewcode-block" id="MetaMonitor.monitor">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.monitor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">monitor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">E_xt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Monitor error evolution and detect violations.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        E_xt : np.ndarray</span>
+<span class="sd">            2D error array of shape (time_steps, X_max)</span>
+<span class="sd">        time_step : int</span>
+<span class="sd">            Current time step to analyze</span>
+<span class="sd">        X_max : int, default=100</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Monitoring results:</span>
+<span class="sd">            - &#39;violations_detected&#39;: List of violations</span>
+<span class="sd">            - &#39;erh_satisfied&#39;: Whether ERH is satisfied</span>
+<span class="sd">            - &#39;correction_applied&#39;: Whether correction was applied</span>
+<span class="sd">            - &#39;new_params&#39;: Updated parameters (if adjusted)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring_active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;violations_detected&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;correction_applied&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        
+        <span class="n">violations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Check each complexity level</span>
+        <span class="k">for</span> <span class="n">x_idx</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">time_step</span> <span class="o">&lt;</span> <span class="n">E_xt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">error_mag</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">E_xt</span><span class="p">[</span><span class="n">time_step</span><span class="p">,</span> <span class="n">x_idx</span><span class="p">])</span>
+                
+                <span class="c1"># Compute ERH bound</span>
+                <span class="n">erh_bound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">epsilon</span><span class="p">))</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="n">erh_bound</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">violation_threshold</span>
+                
+                <span class="k">if</span> <span class="n">error_mag</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                    <span class="n">violation_ratio</span> <span class="o">=</span> <span class="n">error_mag</span> <span class="o">/</span> <span class="n">erh_bound</span>
+                    
+                    <span class="c1"># Determine severity</span>
+                    <span class="k">if</span> <span class="n">violation_ratio</span> <span class="o">&gt;</span> <span class="mf">3.0</span><span class="p">:</span>
+                        <span class="n">severity</span> <span class="o">=</span> <span class="s1">&#39;critical&#39;</span>
+                    <span class="k">elif</span> <span class="n">violation_ratio</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="p">:</span>
+                        <span class="n">severity</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
+                    <span class="k">elif</span> <span class="n">violation_ratio</span> <span class="o">&gt;</span> <span class="mf">1.5</span><span class="p">:</span>
+                        <span class="n">severity</span> <span class="o">=</span> <span class="s1">&#39;medium&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">severity</span> <span class="o">=</span> <span class="s1">&#39;low&#39;</span>
+                    
+                    <span class="n">violation</span> <span class="o">=</span> <span class="n">ViolationEvent</span><span class="p">(</span>
+                        <span class="n">time</span><span class="o">=</span><span class="n">time_step</span><span class="p">,</span>
+                        <span class="n">complexity</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                        <span class="n">error_magnitude</span><span class="o">=</span><span class="n">error_mag</span><span class="p">,</span>
+                        <span class="n">erh_bound</span><span class="o">=</span><span class="n">erh_bound</span><span class="p">,</span>
+                        <span class="n">violation_ratio</span><span class="o">=</span><span class="n">violation_ratio</span><span class="p">,</span>
+                        <span class="n">severity</span><span class="o">=</span><span class="n">severity</span>
+                    <span class="p">)</span>
+                    <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">violation</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">violation</span><span class="p">)</span>
+        
+        <span class="c1"># Apply correction if violations detected</span>
+        <span class="n">correction_applied</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">violations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_enabled</span><span class="p">:</span>
+            <span class="n">correction_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_correction</span><span class="p">(</span><span class="n">violations</span><span class="p">,</span> <span class="n">E_xt</span><span class="p">,</span> <span class="n">time_step</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+            <span class="n">correction_applied</span> <span class="o">=</span> <span class="n">correction_result</span><span class="p">[</span><span class="s1">&#39;applied&#39;</span><span class="p">]</span>
+            <span class="n">new_params</span> <span class="o">=</span> <span class="n">correction_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;new_params&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Mark violations as corrected</span>
+            <span class="k">for</span> <span class="n">violation</span> <span class="ow">in</span> <span class="n">violations</span><span class="p">:</span>
+                <span class="n">violation</span><span class="o">.</span><span class="n">corrected</span> <span class="o">=</span> <span class="n">correction_applied</span>
+                <span class="n">violation</span><span class="o">.</span><span class="n">correction_action</span> <span class="o">=</span> <span class="n">correction_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;violations_detected&#39;</span><span class="p">:</span> <span class="n">violations</span><span class="p">,</span>
+            <span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">violations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;correction_applied&#39;</span><span class="p">:</span> <span class="n">correction_applied</span><span class="p">,</span>
+            <span class="s1">&#39;new_params&#39;</span><span class="p">:</span> <span class="n">new_params</span>
+        <span class="p">}</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_correction</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">violations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ViolationEvent</span><span class="p">],</span>
+        <span class="n">E_xt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply correction mechanism based on violations.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        violations : List[ViolationEvent]</span>
+<span class="sd">            Detected violations</span>
+<span class="sd">        E_xt : np.ndarray</span>
+<span class="sd">            Error array</span>
+<span class="sd">        time_step : int</span>
+<span class="sd">            Current time step</span>
+<span class="sd">        X_max : int</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Correction result:</span>
+<span class="sd">            - &#39;applied&#39;: Whether correction was applied</span>
+<span class="sd">            - &#39;action&#39;: Type of correction action</span>
+<span class="sd">            - &#39;new_params&#39;: Updated parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">violations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;applied&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">NO_ACTION</span><span class="p">}</span>
+        
+        <span class="c1"># Determine severity</span>
+        <span class="n">max_severity</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">severity</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">violations</span><span class="p">)</span>
+        <span class="n">max_violation_ratio</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">violation_ratio</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">violations</span><span class="p">)</span>
+        
+        <span class="c1"># Choose correction action based on severity</span>
+        <span class="k">if</span> <span class="n">max_severity</span> <span class="o">==</span> <span class="s1">&#39;critical&#39;</span> <span class="ow">or</span> <span class="n">max_violation_ratio</span> <span class="o">&gt;</span> <span class="mf">3.0</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">RESTRICT_ALGORITHM</span>
+        <span class="k">elif</span> <span class="n">max_severity</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span> <span class="ow">or</span> <span class="n">max_violation_ratio</span> <span class="o">&gt;</span> <span class="mf">2.0</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">INTRODUCE_HUMAN_OVERSIGHT</span>
+        <span class="k">elif</span> <span class="n">max_severity</span> <span class="o">==</span> <span class="s1">&#39;medium&#39;</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">ADJUST_PARAMETERS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">ALERT</span>
+        
+        <span class="c1"># Apply parameter adjustment</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">CorrectionAction</span><span class="o">.</span><span class="n">ADJUST_PARAMETERS</span><span class="p">:</span>
+            <span class="n">new_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_parameters</span><span class="p">(</span><span class="n">E_xt</span><span class="p">,</span> <span class="n">time_step</span><span class="p">,</span> <span class="n">X_max</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span> <span class="o">=</span> <span class="n">new_params</span>
+        
+        <span class="c1"># Record correction</span>
+        <span class="n">correction_record</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time_step</span><span class="p">,</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+            <span class="s1">&#39;violations_count&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">violations</span><span class="p">),</span>
+            <span class="s1">&#39;max_severity&#39;</span><span class="p">:</span> <span class="n">max_severity</span><span class="p">,</span>
+            <span class="s1">&#39;new_params&#39;</span><span class="p">:</span> <span class="n">new_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">new_params</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">correction_record</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;applied&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+            <span class="s1">&#39;new_params&#39;</span><span class="p">:</span> <span class="n">new_params</span>
+        <span class="p">}</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_adjust_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">E_xt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">X_max</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERHParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjust ERH parameters to better fit observed errors.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        E_xt : np.ndarray</span>
+<span class="sd">            Error array</span>
+<span class="sd">        time_step : int</span>
+<span class="sd">            Current time step</span>
+<span class="sd">        X_max : int</span>
+<span class="sd">            Maximum complexity</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ERHParameters</span>
+<span class="sd">            Adjusted parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use adaptive parameter adjustment</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="c1"># Analyze recent error evolution</span>
+        <span class="k">if</span> <span class="n">time_step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">recent_errors</span> <span class="o">=</span> <span class="n">E_xt</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_step</span> <span class="o">-</span> <span class="mi">5</span><span class="p">):</span><span class="n">time_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Estimate current exponent</span>
+            <span class="c1"># Fit |E(x)| = C * x^alpha for recent data</span>
+            <span class="n">error_magnitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">recent_errors</span><span class="p">)</span>
+            <span class="n">mean_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">error_magnitudes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            
+            <span class="c1"># Filter out zeros</span>
+            <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">mean_errors</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">x_valid</span> <span class="o">=</span> <span class="n">x_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+                <span class="n">E_valid</span> <span class="o">=</span> <span class="n">mean_errors</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+                
+                <span class="c1"># Log-log regression</span>
+                <span class="n">log_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_valid</span><span class="p">)</span>
+                <span class="n">log_E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">E_valid</span><span class="p">)</span>
+                
+                <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">log_x</span><span class="p">,</span> <span class="n">log_E</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">estimated_alpha</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">estimated_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="c1"># Adjust parameters toward target</span>
+                <span class="n">target_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_exponent</span>
+                <span class="n">alpha_diff</span> <span class="o">=</span> <span class="n">estimated_alpha</span> <span class="o">-</span> <span class="n">target_alpha</span>
+                
+                <span class="c1"># Adaptive adjustment: move toward target</span>
+                <span class="n">adjustment_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+                <span class="n">new_params</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> 
+                    <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">-</span> <span class="n">adjustment_rate</span> <span class="o">*</span> <span class="n">alpha_diff</span><span class="p">))</span>
+                
+                <span class="c1"># Adjust C to better fit</span>
+                <span class="k">if</span> <span class="n">estimated_C</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">new_params</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">C</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">estimated_C</span>
+        
+        <span class="k">return</span> <span class="n">new_params</span>
+    
+<div class="viewcode-block" id="MetaMonitor.adaptive_erh_parameters">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.adaptive_erh_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adaptive_erh_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">E_xt_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">target_exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERHParameters</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adaptively adjust ERH parameters based on historical error evolution.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        E_xt_history : List[np.ndarray]</span>
+<span class="sd">            History of error arrays</span>
+<span class="sd">        target_exponent : float, default=0.5</span>
+<span class="sd">            Target exponent for ERH</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ERHParameters</span>
+<span class="sd">            Optimized parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_exponent</span> <span class="o">=</span> <span class="n">target_exponent</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">E_xt_history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span>
+        
+        <span class="c1"># Normalize all errors to 2D arrays (time_steps, X_max)</span>
+        <span class="n">normalized_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">E_xt</span> <span class="ow">in</span> <span class="n">E_xt_history</span><span class="p">:</span>
+            <span class="n">E_xt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">E_xt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">E_xt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Reshape 1D array to (1, X_max)</span>
+                <span class="n">E_xt</span> <span class="o">=</span> <span class="n">E_xt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">normalized_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">E_xt</span><span class="p">)</span>
+        
+        <span class="c1"># Aggregate all historical errors</span>
+        <span class="n">all_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">normalized_history</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">time_steps_total</span> <span class="o">=</span> <span class="n">all_errors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">X_max</span> <span class="o">=</span> <span class="n">all_errors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Compute mean error magnitude over time</span>
+        <span class="n">mean_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">all_errors</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># Fit power law: |E(x)| = C * x^alpha</span>
+        <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">mean_errors</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">x_valid</span> <span class="o">=</span> <span class="n">x_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+            <span class="n">E_valid</span> <span class="o">=</span> <span class="n">mean_errors</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+            
+            <span class="n">log_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_valid</span><span class="p">)</span>
+            <span class="n">log_E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">E_valid</span><span class="p">)</span>
+            
+            <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">log_x</span><span class="p">,</span> <span class="n">log_E</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">estimated_alpha</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">estimated_C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            
+            <span class="c1"># Set parameters</span>
+            <span class="n">new_params</span> <span class="o">=</span> <span class="n">ERHParameters</span><span class="p">()</span>
+            <span class="n">new_params</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">estimated_C</span>
+            <span class="n">new_params</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">estimated_alpha</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">new_params</span><span class="o">.</span><span class="n">baseline_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">baseline_type</span>
+            <span class="n">new_params</span><span class="o">.</span><span class="n">baseline_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">baseline_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span> <span class="o">=</span> <span class="n">new_params</span>
+            <span class="k">return</span> <span class="n">new_params</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span></div>
+
+    
+<div class="viewcode-block" id="MetaMonitor.get_monitoring_summary">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.get_monitoring_summary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_monitoring_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get summary of monitoring activity.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            Summary statistics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;total_violations&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s1">&#39;corrections_applied&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span><span class="p">),</span>
+                <span class="s1">&#39;current_params&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+                    <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">epsilon</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        
+        <span class="n">severity_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">violation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="n">violation</span><span class="o">.</span><span class="n">severity</span>
+            <span class="n">severity_counts</span><span class="p">[</span><span class="n">severity</span><span class="p">]</span> <span class="o">=</span> <span class="n">severity_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">severity</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;total_violations&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="p">),</span>
+            <span class="s1">&#39;severity_breakdown&#39;</span><span class="p">:</span> <span class="n">severity_counts</span><span class="p">,</span>
+            <span class="s1">&#39;corrections_applied&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span><span class="p">),</span>
+            <span class="s1">&#39;correction_rate&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s1">&#39;current_params&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">C</span><span class="p">,</span>
+                <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span>
+                <span class="s1">&#39;baseline_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">erh_params</span><span class="o">.</span><span class="n">baseline_type</span>
+            <span class="p">}</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="MetaMonitor.reset">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset monitor state (clear history).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">violation_history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_history</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="MetaMonitor.enable_monitoring">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.enable_monitoring">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enable_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable monitoring.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring_active</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="MetaMonitor.disable_monitoring">
+<a class="viewcode-back" href="../../../api.html#erh.core.MetaMonitor.disable_monitoring">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disable monitoring.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring_active</span> <span class="o">=</span> <span class="kc">False</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ethical AI Research Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
