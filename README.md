@@ -31,6 +31,8 @@ This repository still contains multiple historical and experimental surfaces. Th
 - **Verified application surface:** `erh-security-app/`
 - **Experimental or duplicate UI surfaces still in tree:** `frontend/`, `erh-security-app/frontend-vite/`
 
+See [docs/SUPPORTED_SURFACES.md](docs/SUPPORTED_SURFACES.md) for the current supported-surface decision record.
+
 ## 📖 Project Overview
 
 This project introduces the **Ethical Riemann Hypothesis (ERH)**. It posits that in a "healthy" moral judgment system, the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$, where $x$ is the complexity of the decision.

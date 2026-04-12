@@ -32,6 +32,8 @@ The latest stabilization pass verified these repository surfaces directly:
 
 Recent stabilization work completed the Phase 1 known-breakage fixes for the security app and started the Phase 5 CI cleanup for that surface. The broader theoretical roadmap below remains useful context, but it should not be read as a current inventory of verified files.
 
+See [SUPPORTED_SURFACES.md](SUPPORTED_SURFACES.md) for the current supported-surface decision record.
+
 ## Completed Tasks
 
 ### Phase 1: Mathematical Metaphor Strengthening
