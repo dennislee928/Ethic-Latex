@@ -57,7 +57,7 @@
 \begin{abstract}
 As artificial intelligence systems increasingly participate in moral decision-making, we urgently need rigorous frameworks to understand when and how these systems fail structurally. This paper proposes the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework that quantifies error growth patterns in moral judgment systems through an analogy with prime number distribution in analytic number theory.
 
-We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
+We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $100$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
 
 Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing normalized error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, remaining below the ERH-style worst-case bound is compatible with poor practical performance; the conservative judge's high mistake rate (61.1\%) shows that ERH-style stability is, at most, a necessary structural condition rather than a guarantee of fairness or adequacy.
 
@@ -813,6 +813,21 @@ The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed''
 
 Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantum Hilbert space simulation.
 
+\begin{table}[htbp]
+\centering
+\caption{Quantum Hilbert Space Simulation Metrics}
+\label{tab:quantum_hilbert_stats}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Consensus State & [QUANTUM_CONSENSUS_STATE] \\
+System Coherence & [QUANTUM_SYSTEM_COHERENCE] \\
+Von Neumann Entropy & [QUANTUM_VON_NEUMANN_ENTROPY] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % Quantum pipeline figures (phase transition, von Neumann entropy) will be inserted here by integrate_figures.py
 
 \begin{figure}[htbp]
@@ -867,7 +882,7 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 \centering
 \caption{Summary of error behavior across judge types. Mistake Rate and Mean $|\Delta(a)|$ are computed over $N = 2000$ actions. ``Within ERH-style bound?'' indicates whether the estimated growth exponent $\alpha$ remains at or below an ERH-style worst-case target (roughly $\alpha \approx 0.5$). ``Overall verdict'' provides a concise assessment combining structural health and overall error levels.}
 \label{tab:summary_judges}
-\begin{tabular}{lcccccp{5cm}}
+\begin{tabular}{lcccccp{3cm}p{5cm}}
 \toprule
 \textbf{Judge Type} & \textbf{Mistake Rate} & \textbf{Mean $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{Within ERH-style bound?} & \textbf{Overall Verdict} & \textbf{Qualitative Assessment} \\
 \midrule
@@ -880,7 +895,8 @@ Quantum      & 0.750 & 0.995 & $-0.037$ & Yes & Structurally safe but error rate
 \end{tabular}
 \end{table}
 
-\subsection{Representative Results}
+\section{Experimental Results}
+\label{sec:results}
 
 We present results for five judgment systems evaluated on 2000 actions with Zipf-distributed complexity.
 
@@ -1550,6 +1566,14 @@ Beyond heuristic auditing, we implemented several advanced features for formal s
 
 
 
+\section{Philosophical Implications}
+\label{sec:philosophy}
+
+The analogy between moral judgment and prime numbers raises profound philosophical questions. If we accept the ERH as a structural requirement, we are effectively saying that moral progress is not just about individual "correct" decisions, but about the long-term stability of the judgment system itself. This aligns with virtue ethics, where the focus is on the character and consistency of the agent rather than just isolated acts.
+
+\section{AI Ethics Applications}
+\label{sec:implications}
+
 \subsection{Design Criteria for Ethical AI}
 
 The most practical interpretation of ERH is as a \emph{structural guardrail}. An AI judgment system that violates an ERH-style bound is showing evidence that its error landscape may deteriorate too quickly as cases become more complex. Passing the bound is therefore useful as a screening condition, but it is only one layer of a broader design and governance process.
@@ -1621,6 +1645,8 @@ This paper introduces the Ethical Riemann Hypothesis (ERH), a mathematical frame
     \item \textbf{Philosophical integration}: We establish connections between ERH and classical moral theories (consequentialism, deontology, virtue ethics) and discuss its positioning and limitations in different application contexts.
     \item \textbf{Practical applications}: We provide quantitative diagnostic tools that can support auditing, mitigation comparison, and complexity-aware monitoring in AI ethics workflows.
 \end{enumerate}
+
+This framework introduces a perspective that views AI moral reliability through the lens of structural stability. Just as an electrocardiogram (ECG) monitor tracks the rhythmic regularity of a heart to detect underlying pathologies before a cardiac arrest occurs, the ERH-style diagnostic monitors the "rhythm" of cumulative errors across complexity levels to flag structural instability before catastrophic failures proliferate. For policy makers and auditors, this provides a critical early-warning system that complements traditional accuracy snapshots.
 
 This work opens a new direction in AI ethics: analyzing structural patterns of moral judgment through the lens of analytic number theory. While the analogy with prime numbers is heuristic rather than exact, it provides valuable intuition, quantitative tools, and diagnostic frameworks for evaluating judgment systems at scale.
 

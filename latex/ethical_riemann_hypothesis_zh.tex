@@ -62,7 +62,7 @@
 \begin{abstract}
 隨著人工智慧系統日益參與道德決策，我們迫切需要嚴謹的框架來理解這些系統何時以及如何出現結構性失敗。本文提出\emph{倫理黎曼猜想}（Ethical Riemann Hypothesis, ERH），這是一個透過與解析數論中質數分布的類比來量化道德判斷系統中錯誤增長模式的數學框架。
 
-我們將「倫理質數」（ethical primes）定義為無法簡化為更簡單案例的基本誤判，並引入$\Pi(x)$作為複雜度級別$x$以下的倫理質數計數函數。透過建立類似於對數積分的基準期望$B(x)$，我們藉由誤差項$E(x) = \Pi(x) - B(x)$來表徵系統性偏差。ERH 指出對於常數$C, \varepsilon > 0$，有$|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$，這表明「健康」判斷系統中的錯誤最多以次線性方式增長。
+我們將「倫理質數」（ethical primes）定義為無法簡化為更簡單案例的基本誤判，並引入$\Pi(x)$作為複雜度級別 $100$ 以下的倫理質數計數函數。透過建立類似於對數積分的基準期望$B(x)$，我們藉由誤差項$E(x) = \Pi(x) - B(x)$來表徵系統性偏差。ERH 指出對於常數$C, \varepsilon > 0$，有$|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$，這表明「健康」判斷系統中的錯誤最多以次線性方式增長。
 
 透過比較偏見、隨機、保守和激進等四種判斷策略的計算模擬（基於 2000 個行動的實驗），我們發現不同系統表現出顯著不同的錯誤增長模式：激進與偏見判斷者顯示快速下降的誤差項（$\alpha < -0.4$），而隨機與保守判斷者則呈現較為平坦的模式（$\alpha \approx -0.1$）。值得注意的是，所有判斷者雖在誤差增長模式上落在 ERH 式上界之內，但保守判斷者的高錯誤率（61.1\%）提醒我們，長尾誤差受控並不等於整體判斷品質良好。
 
@@ -663,6 +663,21 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 表~\ref{tab:quantum_hilbert_stats_zh} 彙整量子 Hilbert 空間模擬的關鍵指標。
 
+\begin{table}[htbp]
+\centering
+\caption{量子 Hilbert 空間模擬指標}
+\label{tab:quantum_hilbert_stats_zh}
+\begin{tabular}{lc}
+\toprule
+\textbf{指標} & \textbf{數值} \\
+\midrule
+共識態 (Consensus State) & [QUANTUM_CONSENSUS_STATE_ZH] \\
+系統相干性 (Coherence) & [QUANTUM_SYSTEM_COHERENCE_ZH] \\
+Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % 量子流程圖表（相變、Von Neumann 熵）將由 integrate_figures.py 插入此處
 
 \begin{figure}[htbp]
@@ -730,7 +745,8 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \end{tabular}
 \end{table}
 
-\subsection{代表性結果}
+\section{實驗結果與討論}
+\label{sec:results}
 
 我們呈現對 2000 個具有 Zipf 分布複雜度的行動進行評估的五個判斷系統的結果。
 
@@ -1340,6 +1356,14 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 
 
+\section{哲學意涵}
+\label{sec:philosophy}
+
+倫理判斷與質數分布之間的類比引發了深刻的哲學思考。若我們將 ERH 視為結構性要求，實質上是在主張道德進步不僅關乎個別「正確」的決策，更關乎判斷系統本身的長期穩定性。這與美德倫理學（Virtue Ethics）一致，後者強調代理人的特質與一致性，而不僅僅是孤立的行為。
+
+\section{AI 倫理應用}
+\label{sec:implications}
+
 \subsection{倫理 AI 的設計標準}
 
 ERH 可作為 AI 判斷系統的\emph{最低限度結構健康要求}：若 $|E(x)|$ 明顯快於 $O(\sqrt{x})$ 增長，表示高複雜度案例中的累積風險可能失控；若系統滿足此界限，則只能說明其長尾誤差沒有爆炸。換言之，ERH 是必要條件，不是充分條件。實務上較穩妥的讀法是將 ERH 與任務指標並讀，而不是把它當成單一的「合格證明」。
@@ -1401,6 +1425,8 @@ ERH 的明顯違反（例如持續觀察到 $\alpha > 0.5$）表明\emph{系統�
     \item \textbf{哲學整合}：建立了 ERH 與結果主義、義務論、美德倫理學等古典道德理論的聯繫，並討論了其在不同應用情境下的定位與限制。
     \item \textbf{實際應用}：為 AI 倫理系統的審計、比較與改進提供了定量診斷工具與優先排序機制。
 \end{enumerate}
+
+此框架引入了一種透過結構穩定性來審視 AI 道德可靠性的視角。正如心電圖（ECG）監控心律的規律性，以便在心臟驟停發生前偵測到潛在病理，ERH 式診斷則監控累積錯誤在不同複雜度級別間的「律動」，以便在災難性失敗蔓延前標記結構性不穩定。對於政策制定者和審計者而言，這提供了一個關鍵的早期預警系統，與傳統的準確率快照相輔相成。
 
 這項工作開闢了 AI 倫理的新方向：透過解析數論的透鏡來分析道德判斷的結構性模式。雖然與質數的類比是啟發性的而非精確的，但它為評估大規模判斷系統提供了有價值的直覺、定量工具與診斷框架。
 

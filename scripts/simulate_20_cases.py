@@ -58,7 +58,7 @@ CASES = [
     {"name": "Edge_AI_Decision", "cat": "LLM", "bias": 0.15, "noise": 0.5, "complex_dep": 0.4},
 ]
 
-def run_simulation(case):
+def run_simulation(case, output_dir):
     print(f"Running simulation for: {case['name']} ({case['cat']})")
     
     # Generate actions with multidimensional values (3 dims: Fairness, Privacy, Safety)
@@ -86,6 +86,20 @@ def run_simulation(case):
     # Compute ERH metrics
     Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes, X_max=100)
     analysis = analyze_error_growth(E_x, x_vals)
+    
+    # Plot results for this case
+    fig_path = output_dir / f"case_plot_{case['name']}.png"
+    try:
+        from simulation.visualization.plots import plot_Pi_B_E, setup_paper_style
+        setup_paper_style()
+        plot_Pi_B_E(
+            x_vals, Pi_x, B_x, E_x,
+            title=f"ERH Profile: {case['name'].replace('_', ' ')}",
+            save_path=str(fig_path),
+            show=False
+        )
+    except Exception as e:
+        print(f"Plotting failed for {case['name']}: {e}")
     
     # Topology metrics
     topology = get_manifold_topology_metrics(actions)
@@ -161,14 +175,14 @@ def main():
     
     all_results = []
     for case in CASES:
-        res = run_simulation(case)
+        res = run_simulation(case, output_dir)
         all_results.append(res)
         
         with open(output_dir / f"sim_result_{case['name']}.json", "w") as f:
             json.dump(res, f, indent=2)
             
     save_summary(all_results, output_dir)
-    print(f"\nCompleted 20 simulations. Results saved to {output_dir}")
+    print(f"\nCompleted 20 simulations and generated figures. Results saved to {output_dir}")
 
 if __name__ == "__main__":
     main()
