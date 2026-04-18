@@ -16,7 +16,7 @@ def parse_results_summary(file_path):
     if not os.path.exists(file_path):
         print(f"Warning: Results summary file not found at {file_path}")
         print("Skipping LaTeX updates - this is expected if simulations haven't run yet")
-        sys.exit(0)  # Exit gracefully, don't break the workflow
+        return None  # Signal callers to skip data injection but still sanitize
 
     with open(file_path, 'r') as f:
         content = f.read()
@@ -336,6 +336,32 @@ def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
         print(f"Updated 20 simulation cases in {path}")
 
 
+def sanitize_unfilled_placeholders(latex_path_en: str, latex_path_zh: str) -> None:
+    """Replace any remaining [UPPER_CASE_TOKEN] placeholders with safe defaults.
+
+    Placeholders that were not filled by the data-injection steps contain
+    underscores (e.g. [CASE_JUD_MR]) which are special characters in LaTeX
+    and cause fatal 'Missing $ inserted' compilation errors.  This function
+    acts as a safety net and must run unconditionally after all data injection.
+    """
+    # Matches bracket-delimited ALL_CAPS tokens that may contain underscores.
+    _PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9_]+\]")
+
+    for path in (latex_path_en, latex_path_zh):
+        if not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        matches = _PLACEHOLDER_RE.findall(content)
+        if matches:
+            print(f"  sanitizing {len(matches)} unfilled placeholder(s) in {path}: {sorted(set(matches))}")
+        content = _PLACEHOLDER_RE.sub("{--}", content)
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     results_path = os.path.join(base_dir, "simulation", "output", "results_summary.txt")
@@ -347,13 +373,19 @@ if __name__ == "__main__":
     print(f"Reading results from: {results_path}")
     results = parse_results_summary(results_path)
 
-    print(f"Updating English LaTeX file: {latex_path_en}")
-    print(f"Updating Chinese LaTeX file: {latex_path_zh}")
-    update_latex_file_bilingual(latex_path_en, latex_path_zh, results)
+    if results is not None:
+        print(f"Updating English LaTeX file: {latex_path_en}")
+        print(f"Updating Chinese LaTeX file: {latex_path_zh}")
+        update_latex_file_bilingual(latex_path_en, latex_path_zh, results)
 
-    print(f"Injecting quantum Hilbert stats from: {quantum_json_path}")
-    update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path)
+        print(f"Injecting quantum Hilbert stats from: {quantum_json_path}")
+        update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path)
 
-    print(f"Injecting 20 cases metrics from: {cases_20_path}")
-    update_cases_20_results(latex_path_en, latex_path_zh, cases_20_path)
+        print(f"Injecting 20 cases metrics from: {cases_20_path}")
+        update_cases_20_results(latex_path_en, latex_path_zh, cases_20_path)
+
+    # Always sanitize: replace any remaining [UPPER_CASE_TOKEN] placeholders with
+    # {--} so latexmk never encounters bare underscores outside math mode.
+    print("Sanitizing any unfilled placeholders in LaTeX files...")
+    sanitize_unfilled_placeholders(latex_path_en, latex_path_zh)
 
