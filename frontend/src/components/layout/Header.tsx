@@ -1,11 +1,21 @@
+import JudgePicker from './JudgePicker'
+
 export default function Header() {
   return (
-    <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold">Ethical Riemann Hypothesis Security Platform</h2>
-      <div className="flex items-center gap-4">
-        {/* User menu or other header items can go here */}
+    <header className="border-b border-border/70 bg-card/60 px-6 py-4 backdrop-blur">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+            Ethical Riemann Hypothesis
+          </p>
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            Hybrid research archive and live experiment interface
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <JudgePicker />
+        </div>
       </div>
     </header>
   )
 }
-
