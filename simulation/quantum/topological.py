@@ -15,7 +15,7 @@ model) this is 0 in the trivial phase and 1 in the topological phase.
 
 from __future__ import annotations
 
-from typing import Callable, Tuple
+from typing import Callable, Optional, Tuple
 
 import numpy as np
 
@@ -65,34 +65,50 @@ def _d_vector(H_k: np.ndarray) -> Tuple[float, float, float]:
 def winding_number(
     bloch_fn: Callable[[float], np.ndarray],
     n_points: int = 400,
+    plane: Optional[str] = None,
 ) -> int:
     """
-    Winding number of (d_x, d_y) around the origin as k sweeps [-pi, pi].
+    Winding number of a two-component component of the d-vector around the
+    origin as k sweeps [-pi, pi].
 
-    For SSH / Kitaev-with-chiral-symmetry the winding jumps between 0 and 1
-    when crossing the topological phase transition.  Returns rounded integer.
+    `plane` selects which two d-components to use:
+        - "xy"  : (d_x, d_y)   (e.g. SSH with chiral symmetry)
+        - "yz"  : (d_y, d_z)   (e.g. Kitaev chain)
+        - "xz"  : (d_x, d_z)
+        - None  : auto-detect the plane whose components vary the most and
+                  whose third component stays closest to zero.
     """
-    # Sample k on a closed loop (duplicate endpoint)
     ks = np.linspace(-np.pi, np.pi, n_points + 1)
-    xs = []
-    ys = []
-    for k in ks:
+    dx = np.zeros(n_points + 1)
+    dy = np.zeros(n_points + 1)
+    dz = np.zeros(n_points + 1)
+    for i, k in enumerate(ks):
         H = bloch_fn(k)
-        dx, dy, _dz = _d_vector(H)
-        xs.append(dx)
-        ys.append(dy)
-    xs = np.array(xs)
-    ys = np.array(ys)
+        a, b, c = _d_vector(H)
+        dx[i], dy[i], dz[i] = a, b, c
 
-    # Accumulate phase differences using atan2 of cross/dot products to avoid
-    # branch-cut issues of np.unwrap.
+    if plane is None:
+        # pick the plane in which the third component has the smallest max|.|
+        candidates = [
+            ("xy", np.max(np.abs(dz)), dx, dy),
+            ("yz", np.max(np.abs(dx)), dy, dz),
+            ("xz", np.max(np.abs(dy)), dx, dz),
+        ]
+        # pick plane with smallest out-of-plane component magnitude
+        candidates.sort(key=lambda t: t[1])
+        _, _, a, b = candidates[0]
+    else:
+        mapping = {"xy": (dx, dy), "yz": (dy, dz), "xz": (dx, dz)}
+        if plane not in mapping:
+            raise ValueError(f"unknown plane {plane}")
+        a, b = mapping[plane]
+
     total = 0.0
     for i in range(n_points):
-        x1, y1 = xs[i], ys[i]
-        x2, y2 = xs[i + 1], ys[i + 1]
+        x1, y1 = a[i], b[i]
+        x2, y2 = a[i + 1], b[i + 1]
         cross = x1 * y2 - y1 * x2
         dot = x1 * x2 + y1 * y2
-        # Avoid zero radius (would be on gap closure)
         if abs(cross) < 1e-14 and abs(dot) < 1e-14:
             continue
         total += np.arctan2(cross, dot)
@@ -158,7 +174,8 @@ def kitaev_real_space_hamiltonian(
 def classify_phase(
     bloch_fn: Callable[[float], np.ndarray],
     n_points: int = 400,
+    plane: Optional[str] = None,
 ) -> str:
     """Return 'trivial' or 'topological' based on winding number."""
-    w = winding_number(bloch_fn, n_points)
+    w = winding_number(bloch_fn, n_points, plane=plane)
     return "topological" if abs(w) >= 1 else "trivial"

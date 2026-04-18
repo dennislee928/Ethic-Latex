@@ -361,9 +361,13 @@ def variance_on_cycle(
     quantum: bool = True,
 ) -> float:
     """
-    Compute the variance of the position distribution after `steps` steps on a
-    cycle graph with n vertices.  Classical walks give var ~ t, quantum walks
-    give var ~ t^2 (ballistic spread).
+    Second moment E[d^2] of the shortest-arc distance from the start vertex
+    after `steps` steps on a cycle graph with n vertices.
+
+    Because a coined quantum walk on a cycle spreads symmetrically, the mean
+    signed displacement is zero and the classical-vs-quantum separation shows
+    up in the *second moment* of the distance.  Classical walks give
+    E[d^2] ~ t, quantum walks give E[d^2] ~ t^2 (ballistic spread).
     """
     adjacency = {i: [(i - 1) % n, (i + 1) % n] for i in range(n)}
     start = n // 2
@@ -372,16 +376,11 @@ def variance_on_cycle(
     else:
         history = classical_walk_on_graph(adjacency, start, steps)
     probs = history[-1]
-    # Use signed distance to start on the cycle (choose shortest arc)
-    var = 0.0
-    mean = 0.0
     total = sum(probs.values())
     if total <= 0:
         return 0.0
+    m2 = 0.0
     for v, p in probs.items():
         dist = min(abs(v - start), n - abs(v - start))
-        mean += p * dist / total
-    for v, p in probs.items():
-        dist = min(abs(v - start), n - abs(v - start))
-        var += p * (dist - mean) ** 2 / total
-    return float(var)
+        m2 += p * dist * dist / total
+    return float(m2)

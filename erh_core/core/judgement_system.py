@@ -80,15 +80,20 @@ class BaseJudge(ABC):
     A judge takes an action and produces a moral judgment J(a),
     which may differ from the true value V(a).
 
-    Extended attributes (all default to non-intrusive values)
-    ---------------------------------------------------------
-    _calibrator         Fitted sklearn calibrator (None if uncalibrated).
-    _calibration_method "platt" | "isotonic" | None.
-    _decision_traces    List of DecisionTrace objects (populated only when
-                        _store_traces is True).
-    _store_traces       Toggle trace recording (default False).
-    abstention_threshold  When set, judge_or_abstain() returns None if
-                          calibrated_confidence() < threshold.
+    Attributes
+    ----------
+    _calibrator : Any or None
+        Fitted sklearn calibrator (None if uncalibrated).
+    _calibration_method : str or None
+        `"platt" | "isotonic" | None`.
+    _decision_traces : list of DecisionTrace
+        List of DecisionTrace objects (populated only when
+        _store_traces is True).
+    _store_traces : bool
+        Toggle trace recording (default False).
+    abstention_threshold : float or None
+        When set, judge_or_abstain() returns None if
+        calibrated_confidence() < threshold.
     """
 
     def __init__(self, name: str = "BaseJudge"):
@@ -1108,7 +1113,7 @@ def evaluate_judgement(
     For each action:
     1. Computes J(a) using judge (or judge_or_abstain() if allow_abstention=True)
     2. Computes error Δ(a) = J(a) - V(a)
-    3. Sets mistake_flag to 1 if |Δ(a)| > τ, else 0
+    3. Sets mistake_flag to 1 if `|Δ(a)|` > τ, else 0
 
     Parameters
     ----------
