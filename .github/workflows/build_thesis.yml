@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+      MPLCONFIGDIR: /tmp/matplotlib
 
     steps:
       - name: Checkout repository

@@ -38,7 +38,7 @@ jobs:
     name: Quantum Simulator Regression
     runs-on: ubuntu-latest
     env:
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -64,7 +64,7 @@ jobs:
     name: NumPy Fallback Regression
     runs-on: ubuntu-latest
     env:
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     env:
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
