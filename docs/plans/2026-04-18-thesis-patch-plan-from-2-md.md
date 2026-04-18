@@ -1,10 +1,10 @@
-# Thesis Patch Plan From `.ignore_ref/2.md`
+# Thesis Patch Plan From `.ignore_ref/2.md` And `.ignore_ref/3.md`
 
 **Date:** 2026-04-18
 
 ## Goal
 
-Turn the review note in `.ignore_ref/2.md` into an actionable thesis-revision plan that improves clarity, internal consistency, empirical credibility, and practical relevance without bloating the paper into an unbounded rewrite.
+Turn the review notes in `.ignore_ref/2.md` and `.ignore_ref/3.md` into an actionable thesis-revision plan that improves clarity, internal consistency, empirical credibility, practical relevance, and cross-surface wording alignment without bloating the paper into an unbounded rewrite.
 
 ## Primary Targets
 
@@ -12,6 +12,9 @@ Turn the review note in `.ignore_ref/2.md` into an actionable thesis-revision pl
 - `latex/ethical_riemann_hypothesis_en.tex`
 - `latex/ethical_riemann_hypothesis_zh.tex`
 - `latex/references.bib`
+- `scripts/integrate_figures.py`
+- `simulation/generate_all_figures.py`
+- `simulation/output/figures/comparison_table_rows.tex`
 - Generated figure/table inputs under `simulation/output/` and `figures/` only where thesis claims or captions must be corrected to match the source results
 
 ## Source Synthesis
@@ -23,6 +26,18 @@ The note in `.ignore_ref/2.md` is not a single bug report. It is a mixed critiqu
 - There are likely internal consistency problems, especially around COMPAS `\alpha` values, table wording, and presentation artifacts.
 - The paper has a credible future-work pipeline, but it needs prioritization and separation between what this version proves, what it demonstrates, and what it only proposes.
 
+`.ignore_ref/3.md` adds a second layer of requirements that the earlier plan only partially covered:
+
+- Future work should explicitly group several proposal-mode extensions:
+  - algebraic or topological definitions of ethical primes
+  - ERH-style regularization during training
+  - adversarial ethical primes
+  - dynamic ERH / ethical-drift monitoring
+  - multi-dimensional ethical zeta constructions
+  - human-in-the-loop or hybrid judgment systems
+- The condensed/root thesis file needs the same practical case-study framing and future-work boundaries already applied to the long-form variants.
+- Figure-caption and table-row generator sources need to emit the same bounded-growth wording as the thesis body, especially for negative `\alpha` values that still satisfy the ERH-style upper bound.
+
 ## Patch Objectives
 
 1. Remove contradictions and low-trust presentation defects.
@@ -30,6 +45,7 @@ The note in `.ignore_ref/2.md` is not a single bug report. It is a mixed critiqu
 3. Translate ERH outputs into decision guidance while keeping the paper honest about scope.
 4. Reframe future work so it strengthens the contribution instead of overextending the claims.
 5. Keep the English and Chinese thesis variants aligned on the same core claims and numbers.
+6. Bring the condensed/root thesis file and generator-produced captions/table rows into the same wording and interpretation scheme.
 
 ## Workstream 1: Consistency Audit And Repairs
 
@@ -190,12 +206,15 @@ Several issues in the note appear to be generated-artifact mismatches rather tha
 
 - Audit all figure captions and legend text that mention `\alpha`, ERH adherence, or structural similarity.
 - Rebuild any generated comparison tables if they still emit stale values or clipped labels.
+- Ensure generator sources use the same ERH-style bounded-growth criterion as the manuscript text.
 - Ensure English and Chinese captions express the same claim strength.
 - Remove or soften captions that overstate universality, prediction, or fairness conclusions.
 
 ### Likely Files
 
 - Thesis `.tex` files
+- `scripts/integrate_figures.py`
+- `simulation/generate_all_figures.py`
 - `simulation/output/figures_latex_code.tex`
 - `simulation/output/figures/comparison_table_rows.tex`
 - Figure-generation scripts only if stale outputs cannot be corrected at the LaTeX layer
@@ -206,6 +225,24 @@ Several issues in the note appear to be generated-artifact mismatches rather tha
 - Tables render completely.
 - No figure legend carries a stronger claim than the body text supports.
 
+## Workstream 7: Condensed Thesis Alignment
+
+### Why
+
+The condensed/root thesis is still lagging behind the long-form English and Chinese variants. If it keeps older wording or weaker case-study framing, the repository will continue to present contradictory thesis surfaces even after the long-form papers are repaired.
+
+### Patch Tasks
+
+- Add the Adult Income practical interpretation layer to `latex/ethical_riemann_hypothesis.tex`, not just the COMPAS layer.
+- Reconcile any condensed-thesis wording that still implies some synthetic judges ``violate'' ERH when the reported exponents remain below the ERH-style upper bound.
+- Mirror the grouped future-work items from `.ignore_ref/3.md` in the condensed thesis while keeping them explicitly in proposal mode.
+- Align condensed-thesis figure captions and alpha-comparison wording with the long-form variants and caption-generation sources.
+
+### Done Criteria
+
+- The root thesis, English thesis, and Chinese thesis present the same core interpretation of Adult Income, COMPAS, negative `\alpha` values, and future-work scope.
+- No thesis surface uses stronger wording than the others for the same result.
+
 ## Suggested Execution Order
 
 1. Consistency audit and numeric reconciliation.
@@ -213,7 +250,8 @@ Several issues in the note appear to be generated-artifact mismatches rather tha
 3. ERH interpretation-layer insert.
 4. Theory/future-work restructuring.
 5. Figure/table synchronization.
-6. Cross-language alignment pass.
+6. Condensed-thesis alignment pass.
+7. Cross-language alignment pass.
 
 ## Verification Checklist
 
