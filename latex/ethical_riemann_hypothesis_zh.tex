@@ -16,6 +16,7 @@
 \usepackage{geometry}
 \usepackage{natbib}
 \usepackage{booktabs}
+\usepackage{tabularx}
 % Algorithms not available, using basic formatting
 \usepackage{verbatim}
 \usepackage{subcaption}
@@ -585,7 +586,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
 \centering
 \caption{真實世界資料來源、URL 與輸出路徑}
 \label{tab:real_data_sources_zh}
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{llX}
 \toprule
 \textbf{資料集} & \textbf{來源} & \textbf{輸出路徑} \\
 \midrule
@@ -594,7 +595,7 @@ Adult Income（測試） & UCI ML Repository & \texttt{data/real\_world/adult.te
 Adult Income（處理後） & --- & \texttt{data/adult.csv}（轉換後） \\
 COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \textbf{取得與轉換步驟}：
@@ -1066,6 +1067,21 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
   }
   \caption{COMPAS 的正規化誤差振盪 $E(x)/\sqrt{x}$ 與信賴區間。可用於檢查 ERH 式正規化下是否保持有界，但不應視為公平性指標。}
   \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_circuit.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_circuit.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_circuit.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_circuit.png (run pipeline to generate).}}
+    }
+  }
+  \caption{代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。}
+  \label{fig:quantum_circuit_supp}
 \end{figure}
 
 \begin{figure}[htbp]

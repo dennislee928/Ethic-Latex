@@ -10,6 +10,7 @@
 \usepackage{geometry}
 \usepackage{natbib}
 \usepackage{booktabs}
+\usepackage{tabularx}
 % Algorithms not available, using basic formatting
 \usepackage{verbatim}
 \usepackage{subcaption}
@@ -1276,6 +1277,21 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
   }
   \caption{Normalized error oscillation $E(x)/\sqrt{x}$ with confidence interval for COMPAS. Useful for checking bounded behavior under the ERH-style normalization, not as a fairness metric.}
   \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_circuit.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_circuit.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_circuit.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_circuit.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Quantum circuit representing ethical Hilbert space: $U3$ gates encode Bloch sphere positions, $R_{ZZ}$ gates model social entanglement.}
+  \label{fig:quantum_circuit_supp}
 \end{figure}
 
 \begin{figure}[htbp]
