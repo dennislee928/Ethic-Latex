@@ -31,13 +31,14 @@ on:
 env:
   PYTHONPATH: ${{ github.workspace }}
   MPLBACKEND: Agg
-  MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
   PYTEST_ADDOPTS: --tb=short
 
 jobs:
   simulator-regression:
     name: Quantum Simulator Regression
     runs-on: ubuntu-latest
+    env:
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -62,6 +63,8 @@ jobs:
   numpy-fallback:
     name: NumPy Fallback Regression
     runs-on: ubuntu-latest
+    env:
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -83,6 +86,8 @@ jobs:
     name: IBM Runtime Smoke
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    env:
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - uses: actions/checkout@v4
 
