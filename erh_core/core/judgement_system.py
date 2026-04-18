@@ -1151,7 +1151,7 @@ def evaluate_judgement(
             action.delta = J - action.V
             action.mistake_flag = 1 if abs(action.delta) > tau else 0
 
-        if judge._store_traces and J is not None:
+        if getattr(judge, '_store_traces', False) and J is not None:
             judge._decision_traces.append(judge.explain(action))
 
     if not inplace:
