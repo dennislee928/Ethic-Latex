@@ -1,6 +1,8 @@
 """
 Script to generate drift monitoring plot for LaTeX inclusion.
 """
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from erh_core.core.temporal_erh import simulate_ethical_drift_scenario
 from pathlib import Path
@@ -32,6 +34,7 @@ def generate_drift_plot(save_path):
     plt.title('Ethical Drift Monitoring: Alpha Index vs. Systemic Bias')
     fig.tight_layout()
     plt.savefig(save_path)
+    plt.close(fig)
     print(f"Drift plot saved to {save_path}")
 
 if __name__ == "__main__":

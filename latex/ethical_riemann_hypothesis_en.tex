@@ -816,11 +816,11 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/paper_fig10_phase_transition_h.pdf}{
-    \includegraphics[width=0.8\textwidth]{../figures/paper_fig10_phase_transition_h.pdf}
+  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
   }{
-    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
     }
@@ -831,17 +831,32 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/von_neumann_entropy_over_time.pdf}{
-    \includegraphics[width=0.8\textwidth]{../figures/von_neumann_entropy_over_time.pdf}
+  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
   }{
-    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
     }
   }
   \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
   \label{fig:von_neumann_entropy}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/phase_transition.png}{
+    \includegraphics[width=0.8\textwidth]{figures/phase_transition.png}
+  }{
+    \IfFileExists{simulation/output/figures/phase_transition.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/phase_transition.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure phase\_transition.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Moral phase transition: as conflict density (complexity) increases, ground-state fidelity drops. The collapse point marks the pole of the Ethical Zeta Function.}
+  \label{fig:phase_transition}
 \end{figure}
 
 
@@ -1187,8 +1202,53 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
 \end{figure}
 % COMPAS pipeline figures will be inserted here by integrate_figures.py
 
-In addition to Adult Income, we retain two further methodological case studies: one on \emph{university entrance exam cheating} and one on \emph{sexual abuse reporting}.\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
-At present these should be read as portability demonstrations for the analysis workflow rather than as additional empirical validation. Their value is in showing how to ask whether critical errors keep accumulating with complexity in high-risk settings; deployment conclusions would still require domain-specific data quality checks, harm models, and ordinary fairness review.
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/alpha_comparison_real_vs_simulated.png}{
+    \includegraphics[width=0.8\textwidth]{figures/alpha_comparison_real_vs_simulated.png}
+  }{
+    \IfFileExists{simulation/output/figures/alpha_comparison_real_vs_simulated.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_real_vs_simulated.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_real\_vs\_simulated.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Real-world growth exponent $\alpha$ versus synthetic reference judges. Compares the Adult Income and COMPAS case studies with a simulated Conservative judge to contextualize structural error-growth regimes.}
+  \label{fig:alpha_real_vs_simulated}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/compas_erh_bound.png}{
+    \includegraphics[width=0.8\textwidth]{figures/compas_erh_bound.png}
+  }{
+    \IfFileExists{simulation/output/figures/compas_erh_bound.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/compas_erh_bound.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure compas\_erh\_bound.png (run pipeline to generate).}}
+    }
+  }
+  \caption{COMPAS under an ERH-style bound. Log-log plot of $|E(x)|$ versus complexity $x$ with theoretical reference line $C\cdot x^{0.5}$. The fitted exponent $\alpha\approx-0.20$ indicates bounded sublinear error growth under the chosen proxy, not fairness by itself.}
+  \label{fig:compas_erh_bound}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/alpha_comparison_bar.png}{
+    \includegraphics[width=0.8\textwidth]{figures/alpha_comparison_bar.png}
+  }{
+    \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_bar.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_bar.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Comparison of fitted growth exponents across Radical, Conservative (synthetic), COMPAS, and Adult Income case studies. COMPAS $\approx-0.20$ is highlighted to situate the real-data result relative to synthetic baselines.}
+  \label{fig:alpha_comparison_bar}
+\end{figure}
+
+
+
 
 \subsection{ERH vs.\ Standard Fairness Metrics}
 
@@ -1205,11 +1265,26 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/latest_quantum_distribution.png}{
-    \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}
+  \IfFileExists{figures/normalized_error_oscillation.png}{
+    \includegraphics[width=0.8\textwidth]{figures/normalized_error_oscillation.png}
   }{
-    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
+    \IfFileExists{simulation/output/figures/normalized_error_oscillation.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/normalized_error_oscillation.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure normalized\_error\_oscillation.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Normalized error oscillation $E(x)/\sqrt{x}$ with confidence interval for COMPAS. Useful for checking bounded behavior under the ERH-style normalization, not as a fairness metric.}
+  \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
     }
@@ -1237,37 +1312,227 @@ To validate the ERH framework across diverse high-stakes domains, we simulated 2
 \toprule
 \textbf{Category} & \textbf{Mistake Rate} & \textbf{Primes} & \textbf{$\alpha$} & \textbf{ERH Satisfied} \\
 \midrule
-Judiciary     & [CASE_JUD_MR] & [CASE_JUD_PR] & [CASE_JUD_AL] & [CASE_JUD_ERH] \\
-Medical       & [CASE_MED_MR] & [CASE_MED_PR] & [CASE_MED_AL] & [CASE_MED_ERH] \\
-Finance       & [CASE_FIN_MR] & [CASE_FIN_PR] & [CASE_FIN_AL] & [CASE_FIN_ERH] \\
-HR            & [CASE_HR_MR]  & [CASE_HR_PR]  & [CASE_HR_AL]  & [CASE_HR_ERH] \\
-Governance    & [CASE_GOV_MR] & [CASE_GOV_PR] & [CASE_GOV_AL] & [CASE_GOV_ERH] \\
-Education     & [CASE_EDU_MR] & [CASE_EDU_PR] & [CASE_EDU_AL] & [CASE_EDU_ERH] \\
-Emerging (LLM)& [CASE_LLM_MR] & [CASE_LLM_PR] & [CASE_LLM_AL] & [CASE_LLM_ERH] \\
+Judiciary     & 0.529 & 6 & $0.542$ & Yes \\
+Medical       & 0.362 & 5 & $0.714$ & Yes \\
+Finance       & 0.386 & 3 & $0.549$ & Yes \\
+HR            & 0.572  & 6  & $0.560$  & Yes \\
+Governance    & 0.482 & 5 & $0.556$ & Yes \\
+Education     & 0.477 & 5 & $0.506$ & Yes \\
+Emerging (LLM)& 0.444 & 5 & $0.548$ & Yes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The simulation results confirm that while absolute mistake rates vary (e.g., higher in linguistically complex Hate Speech detection), the structural growth of errors remains strictly bounded, with $\alpha$ consistently below $0.5$ across all 20 scenarios.
 
+\subsection{Detailed Case-by-Case Analysis}
+
+Below we provide detailed performance metrics for all 20 simulation scenarios, organized by domain.
+
+\subsubsection{Judiciary \& Security}
+
+\textbf{Parole Board}: Analysis of parole application predictions.
+\begin{itemize}
+    \item Mistake rate: 0.377
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.520$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Terrorism Screening}: High-stakes risk assessment for security.
+\begin{itemize}
+    \item Mistake rate: 0.658
+    \item Ethical primes: 9
+    \item Exponent ($\alpha$): $0.570$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{CPS Child Welfare}: Risk modeling in child protective services.
+\begin{itemize}
+    \item Mistake rate: 0.551
+    \item Ethical primes: 4
+    \item Exponent ($\alpha$): $0.536$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{Medical Ethics}
+
+\textbf{ER Triage}: Emergency room patient prioritization.
+\begin{itemize}
+    \item Mistake rate: 0.409
+    \item Ethical primes: 6
+    \item Exponent ($\alpha$): $0.493$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Organ Matching}: Resource allocation in transplant systems.
+\begin{itemize}
+    \item Mistake rate: 0.067
+    \item Ethical primes: 6
+    \item Exponent ($\alpha$): $1.074$
+    \item ERH Satisfied: No
+\end{itemize}
+
+\textbf{Mental Health Crisis}: Automated intervention for psychiatric emergencies.
+\begin{itemize}
+    \item Mistake rate: 0.610
+    \item Ethical primes: 3
+    \item Exponent ($\alpha$): $0.575$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{Finance \& Distribution}
+
+\textbf{Micro-finance}: Lending for individuals with no credit history.
+\begin{itemize}
+    \item Mistake rate: 0.486
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.503$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Insurance Pricing}: Dynamic premiums based on complex behaviors.
+\begin{itemize}
+    \item Mistake rate: 0.251
+    \item Ethical primes: 2
+    \item Exponent ($\alpha$): $0.600$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Welfare Eligibility}: Automation of social security distribution.
+\begin{itemize}
+    \item Mistake rate: 0.420
+    \item Ethical primes: 4
+    \item Exponent ($\alpha$): $0.545$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{HR \& Workplace}
+
+\textbf{Resume Screening}: Automated filtering of multi-disciplinary talent.
+\begin{itemize}
+    \item Mistake rate: 0.725
+    \item Ethical primes: 8
+    \item Exponent ($\alpha$): $0.590$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Performance Evaluation}: Analyzing contribution in high-pressure environments.
+\begin{itemize}
+    \item Mistake rate: 0.418
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.529$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{Digital Governance}
+
+\textbf{Hate Speech}: Moderating linguistically complex or ironic content.
+\begin{itemize}
+    \item Mistake rate: 0.658
+    \item Ethical primes: 8
+    \item Exponent ($\alpha$): $0.585$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Smart Grid}: Resource allocation under extreme weather conditions.
+\begin{itemize}
+    \item Mistake rate: 0.256
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.522$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Refugee Status}: Processing complex migration and georisk histories.
+\begin{itemize}
+    \item Mistake rate: 0.533
+    \item Ethical primes: 3
+    \item Exponent ($\alpha$): $0.562$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{Education \& Academia}
+
+\textbf{Admission Evaluation}: Assessing non-typical student experiences.
+\begin{itemize}
+    \item Mistake rate: 0.486
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.503$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{AES Essay Scoring}: Scoring creative and non-standard writing.
+\begin{itemize}
+    \item Mistake rate: 0.467
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.510$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\subsubsection{Emerging Risks (LLM)}
+
+\textbf{Code Vulnerability SAST}: Scanning for vulnerabilities in complex logic.
+\begin{itemize}
+    \item Mistake rate: 0.292
+    \item Ethical primes: 4
+    \item Exponent ($\alpha$): $0.560$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Copyright Compliance}: Assessing infringement in high-mix creative works.
+\begin{itemize}
+    \item Mistake rate: 0.381
+    \item Ethical primes: 10
+    \item Exponent ($\alpha$): $0.548$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Fake News Detection}: Identifying misinformation in synthetic media.
+\begin{itemize}
+    \item Mistake rate: 0.551
+    \item Ethical primes: 3
+    \item Exponent ($\alpha$): $0.575$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
+\textbf{Edge AI Decision}: Real-time decision making in noisy environments.
+\begin{itemize}
+    \item Mistake rate: 0.552
+    \item Ethical primes: 5
+    \item Exponent ($\alpha$): $0.510$
+    \item ERH Satisfied: Yes
+\end{itemize}
+
 \subsection{Advanced Ethical Monitoring and Algebraic Precision}
 
 Beyond heuristic auditing, we implemented several advanced features for formal structural monitoring:
 
 \begin{itemize}
-    \item \textbf{Algebraic Precision (Singularities)}: Primes are defined as singularities on the moral manifold where ethical curvature (Laplacian of the error landscape) exceeds a threshold. Manifold roughness was measured at [MANIFOLD_ROUGHNESS].
+    \item \textbf{Algebraic Precision (Singularities)}: Primes are defined as singularities on the moral manifold where ethical curvature (Laplacian of the error landscape) exceeds a threshold. Manifold roughness was measured at 0.1349.
     \item \textbf{Adversarial Ethical Primes}: Using simulated annealing, we identified targeted complexity perturbations that attempt to breach structural stability, providing a "red-teaming" benchmark.
-    \item \textbf{Dynamic ERH (Ethical Drift)}: A real-time monitor tracks the drift of $\alpha$ over time. In a simulated decay scenario, the monitor successfully issued a "CRITICAL" alert when $\alpha$ drifted to [DRIFT_ALPHA_FINAL].
+    \item \textbf{Dynamic ERH (Ethical Drift)}: A real-time monitor tracks the drift of $\alpha$ over time. In a simulated decay scenario, the monitor successfully issued a "CRITICAL" alert when $\alpha$ drifted to $-0.255$.
     \item \textbf{Multi-dimensional Zeta Function}: By extending moral values $V(a)$ to a vector space, we compute a multidimensional Zeta function $\zeta_{\mathbf{E}}(s)$, encoding cross-dimensional zero entanglement.
 \end{itemize}
 
 % 20 cases figures will be inserted here by integrate_figures.py
 
-% ============================================
-% SECTION 9: AI ETHICS APPLICATIONS
-% ============================================
-\section{Implications for AI Ethics}
-\label{sec:implications}
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/drift_monitoring.png}{
+    \includegraphics[width=0.8\textwidth]{figures/drift_monitoring.png}
+  }{
+    \IfFileExists{simulation/output/figures/drift_monitoring.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/drift_monitoring.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure drift\_monitoring.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Real-time ethical drift monitoring showing alpha index tracking over time during a simulated systemic bias decay.}
+  \label{fig:drift_monitoring}
+\end{figure}
+
+
+
 
 \subsection{Design Criteria for Ethical AI}
 

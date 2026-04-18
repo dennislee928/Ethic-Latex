@@ -308,9 +308,12 @@ def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
     }
 
     replacements = []
+    
+    # Handle Categories Summary
+    categories_data = summary.get("categories", {})
     for cat, key in cat_mapping.items():
-        if cat in summary:
-            data = summary[cat]
+        if cat in categories_data:
+            data = categories_data[cat]
             replacements.append((f"[CASE_{key}_MR]", f"{data['mistake_rate']:.3f}"))
             replacements.append((f"[CASE_{key}_PR]", f"{int(data['ethical_primes_count'])}"))
             replacements.append((f"[CASE_{key}_AL]", f"${data['estimated_exponent']:.3f}$"))
@@ -318,6 +321,20 @@ def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
             erh_zh = "是" if data['erh_satisfied_rate'] > 0.5 else "否"
             replacements.append((f"[CASE_{key}_ERH]", erh_en))
             replacements.append((f"[CASE_{key}_ERH_ZH]", erh_zh))
+
+    # Handle Detailed Cases (subsections)
+    detailed_data = summary.get("detailed", {})
+    for case_name, data in detailed_data.items():
+        # Example: [CASE_Parole_Board_MR]
+        # Some case names have spaces or symbols, but the ones in simulate_20_cases.py are mostly clean
+        safe_name = case_name.replace(" ", "_").replace("-", "_")
+        replacements.append((f"[CASE_{safe_name}_MR]", f"{data['mistake_rate']:.3f}"))
+        replacements.append((f"[CASE_{safe_name}_PR]", f"{int(data['ethical_primes_count'])}"))
+        replacements.append((f"[CASE_{safe_name}_AL]", f"${data['estimated_exponent']:.3f}$"))
+        erh_en = "Yes" if data['erh_satisfied'] else "No"
+        erh_zh = "是" if data['erh_satisfied'] else "否"
+        replacements.append((f"[CASE_{safe_name}_ERH]", erh_en))
+        replacements.append((f"[CASE_{safe_name}_ERH_ZH]", erh_zh))
 
     if "advanced" in summary:
         adv = summary["advanced"]
@@ -333,7 +350,7 @@ def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
             content = content.replace(old, new)
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"Updated 20 simulation cases in {path}")
+        print(f"Updated 20 simulation cases (detailed) in {path}")
 
 
 def sanitize_unfilled_placeholders(latex_path_en: str, latex_path_zh: str) -> None:
@@ -344,8 +361,10 @@ def sanitize_unfilled_placeholders(latex_path_en: str, latex_path_zh: str) -> No
     and cause fatal 'Missing $ inserted' compilation errors.  This function
     acts as a safety net and must run unconditionally after all data injection.
     """
-    # Matches bracket-delimited ALL_CAPS tokens that may contain underscores.
-    _PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9_]+\]")
+    # Matches bracket-delimited ALL_CAPS tokens that contain at least one
+    # underscore, e.g. [CASE_JUD_MR], [MANIFOLD_ROUGHNESS].
+    # Deliberately excludes safe LaTeX optionals like [T1], [TBD], [H].
+    _PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\]")
 
     for path in (latex_path_en, latex_path_zh):
         if not os.path.exists(path):

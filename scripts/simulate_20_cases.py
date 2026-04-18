@@ -113,17 +113,26 @@ def run_simulation(case):
     return result
 
 def save_summary(all_results, output_dir):
-    """Save aggregate summary by category for LaTeX injection."""
+    """Save aggregate summary by category and detailed per-case metrics."""
     categories = {}
+    detailed = {}
     for res in all_results:
         cat = res['category']
         if cat not in categories:
             categories[cat] = []
         categories[cat].append(res['metrics'])
+        
+        # Store detailed metrics for each specific case
+        detailed[res['case']] = {
+            "mistake_rate": res['metrics']['mistake_rate'],
+            "ethical_primes_count": res['metrics']['ethical_primes_count'],
+            "estimated_exponent": res['metrics']['estimated_exponent'],
+            "erh_satisfied": res['metrics']['erh_satisfied']
+        }
     
-    summary = {}
+    summary = {"categories": {}, "detailed": detailed}
     for cat, metrics_list in categories.items():
-        summary[cat] = {
+        summary["categories"][cat] = {
             "mistake_rate": float(np.mean([m['mistake_rate'] for m in metrics_list])),
             "ethical_primes_count": float(np.mean([m['ethical_primes_count'] for m in metrics_list])),
             "estimated_exponent": float(np.mean([m['estimated_exponent'] for m in metrics_list])),
