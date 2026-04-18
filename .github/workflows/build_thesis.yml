@@ -156,6 +156,13 @@ jobs:
           mkdir -p simulation/output/figures
           python scripts/run_quantum_hilbert_figures.py
 
+      - name: Run 20 Case Simulations and Drift Monitoring
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          mkdir -p simulation/output/cases_20
+          python scripts/simulate_20_cases.py
+          python scripts/run_drift_monitoring.py
+
       - name: Download Available Artifacts
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -179,6 +186,12 @@ jobs:
           if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.png 2>/dev/null)" ]; then
             cp simulation/output/figures/*.png figures/ 2>/dev/null || true
             echo "Copied PNG figures from simulation/output/figures"
+          fi
+          # Copy 20 cases figures
+          if [ -d "simulation/output/cases_20" ]; then
+            cp simulation/output/cases_20/*.png figures/ 2>/dev/null || true
+            cp simulation/output/cases_20/*.pdf figures/ 2>/dev/null || true
+            echo "Copied figures from simulation/output/cases_20"
           fi
           # Copy LLM stress test figure (Π(x), E(x)) if available
           if [ -f "llm_stress_test_results/llm_stress_test_Pi_E.png" ]; then
