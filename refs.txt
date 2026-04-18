@@ -1,0 +1,17 @@
+fig:judge_comparison
+fig:quantum_dist
+fig:spectrum
+sec:conclusion
+sec:erh
+sec:formalization
+sec:framework
+sec:implications
+sec:philosophy
+sec:related
+sec:results
+subsec:real_world_data
+tab:parameters
+tab:quantum_hilbert_stats
+tab:real_data_comparison
+tab:real_data_sources
+tab:seed_stability
