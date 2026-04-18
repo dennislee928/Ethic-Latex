@@ -21,7 +21,7 @@ echo Found pdflatex
 echo.
 
 echo [1/4] First pdflatex pass...
-pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
+cd latex && pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
 if %errorlevel% equ 0 (
     echo   [OK] Completed
 ) else (
@@ -31,7 +31,7 @@ if %errorlevel% equ 0 (
 where bibtex >nul 2>&1
 if %errorlevel% equ 0 (
     echo [2/4] Running BibTeX...
-    bibtex ethical_riemann_hypothesis >nul 2>&1
+    cd latex && bibtex ethical_riemann_hypothesis >nul 2>&1
     if %errorlevel% equ 0 (
         echo   [OK] Completed
     ) else (
@@ -42,7 +42,7 @@ if %errorlevel% equ 0 (
 )
 
 echo [3/4] Second pdflatex pass...
-pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
+cd latex && pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
 if %errorlevel% equ 0 (
     echo   [OK] Completed
 ) else (
@@ -50,7 +50,7 @@ if %errorlevel% equ 0 (
 )
 
 echo [4/4] Third pdflatex pass...
-pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
+cd latex && pdflatex -interaction=nonstopmode ethical_riemann_hypothesis.tex >nul 2>&1
 if %errorlevel% equ 0 (
     echo   [OK] Completed
 ) else (
@@ -58,14 +58,14 @@ if %errorlevel% equ 0 (
 )
 
 echo.
-if exist ethical_riemann_hypothesis.pdf (
+if exist latex\ethical_riemann_hypothesis.pdf (
     echo ======================================================================
-    echo SUCCESS! Paper compiled: ethical_riemann_hypothesis.pdf
+    echo SUCCESS! Paper compiled: latex/ethical_riemann_hypothesis.pdf
     echo ======================================================================
     dir ethical_riemann_hypothesis.pdf
 ) else (
     echo ======================================================================
-    echo ERROR: PDF not generated. Check ethical_riemann_hypothesis.log
+    echo ERROR: PDF not generated. Check latex/ethical_riemann_hypothesis.log
     echo ======================================================================
     exit /b 1
 )

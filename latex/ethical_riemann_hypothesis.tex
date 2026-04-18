@@ -393,10 +393,10 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
-    }{\IfFileExists{simulation/output/figures/quantum_circuit_step_latest.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/quantum_circuit_step_latest.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{../simulation/output/figures/quantum_circuit_step_latest.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/quantum_circuit_step_latest.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
     }}
@@ -421,8 +421,8 @@ As conflict density increases, the system cannot reach a stable ground state: gr
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/phase_transition.png}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/phase_transition.png}%
+    \IfFileExists{../simulation/output/figures/phase_transition.png}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/phase_transition.png}%
     }{\IfFileExists{simulation/output/phase_transition_diagram.png}{%
         \includegraphics[width=0.85\textwidth]{simulation/output/phase_transition_diagram.png}%
     }{%
@@ -434,8 +434,8 @@ As conflict density increases, the system cannot reach a stable ground state: gr
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
     }
@@ -501,8 +501,8 @@ Both are needed to assess judgment system quality.
 \toprule
 \textbf{Judge} & \textbf{Mistake Rate} & \textbf{MAE} & \textbf{F1} & $\bm{\alpha}$ & \textbf{ERH} & \textbf{Interpretation} \\
 \midrule
-\IfFileExists{simulation/output/figures/comparison_table_rows.tex}{%
-    \input{simulation/output/figures/comparison_table_rows.tex}%
+\IfFileExists{../simulation/output/figures/comparison_table_rows.tex}{%
+    \input{../simulation/output/figures/comparison_table_rows.tex}%
 }{%
 Biased & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 Noisy & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
@@ -515,10 +515,10 @@ Radical & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig7_critical_bound.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig7_critical_bound.pdf}%
-    }{\IfFileExists{simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig3_judge_comparison.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig7_critical_bound.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig7_critical_bound.pdf}%
+    }{\IfFileExists{../simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig3_judge_comparison.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate comparison figures.}}
     }}
@@ -535,8 +535,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig2_error_growth.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig2_error_growth.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig2_error_growth.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/paper_fig2_error_growth.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
     }
@@ -546,8 +546,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -557,8 +557,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -568,8 +568,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig11_prime_ladder.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig11_prime_ladder.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -579,8 +579,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
     }
@@ -597,8 +597,8 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}%
+    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -615,8 +615,8 @@ Our empirical analysis yields $\alpha \approx -0.20$ for COMPAS. With $\alpha \a
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/compas_erh_bound.png}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/compas_erh_bound.png}%
+    \IfFileExists{../simulation/output/figures/compas_erh_bound.png}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/compas_erh_bound.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{generate\_comprehensive\_report.py} to generate.}}
     }
@@ -626,8 +626,8 @@ Our empirical analysis yields $\alpha \approx -0.20$ for COMPAS. With $\alpha \a
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/alpha_comparison_bar.png}%
+    \IfFileExists{../simulation/output/figures/alpha_comparison_bar.png}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/alpha_comparison_bar.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} to generate.}}
     }
@@ -662,8 +662,8 @@ Values are computed by running \texttt{scripts/run\_empirical\_validation.py}, \
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/empirical_comparison.png}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/empirical_comparison.png}%
+    \IfFileExists{../simulation/output/figures/empirical_comparison.png}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/empirical_comparison.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{scripts/run\_empirical\_data\_pipeline.py} to generate.}}
     }
@@ -771,7 +771,7 @@ The fundamental question remains: \emph{Can we design AI systems that satisfy ER
 [To be added]
 
 \bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{../references}
 
 \end{document}
 

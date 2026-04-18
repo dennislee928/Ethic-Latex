@@ -71,4 +71,4 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-base texlive-latex-base latexmk
-          latexmk -pdf -interaction=nonstopmode ethical_riemann_hypothesis_en.tex || echo "⚠ LaTeX compilation failed, continuing..."
+          cd latex && latexmk -pdf -interaction=nonstopmode ethical_riemann_hypothesis_en.tex || echo "⚠ LaTeX compilation failed, continuing..."

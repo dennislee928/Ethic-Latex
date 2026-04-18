@@ -79,10 +79,12 @@ jobs:
 
       - name: Compile English LaTeX Document
         run: |
+          cd latex
           latexmk -pdf -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_en.tex
 
       - name: Compile Chinese LaTeX Document
         run: |
+          cd latex
           latexmk -xelatex -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_zh.tex
 
       - name: Upload PDF Artifacts
@@ -90,5 +92,5 @@ jobs:
         with:
           name: ethical_riemann_hypothesis_pdfs
           path: |
-            ethical_riemann_hypothesis_en.pdf
-            ethical_riemann_hypothesis_zh.pdf
+            latex/ethical_riemann_hypothesis_en.pdf
+            latex/ethical_riemann_hypothesis_zh.pdf

@@ -784,10 +784,10 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
-    }{\IfFileExists{figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{figures/latest_quantum_circuit.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{../figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../figures/latest_quantum_circuit.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_hilbert\_figures.py} or simulation with \texttt{enable\_quantum=True} to generate this figure.}}
     }}
@@ -799,10 +799,10 @@ The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed''
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
-    }{\IfFileExists{figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}%
+    }{\IfFileExists{../figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_quantum\_hilbert\_figures.py} to generate this figure.}}
     }}
@@ -816,11 +816,11 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
+  \IfFileExists{../figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig10_phase_transition_h.pdf}
   }{
-    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
     }
@@ -831,11 +831,11 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
+  \IfFileExists{../figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{../figures/von_neumann_entropy_over_time.pdf}
   }{
-    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
     }
@@ -950,10 +950,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig1_pi_b_e.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig1_pi_b_e.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig1_pi_b_e.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig1_pi_b_e.pdf}%
+  \IfFileExists{../figures/paper_fig1_pi_b_e.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig1_pi_b_e.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig1_pi_b_e.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig1_pi_b_e.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
   \caption{Distribution functions $\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge. The solid line represents the actual ethical prime count $\Pi(x)$, the dashed line shows the baseline expectation $B(x)$ (prime theorem analog), and the error term $E(x) = \Pi(x) - B(x)$ is shown as a dotted line. We observe that $E(x)$ gradually deviates from the baseline as complexity increases, indicating the presence of systematic bias.}
   \label{fig:pi_b_e}
@@ -961,10 +961,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig2_error_growth.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig2_error_growth.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig2_error_growth.pdf}%
+  \IfFileExists{../figures/paper_fig2_error_growth.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig2_error_growth.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig2_error_growth.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig2_error_growth.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
 \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$) with a bootstrap confidence interval (not shown) strictly below the ERH-style worst-case exponent of $0.5$. In our normalization, a negative exponent does not mean that the number of errors becomes negative; instead it indicates that, after dividing by the ERH-style baseline $x^{1/2+\varepsilon}$, the residual error term decays as complexity increases---intuitively, the judge is ``better than ERH'' at high $x$. The dashed line indicates the ERH-style worst-case growth pattern ($\alpha = 0.5$) for comparison.}
   \label{fig:error_growth}
@@ -972,10 +972,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig3_judge_comparison.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig3_judge_comparison.pdf}%
+  \IfFileExists{../figures/paper_fig3_judge_comparison.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig3_judge_comparison.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig3_judge_comparison.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
   \caption{Comparison of error term $E(x)$ growth across different judgment systems. The four judges (Biased, Noisy, Conservative, Radical) exhibit markedly different error patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns. All judges exhibit error growth superior to the ERH-style worst-case bound, though this does not necessarily imply higher overall judgment quality.}
   \label{fig:judge_comparison}
@@ -983,10 +983,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig4_exponent_comparison.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig4_exponent_comparison.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig4_exponent_comparison.pdf}%
+  \IfFileExists{../figures/paper_fig4_exponent_comparison.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig4_exponent_comparison.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig4_exponent_comparison.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig4_exponent_comparison.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
 \caption{Estimated growth exponent $\alpha$ by judge type. The bar chart compares error growth exponents across the four judges, with bootstrap confidence intervals (not shown) obtained from resampling the $(x,|E(x)|)$ pairs. Negative values here should be read under our chosen normalization $|E(x)| / x^{1/2+\varepsilon}$: they indicate that the normalized error term decays with complexity, i.e., that long-run error growth is strictly better than the ERH-style worst-case bound of $\alpha \approx 0.5$. The Radical Judge ($\alpha = -0.452$) performs best, followed by the Biased Judge ($\alpha = -0.629$), Noisy Judge ($\alpha = -0.171$), and Conservative Judge ($\alpha = -0.046$).}
   \label{fig:exponent_comparison}
@@ -994,10 +994,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig5_spectrum.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig5_spectrum.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig5_spectrum.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig5_spectrum.pdf}%
+  \IfFileExists{../figures/paper_fig5_spectrum.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig5_spectrum.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig5_spectrum.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig5_spectrum.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
   \caption{Fourier spectrum analysis of the ethical zeta function $\zeta_E(s)$. The spectrum exhibits prominent components in the low-frequency region ($k < 10$), indicating that the distribution of ethical primes has long-period structural patterns rather than being completely random. The high-frequency region ($k > 20$) shows low-amplitude noise, indicating relatively random error distribution at fine-grained levels. Peak positions in the spectrum encode periodic information about error distribution, useful for identifying correlations between complexity levels.}
   \label{fig:spectrum}
@@ -1005,10 +1005,10 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig6_zeros.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig6_zeros.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig6_zeros.pdf}%
+  \IfFileExists{../figures/paper_fig6_zeros.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig6_zeros.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig6_zeros.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig6_zeros.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
   \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. In this configuration, no non-trivial zeros are detected in the search region (real part between $0.3$ and $0.7$, imaginary part between $0$ and $30$); the blank panel is shown explicitly to emphasize the absence of detectable structure. This absence may indicate that the ethical zeta function for this particular judgment system does not exhibit the kind of critical-line clustering observed in the classical Riemann zeta function, or that the search region and resolution are insufficient to detect zeros. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the ethical zeta function may require different analytical approaches or exhibit zeros in regions not captured by this search.}
   \label{fig:zeros}
@@ -1016,68 +1016,68 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig8_quantum_judge.pdf}{%
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig8_quantum_judge.pdf}%
-  }{\IfFileExists{simulation/output/figures/paper_fig8_quantum_judge.pdf}{%
-    \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig8_quantum_judge.pdf}%
+  \IfFileExists{../figures/paper_fig8_quantum_judge.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig8_quantum_judge.pdf}%
+  }{\IfFileExists{../simulation/output/figures/paper_fig8_quantum_judge.pdf}{%
+    \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig8_quantum_judge.pdf}%
   }{\fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}}}
   \caption{$\Pi(x)$, $B(x)$, and $E(x)$ for the Quantum Judge. Superposition-based judgment via Rx$(\theta)$ with $\theta = c(a)/100 \cdot \pi$; uses qiskit-aer or NumPy fallback.}
   \label{fig:quantum_judge}
 \end{figure}
 
 % Additional workflow figures (paper_fig7, paper_fig8_ethical_primes_map, paper_fig9-11, campaign report)
-\IfFileExists{figures/paper_fig7_critical_bound.pdf}{%
+\IfFileExists{../figures/paper_fig7_critical_bound.pdf}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/paper_fig7_critical_bound.pdf}
+  \includegraphics[width=0.9\textwidth]{../figures/paper_fig7_critical_bound.pdf}
   \caption{Critical bound: $|E(x)|$ vs. $x$ in log-log scale with ERH reference $C\cdot x^{1/2}$ overlay.}
   \label{fig:critical_bound}
 \end{figure}
 }{}
-\IfFileExists{figures/paper_fig8_ethical_primes_map.pdf}{%
+\IfFileExists{../figures/paper_fig8_ethical_primes_map.pdf}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/paper_fig8_ethical_primes_map.pdf}
+  \includegraphics[width=0.85\textwidth]{../figures/paper_fig8_ethical_primes_map.pdf}
   \caption{Ethical primes in action space: 2D scatter (complexity vs.\ importance), colored by error magnitude.}
   \label{fig:ethical_primes_map}
 \end{figure}
 }{}
-\IfFileExists{figures/paper_fig9_normalized_oscillation.pdf}{%
+\IfFileExists{../figures/paper_fig9_normalized_oscillation.pdf}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/paper_fig9_normalized_oscillation.pdf}
+  \includegraphics[width=0.9\textwidth]{../figures/paper_fig9_normalized_oscillation.pdf}
   \caption{Normalized oscillation $E(x)/\sqrt{x}$. If ERH holds, the curve remains bounded.}
   \label{fig:normalized_oscillation}
 \end{figure}
 }{}
-\IfFileExists{figures/paper_fig11_prime_ladder.pdf}{%
+\IfFileExists{../figures/paper_fig11_prime_ladder.pdf}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/paper_fig11_prime_ladder.pdf}
+  \includegraphics[width=0.9\textwidth]{../figures/paper_fig11_prime_ladder.pdf}
   \caption{Ethical prime ladder: $\Pi(x)$ step function with $Li(x)$ smooth overlay.}
   \label{fig:prime_ladder}
 \end{figure}
 }{}
-\IfFileExists{figures/alpha_comparison.png}{%
+\IfFileExists{../figures/alpha_comparison.png}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/alpha_comparison.png}
+  \includegraphics[width=0.85\textwidth]{../figures/alpha_comparison.png}
   \caption{Error growth exponent $\alpha$ distribution by complexity distribution. Box plot with ERH limit line at $0.5$.}
   \label{fig:alpha_comparison}
 \end{figure}
 }{}
-\IfFileExists{figures/mistake_rate_comparison.png}{%
+\IfFileExists{../figures/mistake_rate_comparison.png}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/mistake_rate_comparison.png}
+  \includegraphics[width=0.85\textwidth]{../figures/mistake_rate_comparison.png}
   \caption{Mistake rate by complexity distribution (zipf, uniform, power-law) from simulation campaign.}
   \label{fig:mistake_rate_comparison}
 \end{figure}
 }{}
-\IfFileExists{figures/evs_over_time.png}{%
+\IfFileExists{../figures/evs_over_time.png}{%
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/evs_over_time.png}
+  \includegraphics[width=0.85\textwidth]{../figures/evs_over_time.png}
   \caption{Ethical Viability Score (EVS) over time and by complexity distribution.}
   \label{fig:evs_over_time}
 \end{figure}
@@ -1161,11 +1161,11 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/universal_error_growth.png}{
-    \includegraphics[width=0.85\textwidth]{figures/universal_error_growth.png}
+  \IfFileExists{../figures/universal_error_growth.png}{
+    \includegraphics[width=0.85\textwidth]{../figures/universal_error_growth.png}
   }{
-    \IfFileExists{simulation/output/figures/universal_error_growth.png}{
-      \includegraphics[width=0.85\textwidth]{simulation/output/figures/universal_error_growth.png}
+    \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
+      \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
       \fbox{\parbox{0.75\textwidth}{\centering Figure 6: Universal Error Growth Laws. Run \texttt{scripts/generate\_comprehensive\_report.py} to generate. Simulated Agent curves and COMPAS real data on the same log-log plot. When the curves overlap, the theory's universality is visually confirmed.}}
     }
@@ -1193,11 +1193,11 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/latest_quantum_distribution.png}{
-    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  \IfFileExists{../figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}
   }{
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
     }
@@ -1310,7 +1310,7 @@ We thank all colleagues who provided valuable suggestions and feedback for this 
 
 
 \bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{../references}
 
 \end{document}
 

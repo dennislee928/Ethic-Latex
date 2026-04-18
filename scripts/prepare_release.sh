@@ -13,18 +13,18 @@ echo "Preparing release: ${VERSION}"
 mkdir -p "${RELEASE_DIR}"
 
 # Copy PDFs (assuming they are generated)
-if [ -f "ethical_riemann_hypothesis_en.pdf" ]; then
-    cp ethical_riemann_hypothesis_en.pdf "${RELEASE_DIR}/"
+if [ -f "latex/ethical_riemann_hypothesis_en.pdf" ]; then
+    cp latex/ethical_riemann_hypothesis_en.pdf "${RELEASE_DIR}/"
     echo "✓ Copied English PDF"
 else
-    echo "⚠ Warning: ethical_riemann_hypothesis_en.pdf not found. Please compile first."
+    echo "⚠ Warning: latex/ethical_riemann_hypothesis_en.pdf not found. Please compile first."
 fi
 
-if [ -f "ethical_riemann_hypothesis_zh.pdf" ]; then
-    cp ethical_riemann_hypothesis_zh.pdf "${RELEASE_DIR}/"
+if [ -f "latex/ethical_riemann_hypothesis_zh.pdf" ]; then
+    cp latex/ethical_riemann_hypothesis_zh.pdf "${RELEASE_DIR}/"
     echo "✓ Copied Chinese PDF"
 else
-    echo "⚠ Warning: ethical_riemann_hypothesis_zh.pdf not found. Please compile first."
+    echo "⚠ Warning: latex/ethical_riemann_hypothesis_zh.pdf not found. Please compile first."
 fi
 
 # Create supplementary material archive

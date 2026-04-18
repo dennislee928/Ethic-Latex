@@ -153,51 +153,21 @@ jobs:
           mkdir -p simulation/output/figures
           python scripts/run_quantum_hilbert_figures.py
 
-      - name: Download Simulation Figures (if available)
+      - name: Download Available Artifacts
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: simulation-figures
-          path: figures/simulation/
-
-      - name: Download Alpha Comparison Plot (if available)
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: alpha-comparison-plot
-          path: figures/alpha_plot/
-
-      - name: Download Phase Transition Figure (if available)
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: phase-transition-figure
-          path: figures/phase_transition/
-
-      - name: Download Expand Plan Figures (if available)
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: expand-plan-figures
-          path: figures/expand/
-
-      - name: Download Comprehensive Report (if available)
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: comprehensive-report
-          path: figures/comprehensive/
-
-      - name: Download Quantum Figures (if available)
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: quantum-figures
-          path: figures/quantum/
+          path: downloaded_artifacts/
 
       - name: Prepare Figures for LaTeX
         run: |
           mkdir -p figures
+          # Copy any PNG/PDF artifacts produced by sibling jobs or reusable workflows.
+          if [ -d "downloaded_artifacts" ]; then
+            find downloaded_artifacts -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
+            find downloaded_artifacts -name "*.pdf" -exec cp {} figures/ \; 2>/dev/null || true
+            echo "Copied figures from downloaded_artifacts"
+          fi
           # Copy figures from simulation/output/figures (where generate_all_figures.py saves them)
           if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.pdf 2>/dev/null)" ]; then
             cp simulation/output/figures/*.pdf figures/ 2>/dev/null || true
@@ -212,35 +182,6 @@ jobs:
             cp llm_stress_test_results/llm_stress_test_Pi_E.png figures/
             echo "Copied llm_stress_test_Pi_E.png to figures/"
           fi
-          # Copy PNG figures from simulation workflow (final_report)
-          if [ -d "figures/simulation" ] && [ "$(ls -A figures/simulation/*.png 2>/dev/null)" ]; then
-            cp figures/simulation/*.png figures/ 2>/dev/null || true
-            echo "Copied PNG figures from simulation-figures artifact"
-          fi
-          # Copy alpha_comparison_real_vs_simulated from alpha-comparison-plot (artifact preserves path)
-          if [ -f "figures/alpha_plot/alpha_comparison_real_vs_simulated.png" ]; then
-            cp figures/alpha_plot/alpha_comparison_real_vs_simulated.png figures/
-          elif [ -f "figures/alpha_plot/simulation/output/figures/alpha_comparison_real_vs_simulated.png" ]; then
-            cp figures/alpha_plot/simulation/output/figures/alpha_comparison_real_vs_simulated.png figures/
-          fi
-          find figures/alpha_plot -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
-          # Copy phase_transition from phase-transition-figure
-          if [ -f "figures/phase_transition/phase_transition.png" ]; then
-            cp figures/phase_transition/phase_transition.png figures/
-          elif [ -f "figures/phase_transition/simulation/output/figures/phase_transition.png" ]; then
-            cp figures/phase_transition/simulation/output/figures/phase_transition.png figures/
-          fi
-          find figures/phase_transition -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
-          # Copy expand-plan PDFs (artifact may preserve simulation/output/figures/ path)
-          find figures/expand -name "*.pdf" -exec cp {} figures/ \; 2>/dev/null || true
-          # Copy quantum-figures (compas_erh_bound, alpha_comparison_bar, normalized_error_oscillation, etc.)
-          find figures/quantum -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
-          # Copy comprehensive report figures (final_report contents, incl. universal_error_growth.png)
-          if [ -d "figures/comprehensive" ] && [ "$(ls -A figures/comprehensive/*.png 2>/dev/null)" ]; then
-            cp figures/comprehensive/*.png figures/ 2>/dev/null || true
-            echo "Copied comprehensive report PNG figures"
-          fi
-          find figures/comprehensive -name "*.png" -exec cp {} figures/ \; 2>/dev/null || true
           # Quantum Hilbert figures (circuit, distribution)
           if [ -d "simulation/output/figures" ]; then
             cp simulation/output/figures/latest_quantum_circuit.png figures/ 2>/dev/null || true
@@ -317,10 +258,12 @@ jobs:
 
       - name: Compile English LaTeX Document
         run: |
+          cd latex
           latexmk -pdf -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_en.tex
 
       - name: Compile Chinese LaTeX Document
         run: |
+          cd latex
           latexmk -xelatex -file-line-error -halt-on-error -interaction=nonstopmode ethical_riemann_hypothesis_zh.tex
 
       - name: Upload PDF Artifacts
@@ -328,5 +271,5 @@ jobs:
         with:
           name: ethical_riemann_hypothesis_pdfs
           path: |
-            ethical_riemann_hypothesis_en.pdf
-            ethical_riemann_hypothesis_zh.pdf
+            latex/ethical_riemann_hypothesis_en.pdf
+            latex/ethical_riemann_hypothesis_zh.pdf

@@ -287,8 +287,8 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     results_path = os.path.join(base_dir, "simulation", "output", "results_summary.txt")
     quantum_json_path = os.path.join(base_dir, "simulation", "output", "quantum_hilbert_results.json")
-    latex_path_en = os.path.join(base_dir, "ethical_riemann_hypothesis_en.tex")
-    latex_path_zh = os.path.join(base_dir, "ethical_riemann_hypothesis_zh.tex")
+    latex_path_en = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_en.tex")
+    latex_path_zh = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_zh.tex")
 
     print(f"Reading results from: {results_path}")
     results = parse_results_summary(results_path)

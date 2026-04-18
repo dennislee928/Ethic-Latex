@@ -634,10 +634,10 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
-    }{\IfFileExists{figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{figures/latest_quantum_circuit.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{../figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../figures/latest_quantum_circuit.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 或 \texttt{enable\_quantum=True} 模擬以生成此圖。}}
     }}
@@ -649,10 +649,10 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
-    }{\IfFileExists{figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}%
+    }{\IfFileExists{../figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 以生成此圖。}}
     }}
@@ -666,11 +666,11 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
+  \IfFileExists{../figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{../figures/paper_fig10_phase_transition_h.pdf}
   }{
-    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
     }
@@ -681,11 +681,11 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
-    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
+  \IfFileExists{../figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{../figures/von_neumann_entropy_over_time.pdf}
   }{
-    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
     }
@@ -800,98 +800,98 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig1_pi_b_e.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig1_pi_b_e.pdf}
   \caption{偏見判斷者的分布函數 $\Pi(x)$、$B(x)$ 和 $E(x)$。實線表示實際倫理質數計數 $\Pi(x)$，虛線表示基準期望 $B(x)$（質數定理類比），誤差項 $E(x) = \Pi(x) - B(x)$ 顯示為點線。觀察到 $E(x)$ 隨複雜度增加而逐漸偏離基準，表明系統性偏見的存在。}
   \label{fig:pi_b_e}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig2_error_growth.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig2_error_growth.pdf}
   \caption{誤差增長分析，顯示對數-對數尺度下 $|E(x)|$ 與複雜度 $x$ 的關係。通過線性回歸擬合得到誤差增長指數 $\alpha = -0.629$（$R^2 = 0.604$）。負指數表明誤差隨複雜度增加而下降，在數學意義上優於 ERH 預測的 $\alpha \approx 0.5$ 界限。圖中虛線標示 ERH 預測的增長模式（$\alpha = 0.5$）作為對比。}
   \label{fig:error_growth}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig3_judge_comparison.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig3_judge_comparison.pdf}
   \caption{不同判斷系統間誤差項 $E(x)$ 增長的比較。四種判斷者（偏見、隨機、保守、激進）展現出截然不同的誤差模式。激進判斷者（$\alpha = -0.452$）和偏見判斷者（$\alpha = -0.629$）顯示快速下降的誤差項，而隨機判斷者（$\alpha = -0.171$）和保守判斷者（$\alpha = -0.046$）則呈現較為平坦的誤差模式。所有判斷者的誤差增長均優於 ERH 預測，但這並不意味著整體判斷品質較高。}
   \label{fig:judge_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig4_exponent_comparison.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig4_exponent_comparison.pdf}
   \caption{各判斷者類型的估計增長指數 $\alpha$。橫條圖比較四種判斷者的誤差增長指數，其中負值表示誤差隨複雜度增加而下降。激進判斷者（$\alpha = -0.452$）表現最佳，其次為偏見判斷者（$\alpha = -0.629$）、隨機判斷者（$\alpha = -0.171$）和保守判斷者（$\alpha = -0.046$）。所有判斷者的指數均為負值，表明誤差增長模式優於 ERH 預測的 $\alpha \approx 0.5$ 界限。}
   \label{fig:exponent_comparison}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig5_spectrum.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig5_spectrum.pdf}
   \caption{倫理 zeta 函數 $\zeta_E(s)$ 的傅立葉頻譜分析。頻譜顯示在低頻區域（$k < 10$）存在明顯的主導分量，表明倫理質數的分布具有長週期的結構性模式，而非完全隨機。高頻區域（$k > 20$）呈現低振幅雜訊，顯示細粒度層面的誤差分布較為隨機。頻譜中的峰值位置編碼了誤差分布的週期性資訊，可用於識別複雜度級別之間的相關性。}
   \label{fig:spectrum}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig6_zeros.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig6_zeros.pdf}
   \caption{倫理 zeta 函數 $\zeta_E(s)$ 在複平面中的零點分布。圖中顯示在實部介於 $0.3$ 至 $0.7$ 之間的區域內搜尋到的近似零點。零點的分布模式反映了倫理質數分布的深層結構規律性。與經典黎曼 zeta 函數的零點集中在臨界線 $\text{Re}(s) = 1/2$ 附近不同，倫理 zeta 函數的零點分布可能呈現不同的模式，這可能揭示了道德判斷系統的獨特結構特徵。}
   \label{fig:zeros}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/paper_fig8_quantum_judge.pdf}
+  \includegraphics[width=0.8\textwidth]{../figures/paper_fig8_quantum_judge.pdf}
   \caption{量子判斷者的 $\Pi(x)$、$B(x)$ 與 $E(x)$。Rx$(\theta)$ 疊加態判斷，$\theta = c(a)/100 \cdot \pi$；使用 qiskit-aer 或 NumPy 後備。}
   \label{fig:quantum_judge}
 \end{figure}
 
 % 額外流程圖表（paper_fig7、paper_fig8_ethical_primes_map、paper_fig9-11、活動報告）
-\IfFileExists{figures/paper_fig7_critical_bound.pdf}{%
+\IfFileExists{../figures/paper_fig7_critical_bound.pdf}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.9\textwidth]{figures/paper_fig7_critical_bound.pdf}
+\includegraphics[width=0.9\textwidth]{../figures/paper_fig7_critical_bound.pdf}
 \caption{臨界界線：$|E(x)|$ 與 $x$ 的對數-對數圖，含 ERH 參考線 $C\cdot x^{1/2}$。}
 \label{fig:critical_bound_zh}
 \end{figure}}{}
-\IfFileExists{figures/paper_fig8_ethical_primes_map.pdf}{%
+\IfFileExists{../figures/paper_fig8_ethical_primes_map.pdf}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.85\textwidth]{figures/paper_fig8_ethical_primes_map.pdf}
+\includegraphics[width=0.85\textwidth]{../figures/paper_fig8_ethical_primes_map.pdf}
 \caption{行動空間中的倫理質數：二維散點圖（複雜度 vs. 重要性），依誤差大小著色。}
 \label{fig:ethical_primes_map_zh}
 \end{figure}}{}
-\IfFileExists{figures/paper_fig9_normalized_oscillation.pdf}{%
+\IfFileExists{../figures/paper_fig9_normalized_oscillation.pdf}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.9\textwidth]{figures/paper_fig9_normalized_oscillation.pdf}
+\includegraphics[width=0.9\textwidth]{../figures/paper_fig9_normalized_oscillation.pdf}
 \caption{正規化振盪 $E(x)/\sqrt{x}$。若 ERH 成立，曲線保持有界。}
 \label{fig:normalized_oscillation_zh}
 \end{figure}}{}
-\IfFileExists{figures/paper_fig11_prime_ladder.pdf}{%
+\IfFileExists{../figures/paper_fig11_prime_ladder.pdf}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.9\textwidth]{figures/paper_fig11_prime_ladder.pdf}
+\includegraphics[width=0.9\textwidth]{../figures/paper_fig11_prime_ladder.pdf}
 \caption{倫理質數階梯：$\Pi(x)$ 階梯函數與 $Li(x)$ 平滑疊加。}
 \label{fig:prime_ladder_zh}
 \end{figure}}{}
-\IfFileExists{figures/alpha_comparison.png}{%
+\IfFileExists{../figures/alpha_comparison.png}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.85\textwidth]{figures/alpha_comparison.png}
+\includegraphics[width=0.85\textwidth]{../figures/alpha_comparison.png}
 \caption{各複雜度分布的誤差增長指數 $\alpha$ 分布。箱形圖，ERH 界限線為 $0.5$。}
 \label{fig:alpha_comparison_zh}
 \end{figure}}{}
-\IfFileExists{figures/mistake_rate_comparison.png}{%
+\IfFileExists{../figures/mistake_rate_comparison.png}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.85\textwidth]{figures/mistake_rate_comparison.png}
+\includegraphics[width=0.85\textwidth]{../figures/mistake_rate_comparison.png}
 \caption{模擬活動中各複雜度分布的錯誤率。}
 \label{fig:mistake_rate_comparison_zh}
 \end{figure}}{}
-\IfFileExists{figures/evs_over_time.png}{%
+\IfFileExists{../figures/evs_over_time.png}{%
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.85\textwidth]{figures/evs_over_time.png}
+\includegraphics[width=0.85\textwidth]{../figures/evs_over_time.png}
 \caption{倫理可行性分數（EVS）隨時間與複雜度分布。}
 \label{fig:evs_over_time_zh}
 \end{figure}}{}
 
-% \input{figures/figures_content.tex}
+% \input{../figures/figures_content.tex}
 
 \subsection{人因與視覺化評估}
 
@@ -955,11 +955,11 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/universal_error_growth.png}{
-    \includegraphics[width=0.85\textwidth]{figures/universal_error_growth.png}
+  \IfFileExists{../figures/universal_error_growth.png}{
+    \includegraphics[width=0.85\textwidth]{../figures/universal_error_growth.png}
   }{
-    \IfFileExists{simulation/output/figures/universal_error_growth.png}{
-      \includegraphics[width=0.85\textwidth]{simulation/output/figures/universal_error_growth.png}
+    \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
+      \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
       \fbox{\parbox{0.75\textwidth}{\centering 圖 6：普適誤差增長定律。執行 \texttt{scripts/generate\_comprehensive\_report.py} 以生成。模擬智能體曲線與 COMPAS 真實數據同繪於對數-對數圖。當兩條線重合時，理論的普適性得以視覺化驗證。}}
     }
@@ -979,11 +979,11 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{figures/latest_quantum_distribution.png}{
-    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  \IfFileExists{../figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}
   }{
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
-      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
     }
@@ -1095,7 +1095,7 @@ ERH 的違反（例如，$\alpha > 1$）表明\emph{系統性失敗模式}：
 本研究感謝所有為本文提供寶貴建議與反饋的同行。特別感謝 胡君毅先生 在研究過程中提供的指導與支持。本研究使用的開源軟體工具與 Python 生態系統為實驗分析提供了重要基礎。所有模擬程式碼與實驗數據均已公開至https://github.com/dennislee928/Ethic-Latex，以便於研究社群的重現與進一步發展。
 
 \bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{../references}
 
 \end{document}
 
