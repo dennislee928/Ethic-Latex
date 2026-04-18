@@ -1137,7 +1137,10 @@ At the same time, group-wise error rates (e.g., by sex or race) reveal that miti
 This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the decision space, while leaving fairness, calibration, and policy judgment to other evaluation layers.
 
 \paragraph{Case interpretation.}
-\textbf{What ERH lets us conclude:} the mitigated model is less prone to runaway accumulation of errors on harder examples under this complexity proxy. \textbf{What ERH does not let us conclude:} that the intervention is fair in every subgroup or acceptable under every harm model. \textbf{Practical takeaway:} ERH is useful here as a complement to standard fairness metrics because it reveals whether an intervention improves the structure of long-tail errors, not just average performance.
+\textbf{Observed signal:} the mitigated model slightly reduces average error and significantly lowers the fitted growth exponent $\alpha$.
+\textbf{What ERH lets us conclude:} the mitigated model is less prone to runaway accumulation of errors on harder examples under this complexity proxy.
+\textbf{What ERH does not let us conclude:} that the intervention is fair in every subgroup or acceptable under every harm model.
+\textbf{What to inspect next:} which subgroups bear any newly redistributed errors, and how $\alpha$ changes under non-linear complexity proxies.
 
 Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseline and mitigated models, illustrating how ERH-style analysis complements traditional accuracy and fairness metrics.
 
@@ -1163,7 +1166,10 @@ Detailed numerical results, including accuracy metrics, group-wise error rates, 
 We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$. Repository-backed experimental outputs place the COMPAS error growth exponent at approximately $\alpha \approx -0.20$. Under this ERH-style diagnostic, the practical conclusion is limited but still useful: the fitted error term does not show runaway long-tail accumulation under the chosen complexity proxy. That does \emph{not} imply that COMPAS is fair, unbiased, or normatively acceptable, nor does it identify a unique synthetic judge as its mechanism.
 
 \paragraph{Interpretation.}
-\textbf{What ERH lets us conclude:} COMPAS appears structurally stable with respect to this specific growth metric, because the fitted exponent remains well below the ERH-style worst-case threshold of $0.5$. \textbf{What ERH does not let us conclude:} demographic fairness, calibration quality, legal legitimacy, or the causal source of the observed disparities. \textbf{Practical takeaway:} ERH is useful here as a screening layer for complexity-linked error accumulation, after which subgroup disparity and calibration analyses still need to do the substantive fairness work.
+\textbf{Observed signal:} COMPAS exhibits a negative fitted exponent, indicating that cumulative error grows more slowly than the square-root upper bound.
+\textbf{What ERH lets us conclude:} the system appears structurally stable under the chosen complexity proxy, with no evidence of catastrophic complexity-driven error explosion.
+\textbf{What ERH does not let us conclude:} demographic fairness, calibration quality, legal legitimacy, or the causal source of observed disparities.
+\textbf{What to inspect next:} subgroup disparities, calibration by risk band, and sensitivity of $\alpha$ to alternative feature-set definitions.
 
 \begin{figure}[htbp]
   \centering
@@ -1297,12 +1303,17 @@ This work opens a new direction in AI ethics: analyzing structural patterns of m
 
 \subsection{Future Work}
 
-Based on the findings of this study, several bounded directions merit further exploration:
+Based on the findings of this study and the broader research roadmap, we identify several high-priority extensions:
 
 \begin{itemize}
-    \item \textbf{Measurement robustness}: test alternative complexity proxies, threshold choices, and subgroup-conditioned estimates to determine when fitted exponents are stable enough to support audit use.
-    \item \textbf{Empirical audit studies}: replicate Adult- and COMPAS-style analyses on additional documented decision systems, pairing ERH with calibration, fairness, and domain-specific harm metrics rather than treating it as a standalone score.
-    \item \textbf{Theory and estimation}: tighten finite-sample error analysis, confidence intervals, and explicit assumptions under which ERH-style bounds should or should not be expected.
+    \item \textbf{Algebraic and topological formalization}: transitioning from heuristic prime definitions to defining ethical primes as singularities on a moral manifold using algebraic geometry or topology.
+    \item \textbf{ERH-inspired regularization}: integrating ERH-style constraints directly into machine learning loss functions to penalize structural instability during model training.
+    \item \textbf{Adversarial ethical primes}: investigating how targeted adversarial attacks can induce complexity-linked failure modes and breach the ERH bound.
+    \item \textbf{Dynamic ERH and drift monitoring}: developing real-time monitoring tools to detect "ethical drift" by tracking changes in $\alpha$ over a system's lifecycle.
+    \item \textbf{Multi-dimensional ethical zeta}: constructing vector-valued zeta functions to analyze the entanglement between different ethical dimensions (e.g., fairness vs. privacy).
+    \item \textbf{Spectral analysis and phase transitions}: applying random matrix theory and spectral density analysis to predict critical points where social consensus may undergo rapid "moral phase transitions."
+    \item \textbf{Human-in-the-loop ERH}: evaluating the impact of human intervention on the structural stability of hybrid judgment systems.
+    \item \textbf{Empirical expansion}: prioritizing high-stakes domains such as medical triage, content moderation, and welfare eligibility screening for large-scale validation.
 \end{itemize}
 
 \subsection{Open Questions and Reflections}

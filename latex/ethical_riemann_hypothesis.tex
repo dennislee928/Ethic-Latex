@@ -606,6 +606,19 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
     \label{fig:von_neumann_entropy}
 \end{figure}
 
+\subsection{Empirical Validation: Adult Income}
+\label{sec:adult-income}
+
+We conduct a real-data case study on the UCI Adult Income dataset to demonstrate how ERH-style analysis complements standard fairness metrics. We compare a baseline logistic regression model with a mitigated model (using class reweighting). Misclassified instances are treated as simplified ethical primes, with complexity $x$ defined by a combination of feature magnitude and predictive uncertainty.
+
+Empirically, the mitigated model shows a slightly lower structural error-growth exponent $\alpha$, suggesting that the intervention not only improves average performance but also stabilizes the long-tail error profile.
+
+\paragraph{Case interpretation.}
+\textbf{Observed signal:} the mitigated model slightly reduces average error and lowers the fitted growth exponent $\alpha$.
+\textbf{What ERH lets us conclude:} the mitigated model is less prone to runaway accumulation of errors on harder examples under this complexity proxy.
+\textbf{What ERH does not let us conclude:} that the intervention is fair in every subgroup or acceptable under every harm model.
+\textbf{What to inspect next:} subgroup redistribution of errors and sensitivity to non-linear complexity proxies.
+
 \subsection{Empirical Results: The COMPAS Case Study}
 \label{sec:compas}
 
@@ -763,10 +776,13 @@ Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ of the reduced density
 \subsection{Future Work}
 
 \begin{itemize}
-    \item \textbf{Empirical expansion}: prioritize a small set of high-stakes domains with reproducible data and interpretable complexity proxies, such as content moderation, medical triage, and benefit-eligibility screening.
-    \item \textbf{Causal diagnostics}: connect large or unstable $\alpha$ values to specific data, modeling, or pipeline choices rather than treating ERH as a black-box score.
-    \item \textbf{Training-time constraints}: explore ERH-inspired regularization as a design proposal, not yet a validated component of this repository.
-    \item \textbf{Theory extensions}: formalize multi-dimensional and dynamic variants of ERH while keeping the current ethical-zeta construction explicitly heuristic.
+    \item \textbf{Algebraic and topological formalization}: defining ethical primes as singularities on a moral manifold using algebraic geometry or topology.
+    \item \textbf{ERH-inspired regularization}: integrating ERH-style constraints into loss functions to penalize structural instability during model training.
+    \item \textbf{Adversarial ethical primes}: investigating how targeted adversarial attacks can induce complexity-linked failures and breach the ERH bound.
+    \item \textbf{Dynamic ERH and drift monitoring}: developing tools to detect "ethical drift" by tracking changes in $\alpha$ over time.
+    \item \textbf{Multi-dimensional ethical zeta}: constructing vector-valued zeta functions to analyze entanglement between different ethical dimensions (e.g., fairness vs. privacy).
+    \item \textbf{Spectral analysis and phase transitions}: using random matrix theory to predict critical points of social consensus collapse.
+    \item \textbf{Human-in-the-loop ERH}: evaluating the impact of human intervention on the structural stability of hybrid systems.
 \end{itemize}
 
 \section{Conclusion}

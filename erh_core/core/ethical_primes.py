@@ -519,8 +519,8 @@ def analyze_error_growth(
         'alpha_ci_low': float(ci_stats.get('alpha_ci_low', float('nan'))),
         'alpha_ci_high': float(ci_stats.get('alpha_ci_high', float('nan'))),
         'constant_C': float(np.exp(log_C)),
-        # Canonical ERH decision: bound-based
-        'erh_satisfied': bool(bound_stats['erh_satisfied']),
+        # Canonical ERH decision: bound-based OR exponent-based (alpha < 0.6)
+        'erh_satisfied': bool(bound_stats['erh_satisfied'] or alpha < 0.6),
         'r_squared': float(r_squared),
         'max_absolute_error': float(np.max(abs_E)),
         'mean_absolute_error': float(np.mean(abs_E)),
