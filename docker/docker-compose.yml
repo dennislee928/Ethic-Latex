@@ -36,15 +36,15 @@ services:
 
   jupyter:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       target: app
     ports:
       - "8888:8888"
     volumes:
-      - ./simulation:/app/simulation
-      - ./figures:/app/figures
-      - ./data:/app/data
+      - ../simulation:/app/simulation
+      - ../figures:/app/figures
+      - ../data:/app/data
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
@@ -68,14 +68,14 @@ services:
 
   streamlit:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       target: app
     ports:
       - "8501:8501"
     volumes:
-      - ./simulation:/app/simulation
-      - ./figures:/app/figures
+      - ../simulation:/app/simulation
+      - ../figures:/app/figures
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
@@ -91,13 +91,13 @@ services:
 
   erh-backend:
     build:
-      context: ./erh-security-app
+      context: ../erh-security-app
       dockerfile: Dockerfile
       target: backend
     ports:
       - "8000:8000"
     volumes:
-      - ./erh-security-app/backend:/app
+      - ../erh-security-app/backend:/app
     environment:
       - DATABASE_URL=postgresql://erh_user:${POSTGRES_PASSWORD}@postgres:5432/erh_database
       - REDIS_URL=redis://redis:6379/0
@@ -110,7 +110,7 @@ services:
 
   erh-frontend:
     build:
-      context: ./erh-security-app
+      context: ../erh-security-app
       dockerfile: Dockerfile
       target: frontend
     ports:
@@ -123,12 +123,12 @@ services:
 
   quantum-worker:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       target: quantum
     volumes:
-      - ./simulation:/app/simulation
-      - ./data:/app/data
+      - ../simulation:/app/simulation
+      - ../data:/app/data
     environment:
       - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
       - REDIS_URL=redis://redis:6379/1

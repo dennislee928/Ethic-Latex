@@ -283,12 +283,66 @@ def update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path
         print(f"Updated quantum Hilbert stats in {path}")
 
 
+def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
+    """Inject 20 simulation case metrics into LaTeX placeholders."""
+    if not os.path.exists(summary_json_path):
+        print(f"Warning: 20 cases summary not found at {summary_json_path}")
+        return
+
+    try:
+        with open(summary_json_path) as f:
+            summary = json.load(f)
+    except Exception as e:
+        print(f"Error reading {summary_json_path}: {e}")
+        return
+
+    # Category mapping: Category Name -> Placeholder Key
+    cat_mapping = {
+        "Judiciary": "JUD",
+        "Medical": "MED",
+        "Finance": "FIN",
+        "HR": "HR",
+        "Governance": "GOV",
+        "Education": "EDU",
+        "LLM": "LLM"
+    }
+
+    replacements = []
+    for cat, key in cat_mapping.items():
+        if cat in summary:
+            data = summary[cat]
+            replacements.append((f"[CASE_{key}_MR]", f"{data['mistake_rate']:.3f}"))
+            replacements.append((f"[CASE_{key}_PR]", f"{int(data['ethical_primes_count'])}"))
+            replacements.append((f"[CASE_{key}_AL]", f"${data['estimated_exponent']:.3f}$"))
+            erh_en = "Yes" if data['erh_satisfied_rate'] > 0.5 else "No"
+            erh_zh = "是" if data['erh_satisfied_rate'] > 0.5 else "否"
+            replacements.append((f"[CASE_{key}_ERH]", erh_en))
+            replacements.append((f"[CASE_{key}_ERH_ZH]", erh_zh))
+
+    if "advanced" in summary:
+        adv = summary["advanced"]
+        replacements.append(("[MANIFOLD_ROUGHNESS]", f"{adv['manifold_roughness']:.4f}"))
+        replacements.append(("[DRIFT_ALPHA_FINAL]", f"${adv['drift_alpha_final']:.3f}$"))
+
+    for path in [latex_path_en, latex_path_zh]:
+        if not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+        for old, new in replacements:
+            content = content.replace(old, new)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"Updated 20 simulation cases in {path}")
+
+
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     results_path = os.path.join(base_dir, "simulation", "output", "results_summary.txt")
     quantum_json_path = os.path.join(base_dir, "simulation", "output", "quantum_hilbert_results.json")
-    latex_path_en = os.path.join(base_dir, "ethical_riemann_hypothesis_en.tex")
-    latex_path_zh = os.path.join(base_dir, "ethical_riemann_hypothesis_zh.tex")
+    cases_20_path = os.path.join(base_dir, "simulation", "output", "cases_20", "cases_20_summary.json")
+    latex_path_en = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_en.tex")
+    latex_path_zh = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_zh.tex")
 
     print(f"Reading results from: {results_path}")
     results = parse_results_summary(results_path)
@@ -299,4 +353,7 @@ if __name__ == "__main__":
 
     print(f"Injecting quantum Hilbert stats from: {quantum_json_path}")
     update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path)
+
+    print(f"Injecting 20 cases metrics from: {cases_20_path}")
+    update_cases_20_results(latex_path_en, latex_path_zh, cases_20_path)
 

@@ -52,9 +52,9 @@
 \begin{abstract}
 We propose the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework for analyzing error patterns in moral judgment systems. Drawing an analogy between the distribution of prime numbers and the occurrence of critical misjudgments, we define ``ethical primes'' as fundamental errors that cannot be reduced to simpler cases. We introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$, and establish a baseline expectation $B(x)$ analogous to the logarithmic integral in number theory. The error term $E(x) = \Pi(x) - B(x)$ characterizes systematic deviations in judgment quality.
 
-The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in ``healthy'' judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Empirical validation on real-world datasets (COMPAS recidivism, Adult Income) yields $\alpha \approx -0.20$ for COMPAS and comparable exponents for Adult, supporting the applicability of ERH to algorithmic fairness evaluation. Applying this framework to the COMPAS dataset, we find that real-world judicial algorithms exhibit structural similarity to our Conservative judge ($\alpha \approx -0.14$)---errors accumulate sublinearly and satisfy the ERH bound.
+The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for some constants $C, \varepsilon > 0$, suggesting that errors in structurally healthy judgment systems grow at most like $\sqrt{x}$. We present computational simulations comparing various judgment strategies (biased, noisy, conservative, radical) and demonstrate that different systems exhibit markedly different error growth patterns. Empirical validation on real-world datasets shows that COMPAS recidivism data yields $\alpha \approx -0.20$, well below the ERH-style upper bound, while the Adult Income case study illustrates how ERH-style diagnostics can be layered onto standard accuracy and fairness metrics. These results support ERH as a structural-stability lens on how misjudgments accumulate with complexity, not as a stand-alone fairness certificate.
 
-This framework has implications for AI ethics, providing a quantitative criterion for evaluating moral judgment systems and identifying structural biases. We discuss applications to fairness in machine learning, algorithmic accountability, and the design of ethically robust AI systems.
+This framework has implications for AI ethics as a diagnostic tool for complexity-sensitive failure modes and structural bias. We discuss how ERH can complement fairness metrics, accountability analysis, and the design of more robust judgment systems while remaining explicit about its limits.
 
 \textbf{Keywords:} Riemann Hypothesis, Ethical AI, Moral Judgment, Error Analysis, AI Fairness, Prime Number Theory
 \end{abstract}
@@ -393,10 +393,10 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/latest_quantum_circuit.png}%
-    }{\IfFileExists{simulation/output/figures/quantum_circuit_step_latest.png}{%
-        \includegraphics[width=1.0\textwidth]{simulation/output/figures/quantum_circuit_step_latest.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}%
+    }{\IfFileExists{../simulation/output/figures/quantum_circuit_step_latest.png}{%
+        \includegraphics[width=1.0\textwidth]{../simulation/output/figures/quantum_circuit_step_latest.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
     }}
@@ -421,8 +421,8 @@ As conflict density increases, the system cannot reach a stable ground state: gr
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/phase_transition.png}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/phase_transition.png}%
+    \IfFileExists{../simulation/output/figures/phase_transition.png}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/phase_transition.png}%
     }{\IfFileExists{simulation/output/phase_transition_diagram.png}{%
         \includegraphics[width=0.85\textwidth]{simulation/output/phase_transition_diagram.png}%
     }{%
@@ -434,8 +434,8 @@ As conflict density increases, the system cannot reach a stable ground state: gr
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{%
-        \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}%
+    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{%
+        \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run simulation with \texttt{enable\_quantum=True} to generate this figure.}}
     }
@@ -501,8 +501,8 @@ Both are needed to assess judgment system quality.
 \toprule
 \textbf{Judge} & \textbf{Mistake Rate} & \textbf{MAE} & \textbf{F1} & $\bm{\alpha}$ & \textbf{ERH} & \textbf{Interpretation} \\
 \midrule
-\IfFileExists{simulation/output/figures/comparison_table_rows.tex}{%
-    \input{simulation/output/figures/comparison_table_rows.tex}%
+\IfFileExists{../simulation/output/figures/comparison_table_rows.tex}{%
+    \input{../simulation/output/figures/comparison_table_rows.tex}%
 }{%
 Biased & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 Noisy & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
@@ -515,10 +515,10 @@ Radical & [TBD] & [TBD] & [TBD] & [TBD] & [YES/NO] & [TBD] \\
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig7_critical_bound.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig7_critical_bound.pdf}%
-    }{\IfFileExists{simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig3_judge_comparison.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig7_critical_bound.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig7_critical_bound.pdf}%
+    }{\IfFileExists{../simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig3_judge_comparison.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate comparison figures.}}
     }}
@@ -535,8 +535,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig2_error_growth.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig2_error_growth.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig2_error_growth.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/paper_fig2_error_growth.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
     }
@@ -546,8 +546,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig9_normalized_oscillation.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig9_normalized_oscillation.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -557,8 +557,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -568,8 +568,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/paper_fig11_prime_ladder.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig11_prime_ladder.pdf}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/paper_fig11_prime_ladder.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -579,8 +579,8 @@ Figure~\ref{fig:comparison} compares $E(x)$ across all four judges. We observe:
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
+    \IfFileExists{../simulation/output/figures/paper_fig8_ethical_primes_map.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/paper_fig8_ethical_primes_map.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{python -m simulation.generate\_all\_figures} to generate.}}
     }
@@ -597,8 +597,8 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}%
+    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/generate\_comprehensive\_report.py} to generate.}}
     }
@@ -606,32 +606,51 @@ We sweep the transverse field strength $h$ and measure magnetization (consensus)
     \label{fig:von_neumann_entropy}
 \end{figure}
 
+\subsection{Empirical Validation: Adult Income}
+\label{sec:adult-income}
+
+We conduct a real-data case study on the UCI Adult Income dataset to demonstrate how ERH-style analysis complements standard fairness metrics. We compare a baseline logistic regression model with a mitigated model (using class reweighting). Misclassified instances are treated as simplified ethical primes, with complexity $x$ defined by a combination of feature magnitude and predictive uncertainty.
+
+Empirically, the mitigated model shows a slightly lower structural error-growth exponent $\alpha$, suggesting that the intervention not only improves average performance but also stabilizes the long-tail error profile.
+
+\paragraph{Case interpretation.}
+\textbf{Observed signal:} the mitigated model slightly reduces average error and lowers the fitted growth exponent $\alpha$.
+\textbf{What ERH lets us conclude:} the mitigated model is less prone to runaway accumulation of errors on harder examples under this complexity proxy.
+\textbf{What ERH does not let us conclude:} that the intervention is fair in every subgroup or acceptable under every harm model.
+\textbf{What to inspect next:} subgroup redistribution of errors and sensitivity to non-linear complexity proxies.
+
 \subsection{Empirical Results: The COMPAS Case Study}
 \label{sec:compas}
 
 We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$.
 
-Our empirical analysis yields $\alpha \approx -0.20$ for COMPAS. With $\alpha \approx -0.20$, COMPAS falls between our Radical ($\alpha \approx -0.31$) and Conservative ($\alpha \approx -0.14$) models, structurally similar to a moderately conservative judge. This indicates that COMPAS error growth is \emph{better than} the ERH bound ($\alpha < 0.5$): errors accumulate more slowly than $\sqrt{x}$ as complexity increases. However, this does not imply fairness---ERH characterizes structural stability of error growth, not demographic parity or calibration. The COMPAS case study demonstrates that ERH-style analysis can be applied to real-world algorithmic systems to quantify how judgment errors scale with case complexity.
+Our empirical analysis yields $\alpha \approx -0.20$ for COMPAS, consistent with the checked repository outputs in \texttt{simulation/output/compas\_error\_rates.json} and \texttt{simulation/output/real\_world\_results.json}. With $\alpha \approx -0.20$, COMPAS falls between our Radical ($\alpha \approx -0.31$) and Conservative ($\alpha \approx -0.14$) synthetic models, indicating bounded and clearly sublinear error growth as case complexity increases. The practical conclusion is limited but useful: under this ERH-style diagnostic, the COMPAS error term does not show runaway long-tail accumulation. That does \emph{not} imply the system is fair, unbiased, or normatively acceptable. It only shows that this particular structural-health metric remains well below the ERH-style worst-case threshold.
+
+\paragraph{Interpretation.}
+\textbf{Observed signal:} COMPAS exhibits a negative fitted exponent, so the cumulative error landscape grows more slowly than the ERH-style upper bound.
+\textbf{What ERH lets us conclude:} the system appears structurally stable under the chosen complexity proxy, with no evidence here of catastrophic complexity-driven error explosion.
+\textbf{What ERH does not let us conclude:} demographic fairness, calibration quality, causal mechanism, or legal legitimacy.
+\textbf{What to inspect next:} subgroup disparities, calibration by risk band, and sensitivity of $\alpha$ to alternate complexity definitions.
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/compas_erh_bound.png}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/compas_erh_bound.png}%
+    \IfFileExists{../simulation/output/figures/compas_erh_bound.png}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/compas_erh_bound.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{generate\_comprehensive\_report.py} to generate.}}
     }
-    \caption{COMPAS: Adherence to Riemann Bound. Log-log plot of $|E(x)|$ vs.\ complexity $x$ with theoretical bound $C \cdot x^{0.5}$.}
+    \caption{COMPAS under an ERH-style bound. Log-log plot of $|E(x)|$ vs.\ complexity $x$ with theoretical reference line $C \cdot x^{0.5}$. The fitted exponent $\alpha \approx -0.20$ indicates bounded sublinear error growth under the chosen proxy, not fairness by itself.}
     \label{fig:compas_erh_bound}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{%
-        \includegraphics[width=0.85\textwidth]{simulation/output/figures/alpha_comparison_bar.png}%
+    \IfFileExists{../simulation/output/figures/alpha_comparison_bar.png}{%
+        \includegraphics[width=0.85\textwidth]{../simulation/output/figures/alpha_comparison_bar.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} to generate.}}
     }
-    \caption{Structural similarity: $\alpha$ comparison across Radical, Conservative (synthetic), COMPAS, and Adult Income (real-world). COMPAS $\approx -0.20$ highlighted.}
+    \caption{Comparison of fitted growth exponents across Radical, Conservative (synthetic), COMPAS, and Adult Income case studies. COMPAS $\approx -0.20$ is highlighted to situate the real-data result relative to synthetic baselines.}
     \label{fig:alpha_comparison}
 \end{figure}
 
@@ -658,16 +677,16 @@ NLP Ethics & HuggingFace (DistilGPT-2) & (run \texttt{process\_huggingface\_llm.
 \end{tabular}
 \end{table}
 
-Values are computed by running \texttt{scripts/run\_empirical\_validation.py}, \texttt{simulation/real\_data/process\_github.py}, and \texttt{simulation/real\_data/process\_huggingface\_llm.py}. The HuggingFace LLM module uses a free local model (DistilGPT-2, \textasciitilde80MB) via HuggingFace Transformers---no API key required. Even state-of-the-art LLMs exhibit error patterns consistent with the ERH bound when tested on the Moral Stories dataset. The empirical validation plot (Figure~\ref{fig:empirical-comparison}) overlays the theoretical bound $C \cdot x^{1/2}$, the Radical simulation curve, COMPAS data, and GitHub PR data, demonstrating that real-world curves fall within the theoretical bounds.
+Values are computed by running \texttt{scripts/run\_empirical\_validation.py}, \texttt{simulation/real\_data/process\_github.py}, and \texttt{simulation/real\_data/process\_huggingface\_llm.py}. The HuggingFace LLM module uses a free local model (DistilGPT-2, \textasciitilde80MB) via HuggingFace Transformers---no API key required. The empirical validation plot (Figure~\ref{fig:empirical-comparison}) overlays the theoretical bound $C \cdot x^{1/2}$, the Radical simulation curve, COMPAS data, and GitHub PR data to compare structural error-growth behavior across settings. These overlays should be read as descriptive evidence for ERH-style diagnostics, not as proof of universality.
 
 \begin{figure}[h!]
     \centering
-    \IfFileExists{simulation/output/figures/empirical_comparison.png}{%
-        \includegraphics[width=0.9\textwidth]{simulation/output/figures/empirical_comparison.png}%
+    \IfFileExists{../simulation/output/figures/empirical_comparison.png}{%
+        \includegraphics[width=0.9\textwidth]{../simulation/output/figures/empirical_comparison.png}%
     }{%
         \fbox{\parbox{0.7\textwidth}{\centering Run \texttt{scripts/run\_empirical\_validation.py} and \texttt{scripts/run\_empirical\_data\_pipeline.py} to generate.}}
     }
-    \caption{Empirical validation: Theoretical bound ($C \cdot x^{1/2}$), Radical simulation, COMPAS, and GitHub PR. The overlay of COMPAS with simulated curves provides visual evidence that our framework captures real-world error growth patterns; all fall within ERH bounds.}
+    \caption{Empirical comparison of the theoretical reference bound ($C \cdot x^{1/2}$), Radical simulation, COMPAS, and GitHub PR. The overlay illustrates how several datasets can be compared within the same ERH-style error-growth view; it should not be read as a claim that all systems are fair or mechanistically identical.}
     \label{fig:empirical-comparison}
 \end{figure}
 
@@ -699,12 +718,30 @@ A philosophical implication: if moral judgment is modeled by quantum processes (
 
 \subsubsection{Design Criteria for Ethical AI}
 
-The ERH provides a quantitative criterion: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This suggests:
+The ERH provides a quantitative criterion for \emph{structural stability}: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This is a necessary condition for avoiding complexity-driven failure cascades, not a sufficient condition for fairness or correctness. In practice, ERH-style readings are most useful when combined with domain metrics:
 
 \begin{itemize}
-    \item \textbf{Bounded Uncertainty Growth}: As AI systems face more complex decisions, their uncertainty should not explode
-    \item \textbf{Graceful Degradation}: Errors should accumulate slowly, not catastrophically
-    \item \textbf{Predictable Reliability}: The error rate should be forecastable
+    \item \textbf{Structural metric}: $\alpha$, normalized oscillation, or other indicators of how errors accumulate with complexity
+    \item \textbf{Task metric}: accuracy, calibration, subgroup disparity, or domain-specific loss
+\end{itemize}
+
+This suggests:
+
+\begin{itemize}
+    \item \textbf{Bounded uncertainty growth}: as AI systems face more complex decisions, their uncertainty should not explode
+    \item \textbf{Graceful degradation}: errors should accumulate slowly rather than catastrophically
+    \item \textbf{Operational interpretability}: structural stability should be assessed alongside concrete fairness and performance metrics
+\end{itemize}
+
+\subsubsection{Reading Exponent Regimes}
+
+The fitted exponent $\alpha$ can be interpreted operationally:
+
+\begin{itemize}
+    \item \textbf{$\alpha > 0.5$}: warning regime; error grows faster than the ERH-style target and deserves immediate investigation
+    \item \textbf{$0 < \alpha \leq 0.5$}: bounded but still accumulating error; complexity-sensitive monitoring is warranted
+    \item \textbf{$\alpha \approx 0$}: roughly flat structural error growth; stability may be acceptable even if raw performance is poor
+    \item \textbf{$\alpha < 0$}: highly controlled growth under the current normalization, but this can still coexist with demographic disparity or high absolute error
 \end{itemize}
 
 \subsubsection{Detecting Systematic Bias}
@@ -739,10 +776,13 @@ Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \ln \rho)$ of the reduced density
 \subsection{Future Work}
 
 \begin{itemize}
-    \item \textbf{Real-world datasets}: The framework includes real-data case studies on Adult Income (UCI) and COMPAS (ProPublica). Data can be obtained via \texttt{scripts/fetch\_real\_data.sh} and \texttt{scripts/convert\_adult\_to\_csv.py}; see README for instructions. Future work may extend ERH analysis to additional AI systems (e.g., content moderation).
-    \item \textbf{Causal analysis}: Connect ERH violations to specific model components
-    \item \textbf{Theoretical foundations}: Prove conditions under which ERH must hold
-    \item \textbf{Multi-objective extension}: Generalize to multiple ethical dimensions
+    \item \textbf{Algebraic and topological formalization}: defining ethical primes as singularities on a moral manifold using algebraic geometry or topology.
+    \item \textbf{ERH-inspired regularization}: integrating ERH-style constraints into loss functions to penalize structural instability during model training.
+    \item \textbf{Adversarial ethical primes}: investigating how targeted adversarial attacks can induce complexity-linked failures and breach the ERH bound.
+    \item \textbf{Dynamic ERH and drift monitoring}: developing tools to detect "ethical drift" by tracking changes in $\alpha$ over time.
+    \item \textbf{Multi-dimensional ethical zeta}: constructing vector-valued zeta functions to analyze entanglement between different ethical dimensions (e.g., fairness vs. privacy).
+    \item \textbf{Spectral analysis and phase transitions}: using random matrix theory to predict critical points of social consensus collapse.
+    \item \textbf{Human-in-the-loop ERH}: evaluating the impact of human intervention on the structural stability of hybrid systems.
 \end{itemize}
 
 \section{Conclusion}
@@ -758,20 +798,19 @@ We have introduced the Ethical Riemann Hypothesis, a mathematical framework for 
     \item Practical implications for AI ethics and system design
 \end{enumerate}
 
-Our empirical validation on the COMPAS dataset demonstrates that real-world judicial algorithms exhibit $\alpha \approx -0.20$, satisfying the ERH bound and showing structural similarity to our Conservative judge model ($\alpha \approx -0.14$). The overlay of simulated and COMPAS error curves (Figure~\ref{fig:empirical-comparison}) provides visual evidence that our theoretical framework captures real-world error growth patterns.
+Our empirical validation on the COMPAS dataset shows $\alpha \approx -0.20$, satisfying the ERH-style bound and indicating bounded structural error growth under the chosen complexity proxy. This is best read as evidence that ERH can surface a useful stability signal on real data, not as proof that COMPAS is fair or that its mechanism is identical to any synthetic judge.
 
 This work opens a new direction in AI ethics: viewing moral judgment through the lens of analytic number theory. While the analogy is not perfect, it provides valuable intuition and quantitative tools for evaluating judgment systems at scale.
 
 We emphasize that ERH is a \emph{necessary} condition for safety (structural stability): systems violating ERH exhibit unbounded error growth and are thus unreliable at scale. ERH is \emph{not sufficient} for correctness: a Conservative Judge may satisfy ERH (low $\alpha$, bounded error) yet underperform on raw accuracy (tendency toward neutral). The dual metrics---Accuracy and Stability---address this distinction.
 
-The fundamental question remains: \emph{Can we design AI systems that satisfy ERH?} And if not, what does that tell us about the inherent limitations of automated moral reasoning?
+The fundamental question remains: \emph{Can we design AI systems that remain structurally stable under increasing complexity while also satisfying ordinary fairness and accuracy demands?} ERH offers one part of that answer by making long-tail error growth measurable, but it does not remove the need for domain-specific ethical judgment.
 
 \section*{Acknowledgments}
 
 [To be added]
 
 \bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{../references}
 
 \end{document}
-

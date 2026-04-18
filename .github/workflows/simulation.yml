@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "0 0 * * 0"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   real-data-preparation:
     name: Real Data Preparation
