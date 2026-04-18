@@ -735,7 +735,7 @@ Real-data case studies (Adult Income, COMPAS) require datasets that are not bund
 \centering
 \caption{Real-world data sources, URLs, and output paths}
 \label{tab:real_data_sources}
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{llX}
 \toprule
 \textbf{Dataset} & \textbf{Source} & \textbf{Output Path} \\
 \midrule
@@ -744,7 +744,7 @@ Adult Income (test) & UCI ML Repository & \texttt{data/real\_world/adult.test} \
 Adult Income (processed) & --- & \texttt{data/adult.csv} (after conversion) \\
 COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \textbf{Fetch and conversion steps}:
@@ -1306,7 +1306,7 @@ To validate the ERH framework across diverse high-stakes domains, we simulated 2
 
 \begin{table}[htbp]
 \centering
-\caption{Aggregate results for 20 simulation scenarios. Metrics are averaged across cases in each category. [TBD] indicates values to be populated by the simulation pipeline.}
+\caption{Aggregate results for 20 simulation scenarios. Metrics are averaged across cases in each category. Dashes (\texttt{--}) indicate values pending simulation pipeline output.}
 \label{tab:20_cases_summary}
 \begin{tabular}{lcccc}
 \toprule
