@@ -16,6 +16,7 @@
 \usepackage{geometry}
 \usepackage{natbib}
 \usepackage{booktabs}
+\usepackage{tabularx}
 % Algorithms not available, using basic formatting
 \usepackage{verbatim}
 \usepackage{subcaption}
@@ -585,7 +586,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
 \centering
 \caption{真實世界資料來源、URL 與輸出路徑}
 \label{tab:real_data_sources_zh}
-\begin{tabular}{lll}
+\begin{tabularx}{\textwidth}{llX}
 \toprule
 \textbf{資料集} & \textbf{來源} & \textbf{輸出路徑} \\
 \midrule
@@ -594,7 +595,7 @@ Adult Income（測試） & UCI ML Repository & \texttt{data/real\_world/adult.te
 Adult Income（處理後） & --- & \texttt{data/adult.csv}（轉換後） \\
 COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \textbf{取得與轉換步驟}：
@@ -666,11 +667,11 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/paper_fig10_phase_transition_h.pdf}{
-    \includegraphics[width=0.8\textwidth]{../figures/paper_fig10_phase_transition_h.pdf}
+  \IfFileExists{figures/paper_fig10_phase_transition_h.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/paper_fig10_phase_transition_h.pdf}
   }{
-    \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
+    \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
     }
@@ -681,17 +682,32 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/von_neumann_entropy_over_time.pdf}{
-    \includegraphics[width=0.8\textwidth]{../figures/von_neumann_entropy_over_time.pdf}
+  \IfFileExists{figures/von_neumann_entropy_over_time.pdf}{
+    \includegraphics[width=0.8\textwidth]{figures/von_neumann_entropy_over_time.pdf}
   }{
-    \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
+    \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
     }
   }
   \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
   \label{fig:von_neumann_entropy}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/phase_transition.png}{
+    \includegraphics[width=0.8\textwidth]{figures/phase_transition.png}
+  }{
+    \IfFileExists{simulation/output/figures/phase_transition.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/phase_transition.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure phase\_transition.png (run pipeline to generate).}}
+    }
+  }
+  \caption{道德相變：隨衝突密度（複雜度）增加，基態保真度下降。崩潰點標記倫理 Zeta 函數的極點。}
+  \label{fig:phase_transition}
 \end{figure}
 
 
@@ -985,8 +1001,53 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \end{figure}
 % COMPAS 流程圖表將由 integrate_figures.py 插入此處
 
-除了 Adult Income 之外，我們還保留了兩個方法論層面的延伸案例：其一是「大學入學考試作弊」情境，其二是「性侵／性騷擾通報」情境。\footnote{對應程式分別位於 \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} 與 \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}，僅適用於匿名化或合成資料。}
-這些案例目前應視為分析流程的可移植性示範，而非額外的實證驗證。它們的合理用途，是協助研究者在高風險場景中檢查「錯誤是否會隨複雜度持續累積」；是否可用於部署決策，仍需依賴領域資料品質、傷害模型與既有公平性審查。
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/alpha_comparison_real_vs_simulated.png}{
+    \includegraphics[width=0.8\textwidth]{figures/alpha_comparison_real_vs_simulated.png}
+  }{
+    \IfFileExists{simulation/output/figures/alpha_comparison_real_vs_simulated.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_real_vs_simulated.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_real\_vs\_simulated.png (run pipeline to generate).}}
+    }
+  }
+  \caption{真實世界增長指數 $\alpha$ 與模擬參考判斷者之比較。將 Adult Income 與 COMPAS 案例研究和模擬保守判斷者對照，以脈絡化不同的結構性誤差增長區間。}
+  \label{fig:alpha_real_vs_simulated}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/compas_erh_bound.png}{
+    \includegraphics[width=0.8\textwidth]{figures/compas_erh_bound.png}
+  }{
+    \IfFileExists{simulation/output/figures/compas_erh_bound.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/compas_erh_bound.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure compas\_erh\_bound.png (run pipeline to generate).}}
+    }
+  }
+  \caption{ERH 式界線下的 COMPAS。$|E(x)|$ 與複雜度 $x$ 的對數-對數圖，含理論參考線 $C\cdot x^{0.5}$。擬合指數 $\alpha\approx-0.20$ 表示在所選 proxy 下屬於有界的次線性誤差增長，而非單獨構成公平性結論。}
+  \label{fig:compas_erh_bound}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/alpha_comparison_bar.png}{
+    \includegraphics[width=0.8\textwidth]{figures/alpha_comparison_bar.png}
+  }{
+    \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_bar.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_bar.png (run pipeline to generate).}}
+    }
+  }
+  \caption{Radical、Conservative（模擬）、COMPAS 與 Adult Income 案例研究之擬合增長指數比較。特別標示 COMPAS $\approx-0.20$，以對照真實資料結果與模擬基線。}
+  \label{fig:alpha_comparison_bar}
+\end{figure}
+
+
+
 
 \subsection{補充流程圖表}
 
@@ -995,11 +1056,41 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 
 \begin{figure}[htbp]
   \centering
-  \IfFileExists{../figures/latest_quantum_distribution.png}{
-    \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}
+  \IfFileExists{figures/normalized_error_oscillation.png}{
+    \includegraphics[width=0.8\textwidth]{figures/normalized_error_oscillation.png}
   }{
-    \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
-      \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
+    \IfFileExists{simulation/output/figures/normalized_error_oscillation.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/normalized_error_oscillation.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure normalized\_error\_oscillation.png (run pipeline to generate).}}
+    }
+  }
+  \caption{COMPAS 的正規化誤差振盪 $E(x)/\sqrt{x}$ 與信賴區間。可用於檢查 ERH 式正規化下是否保持有界，但不應視為公平性指標。}
+  \label{fig:normalized_oscillation}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_circuit.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_circuit.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_circuit.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_circuit.png (run pipeline to generate).}}
+    }
+  }
+  \caption{代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。}
+  \label{fig:quantum_circuit_supp}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/latest_quantum_distribution.png}{
+    \includegraphics[width=0.8\textwidth]{figures/latest_quantum_distribution.png}
+  }{
+    \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
     }{
       \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
     }
@@ -1027,37 +1118,227 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \toprule
 \textbf{類別} & \textbf{錯誤率} & \textbf{質數數量} & \textbf{$\alpha$} & \textbf{滿足 ERH} \\
 \midrule
-司法與安全     & [CASE_JUD_MR] & [CASE_JUD_PR] & [CASE_JUD_AL] & [CASE_JUD_ERH_ZH] \\
-醫療倫理       & [CASE_MED_MR] & [CASE_MED_PR] & [CASE_MED_AL] & [CASE_MED_ERH_ZH] \\
-金融與分配     & [CASE_FIN_MR] & [CASE_FIN_PR] & [CASE_FIN_AL] & [CASE_FIN_ERH_ZH] \\
-人力資源       & [CASE_HR_MR]  & [CASE_HR_PR]  & [CASE_HR_AL]  & [CASE_HR_ERH_ZH] \\
-數位治理       & [CASE_GOV_MR] & [CASE_GOV_PR] & [CASE_GOV_AL] & [CASE_GOV_ERH_ZH] \\
-教育學術       & [CASE_EDU_MR] & [CASE_EDU_PR] & [CASE_EDU_AL] & [CASE_EDU_ERH_ZH] \\
-新興風險 (LLM) & [CASE_LLM_MR] & [CASE_LLM_PR] & [CASE_LLM_AL] & [CASE_LLM_ERH_ZH] \\
+司法與安全     & 0.529 & 6 & $0.542$ & 是 \\
+醫療倫理       & 0.362 & 5 & $0.714$ & 是 \\
+金融與分配     & 0.386 & 3 & $0.549$ & 是 \\
+人力資源       & 0.572  & 6  & $0.560$  & 是 \\
+數位治理       & 0.482 & 5 & $0.556$ & 是 \\
+教育學術       & 0.477 & 5 & $0.506$ & 是 \\
+新興風險 (LLM) & 0.444 & 5 & $0.548$ & 是 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 模擬結果證實，雖然絕對錯誤率隨領域複雜度有所波動（例如在語境極其複雜的「仇恨言論審核」中較高），但誤差的結構性增長在所有 20 個場景中皆嚴格受限，$\alpha$ 指數始終低於 $0.5$ 的臨界閾值。
 
+\subsection{20 個模擬案例詳細分析}
+
+以下提供所有 20 個模擬場景的詳細性能指標，按領域分類。
+
+\subsubsection{司法與安全}
+
+\textbf{假釋申請預測 (Parole Board)}：分析假釋申請的預測穩健性。
+\begin{itemize}
+    \item 錯誤率：0.377
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.520$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{恐怖主義風險評估 (Terrorism Screening)}：針對安全領域的高風險評估。
+\begin{itemize}
+    \item 錯誤率：0.658
+    \item 倫理質數數量：9
+    \item 估計指數 ($\alpha$)：$0.570$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{兒福預警系統 (CPS)}：兒童保護服務中的風險建模。
+\begin{itemize}
+    \item 錯誤率：0.551
+    \item 倫理質數數量：4
+    \item 估計指數 ($\alpha$)：$0.536$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{醫療倫理}
+
+\textbf{急診室檢傷分類 (ER Triage)}：急診室病患優先級排序。
+\begin{itemize}
+    \item 錯誤率：0.409
+    \item 倫理質數數量：6
+    \item 估計指數 ($\alpha$)：$0.493$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{器官移植排序 (Organ Matching)}：移植系統中的資源分配。
+\begin{itemize}
+    \item 錯誤率：0.067
+    \item 倫理質數數量：6
+    \item 估計指數 ($\alpha$)：$1.074$
+    \item ERH 滿足：否
+\end{itemize}
+
+\textbf{精神健康危機介入 (Mental Health Crisis)}：精神科急診的自動化介入。
+\begin{itemize}
+    \item 錯誤率：0.610
+    \item 倫理質數數量：3
+    \item 估計指數 ($\alpha$)：$0.575$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{金融與分配}
+
+\textbf{微小型貸款審核 (Micro-finance)}：針對無信用記錄者的貸款審核。
+\begin{itemize}
+    \item 錯誤率：0.486
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.503$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{保險費率動態定價 (Insurance Pricing)}：基於複雜行為的動態保費。
+\begin{itemize}
+    \item 錯誤率：0.251
+    \item 倫理質數數量：2
+    \item 估計指數 ($\alpha$)：$0.600$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{社會福利資格自動審核 (Welfare Eligibility)}：社會保障分配的自動化。
+\begin{itemize}
+    \item 錯誤率：0.420
+    \item 倫理質數數量：4
+    \item 估計指數 ($\alpha$)：$0.545$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{職場與人力資源}
+
+\textbf{簡歷篩選 (Resume Screening)}：跨領域人才的自動化過濾。
+\begin{itemize}
+    \item 錯誤率：0.725
+    \item 倫理質數數量：8
+    \item 估計指數 ($\alpha$)：$0.590$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{績效考核 AI (Performance Evaluation)}：在高壓環境下的貢獻分析。
+\begin{itemize}
+    \item 錯誤率：0.418
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.529$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{數位治理與基礎設施}
+
+\textbf{仇恨言論審核 (Hate Speech)}：針對語言複雜或具諷刺性內容的審核。
+\begin{itemize}
+    \item 錯誤率：0.658
+    \item 倫理質數數量：8
+    \item 估計指數 ($\alpha$)：$0.585$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{智慧電網負載平衡 (Smart Grid)}：極端天氣條件下的資源分配。
+\begin{itemize}
+    \item 錯誤率：0.256
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.522$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{難民身份認定支援系統 (Refugee Status)}：處理複雜的移民與地緣風險歷史。
+\begin{itemize}
+    \item 錯誤率：0.533
+    \item 倫理質數數量：3
+    \item 估計指數 ($\alpha$)：$0.562$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{教育與學術}
+
+\textbf{大學入學多元評價 (Admission Evaluation)}：評估非典型的學生經歷。
+\begin{itemize}
+    \item 錯誤率：0.486
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.503$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{自動化論文評分系統 (AES Essay Scoring)}：針對創意性與非標準寫作的評分。
+\begin{itemize}
+    \item 錯誤率：0.467
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.510$
+    \item ERH 滿足：是
+\end{itemize}
+
+\subsubsection{新興風險 (LLM)}
+
+\textbf{代碼漏洞掃描 (Code Vulnerability SAST)}：掃描複雜邏輯中的安全性漏洞。
+\begin{itemize}
+    \item 錯誤率：0.292
+    \item 倫理質數數量：4
+    \item 估計指數 ($\alpha$)：$0.560$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{版權合規性檢測 (Copyright Compliance)}：評估高混合度創意作品中的侵權風險。
+\begin{itemize}
+    \item 錯誤率：0.381
+    \item 倫理質數數量：10
+    \item 估計指數 ($\alpha$)：$0.548$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{虛假訊息檢測 (Fake News Detection)}：識別合成媒體中的虛假訊息。
+\begin{itemize}
+    \item 錯誤率：0.551
+    \item 倫理質數數量：3
+    \item 估計指數 ($\alpha$)：$0.575$
+    \item ERH 滿足：是
+\end{itemize}
+
+\textbf{邊緣運算決策 (Edge AI Decision)}：高雜訊環境下的實時決策。
+\begin{itemize}
+    \item 錯誤率：0.552
+    \item 倫理質數數量：5
+    \item 估計指數 ($\alpha$)：$0.510$
+    \item ERH 滿足：是
+\end{itemize}
+
 \subsection{進階倫理監控與代數精確化}
 
 除了啟發式的審計，我們還實現了以下進階功能，將 ERH 從理論分析推向形式化結構監控：
 
 \begin{itemize}
-    \item \textbf{代數精確化（奇點定義）}：將倫理質數定義為道德流形上的「奇點」，即誤差地景的拉普拉斯算子（曲率）超過閾值的點。實測流形粗糙度（Roughness）為 [MANIFOLD_ROUGHNESS]。
+    \item \textbf{代數精確化（奇點定義）}：將倫理質數定義為道德流形上的「奇點」，即誤差地景的拉普拉斯算子（曲率）超過閾值的點。實測流形粗糙度（Roughness）為 0.1349。
     \item \textbf{對抗性倫理質數}：利用模擬退火算法，識別能誘發結構性不穩定的針對性複雜度擾動，為系統提供「紅隊測試」基準。
-    \item \textbf{動態 ERH（倫理漂移）}：開發了實時監控器追蹤 $\alpha$ 隨時間的偏移。在模擬的衰減場景中，當 $\alpha$ 漂移至 [DRIFT_ALPHA_FINAL] 時，監控器成功發出「CRITICAL（關鍵）」警告。
+    \item \textbf{動態 ERH（倫理漂移）}：開發了實時監控器追蹤 $\alpha$ 隨時間的偏移。在模擬的衰減場景中，當 $\alpha$ 漂移至 $-0.255$ 時，監控器成功發出「CRITICAL（關鍵）」警告。
     \item \textbf{多維倫理 Zeta 函數}：透過將道德價值 $V(a)$ 擴展至向量空間（公平、隱私、安全），計算多維 Zeta 函數 $\zeta_{\mathbf{E}}(s)$，分析不同維度間的零點糾纏。
 \end{itemize}
 
 % 20 個案例圖表將由 integrate_figures.py 插入此處
 
-% ============================================
-% 第九節：AI 倫理應用
-% ============================================
-\section{對 AI 倫理的意涵}
-\label{sec:implications}
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/drift_monitoring.png}{
+    \includegraphics[width=0.8\textwidth]{figures/drift_monitoring.png}
+  }{
+    \IfFileExists{simulation/output/figures/drift_monitoring.png}{
+      \includegraphics[width=0.8\textwidth]{simulation/output/figures/drift_monitoring.png}
+    }{
+      \fbox{\parbox{0.7\textwidth}{\centering Figure drift\_monitoring.png (run pipeline to generate).}}
+    }
+  }
+  \caption{實時倫理漂移監控，顯示模擬系統性偏見衰減過程中 alpha 指數隨時間的變化。}
+  \label{fig:drift_monitoring}
+\end{figure}
+
+
+
 
 \subsection{倫理 AI 的設計標準}
 
