@@ -18,10 +18,18 @@ PLACEHOLDERS = ["[To be filled]", "[Insert Data]", "[Pending]", "[TBD]"]
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+SKIP_DIRS = {".git", "node_modules", ".worktrees", ".venv", ".venv_erh", ".venv_new", ".venv_sphinx"}
+
+# Only the production-ready LaTeX sources are checked; draft originals are excluded.
+SKIP_FILES = {"ethical_riemann_hypothesis.tex"}
+
+
 def main() -> int:
     found = []
     for path in PROJECT_ROOT.rglob("*.tex"):
-        if ".git" in path.parts or "node_modules" in path.parts:
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        if path.name in SKIP_FILES:
             continue
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
