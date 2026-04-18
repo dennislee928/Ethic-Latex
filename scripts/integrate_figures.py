@@ -44,6 +44,7 @@ def find_figures(figures_dir):
         'llm_stress_test_Pi_E.png': {'label': 'fig:llm_stress_test', 'caption_en': 'LLM stress test: $\\Pi(x)$ and $E(x)$ from OpenAI/Anthropic API evaluation. Empirical curves from LLM-based moral judgment under repeated action evaluation.', 'caption_zh': 'LLM 壓力測試：OpenAI/Anthropic API 評估的 $\\Pi(x)$ 與 $E(x)$。來自重複行動評估下 LLM 道德判斷的實證曲線。', 'section': 'supplementary'},
         'latest_quantum_circuit.png': {'label': 'fig:quantum_circuit_supp', 'caption_en': 'Quantum circuit representing ethical Hilbert space: $U3$ gates encode Bloch sphere positions, $R_{ZZ}$ gates model social entanglement.', 'caption_zh': '代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。', 'section': 'supplementary'},
         'latest_quantum_distribution.png': {'label': 'fig:quantum_dist_supp', 'caption_en': 'Probability distribution of ethical states after quantum simulation. Peaks indicate highly probable societal configurations.', 'caption_zh': '量子模擬後倫理態的機率分布。峰值表示高機率社會配置。', 'section': 'supplementary'},
+        'drift_monitoring.png': {'label': 'fig:drift_monitoring', 'caption_en': 'Real-time ethical drift monitoring showing alpha index tracking over time during a simulated systemic bias decay.', 'caption_zh': '實時倫理漂移監控，顯示模擬系統性偏見衰減過程中 alpha 指數隨時間的變化。', 'section': 'cases_20'},
     }
     
     found_figures = {}
@@ -153,6 +154,15 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
         supp_block = re.escape(supp_marker) + r'\n\n.*?(?=\n\n% =====)'
         content = re.sub(supp_block, lambda m: supp_marker + "\n\n" + supp_insertions + "\n\n", content, flags=re.DOTALL)
         print(f"Inserted {len(supp_figures)} supplementary pipeline figures")
+
+    # Insert 20 cases figures
+    cases_marker = r"% 20 cases figures will be inserted here by integrate_figures.py" if lang == 'en' else r"% 20 個案例圖表將由 integrate_figures.py 插入此處"
+    cases_figures = [(f, i) for f, i in figures.items() if i.get('section') == 'cases_20']
+    if cases_figures and cases_marker in content:
+        cases_insertions = "\n".join(_insert_figure_if_exists(f, i, lang) for f, i in cases_figures)
+        cases_block = re.escape(cases_marker) + r'\n\n.*?(?=\n\n\\section\{|\n\n\\subsection\{)'
+        content = re.sub(cases_block, lambda m: cases_marker + "\n\n" + cases_insertions + "\n\n", content, flags=re.DOTALL)
+        print(f"Inserted {len(cases_figures)} 20 cases figures")
 
     with open(latex_path, 'w', encoding='utf-8') as f:
         f.write(content)

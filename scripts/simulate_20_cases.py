@@ -112,6 +112,40 @@ def run_simulation(case):
     
     return result
 
+def save_summary(all_results, output_dir):
+    """Save aggregate summary by category for LaTeX injection."""
+    categories = {}
+    for res in all_results:
+        cat = res['category']
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append(res['metrics'])
+    
+    summary = {}
+    for cat, metrics_list in categories.items():
+        summary[cat] = {
+            "mistake_rate": float(np.mean([m['mistake_rate'] for m in metrics_list])),
+            "ethical_primes_count": float(np.mean([m['ethical_primes_count'] for m in metrics_list])),
+            "estimated_exponent": float(np.mean([m['estimated_exponent'] for m in metrics_list])),
+            "erh_satisfied_rate": float(np.mean([1.0 if m['erh_satisfied'] else 0.0 for m in metrics_list]))
+        }
+    
+    # Advanced metrics from a representative run (e.g. Hate_Speech)
+    hate_speech = next((r for r in all_results if r['case'] == "Hate_Speech"), all_results[0])
+    summary["advanced"] = {
+        "manifold_roughness": hate_speech['metrics']['manifold_roughness'],
+        "singularity_density": hate_speech['metrics']['singularity_density'],
+    }
+    
+    # Simulate one drift run for the final alpha
+    from erh_core.core.temporal_erh import simulate_ethical_drift_scenario
+    drift = simulate_ethical_drift_scenario(time_steps=5, drift_start_time=2)
+    summary["advanced"]["drift_alpha_final"] = drift[-1]['alpha']
+
+    with open(output_dir / "cases_20_summary.json", "w") as f:
+        json.dump(summary, f, indent=2)
+    print(f"Summary saved to {output_dir / 'cases_20_summary.json'}")
+
 def main():
     output_dir = ROOT / "simulation" / "output" / "cases_20"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -124,6 +158,7 @@ def main():
         with open(output_dir / f"sim_result_{case['name']}.json", "w") as f:
             json.dump(res, f, indent=2)
             
+    save_summary(all_results, output_dir)
     print(f"\nCompleted 20 simulations. Results saved to {output_dir}")
 
 if __name__ == "__main__":
