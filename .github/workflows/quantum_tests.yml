@@ -31,6 +31,7 @@ on:
 env:
   PYTHONPATH: ${{ github.workspace }}
   MPLBACKEND: Agg
+  MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
   PYTEST_ADDOPTS: --tb=short
 
 jobs:
@@ -56,8 +57,7 @@ jobs:
           pytest -v \
             tests/test_quantum_entanglement.py \
             tests/test_update_plan_features.py \
-            tests/test_simulator_ising.py \
-            --deselect tests/test_simulator_ising.py::test_calculate_von_neumann_entropy_density_matrix
+            tests/test_simulator_ising.py
 
   numpy-fallback:
     name: NumPy Fallback Regression
@@ -110,5 +110,4 @@ jobs:
             exit 0
           fi
           python scripts/run_quantum_hilbert_figures.py
-          test -f simulation/output/quantum_hilbert_results.json
-        continue-on-error: true
+          python -c "import json, pathlib; p = pathlib.Path('simulation/output/quantum_hilbert_results.json'); data = json.loads(p.read_text()); assert 'error' not in data, data; assert data.get('consensus_state'), data; assert 'system_coherence' in data, data; assert data.get('execution_backend'), data; print('validated', data['execution_backend'])"

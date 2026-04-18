@@ -51,6 +51,7 @@ def main():
                 "von_neumann_entropy": qs.get("von_neumann_entropy"),
                 "circuit_image": str(qs.get("circuit_image", "")),
                 "dist_image": str(qs.get("dist_image", "")),
+                "execution_backend": qs.get("execution_backend", "unknown"),
             }
             with open(output_json, "w") as f:
                 json.dump(payload, f, indent=2)
@@ -59,6 +60,7 @@ def main():
             print(f"  system_coherence: {payload['system_coherence']:.4f}")
             if payload.get("von_neumann_entropy") is not None:
                 print(f"  von_neumann_entropy: {payload['von_neumann_entropy']:.4f}")
+            print(f"  execution_backend: {payload['execution_backend']}")
         else:
             err = qs.get("error", "unknown") if qs else "no quantum_stability"
             print(f"Quantum step failed: {err}")

@@ -9,7 +9,7 @@ This document tracks the implementation and verification status of the quantum-c
 | Plan-to-code coverage | Implemented | Most roadmap items now have concrete modules under `simulation/quantum/`. |
 | CI/workflow coverage | Partial | Core simulator and integration paths are covered, but not every advanced module has dedicated tests yet. |
 | Real hardware execution | Partial | IBM Runtime integration exists, but it remains smoke/manual coverage rather than full regression coverage. |
-| Numerical/test stability | Partial | One entropy assertion is still precision-sensitive; plotting paths require headless execution in CI. |
+| Numerical/test stability | Partial | Entropy handling is now stable for pure states, but plotting paths still require headless execution in CI. |
 
 ## Status Legend
 
@@ -30,14 +30,14 @@ This document tracks the implementation and verification status of the quantum-c
 | Simulating moral interference | Implemented | `simulation/quantum/interference.py` | Partial | Core functions exist; not yet represented by dedicated regression tests. |
 | Qiskit / PennyLane integration layer | Implemented | `simulation/quantum/backends.py` | Partial | Abstraction exists; CI currently verifies Qiskit-oriented paths more than PennyLane-specific paths. |
 | Dynamic circuit generation for psychohistory | Implemented | `simulation/quantum/dynamic_circuits.py` | Partial | Time-series compilation and execution helpers exist; dedicated tests are still needed. |
-| Entanglement and discord calculators | Implemented | `simulation/quantum/entanglement_metrics.py` | Partial | Metrics exist, including `discord_proxy`; one entropy assertion remains precision-sensitive. |
+| Entanglement and discord calculators | Implemented | `simulation/quantum/entanglement_metrics.py` | Partial | Metrics exist, including `discord_proxy`; broader module-specific tests are still needed. |
 | Noise models and decoherence simulation | Implemented | `simulation/quantum/noise_models.py` | Partial | Noise primitives exist; workflow coverage is indirect rather than module-specific. |
 | Moral Heisenberg model | Implemented | `simulation/quantum/heisenberg.py` | Partial | Hamiltonian builders exist; direct tests are still missing. |
 | Dynamic Hamiltonian evolution | Implemented | `simulation/quantum/lindblad.py`, `time_dependent_evolution` | Partial | Time-dependent evolution exists; no dedicated test file covers it yet. |
 | Open quantum systems / Lindblad equation | Implemented | `simulation/quantum/lindblad.py` | Partial | Core solver exists; verification remains indirect. |
 | Topological moral phases | Implemented | `simulation/quantum/topological.py` | Partial | Bloch, winding-number, and phase-classification helpers exist; direct regression tests are still missing. |
 | Advanced ethical circuit / Hilbert-space engine | Implemented | `AdvancedEthicalCircuit`, `AdvancedEthicalQuantumEngine` in `simulation/quantum/simulator.py` | Partial | Covered by integration-style tests and workflow jobs; plotting must stay headless in automation. |
-| Social dynamics Ising simulator | Implemented | `SocialDynamicsQuantumSimulator` in `simulation/quantum/simulator.py` | Partial | Mostly tested; one Von Neumann entropy check still needs tolerance-based handling. |
+| Social dynamics Ising simulator | Implemented | `SocialDynamicsQuantumSimulator` in `simulation/quantum/simulator.py` | Partial | Stable targeted tests now pass in headless mode; remaining gaps are broader advanced-module coverage. |
 | Hybrid psychohistory quantum integration | Implemented | `erh_core/core/hybrid_model.py` | Partial | Tested through integration paths; IBM execution is smoke/manual rather than full regression coverage. |
 | Real IBM Quantum execution | Partial | `simulation/quantum/cloud.py`, IBM Runtime path in `simulation/quantum/simulator.py` and `erh_core/core/hybrid_model.py` | Partial | Available behind `IBM_QUANTUM_TOKEN`, but CI only runs a guarded smoke path and does not guarantee broad hardware regression coverage. |
 
@@ -54,7 +54,6 @@ This document tracks the implementation and verification status of the quantum-c
 
 | Gap | Status | Impact | Next Action |
 | --- | --- | --- | --- |
-| Precision-sensitive entropy assertion | Blocked | Causes one dedicated Ising test to fail under strict equality. | Replace exact-zero assertion with tolerance-based expectation. |
 | GUI plotting dependency outside headless mode | Blocked | Local macOS runs can abort when `matplotlib` uses a GUI backend. | Keep CI on `MPLBACKEND=Agg`; optionally force a non-interactive backend in code paths that render figures. |
 | Missing dedicated tests for several advanced modules | Partial | Workflow cannot honestly claim end-to-end regression coverage for the whole roadmap. | Add targeted tests for quantum walk, interference, QML, Heisenberg, Lindblad, topological, and backend-selection modules. |
 | Real-hardware verification breadth | Partial | IBM workflow currently acts as smoke coverage, not comprehensive verification. | Add explicit hardware-result validation once output schema records whether a real backend was used. |
@@ -65,5 +64,5 @@ This document tracks the implementation and verification status of the quantum-c
 | --- | --- |
 | Feature implementation completeness | 85% |
 | Verification completeness | 45% |
-| Workflow completeness | 55% |
+| Workflow completeness | 60% |
 | Real-hardware readiness | 35% |
