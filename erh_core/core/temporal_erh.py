@@ -382,43 +382,126 @@ def detect_mule_anomalies(
     return anomalies
 
 
-def add_stochastic_perturbation(
-    E_xt: np.ndarray,
-    noise_scale: float = 0.1,
-    correlation_time: int = 2
-) -> np.ndarray:
+class EthicalDriftMonitor:
     """
-    Add stochastic perturbation to simulate random fluctuations.
+    Real-time monitoring for AI systems to detect "Ethical Drift".
     
-    Parameters
-    ----------
-    E_xt : np.ndarray
-        Original error array
-    noise_scale : float, default=0.1
-        Standard deviation of noise
-    correlation_time : int, default=2
-        Time correlation (how many steps noise persists)
+    Tracks the alpha exponent (error growth) over time. If alpha moves from
+    highly stable (negative) toward 0.5 (critical) or higher, it raises an alert.
+    """
+    def __init__(
+        self,
+        window_size: int = 10,
+        critical_alpha: float = 0.5,
+        warning_alpha: float = 0.4
+    ):
+        self.window_size = window_size
+        self.critical_alpha = critical_alpha
+        self.warning_alpha = warning_alpha
+        self.alpha_history = []
+        self.timestamps = []
         
-    Returns
-    -------
-    np.ndarray
-        Error array with stochastic perturbation
-    """
-    E_xt_perturbed = E_xt.copy()
-    time_steps, X_max = E_xt.shape
-    
-    # Generate correlated noise
-    noise = np.zeros((time_steps, X_max))
-    for t in range(time_steps):
-        if t == 0:
-            noise[t, :] = np.random.normal(0, noise_scale, X_max)
+    def update(self, actions: List[Action], timestamp: Optional[float] = None):
+        """
+        Update monitor with new simulation data and compute current alpha.
+        """
+        if timestamp is None:
+            timestamp = float(len(self.alpha_history))
+            
+        primes = select_ethical_primes(actions)
+        if not primes:
+            self.alpha_history.append(0.0)
+            self.timestamps.append(timestamp)
+            return 0.0
+            
+        _, _, E_x, x_vals = compute_Pi_and_error(primes, X_max=max(a.c for a in actions))
+        
+        from .ethical_primes import analyze_error_growth
+        analysis = analyze_error_growth(E_x, x_vals)
+        alpha = analysis.get('estimated_exponent', 0.0)
+        
+        self.alpha_history.append(alpha)
+        self.timestamps.append(timestamp)
+        
+        # Keep only window size
+        if len(self.alpha_history) > self.window_size:
+            self.alpha_history = self.alpha_history[-self.window_size:]
+            self.timestamps = self.timestamps[-self.window_size:]
+            
+        return alpha
+        
+    def get_status(self) -> dict:
+        """
+        Check for ethical drift and return human-readable status.
+        """
+        if not self.alpha_history:
+            return {"status": "INSUFFICIENT_DATA", "alpha": None}
+            
+        current_alpha = self.alpha_history[-1]
+        
+        # Detect trend (drift)
+        if len(self.alpha_history) >= 3:
+            trend = np.polyfit(range(len(self.alpha_history)), self.alpha_history, 1)[0]
         else:
-            # Correlated with previous time step
-            decay = np.exp(-1.0 / correlation_time)
-            noise[t, :] = (decay * noise[t-1, :] + 
-                          np.random.normal(0, noise_scale * (1 - decay), X_max))
-    
-    E_xt_perturbed += noise
-    return E_xt_perturbed
+            trend = 0.0
+            
+        status = "STABLE"
+        message = "System is structurally healthy (alpha < 0.4)."
+        
+        if current_alpha >= self.critical_alpha:
+            status = "CRITICAL"
+            message = f"DANGER: Structural collapse imminent (alpha={current_alpha:.2f} >= 0.5). " \
+                      f"Ethical Riemann Hypothesis violated!"
+        elif current_alpha >= self.warning_alpha:
+            status = "WARNING"
+            message = f"Drift detected: Model is losing stability (alpha={current_alpha:.2f} >= 0.4)."
+        elif trend > 0.05:
+            status = "WATCH"
+            message = "Warning: Positive alpha trend detected (ethical fatigue)."
+            
+        return {
+            "status": status,
+            "current_alpha": float(current_alpha),
+            "trend": float(trend),
+            "message": message,
+            "history_len": len(self.alpha_history)
+        }
 
+def simulate_ethical_drift_scenario(
+    time_steps: int = 20,
+    drift_start_time: int = 10
+) -> List[dict]:
+    """
+    Simulate a scenario where an AI system starts stable and slowly drifts
+    into structural instability (high alpha).
+    """
+    monitor = EthicalDriftMonitor()
+    results = []
+    
+    from .judgement_system import BiasedJudge, evaluate_judgement
+    
+    for t in range(time_steps):
+        # As time progresses, bias strength increases (drift)
+        if t < drift_start_time:
+            bias = 0.1
+        else:
+            # Drift bias from 0.1 to 0.8
+            bias = 0.1 + 0.7 * (t - drift_start_time) / (time_steps - drift_start_time)
+            
+        judge = BiasedJudge(bias_strength=bias, complexity_dependency=0.5 + 0.5 * bias)
+        actions = generate_world(num_actions=500, random_seed=42+t)
+        evaluate_judgement(actions, judge)
+        
+        alpha = monitor.update(actions)
+        status = monitor.get_status()
+        
+        results.append({
+            "time": t,
+            "bias": bias,
+            "alpha": alpha,
+            "status": status["status"],
+            "message": status["message"]
+        })
+        
+    return results
 
