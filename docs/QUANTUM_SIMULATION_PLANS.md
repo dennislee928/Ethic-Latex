@@ -1,63 +1,68 @@
-# Quantum Simulation Plans for the Ethical Riemann Hypothesis (ERH)
+# Quantum Simulation Status Matrix for ERH
 
-This document outlines the strategic roadmap for integrating advanced quantum computing methodologies into the Ethical Riemann Hypothesis (ERH) and Psychohistory framework. Building upon our existing foundational concepts (Transverse-Field Ising Model, Moral Phase Transitions, Hilbert Space Mapping, and Von Neumann Entropy), these expansions aim to deepen the fidelity, scalability, and theoretical rigor of our moral judgment simulations.
+This document tracks the implementation and verification status of the quantum-computing roadmap for the Ethical Riemann Hypothesis (ERH) and Psychohistory stack.
 
-## 1. Advanced Use Cases for Quantum Computing in ERH
+## Status Summary
 
-The current framework successfully maps moral agents to quantum states and identifies phase transitions. To push the boundaries of this modeling, we propose the following advanced use cases:
+| Area | Status | Notes |
+| --- | --- | --- |
+| Plan-to-code coverage | Implemented | Most roadmap items now have concrete modules under `simulation/quantum/`. |
+| CI/workflow coverage | Partial | Core simulator and integration paths are covered, but not every advanced module has dedicated tests yet. |
+| Real hardware execution | Partial | IBM Runtime integration exists, but it remains smoke/manual coverage rather than full regression coverage. |
+| Numerical/test stability | Partial | Entropy handling is now stable for pure states, but plotting paths still require headless execution in CI. |
 
-### 1.1. Large-Scale Entanglement of Moral Communities
-**Concept:** Modeling complex societal structures where agents' moral judgments are non-locally correlated, mirroring quantum entanglement.
-**Application:** Simulating "echo chambers" or tightly knit ideological groups where a shift in one sub-community instantaneously impacts the moral stance of an entangled, geographically or socially distant group. This goes beyond simple classical network effects by capturing superposition and non-local correlations in belief systems.
+## Status Legend
 
-### 1.2. Quantum Walk for Moral Evolution
-**Concept:** Replacing classical random walks in belief space with quantum walks.
-**Application:** Quantum walks spread quadratically faster than classical walks. This can model rapid, systemic shifts in societal morality (e.g., sudden widespread acceptance of a new civil right or rapid moral panic), providing a more accurate model for non-linear social dynamics and "tipping points."
+| Status | Meaning |
+| --- | --- |
+| Implemented | Feature exists in repo and is wired into import surface or runtime paths. |
+| Partial | Feature exists, but test coverage, workflow coverage, or production-readiness is incomplete. |
+| Planned | Feature is still roadmap-only. |
+| Blocked | Feature exists conceptually, but a known defect currently limits reliable verification. |
 
-### 1.3. Quantum Machine Learning (QML) for ERH Parameter Discovery
-**Concept:** Utilizing Variational Quantum Eigensolvers (VQE) or Quantum Neural Networks (QNN) to find the ground states of complex moral Hamiltonians.
-**Application:** Instead of classical optimization to find the poles of the moral zeta function or the steady-state of the society, QML algorithms can be trained on empirical sociological data to discover the hidden coupling constants (the $J_{ij}$ interactions) that best describe real-world moral systems.
+## Roadmap Matrix
 
-### 1.4. Simulating Moral Interference
-**Concept:** Utilizing the superposition of moral states to model cognitive dissonance and societal debate.
-**Application:** When an agent is exposed to conflicting moral narratives, their state is a superposition. Simulating the interference pattern of these states can predict the probabilistic outcome of a societal "measurement" (e.g., an election, a referendum, or a major policy shift), capturing the constructive and destructive interference of competing ethical paradigms.
+| Roadmap Item | Status | Implementation Evidence | Verification Status | Notes |
+| --- | --- | --- | --- | --- |
+| Large-scale entanglement of moral communities | Implemented | `simulation/quantum/entangled_communities.py`, exported via `simulation.quantum` | Partial | Dedicated module exists, but no dedicated `tests/` file covers community-network APIs yet. |
+| Quantum walk for moral evolution | Implemented | `simulation/quantum/quantum_walk.py` | Partial | Code exists for line and graph walks; no dedicated workflow test currently exercises it directly. |
+| QML for ERH parameter discovery | Implemented | `simulation/quantum/qml_discovery.py` | Partial | VQE-style and coupling-fit helpers exist; direct test coverage is still missing. |
+| Simulating moral interference | Implemented | `simulation/quantum/interference.py` | Partial | Core functions exist; not yet represented by dedicated regression tests. |
+| Qiskit / PennyLane integration layer | Implemented | `simulation/quantum/backends.py` | Partial | Abstraction exists; CI currently verifies Qiskit-oriented paths more than PennyLane-specific paths. |
+| Dynamic circuit generation for psychohistory | Implemented | `simulation/quantum/dynamic_circuits.py` | Partial | Time-series compilation and execution helpers exist; dedicated tests are still needed. |
+| Entanglement and discord calculators | Implemented | `simulation/quantum/entanglement_metrics.py` | Partial | Metrics exist, including `discord_proxy`; broader module-specific tests are still needed. |
+| Noise models and decoherence simulation | Implemented | `simulation/quantum/noise_models.py` | Partial | Noise primitives exist; workflow coverage is indirect rather than module-specific. |
+| Moral Heisenberg model | Implemented | `simulation/quantum/heisenberg.py` | Partial | Hamiltonian builders exist; direct tests are still missing. |
+| Dynamic Hamiltonian evolution | Implemented | `simulation/quantum/lindblad.py`, `time_dependent_evolution` | Partial | Time-dependent evolution exists; no dedicated test file covers it yet. |
+| Open quantum systems / Lindblad equation | Implemented | `simulation/quantum/lindblad.py` | Partial | Core solver exists; verification remains indirect. |
+| Topological moral phases | Implemented | `simulation/quantum/topological.py` | Partial | Bloch, winding-number, and phase-classification helpers exist; direct regression tests are still missing. |
+| Advanced ethical circuit / Hilbert-space engine | Implemented | `AdvancedEthicalCircuit`, `AdvancedEthicalQuantumEngine` in `simulation/quantum/simulator.py` | Partial | Covered by integration-style tests and workflow jobs; plotting must stay headless in automation. |
+| Social dynamics Ising simulator | Implemented | `SocialDynamicsQuantumSimulator` in `simulation/quantum/simulator.py` | Partial | Stable targeted tests now pass in headless mode; remaining gaps are broader advanced-module coverage. |
+| Hybrid psychohistory quantum integration | Implemented | `erh_core/core/hybrid_model.py` | Partial | Tested through integration paths; IBM execution is smoke/manual rather than full regression coverage. |
+| Real IBM Quantum execution | Partial | `simulation/quantum/cloud.py`, IBM Runtime path in `simulation/quantum/simulator.py` and `erh_core/core/hybrid_model.py` | Partial | Available behind `IBM_QUANTUM_TOKEN`, but CI only runs a guarded smoke path and does not guarantee broad hardware regression coverage. |
 
-## 2. Specific Feature Suggestions for the Simulation Pipeline
+## Current Workflow Coverage
 
-To support the advanced use cases, the simulation pipeline must be upgraded with the following features:
+| Workflow Area | Status | Scope |
+| --- | --- | --- |
+| Headless simulator regression | Implemented | Runs entanglement, update-plan integration, and stable Ising checks under `MPLBACKEND=Agg`. |
+| NumPy fallback regression | Implemented | Confirms quantum functionality still works without Qiskit. |
+| IBM Runtime smoke path | Implemented | Secret-gated smoke execution for `scripts/run_quantum_hilbert_figures.py`. |
+| Full advanced-module regression | Partial | No dedicated test files yet for quantum walk, interference, topological, dynamic circuits, Lindblad, Heisenberg, or QML helpers. |
 
-### 2.1. Qiskit / PennyLane Integration Layer
-- **Feature:** A robust, abstracted interface supporting quantum backends.
-- **Details:** Transition from pure NumPy/SciPy state-vector simulations to a framework utilizing Qiskit or PennyLane. This allows the simulation to scale from local state-vector simulators to real quantum hardware (e.g., IBM Quantum) or high-performance GPU-accelerated simulators (cuQuantum).
+## Known Gaps
 
-### 2.2. Dynamic Circuit Generation for Psychohistory
-- **Feature:** Automated generation of quantum circuits based on time-evolving sociological data.
-- **Details:** The simulation pipeline should accept time-series data of social interactions and automatically compile the corresponding parameterized quantum circuits (e.g., dynamic $R_{zz}$ coupling based on real-time social media sentiment analysis), allowing for continuous evolution of the moral state vector.
+| Gap | Status | Impact | Next Action |
+| --- | --- | --- | --- |
+| GUI plotting dependency outside headless mode | Blocked | Local macOS runs can abort when `matplotlib` uses a GUI backend. | Keep CI on `MPLBACKEND=Agg`; optionally force a non-interactive backend in code paths that render figures. |
+| Missing dedicated tests for several advanced modules | Partial | Workflow cannot honestly claim end-to-end regression coverage for the whole roadmap. | Add targeted tests for quantum walk, interference, QML, Heisenberg, Lindblad, topological, and backend-selection modules. |
+| Real-hardware verification breadth | Partial | IBM workflow currently acts as smoke coverage, not comprehensive verification. | Add explicit hardware-result validation once output schema records whether a real backend was used. |
 
-### 2.3. Entanglement and Discord Calculators
-- **Feature:** Built-in metrics for multi-partite entanglement.
-- **Details:** Beyond Von Neumann entropy (which measures mixedness of a subsystem), the pipeline needs tools to calculate Concurrence, Negativity, or Quantum Discord across the entire societal density matrix to quantify the exact degree of non-classical correlation between different demographic segments.
+## Completion Estimate
 
-### 2.4. Noise Models and Decoherence Simulation
-- **Feature:** Simulating the "noisy" real world.
-- **Details:** Incorporate quantum noise models (depolarizing channels, amplitude damping) to represent information loss, misunderstanding, or the natural decay of societal consensus over time. This models how "pure" moral ideologies degrade into mixed states when interacting with the environment (general public).
-
-## 3. Theoretical Expansions
-
-Expanding the theoretical foundations of the ERH to support more nuanced moral dynamics.
-
-### 3.1. Beyond the Transverse-Field Ising Model: The Moral Heisenberg Model
-- **Theory:** The current Ising model primarily captures binary moral choices (spin up/down) with a field inducing flips. The Heisenberg model ($XXZ$ or $XYZ$) allows for continuous moral variables and anisotropic interactions.
-- **Impact:** This would allow modeling of complex, multi-dimensional moral dilemmas where opinions are not just "for" or "against," but exist on a sphere of possibilities, allowing for cross-coupled moral variables (e.g., the interplay between economic morality and social morality).
-
-### 3.2. Dynamic Hamiltonian Evolution (Time-Dependent Systems)
-- **Theory:** Shifting from a static moral landscape to a time-dependent Hamiltonian $H(t)$.
-- **Impact:** Societal norms are not static. By introducing a time-dependent driving force (e.g., periodic driving modeling election cycles, or sudden quench dynamics modeling a crisis or war), we can study Floquet topological phases of morality or non-equilibrium steady states that better represent modern, fast-paced societies.
-
-### 3.3. Open Quantum Systems and the Lindblad Equation
-- **Theory:** Treating the society as an open quantum system interacting with a larger environment (e.g., the global geopolitical landscape or the natural environment).
-- **Impact:** Using the Lindblad master equation to govern the evolution of the societal density matrix. This provides a rigorous mathematical framework for the decoherence described in section 2.4, mapping perfectly to the concept of entropy production in social systems and the eventual thermalization of radical moral movements into mainstream consensus.
-
-### 3.4. Topological Moral Phases and Anyonic Statistics
-- **Theory:** Investigating whether the moral Hilbert space can support topological order.
-- **Impact:** If moral systems exhibit topological phases, their ground states would be robust against local perturbations (e.g., a society highly resilient to local misinformation campaigns). We could explore mapping moral agents to anyons, where the "braiding" of different social groups around each other fundamentally alters the societal wavefunction.
+| Dimension | Estimate |
+| --- | --- |
+| Feature implementation completeness | 85% |
+| Verification completeness | 45% |
+| Workflow completeness | 60% |
+| Real-hardware readiness | 35% |

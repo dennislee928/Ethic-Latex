@@ -5,7 +5,7 @@ Classical random walk diffuses as O(√t); quantum walk diffuses as O(t).
 Models the rapid spread of moral judgment in social networks (e.g. cancel culture).
 """
 
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Sequence
 import numpy as np
 
 

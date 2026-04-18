@@ -5,12 +5,15 @@ on:
   push:
     branches: ["main", "dev"]
   pull_request:
-    branches: ["main", "master"]
+    branches: ["main", "dev", "master"]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
 
     steps:
       - name: Checkout repository
@@ -128,7 +131,7 @@ jobs:
           # Run unit tests for psychohistory modules
           pytest tests/test_temporal_erh.py tests/test_agent_framework.py tests/test_social_network.py \
                  tests/test_meta_monitor.py tests/test_hybrid_model.py tests/test_psychohistory_integration.py \
-                 -v --tb=short || echo "⚠ Some unit tests failed, continuing..."
+                 -v --tb=short
 
       - name: Install CJK fonts
         run: |
@@ -141,14 +144,14 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
           mkdir -p simulation/output/psychohistory_tests
           # Run quick tests in CI to save time
-          python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests || echo "⚠ Simulation tests failed, continuing..."
+          python scripts/run_psychohistory_simulations.py --quick --output-dir simulation/output/psychohistory_tests
 
       - name: Run Quantum Hilbert Space Simulation
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           export PYTHONPATH=$PYTHONPATH:$(pwd)/simulation
           mkdir -p simulation/output/figures
-          python scripts/run_quantum_hilbert_figures.py || echo "⚠ Quantum Hilbert figures step failed, continuing..."
+          python scripts/run_quantum_hilbert_figures.py
 
       - name: Download Simulation Figures (if available)
         continue-on-error: true

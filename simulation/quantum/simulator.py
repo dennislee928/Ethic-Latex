@@ -572,10 +572,21 @@ def calculate_von_neumann_entropy(density_matrix: np.ndarray) -> float:
     float
         Entropy in nats.
     """
-    rho = np.asarray(density_matrix)
+    rho = np.asarray(density_matrix, dtype=complex)
+    rho = (rho + rho.conj().T) / 2
     evals = np.linalg.eigvalsh(rho)
-    evals = np.clip(evals, 1e-15, 1.0)
-    return float(-np.sum(evals * np.log(evals)))
+    evals = np.clip(np.real(evals), 0.0, None)
+
+    total = float(np.sum(evals))
+    if total > 0:
+        evals = evals / total
+
+    entropy = 0.0
+    for ev in evals:
+        if ev > 1e-15:
+            entropy -= float(ev) * float(np.log(ev))
+
+    return 0.0 if abs(entropy) < 1e-12 else float(entropy)
 
 
 def actions_to_conflict_matrix(
@@ -1108,6 +1119,7 @@ class AdvancedEthicalQuantumEngine:
             return self._numpy_fallback_results(output_dir)
 
         counts: Dict[str, int] = {}
+        execution_backend = "aer_simulator"
         use_ibm = self.use_real_hardware and self._service
         backend = self._get_ibm_backend() if use_ibm else None
 
@@ -1121,6 +1133,7 @@ class AdvancedEthicalQuantumEngine:
                 sampler = Sampler(mode=backend)
                 sampler_result = sampler.run([(isa_circuit,)], shots=shot_count).result()
                 quasi = sampler_result[0].join_data().get_counts()
+                execution_backend = str(getattr(backend, "name", self._backend_name))
 
                 n = self.num_qubits
                 for outcome, cnt in quasi.items():
@@ -1138,13 +1151,14 @@ class AdvancedEthicalQuantumEngine:
         if use_error_mitigation:
             counts = self.apply_error_mitigation(counts)
 
-        return self._analyze_results(counts, qc, output_dir)
+        return self._analyze_results(counts, qc, output_dir, execution_backend)
 
     def _analyze_results(
         self,
         counts: Dict[str, int],
         qc: Any,
         output_dir: str,
+        execution_backend: str,
     ) -> Dict[str, Any]:
         """Interpret quantum measurement as social outcomes."""
         import os
@@ -1184,6 +1198,7 @@ class AdvancedEthicalQuantumEngine:
             "circuit_image": circuit_img_path,
             "dist_image": dist_img_path,
             "raw_counts": counts,
+            "execution_backend": execution_backend,
         }
 
     def _numpy_fallback_results(self, output_dir: str) -> Dict[str, Any]:
@@ -1213,6 +1228,7 @@ class AdvancedEthicalQuantumEngine:
             "circuit_image": circuit_img_path,
             "dist_image": dist_img_path,
             "raw_counts": counts,
+            "execution_backend": "numpy_fallback",
         }
 
 
