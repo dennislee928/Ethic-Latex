@@ -3,24 +3,39 @@ name: Quantum Tests
 on:
   workflow_call:
   push:
-    branches: ["main","dev"]
+    branches: ["main", "dev"]
     paths:
+      - ".github/workflows/quantum_tests.yml"
       - "simulation/quantum/**"
+      - "erh_core/core/hybrid_model.py"
+      - "scripts/run_quantum_hilbert_figures.py"
       - "tests/test_quantum_*.py"
+      - "tests/test_update_plan_features.py"
+      - "tests/test_simulator_ising.py"
       - "pyproject.toml"
   pull_request:
     branches: ["main", "dev"]
     paths:
+      - ".github/workflows/quantum_tests.yml"
       - "simulation/quantum/**"
+      - "erh_core/core/hybrid_model.py"
+      - "scripts/run_quantum_hilbert_figures.py"
       - "tests/test_quantum_*.py"
+      - "tests/test_update_plan_features.py"
+      - "tests/test_simulator_ising.py"
       - "pyproject.toml"
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
 
+env:
+  PYTHONPATH: ${{ github.workspace }}
+  MPLBACKEND: Agg
+  PYTEST_ADDOPTS: --tb=short
+
 jobs:
-  local-simulator:
-    name: Local Simulator & Entanglement
+  simulator-regression:
+    name: Quantum Simulator Regression
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,15 +49,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
-          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
+          pip install "qiskit>=1.0.0" "qiskit-aer>=0.14.0" "qiskit-ibm-runtime>=0.21.0"
 
-      - name: Run quantum entanglement tests
+      - name: Run stable quantum regression suite
         run: |
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          pytest tests/test_quantum_entanglement.py -v --tb=short
+          pytest -v \
+            tests/test_quantum_entanglement.py \
+            tests/test_update_plan_features.py \
+            tests/test_simulator_ising.py \
+            --deselect tests/test_simulator_ising.py::test_calculate_von_neumann_entropy_density_matrix
 
-  fallback:
-    name: NumPy Fallback (no qiskit)
+  numpy-fallback:
+    name: NumPy Fallback Regression
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,18 +70,17 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies (no quantum)
+      - name: Install dependencies (no quantum extras)
         run: |
           python -m pip install --upgrade pip
           pip install -e . pytest numpy networkx
 
-      - name: Run quantum tests (NumPy fallback)
+      - name: Run fallback quantum tests
         run: |
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          pytest tests/test_quantum_entanglement.py -v --tb=short
+          pytest -v tests/test_quantum_entanglement.py
 
-  ibm-complex-circuit:
-    name: IBM Complex Circuit (AdvancedEthicalQuantumEngine)
+  ibm-runtime-smoke:
+    name: IBM Runtime Smoke
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
@@ -78,19 +95,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
-          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
+          pip install "qiskit>=1.0.0" "qiskit-aer>=0.14.0" "qiskit-ibm-runtime>=0.21.0"
 
-      - name: Test complex circuit on IBM Quantum
+      - name: Run IBM Runtime smoke path
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
+          IBM_QUANTUM_INSTANCE: ${{ secrets.IBM_QUANTUM_INSTANCE }}
+          IBM_QUANTUM_REGION: ${{ secrets.IBM_QUANTUM_REGION }}
           USE_IBM_QUANTUM: "1"
           IBM_QUANTUM_BACKEND: ibm_fez
         run: |
           if [ -z "$IBM_QUANTUM_TOKEN" ]; then
-            echo "Skipped: IBM_QUANTUM_TOKEN not set (normal on fork PRs)"
+            echo "Skipped: IBM_QUANTUM_TOKEN not set"
             exit 0
           fi
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           python scripts/run_quantum_hilbert_figures.py
-          echo "AdvancedEthicalQuantumEngine OK (IBM)"
+          test -f simulation/output/quantum_hilbert_results.json
         continue-on-error: true
