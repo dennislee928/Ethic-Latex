@@ -51,7 +51,7 @@ class DecisionTrace:
     delta : float
         J - V.
     mistake_flag : int
-        1 if |delta| > tau, else 0.
+        1 if `|delta|` > tau, else 0.
     top_features : List[Tuple[str, float]]
         Ordered list of (feature_name, contribution) pairs.
     reasoning : str
@@ -194,15 +194,15 @@ class BaseJudge(ABC):
         """Fit a calibrator to align confidence scores with violation rates.
 
         After calling calibrate(), calibrated_confidence() uses the fitted
-        model rather than the raw |delta|/2 proxy.
+        model rather than the raw `|delta|/2` proxy.
 
         Parameters
         ----------
         calibration_actions : List[Action]
             Actions that already have action.J and action.mistake_flag set.
         method : str
-            "platt"    — LogisticRegression on |delta| scores.
-            "isotonic" — IsotonicRegression on sorted |delta| scores.
+            "platt"    — LogisticRegression on `|delta|` scores.
+            "isotonic" — IsotonicRegression on sorted `|delta|` scores.
 
         Raises
         ------
@@ -257,7 +257,7 @@ class BaseJudge(ABC):
         """Return P(violation) for *action*.
 
         Uses the fitted calibrator if available; otherwise falls back to
-        |J - V| / 2 as a raw unnormalised proxy (range 0–1).
+        `|J - V| / 2` as a raw unnormalised proxy (range 0–1).
 
         action.J must be set (or judge() is called internally to set it).
         """
@@ -589,7 +589,7 @@ class OracleDrivenJudge(BaseJudge):
     """Judge that sets V(a) from HuggingFaceEthicalOracle before computing J(a).
 
     Supports GroundTruthProxy priority: if csv_proxy has action_id, use it;
-    else use oracle.score(action.description). E(x) = |J - V|.
+    else use oracle.score(action.description). E(x) = `|J - V|`.
 
     Parameters
     ----------

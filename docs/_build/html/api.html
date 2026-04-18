@@ -426,19 +426,125 @@ ERH metrics dynamically throughout the simulation.</p>
 <p>Abstract base class for all judgment systems.</p>
 <p>A judge takes an action and produces a moral judgment J(a),
 which may differ from the true value V(a).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_calibrator</strong> (<em>Any</em><em> or </em><em>None</em>) – Fitted sklearn calibrator (None if uncalibrated).</p></li>
+<li><p><strong>_calibration_method</strong> (<em>str</em><em> or </em><em>None</em>) – <cite>“platt” | “isotonic” | None</cite>.</p></li>
+<li><p><strong>_decision_traces</strong> (<em>list</em><em> of </em><em>DecisionTrace</em>) – List of DecisionTrace objects (populated only when
+_store_traces is True).</p></li>
+<li><p><strong>_store_traces</strong> (<em>bool</em>) – Toggle trace recording (default False).</p></li>
+<li><p><strong>abstention_threshold</strong> (<em>float</em><em> or </em><em>None</em>) – When set, judge_or_abstain() returns None if
+calibrated_confidence() &lt; threshold.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibration_actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'platt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Fit a calibrator to align confidence scores with violation rates.</p>
+<p>After calling calibrate(), calibrated_confidence() uses the fitted
+model rather than the raw <cite>|delta|/2</cite> proxy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calibration_actions</strong> (<em>List</em><em>[</em><a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a><em>]</em>) – Actions that already have action.J and action.mistake_flag set.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – “platt”    — LogisticRegression on <cite>|delta|</cite> scores.
+“isotonic” — IsotonicRegression on sorted <cite>|delta|</cite> scores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ImportError</strong> – If scikit-learn is not installed.</p></li>
+<li><p><strong>ValueError</strong> – If actions are missing required fields or only one class present.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">calibrated_confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.calibrated_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return P(violation) for <em>action</em>.</p>
+<p>Uses the fitted calibrator if available; otherwise falls back to
+<cite>|J - V| / 2</cite> as a raw unnormalised proxy (range 0–1).</p>
+<p>action.J must be set (or judge() is called internally to set it).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">clear_traces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.clear_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Clear the stored trace list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">disable_trace_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.disable_trace_storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Disable trace recording.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">enable_trace_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.enable_trace_storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Enable automatic trace recording on every judge() call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DecisionTrace</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a DecisionTrace explaining the judgment for <em>action</em>.</p>
+<p>The base implementation builds a generic trace from the judge’s
+parameters and the action’s features.  Concrete subclasses override
+this to provide class-specific feature attributions.</p>
+<p>If action.J is not yet set, judge() is called internally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_traces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DecisionTrace</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.get_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return all stored DecisionTrace objects.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.judge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Produce a judgment for the given action.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>action</strong> (<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a>) – The action to judge</p>
+<dd class="field-odd"><p><strong>action</strong> (<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Judgment value J(a)</p>
+<dd class="field-even"><p>Judgment value J(a) in [-1, 1].</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">judge_or_abstain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.judge_or_abstain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Judge <em>action</em> or return None if confidence is below threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>J(a) if confidence &gt;= abstention_threshold (or threshold is None).
+None means the judge is uncertain and abstains.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set_abstention_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BaseJudge.set_abstention_threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Set the confidence threshold below which the judge will abstain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threshold</strong> (<em>float</em>) – Value in [0, 1].  When calibrated_confidence(action) &lt; threshold,
+judge_or_abstain() returns None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -470,6 +576,16 @@ with the bias becoming stronger for more complex cases.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DecisionTrace</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BiasedJudge.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a DecisionTrace explaining the judgment for <em>action</em>.</p>
+<p>The base implementation builds a generic trace from the judge’s
+parameters and the action’s features.  Concrete subclasses override
+this to provide class-specific feature attributions.</p>
+<p>If action.J is not yet set, judge() is called internally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#BiasedJudge.judge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Judge with complexity-dependent bias.</p>
 <p>J(a) = V(a) + bias * f(c) + noise
@@ -483,22 +599,41 @@ where f(c) is a function of complexity</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">ConservativeJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexity_dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ConservativeJudge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#ConservativeJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseJudge</span></code></p>
 <p>A conservative judge that tends toward neutral (0) judgments.</p>
-<p>This represents risk-averse or cautious judgment that avoids extremes,
-especially for complex or uncertain cases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – How strongly to pull toward neutral (0 = no effect, 1 = always neutral)</p></li>
 <li><p><strong>noise_scale</strong> (<em>float</em><em>, </em><em>default=0.1</em>) – Random noise</p></li>
 <li><p><strong>complexity_dependency</strong> (<em>float</em><em>, </em><em>default=0.7</em>) – How much conservatism increases with complexity</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for this judge</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DecisionTrace</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#ConservativeJudge.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a DecisionTrace explaining the judgment for <em>action</em>.</p>
+<p>The base implementation builds a generic trace from the judge’s
+parameters and the action’s features.  Concrete subclasses override
+this to provide class-specific feature attributions.</p>
+<p>If action.J is not yet set, judge() is called internally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#ConservativeJudge.judge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Judge with tendency toward neutral values.</p>
+<dd><p>Produce a judgment for the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Judgment value J(a) in [-1, 1].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -816,21 +951,40 @@ secret guidance of civilization.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">NoisyJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complexity_scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'NoisyJudge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#NoisyJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseJudge</span></code></p>
 <p>A judge with high random noise but no systematic bias.</p>
-<p>This represents inconsistent judgment due to randomness,
-distraction, or lack of information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>noise_scale</strong> (<em>float</em><em>, </em><em>default=0.3</em>) – Standard deviation of the judgment noise</p></li>
 <li><p><strong>complexity_scaling</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, noise increases with complexity</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for this judge</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DecisionTrace</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#NoisyJudge.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a DecisionTrace explaining the judgment for <em>action</em>.</p>
+<p>The base implementation builds a generic trace from the judge’s
+parameters and the action’s features.  Concrete subclasses override
+this to provide class-specific feature attributions.</p>
+<p>If action.J is not yet set, judge() is called internally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#NoisyJudge.judge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Judge with complexity-dependent noise.</p>
+<dd><p>Produce a judgment for the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Judgment value J(a) in [-1, 1].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -840,20 +994,40 @@ distraction, or lack of information.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">RadicalJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amplification</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RadicalJudge'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#RadicalJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseJudge</span></code></p>
 <p>A radical judge that amplifies extremes and avoids neutral judgments.</p>
-<p>This represents polarized thinking that sees things in black and white.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>amplification</strong> (<em>float</em><em>, </em><em>default=1.5</em>) – Factor by which to amplify judgments (&gt;1)</p></li>
 <li><p><strong>noise_scale</strong> (<em>float</em><em>, </em><em>default=0.1</em>) – Random noise</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name for this judge</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DecisionTrace</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#RadicalJudge.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a DecisionTrace explaining the judgment for <em>action</em>.</p>
+<p>The base implementation builds a generic trace from the judge’s
+parameters and the action’s features.  Concrete subclasses override
+this to provide class-specific feature attributions.</p>
+<p>If action.J is not yet set, judge() is called internally.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#RadicalJudge.judge"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Judge with amplified values.</p>
+<dd><p>Produce a judgment for the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Judgment value J(a) in [-1, 1].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1092,7 +1266,7 @@ for use with chat API (e.g. OpenAI messages format).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">analyze_error_growth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/erh_core/core/ethical_primes.html#analyze_error_growth"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">analyze_error_growth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_structured</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/erh_core/core/ethical_primes.html#analyze_error_growth"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Analyze whether <code class="docutils literal notranslate"><span class="pre">|E(x)|</span></code> grows like x^α and estimate α.</p>
 <p>This tests the Ethical Riemann Hypothesis by checking if α ≈ 0.5.</p>
 <dl class="field-list simple">
@@ -1104,12 +1278,14 @@ for use with chat API (e.g. OpenAI messages format).</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Analysis results including:
+<dd class="field-even"><p><p>Analysis results including:
 - ‘estimated_exponent’: fitted α value
 - ‘erh_satisfied’: whether <code class="docutils literal notranslate"><span class="pre">|α</span> <span class="pre">-</span> <span class="pre">0.5|</span></code> &lt; 0.1
 - ‘r_squared’: goodness of fit
 - ‘max_absolute_error’: max <code class="docutils literal notranslate"><span class="pre">|E(x)|</span></code>
 - ‘growth_rate’: how E(x) grows</p>
+<p>When return_structured=True, returns a (dict, ERHCheckResult) tuple.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
@@ -1120,6 +1296,8 @@ for use with chat API (e.g. OpenAI messages format).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">analyze_error_growth</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated exponent: </span><span class="si">{</span><span class="n">analysis</span><span class="p">[</span><span class="s1">&#39;estimated_exponent&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERH satisfied: </span><span class="si">{</span><span class="n">analysis</span><span class="p">[</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Structured result:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result_dict</span><span class="p">,</span> <span class="n">erh_result</span> <span class="o">=</span> <span class="n">analyze_error_growth</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_vals</span><span class="p">,</span> <span class="n">return_structured</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1300,25 +1478,25 @@ Pi_xt[t, x-1] = count of primes with complexity &lt;= x at time t
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">evaluate_judgement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseJudge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#evaluate_judgement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">erh.core.</span></span><span class="sig-name descname"><span class="pre">evaluate_judgement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseJudge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_abstention</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/erh_core/core/judgement_system.html#evaluate_judgement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Evaluate all actions with a given judge and compute errors.</p>
-<p>For each action, this function:
-1. Computes judgment J(a) using the judge
+<p>For each action:
+1. Computes J(a) using judge (or judge_or_abstain() if allow_abstention=True)
 2. Computes error Δ(a) = J(a) - V(a)
-3. Sets mistake_flag to 1 if <code class="docutils literal notranslate"><span class="pre">|Δ(a)|</span></code> &gt; τ, else 0</p>
+3. Sets mistake_flag to 1 if <cite>|Δ(a)|</cite> &gt; τ, else 0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>actions</strong> (<em>List</em><em>[</em><a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a><em>]</em>) – List of actions to evaluate</p></li>
-<li><p><strong>judge</strong> (<a class="reference internal" href="#erh.core.judgement_system.BaseJudge" title="erh.core.judgement_system.BaseJudge"><em>BaseJudge</em></a>) – The judge to use for evaluation</p></li>
-<li><p><strong>tau</strong> (<em>float</em><em>, </em><em>default=0.3</em>) – Threshold for considering a judgment a “mistake”
-If <code class="docutils literal notranslate"><span class="pre">|Δ(a)|</span></code> &gt; τ, then mistake_flag = 1</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, modify actions in place. If False, return a copy.</p></li>
+<li><p><strong>actions</strong> (<em>List</em><em>[</em><a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action"><em>Action</em></a><em>]</em>)</p></li>
+<li><p><strong>judge</strong> (<a class="reference internal" href="#erh.core.judgement_system.BaseJudge" title="erh.core.judgement_system.BaseJudge"><em>BaseJudge</em></a>)</p></li>
+<li><p><strong>tau</strong> (<em>float</em><em>, </em><em>default=0.3</em>)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default=True</em>)</p></li>
+<li><p><strong>allow_abstention</strong> (<em>bool</em><em>, </em><em>default=False</em>) – When True and judge.abstention_threshold is set, abstained actions
+have J=None and mistake_flag=None rather than a computed value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>If inplace=False, returns a new list of actions with judgments.
-If inplace=True, returns None and modifies input list.</p>
+<dd class="field-even"><p>None if inplace=True; copy of evaluated actions if inplace=False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[List[<a class="reference internal" href="#erh.core.action_space.Action" title="erh.core.action_space.Action">Action</a>]]</p>
@@ -1329,7 +1507,6 @@ If inplace=True, returns None and modifies input list.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">judge</span> <span class="o">=</span> <span class="n">BiasedJudge</span><span class="p">(</span><span class="n">bias_strength</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">evaluate_judgement</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">judge</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mistakes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">mistake_flag</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total mistakes: </span><span class="si">{</span><span class="n">mistakes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
