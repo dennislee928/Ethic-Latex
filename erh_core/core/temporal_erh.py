@@ -13,7 +13,7 @@ Key concepts:
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable
 from scipy import stats
-from .action_space import Action
+from .action_space import Action, generate_world
 from .ethical_primes import select_ethical_primes, compute_Pi_and_error
 from .judgement_system import BaseJudge, evaluate_judgement
 

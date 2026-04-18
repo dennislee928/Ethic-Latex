@@ -94,10 +94,14 @@ def run_simulation(case):
     result = {
         "case": case['name'],
         "category": case['cat'],
-        "config": case,
+        "config": {
+            "complexity_dist": "zipf",
+            "num_actions": 1000,
+            **case
+        },
         "metrics": {
             "mistake_rate": float(np.mean([a.mistake_flag for a in actions])),
-            "num_primes": len(primes),
+            "ethical_primes_count": len(primes),
             "estimated_exponent": analysis.get('estimated_exponent'),
             "erh_satisfied": analysis.get('erh_satisfied'),
             "manifold_roughness": topology['manifold_roughness'],

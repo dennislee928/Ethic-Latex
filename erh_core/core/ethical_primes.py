@@ -583,35 +583,32 @@ def compare_error_distributions(
     return comparison
 
 
-def compute_prime_density(
-    primes: List[Action],
-    X_max: int = 100,
-    bin_size: int = 5
-) -> Tuple[np.ndarray, np.ndarray]:
+def compute_multidimensional_zeta(
+    actions: List[Action],
+    X_max: int = 100
+) -> Dict[int, np.ndarray]:
     """
-    Compute the density of ethical primes in complexity bins.
+    Compute Multi-dimensional Ethical Zeta Function.
+    Zeta(s) is generalized to a vector in moral space.
     
-    Parameters
-    ----------
-    primes : List[Action]
-        List of ethical primes
-    X_max : int, default=100
-        Maximum complexity
-    bin_size : int, default=5
-        Size of complexity bins
-        
     Returns
     -------
-    bin_centers : np.ndarray
-        Center of each bin
-    densities : np.ndarray
-        Number of primes per bin
+    dict
+        {complexity_x: vector_sum_of_errors}
     """
-    bins = np.arange(0, X_max + bin_size, bin_size)
-    bin_centers = (bins[:-1] + bins[1:]) / 2
+    x_values = np.arange(1, X_max + 1)
+    zeta_vectors = {}
     
-    prime_complexities = [p.c for p in primes if p.c <= X_max]
-    densities, _ = np.histogram(prime_complexities, bins=bins)
-    
-    return bin_centers, densities
-
+    # We assume actions have V_vector and J_vector
+    for x in x_values:
+        subset = [a for a in actions if a.c <= x and a.delta_vector is not None]
+        if not subset:
+            zeta_vectors[x] = None
+            continue
+            
+        # Cumulative sum of error vectors
+        # Analogous to Zeta function in complex space, but here in moral space
+        total_error_vector = np.sum([a.delta_vector for a in subset], axis=0)
+        zeta_vectors[x] = total_error_vector
+        
+    return zeta_vectors
