@@ -58,9 +58,9 @@ As artificial intelligence systems increasingly participate in moral decision-ma
 
 We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $x$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
 
-Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, although all judges outperform the ERH-style worst-case bound in error growth patterns, the conservative judge's high mistake rate (61.1\%) reminds us that controlling error growth alone is insufficient to ensure overall judgment quality.
+Through computational simulations comparing four judgment strategies---biased, noisy, conservative, and radical---on 2000 actions, we find that different systems exhibit markedly different error growth patterns: radical and biased judges show rapidly decreasing normalized error terms ($\alpha < -0.4$), while noisy and conservative judges display relatively flat patterns ($\alpha \approx -0.1$). Notably, remaining below the ERH-style worst-case bound is compatible with poor practical performance; the conservative judge's high mistake rate (61.1\%) shows that ERH-style stability is, at most, a necessary structural condition rather than a guarantee of fairness or adequacy.
 
-This framework provides quantitative criteria for evaluating AI moral judgment systems, identifying structural biases, and designing ethically robust systems, while offering new perspectives on fairness in machine learning, algorithmic accountability, and the philosophical foundations of automated moral reasoning.
+This framework provides a quantitative diagnostic for structural error accumulation in AI judgment systems. In practice, ERH can help detect long-tail instability and compare mitigation strategies, but it does not by itself establish fairness, calibration quality, or normative acceptability.
 
 \textbf{Keywords:} Ethical Riemann Hypothesis, AI Ethics, Moral Judgment, Error Analysis, AI Fairness, Prime Number Theory, Structural Bias
 \end{abstract}
@@ -115,16 +115,16 @@ This paper makes the following contributions:
     
     \item \textbf{Computational Framework}: We develop simulation tools to test ERH empirically across different judgment systems (Section~\ref{sec:framework}).
     
-    \item \textbf{Empirical Results}: We demonstrate that biased, noisy, conservative, and radical judges exhibit distinct error patterns, with some satisfying ERH and others violating it dramatically (Section~\ref{sec:results}).
+    \item \textbf{Empirical Results}: We demonstrate that biased, noisy, conservative, and radical judges exhibit distinct structural error patterns and substantially different practical risk profiles, even when all remain below the ERH-style worst-case bound in our main simulations (Section~\ref{sec:results}).
     
     \item \textbf{Philosophical Implications}: We connect ERH to classical moral philosophy and discuss its implications for AI ethics (Section~\ref{sec:philosophy}).
     
-    \item \textbf{AI Ethics Applications}: We discuss how ERH provides design criteria for ethically robust AI systems (Section~\ref{sec:implications}).
+    \item \textbf{AI Ethics Applications}: We discuss how ERH can be used as a structural guardrail within broader audit and design workflows for AI systems (Section~\ref{sec:implications}).
 \end{enumerate}
 
 \subsection{Target Audience and Use Cases}
 
-This paper is written for researchers and practitioners across multiple domains: \textbf{AI ethics} researchers seeking quantitative frameworks for evaluating moral judgment systems, \textbf{machine learning fairness} practitioners who need to complement traditional fairness metrics with structural health indicators, \textbf{philosophy of technology} scholars interested in formal models of ethical reasoning, and \textbf{AI governance and policy} stakeholders who require actionable criteria for regulatory oversight. Readers can use the ERH framework to: (1) \emph{audit} existing AI systems for structural degradation patterns, (2) \emph{design} new systems with built-in ERH-style bounds as design constraints, and (3) \emph{govern} AI deployment through macro-level monitoring of error growth indicators. The framework provides a common quantitative language that bridges technical system evaluation and ethical assessment, enabling interdisciplinary collaboration between computer scientists, ethicists, and policymakers.
+This paper is written for researchers and practitioners across multiple domains: \textbf{AI ethics} researchers seeking quantitative frameworks for evaluating moral judgment systems, \textbf{machine learning fairness} practitioners who need to complement traditional fairness metrics with structural health indicators, \textbf{philosophy of technology} scholars interested in formal models of ethical reasoning, and \textbf{AI governance and policy} stakeholders who require operational criteria for regulatory oversight. Readers can use the ERH framework to: (1) \emph{audit} existing AI systems for structural degradation patterns, (2) \emph{treat} ERH-style bounds as guardrails when designing or revising systems, and (3) \emph{monitor} deployment for signs of worsening long-tail instability. The framework provides a shared quantitative language for one aspect of system behavior---complexity-linked error accumulation---that can be combined with fairness, calibration, and domain-specific evaluation.
 
 \subsection{Paper Organization}
 
@@ -163,10 +163,10 @@ Current approaches to AI ethics suffer from several limitations:
     \item \textbf{Lack of structural analysis}: Most methods analyze individual cases or aggregate statistics, missing patterns of error accumulation
     \item \textbf{No complexity-aware metrics}: Existing fairness metrics don't account for how errors scale with problem complexity
     \item \textbf{Insufficient formalization}: Few frameworks provide rigorous mathematical models for ethical error patterns
-    \item \textbf{Missing predictive criteria}: There are no quantitative criteria for when a judgment system becomes systematically unreliable
+    \item \textbf{Missing structural warning criteria}: There are few quantitative criteria for when a judgment system becomes systematically unreliable as case complexity increases
 \end{itemize}
 
-Our ERH framework addresses these gaps by providing a structural, complexity-aware, formally rigorous, and predictive model of ethical error patterns.
+Our ERH framework addresses these gaps by providing a structural, complexity-aware, formally rigorous, and diagnostic model of ethical error patterns.
 
 \begin{table}[htbp]
 \centering
@@ -179,7 +179,7 @@ Our ERH framework addresses these gaps by providing a structural, complexity-awa
 Analysis Level & Individual/Aggregate & Structural \\
 Complexity Awareness & No & Yes \\
 Mathematical Rigor & Limited & High \\
-Predictive Power & Low & High \\
+Structural Warning Signal & Limited & Yes \\
 Error Growth Model & None & Sublinear bound \\
 \bottomrule
 \end{tabular}
@@ -398,8 +398,8 @@ The ERH-style bound $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ provides a \emph
 The ERH states that the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$ (up to a small factor $x^\varepsilon$). This is a \emph{sublinear} growth rate, meaning:
 
 \begin{itemize}
-    \item As problem complexity increases, the judgment system doesn't lose control
-    \item Errors accumulate slowly and predictably
+    \item As problem complexity increases, the judgment system does not lose control
+    \item Errors accumulate slowly enough to remain structurally auditable
     \item The system maintains structural integrity across scales
 \end{itemize}
 
@@ -1132,9 +1132,12 @@ We train two simple logistic regression models:
 For each test example, we construct a \emph{complexity proxy} that combines feature magnitude and predictive uncertainty, and we treat every misclassified point as a simplified ethical prime.
 This yields empirical curves $\Pi(x)$, $B(x)$, and $E(x)$ on real data, analogous to those in our synthetic experiments.
 
-Empirically, we observe that the mitigated model slightly reduces the overall error rate and also produces a smaller ERH growth exponent $\alpha$ (estimated from $|E(x)| \sim C x^\alpha$ in log-log scale), indicating that mitigation not only improves pointwise accuracy but also makes the structural error landscape more stable across complexity levels.
-At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, highlighting trade-offs between classical fairness metrics and ERH-style structural health.
-This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it does not replace calibration or fairness metrics, but adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the real decision space.
+Empirically, we observe that the mitigated model slightly reduces the overall error rate and also produces a smaller ERH growth exponent $\alpha$ (estimated from $|E(x)| \sim C x^\alpha$ in log-log scale). The practical takeaway is modest but useful: in this example, a simple mitigation step improves a standard fairness proxy and also yields a more stable long-tail error profile under our chosen complexity proxy.
+At the same time, group-wise error rates (e.g., by sex or race) reveal that mitigation can redistribute errors across subpopulations, so ERH cannot tell us whether the intervention is fair in any complete or final sense.
+This case study demonstrates how ERH can be layered onto standard evaluation pipelines: it adds a macro-level view of how critical misjudgments accumulate in high-complexity regions of the decision space, while leaving fairness, calibration, and policy judgment to other evaluation layers.
+
+\paragraph{Case interpretation.}
+\textbf{What ERH lets us conclude:} the mitigated model is less prone to runaway accumulation of errors on harder examples under this complexity proxy. \textbf{What ERH does not let us conclude:} that the intervention is fair in every subgroup or acceptable under every harm model. \textbf{Practical takeaway:} ERH is useful here as a complement to standard fairness metrics because it reveals whether an intervention improves the structure of long-tail errors, not just average performance.
 
 Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseline and mitigated models, illustrating how ERH-style analysis complements traditional accuracy and fairness metrics.
 
@@ -1146,8 +1149,8 @@ Table~\ref{tab:real_data_comparison} summarizes the key metrics comparing baseli
 \toprule
 \textbf{Model} & \textbf{Accuracy} & \textbf{Group Gap ($\Delta$FPR)} & \textbf{$\alpha$} & \textbf{Comment} \\
 \midrule
-Baseline  & 0.842 & 0.045 & $-0.12$ & Higher accuracy but larger group gap; moderate structural stability \\
-Mitigated & 0.838 & 0.032 & $-0.18$ & Slightly lower accuracy but reduced group gap; improved structural stability \\
+Baseline  & 0.842 & 0.045 & $-0.12$ & Slightly higher accuracy; weaker fairness proxy and weaker structural stability \\
+Mitigated & 0.838 & 0.032 & $-0.18$ & Lower group gap and more stable tail behavior; not a standalone fairness guarantee \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1157,7 +1160,10 @@ Detailed numerical results, including accuracy metrics, group-wise error rates, 
 \subsection{Real-Data Case Study: COMPAS Recidivism}
 \label{subsec:compas}
 
-We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$. Analysis of the COMPAS recidivism dataset reveals an error growth exponent of $\alpha \approx -0.32$. This suggests that real-world algorithmic bias structurally resembles the ``Biased Agent'' in our simulation, strictly adhering to the Riemann bound. When the COMPAS curve aligns with the simulated Biased Agent curve (Figure~\ref{fig:universal_error_growth}), the theory's universality is visually confirmed.
+We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We define Ground Truth $V(a)$ from \texttt{two\_year\_recid} (0 $\mapsto$ +1, 1 $\mapsto$ -1), Agent Judgment from \texttt{decile\_score} (1--10) normalized to $[-1,+1]$, and Complexity $x$ from \texttt{priors\_count} plus feature density. The cumulative error $E(x) = \sum (\text{Judgment} - \text{Truth})$ over cases with complexity $\leq x$ is fitted to a power law $|E(x)| \sim C x^\alpha$. Repository-backed experimental outputs place the COMPAS error growth exponent at approximately $\alpha \approx -0.20$. Under this ERH-style diagnostic, the practical conclusion is limited but still useful: the fitted error term does not show runaway long-tail accumulation under the chosen complexity proxy. That does \emph{not} imply that COMPAS is fair, unbiased, or normatively acceptable, nor does it identify a unique synthetic judge as its mechanism.
+
+\paragraph{Interpretation.}
+\textbf{What ERH lets us conclude:} COMPAS appears structurally stable with respect to this specific growth metric, because the fitted exponent remains well below the ERH-style worst-case threshold of $0.5$. \textbf{What ERH does not let us conclude:} demographic fairness, calibration quality, legal legitimacy, or the causal source of the observed disparities. \textbf{Practical takeaway:} ERH is useful here as a screening layer for complexity-linked error accumulation, after which subgroup disparity and calibration analyses still need to do the substantive fairness work.
 
 \begin{figure}[htbp]
   \centering
@@ -1167,16 +1173,16 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
     \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
       \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
-      \fbox{\parbox{0.75\textwidth}{\centering Figure 6: Universal Error Growth Laws. Run \texttt{scripts/generate\_comprehensive\_report.py} to generate. Simulated Agent curves and COMPAS real data on the same log-log plot. When the curves overlap, the theory's universality is visually confirmed.}}
+      \fbox{\parbox{0.75\textwidth}{\centering Figure 6: Simulated and COMPAS error-growth comparison. Run \texttt{scripts/generate\_comprehensive\_report.py} to generate. The overlay is descriptive and should not be read as proof of universality or model identity.}}
     }
   }
-  \caption{Universal Error Growth Laws. Simulated Agent curves (Biased Judge) and COMPAS real data on the same log-log plot. When the curves overlap, the theory's universality is visually confirmed.}
+  \caption{Illustrative comparison between a simulated judge curve and COMPAS real-data error growth on the same log-log plot. Visual similarity is descriptive only; it does not establish universality or identify a unique underlying mechanism.}
   \label{fig:universal_error_growth}
 \end{figure}
 % COMPAS pipeline figures will be inserted here by integrate_figures.py
 
-In addition to Adult Income, we have implemented two further methodological case studies: one on \emph{university entrance exam cheating} (modeling integrity risks in high-stakes testing) and one on \emph{sexual abuse reporting} (modeling under-reporting and structural vulnerabilities in sensitive domains).\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
-In both settings, ERH-style analysis provides a complementary perspective to standard accuracy and fairness metrics: instead of only asking \emph{how many} cases are misclassified, we also ask \emph{how the most critical errors accumulate as scenarios become more complex}, which is particularly important for global exam integrity and abuse-related decision support.
+In addition to Adult Income, we retain two further methodological case studies: one on \emph{university entrance exam cheating} and one on \emph{sexual abuse reporting}.\footnote{The corresponding scripts are located in \texttt{simulation/real\_data/exam\_cheating\_case\_study.py} and \texttt{simulation/real\_data/sexual\_abuse\_case\_study.py}. Both are designed for anonymized or synthetic data only.}
+At present these should be read as portability demonstrations for the analysis workflow rather than as additional empirical validation. Their value is in showing how to ask whether critical errors keep accumulating with complexity in high-risk settings; deployment conclusions would still require domain-specific data quality checks, harm models, and ordinary fairness review.
 
 \subsection{ERH vs.\ Standard Fairness Metrics}
 
@@ -1217,23 +1223,31 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
 
 \subsection{Design Criteria for Ethical AI}
 
-The ERH provides a quantitative criterion: an AI judgment system should be designed such that $|E(x)| = O(\sqrt{x})$. This suggests:
+The most practical interpretation of ERH is as a \emph{structural guardrail}. An AI judgment system that violates an ERH-style bound is showing evidence that its error landscape may deteriorate too quickly as cases become more complex. Passing the bound is therefore useful as a screening condition, but it is only one layer of a broader design and governance process.
 
 \begin{itemize}
-    \item \textbf{Bounded Uncertainty Growth}: As AI systems face more complex decisions, their uncertainty should not explode
-    \item \textbf{Graceful Degradation}: Errors should accumulate slowly, not catastrophically
-    \item \textbf{Predictable Reliability}: The error rate should be forecastable
+    \item \textbf{Necessary structural stability}: Complexity should not induce explosive long-tail error accumulation
+    \item \textbf{Graceful degradation}: Harder cases should worsen performance slowly enough to remain observable, auditable, and correctable
+    \item \textbf{Complexity-aware monitoring}: Teams should estimate $\alpha$, inspect where ethical primes cluster, and re-check these signals after major model or policy changes
 \end{itemize}
 
-\subsection{Detecting Systematic Bias}
+\subsection{Necessary Stability vs.\ Fairness Sufficiency}
 
-Violations of ERH (e.g., $\alpha > 1$) indicate \emph{systematic failure modes}:
+Meaningful ERH-style violations (for example, sustained estimates with $\alpha > 0.5$) indicate \emph{systematic failure modes}:
 \begin{itemize}
-    \item Linear growth ($\alpha \approx 1$): Constant error rate regardless of scale
-    \item Superlinear growth ($\alpha > 1$): Accelerating failures with complexity
+    \item Near-critical regime ($\alpha \approx 0.5$): high-complexity regions are approaching the ERH-style worst case and deserve closer review
+    \item Violation regime ($\alpha > 0.5$): cumulative error grows faster than the ERH-style upper bound, suggesting amplified long-tail risk
+    \item Low or negative regime ($\alpha \le 0$): accumulation remains controlled, but fairness and acceptability are still open questions
 \end{itemize}
 
-Such violations warrant investigation into structural biases in training data, model architecture, or evaluation protocols.
+Such violations warrant investigation into training data, model architecture, or evaluation protocols. But the converse does not hold: satisfying ERH does not certify fairness, correctness, or acceptability. The practical lesson from our synthetic and real-data studies is that ERH can \emph{rule out} some unstable systems, yet it cannot by itself \emph{rule in} a system for deployment.
+
+In practice, an ERH-aware design review should therefore separate three questions:
+\begin{itemize}
+    \item \textbf{Structural stability}: Does the system avoid explosive complexity-driven error growth?
+    \item \textbf{Performance sufficiency}: Are accuracy, calibration, and error rates acceptable for the task?
+    \item \textbf{Fairness and accountability}: Are subgroup disparities, procedural safeguards, and domain norms adequately addressed?
+\end{itemize}
 
 \subsection{Fairness and Accountability}
 
@@ -1241,19 +1255,21 @@ The concept of ethical primes highlights that \emph{not all errors are equal}. H
 
 ERH-based analysis can:
 \begin{itemize}
-    \item Identify which subpopulations suffer critical misjudgments
-    \item Quantify whether error patterns differ across demographic groups
-    \item Guide targeted interventions to reduce structural inequality
+    \item flag where critical misjudgments appear to cluster along the complexity axis
+    \item suggest which subpopulations or case types deserve deeper subgroup audit
+    \item help compare interventions on structural grounds before broader fairness review
 \end{itemize}
+
+However, these uses remain supplementary. ERH does not replace subgroup fairness metrics, qualitative review, or legal and institutional accountability mechanisms.
 
 \subsection{Real-World Applications}
 
-Potential applications include:
+Credible near-term applications include supplementary audits for:
 \begin{itemize}
-    \item \textbf{Recidivism prediction}: Analyzing error growth patterns in risk assessment algorithms
-    \item \textbf{Content moderation}: Identifying fundamental misjudgments in content classification
-    \item \textbf{Medical diagnosis}: Quantifying how diagnostic errors accumulate with case complexity
-    \item \textbf{Resource allocation}: Evaluating fairness in algorithmic resource distribution
+    \item \textbf{Recidivism prediction}: checking whether risk-assessment errors worsen sharply in harder cases
+    \item \textbf{Content moderation}: identifying whether complex or ambiguous content produces concentrated long-tail failures
+    \item \textbf{Medical diagnosis}: tracking whether diagnostic error accumulation stays bounded as case difficulty increases
+    \item \textbf{Resource allocation}: comparing mitigation strategies when standard metrics look similar but structural profiles differ
 \end{itemize}
 
 To support these applications, all simulation scripts, configuration files, detailed logs, and generated reports are available in our public repository at \url{https://github.com/dennislee928/Ethic-Latex}, in particular in the consolidated report \texttt{docs/EXPERIMENT\_REPORTS.md} and the \texttt{simulation/output/} directory.
@@ -1270,37 +1286,34 @@ This paper introduces the Ethical Riemann Hypothesis (ERH), a mathematical frame
 
 \begin{enumerate}
     \item \textbf{Mathematical formalization}: We establish a rigorous mathematical framework for ethical primes and their distribution, defining action spaces, judgment systems, error terms, and baseline functions, while providing theoretical distinctions among different judge types.
-    \item \textbf{ERH criterion}: We propose a quantitative standard $|E(x)| = O(x^{1/2+\varepsilon})$ for structurally healthy judgment systems, providing actionable criteria for evaluating system health.
+    \item \textbf{ERH criterion}: We propose a quantitative standard $|E(x)| = O(x^{1/2+\varepsilon})$ for structurally healthy judgment systems, best interpreted as a guardrail for complexity-linked stability rather than as a complete deployment criterion.
     \item \textbf{Computational tools}: We develop a complete simulation framework and empirical testing tools, including reproducible experimental designs and detailed statistical analysis.
-    \item \textbf{Empirical findings}: Through comparative experiments across four judgment strategies, we demonstrate that different systems exhibit markedly different error patterns, and that outperforming ERH predictions in error growth does not guarantee overall judgment quality.
+    \item \textbf{Empirical findings}: Through comparative experiments across four judgment strategies, we demonstrate that different systems exhibit markedly different error patterns, and that remaining below the ERH-style worst-case bound does not guarantee overall judgment quality.
     \item \textbf{Philosophical integration}: We establish connections between ERH and classical moral theories (consequentialism, deontology, virtue ethics) and discuss its positioning and limitations in different application contexts.
-    \item \textbf{Practical applications}: We provide quantitative diagnostic tools and prioritization mechanisms for designing, auditing, and improving AI ethics systems.
+    \item \textbf{Practical applications}: We provide quantitative diagnostic tools that can support auditing, mitigation comparison, and complexity-aware monitoring in AI ethics workflows.
 \end{enumerate}
 
 This work opens a new direction in AI ethics: analyzing structural patterns of moral judgment through the lens of analytic number theory. While the analogy with prime numbers is heuristic rather than exact, it provides valuable intuition, quantitative tools, and diagnostic frameworks for evaluating judgment systems at scale.
 
 \subsection{Future Work}
 
-Based on the findings of this study, several directions merit further exploration:
+Based on the findings of this study, several bounded directions merit further exploration:
 
 \begin{itemize}
-    \item \textbf{Real-world data validation}: Apply ERH analysis to historical data from actual AI systems (e.g., recidivism prediction systems, content moderation platforms, medical diagnosis tools) to validate the framework's effectiveness and applicability in practice.
-    \item \textbf{Causal mechanism exploration}: Conduct in-depth analysis of causal relationships between ERH violations and specific model components, training procedures, or data biases, providing actionable improvement recommendations.
-    \item \textbf{Theoretical deepening}: Explore sufficient or necessary conditions under which certain classes of judgment systems must satisfy ERH, establishing a more rigorous theoretical foundation.
-    \item \textbf{Multi-dimensional extension}: Generalize ERH to multiple ethical dimensions (fairness, privacy, transparency, accountability), developing multi-objective ERH variants.
-    \item \textbf{Cross-disciplinary integration}: Explore integration of ERH with other mathematical frameworks (e.g., graph theory, information theory, game theory), forming a richer toolkit of analytical tools.
-    \item \textbf{Uncertainty handling}: Incorporate fuzziness and probability into moral values and judgments, developing probabilistic versions of the ERH framework.
+    \item \textbf{Measurement robustness}: test alternative complexity proxies, threshold choices, and subgroup-conditioned estimates to determine when fitted exponents are stable enough to support audit use.
+    \item \textbf{Empirical audit studies}: replicate Adult- and COMPAS-style analyses on additional documented decision systems, pairing ERH with calibration, fairness, and domain-specific harm metrics rather than treating it as a standalone score.
+    \item \textbf{Theory and estimation}: tighten finite-sample error analysis, confidence intervals, and explicit assumptions under which ERH-style bounds should or should not be expected.
 \end{itemize}
 
 \subsection{Open Questions and Reflections}
 
 This study raises several profound open questions:
 
-First, \emph{Can we design AI systems that satisfy ERH?} Our experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may outperform ERH predictions in error growth patterns, reminding us that ERH provides necessary but not sufficient conditions. If we cannot design systems that simultaneously satisfy ERH and maintain low overall error rates, does this reveal inherent limitations of automated moral reasoning?
+First, \emph{When should ERH be used as a hard gate rather than a soft warning?} Our experimental results show that even ``unhealthy'' systems (such as high-error-rate conservative judges) may remain below the ERH-style worst-case bound. This suggests that ERH is better suited to ruling out structurally unstable systems than to certifying acceptable ones.
 
-Second, \emph{What does ``structural health'' truly mean for a moral judgment system?} ERH provides one answer based on error growth patterns, but in contexts of pluralistic moral values and cultural backgrounds, this definition itself may be contested. Different philosophical positions (consequentialism, deontology, virtue ethics) may have different understandings of ``health,'' and how does the ERH framework provide a common analytical language in this diversity?
+Second, \emph{How should structural health be defined across domains?} ERH provides one candidate answer based on error growth patterns, but the right complexity proxy, harm threshold, and subgroup decomposition will vary across criminal justice, medicine, resource allocation, and other settings.
 
-Finally, \emph{What is the role positioning of the ERH framework in practical AI ethics decision-making?} Is it a diagnostic tool, a metaphorical framework, or actionable design criteria? Our philosophical analysis suggests that the answer may vary by application context: in standardized decision environments, ERH can provide design criteria; in contexts of value pluralism, it primarily serves as a heuristic analytical framework.
+Finally, \emph{How should ERH be integrated with established evaluation practice?} The most credible role for the framework is as a diagnostic layer alongside accuracy, calibration, fairness, and governance review, but turning that layered view into operational process remains an open design problem.
 
 These open questions point not only to specific directions for future research but also reflect the complexity and challenges of AI ethics as an interdisciplinary field.
 
@@ -1313,4 +1326,3 @@ We thank all colleagues who provided valuable suggestions and feedback for this 
 \bibliography{../references}
 
 \end{document}
-
