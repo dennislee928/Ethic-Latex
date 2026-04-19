@@ -151,12 +151,13 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=<your-pypi-token> twine upload dist/*
 
 **npm（`js-sdk/` 目錄）**
 
+請在**儲存庫根目錄**執行 `cd js-sdk`（若已在 `js-sdk/` 內則不用再 `cd`）。下列區塊中勿把說明文字貼進終端機（以 `#` 開頭的行在 zsh 會被當成指令而報錯）。
+
 ```bash
-cd js-sdk
+cd js-sdk    # 僅當您目前不在 js-sdk 目錄時需要
 npm install
 npm run build
-# 需已登入 npm，或設定 NODE_AUTH_TOKEN 後：
-npm publish
+npm publish    # 需已 npm login，或預先 export NODE_AUTH_TOKEN=<token>
 ```
 
 ---
@@ -168,6 +169,11 @@ npm publish
 | `publish` 永遠 skip | 未推送 `v*` tag；ref 不是 `refs/tags/v...` |
 | Node `test` 全 skip | `js-sdk/package.json` 仍為 `0.0.0` + `private: true` |
 | `npm run build` 失敗（TS5011） | `js-sdk/tsconfig.json` 缺少 `rootDir`（例如 `"./src"`） |
+| `Permission denied`（`.bin/tsc`） | 部分環境下 `node_modules/.bin/tsc` shim 無執行位元；本 repo 已將 `build` 改為 **`node ./node_modules/typescript/bin/tsc`**（不透過 shim），請 `npm install` 後重試 |
+| `cd: no such file or directory: js-sdk` | 已在 `js-sdk/` 內又執行一次 `cd js-sdk`，或目前目錄不是 repo 根目錄 |
+| `zsh: command not found: #` | 誤將文件裡以 `#` 開頭的註解貼成指令；刪除該行或改為純 bash 註解 |
+| `You cannot publish over the previously published versions` | **registry 上已有該版號**；請 bump `js-sdk/package.json` 的 `version`（例如 `0.1.0` → `0.1.1`）後再 `npm publish` |
+| npm warn：`bin` 無效 | `package.json` 的 `bin` 路徑應為相對路徑（如 `bin/erh-cli.js`），勿使用會被 npm 拒絕的格式 |
 | PyPI 上無新版本 | 未 bump `pyproject.toml`；或 artifact 已存在被 skip |
 | npm publish 403／EOTP | Token 類型錯誤或非 Automation；權限／套件名稱不符 |
 
@@ -304,11 +310,13 @@ TWINE_USERNAME=__token__ TWINE_PASSWORD=<your-pypi-token> twine upload dist/*
 
 **npm (`js-sdk/`)**
 
+Run `cd js-sdk` from the **repository root** (skip `cd` if you are already inside `js-sdk`). Do **not** paste prose lines starting with `#` into the shell as commands.
+
 ```bash
-cd js-sdk
+cd js-sdk    # only if you are not already in js-sdk
 npm install
 npm run build
-npm publish   # or set NODE_AUTH_TOKEN for non-interactive publish
+npm publish    # after npm login, or: export NODE_AUTH_TOKEN=<token>
 ```
 
 ---
@@ -320,6 +328,11 @@ npm publish   # or set NODE_AUTH_TOKEN for non-interactive publish
 | `publish` always skipped | No **`v*`** tag pushed |
 | Node `test` skipped | Placeholder `package.json` (`0.0.0` + `private`) |
 | `npm run build` fails (`TS5011`) | Missing `rootDir` in **`js-sdk/tsconfig.json`** |
+| `Permission denied` on `.bin/tsc` | Missing execute bit on the shim; this repo invokes **`node ./node_modules/typescript/bin/tsc`** in `scripts.build` — run `npm install` again |
+| `cd: ... js-sdk: No such file or directory` | Already inside `js-sdk`, or wrong working directory |
+| `command not found: #` | A documentation line starting with `#` was pasted as a command |
+| `You cannot publish over the previously published versions` | That **version already exists on npm** — bump **`js-sdk/package.json`** `version` then publish again |
+| npm warns `bin` entry removed / invalid | Use a valid relative path for `bin` values (e.g. `bin/erh-cli.js`) |
 | No new files on PyPI | Version not bumped or artifacts skipped as existing |
 | npm 403 / EOTP | Wrong token type or permissions |
 
