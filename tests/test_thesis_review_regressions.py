@@ -26,6 +26,8 @@ def test_public_thesis_entrypoints_do_not_contain_review_regressions() -> None:
     ]
 
     bilingual_markers = [
+        "[figure pending]",
+        "［圖示待補］",
         "待填入",
         "由模擬管線自動填入",
         "Section ??",

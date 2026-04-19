@@ -22,6 +22,7 @@ PLACEHOLDERS = [
     "[TBD]",
     "[YES/NO]",
     "[Observation",
+    "[figure pending]",
     "待填入",
     "由模擬管線自動填入",
     "Section ??",
@@ -29,6 +30,7 @@ PLACEHOLDERS = [
     "run pipeline",
     "elementsofai.com/zh",
     "conservative judges display r...",
+    "［圖示待補］",
 ]
 ALL_CAPS_PLACEHOLDER = re.compile(r"\[[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\]")
 BROKEN_PI_PLACEHOLDER = re.compile(r"\\Pi\(\s*\)")

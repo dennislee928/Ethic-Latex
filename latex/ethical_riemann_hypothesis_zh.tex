@@ -1,15 +1,41 @@
 \documentclass[12pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
 \usepackage{fontspec}
 \usepackage{xeCJK}
 \usepackage[expansion=false]{microtype}
-\setmainfont{Latin Modern Roman}
-% Use a widely available CJK font on cloud runners; if missing locally,
-% you may switch this to a system font such as "Microsoft JhengHei" or "PingFang TC".
-\setCJKmainfont{Noto Serif CJK SC}
+\IfFontExistsTF{Latin Modern Roman}{%
+  \setmainfont{Latin Modern Roman}%
+}{\IfFontExistsTF{Times New Roman}{%
+  \setmainfont{Times New Roman}%
+}{%
+  \setmainfont{Times}%
+}}
+\IfFontExistsTF{Menlo}{%
+  \setmonofont{Menlo}%
+}{\IfFontExistsTF{Latin Modern Mono}{%
+  \setmonofont{Latin Modern Mono}%
+}{}}
+% Prefer the project default CJK font, but fall back to common macOS fonts for
+% local builds where Noto CJK is not installed.
+\IfFontExistsTF{Noto Serif CJK SC}{%
+  \setCJKmainfont[ItalicFont={Noto Serif CJK SC}]{Noto Serif CJK SC}%
+}{\IfFontExistsTF{PingFang TC}{%
+  \setCJKmainfont[ItalicFont={PingFang TC}]{PingFang TC}%
+}{\IfFontExistsTF{Hiragino Sans GB}{%
+  \setCJKmainfont[ItalicFont={Hiragino Sans GB}]{Hiragino Sans GB}%
+}{%
+  \setCJKmainfont[ItalicFont={STHeiti}]{STHeiti}%
+}}}  
+\IfFontExistsTF{Noto Sans Mono CJK SC}{%
+  \setCJKmonofont{Noto Sans Mono CJK SC}%
+}{\IfFontExistsTF{PingFang TC}{%
+  \setCJKmonofont{PingFang TC}%
+}{\IfFontExistsTF{Hiragino Sans GB}{%
+  \setCJKmonofont{Hiragino Sans GB}%
+}{%
+  \setCJKmonofont{STHeiti}%
+}}}
 
 % Packages
-\usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -44,6 +70,7 @@
 
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{註記}
+\newcommand{\missingfigureplaceholder}{\mbox{}}
 
 % Title information
 \title{倫理黎曼猜想：\\
@@ -535,11 +562,15 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
     \item \textbf{固定隨機種子}：所有模擬使用固定隨機種子（$seed = 42$），確保行動空間生成、雜訊產生與判斷評估的一致性。
     \item \textbf{參數記錄}：所有判斷者類型及其參數設定（如表~\ref{tab:parameters}）均明確記錄，便於重現與驗證。
     \item \textbf{行動生成過程}：行動空間的生成遵循以下步驟：
-    \begin{enumerate}
-        \item 複雜度 $c(a)$ 從 Zipf 分布中採樣：$c(a) \sim \text{Zipf}(\alpha=2.0)$，範圍 $[1, 100]$
-        \item 真實道德值 $V(a)$ 依複雜度依賴的模糊性生成：$V(a) = \text{sign}(\mathcal{N}(0,1)) \cdot \min(1, |\mathcal{N}(0,1)| \cdot (1 - c(a)/100))$，其中低複雜度案例（$c(a) \approx 1$）傾向於接近 $\pm 1$，高複雜度案例（$c(a) \approx 100$）傾向於接近 $0$
-        \item 重要性權重 $w(a)$ 從對數正態分布中採樣：$\log w(a) \sim \mathcal{N}(\mu=2, \sigma=1)$，確保少數行動具有高重要性
-    \end{enumerate}
+	    \begin{enumerate}
+	        \item 複雜度 $c(a)$ 從 Zipf 分布中採樣：$c(a) \sim \text{Zipf}(\alpha=2.0)$，範圍 $[1, 100]$
+	        \item 真實道德值 $V(a)$ 依複雜度依賴的模糊性生成：
+	        \[
+	        V(a) = \text{sign}(\mathcal{N}(0,1)) \cdot \min\left(1, |\mathcal{N}(0,1)| \cdot \left(1 - \frac{c(a)}{100}\right)\right)
+	        \]
+	        低複雜度案例（$c(a) \approx 1$）傾向於接近 $\pm 1$，高複雜度案例（$c(a) \approx 100$）則傾向於接近 $0$
+	        \item 重要性權重 $w(a)$ 從對數正態分布中採樣：$\log w(a) \sim \mathcal{N}(\mu=2, \sigma=1)$，確保少數行動具有高重要性
+	    \end{enumerate}
     \item \textbf{判斷系統實作細節}：
     \begin{itemize}
         \item \textbf{偏見判斷者}：$J(a) = V(a) + 0.2 \cdot (c(a)/100)^2 + \mathcal{N}(0, 0.1^2)$，偏見隨複雜度的平方增長
@@ -582,7 +613,13 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
         \item \texttt{quantum\_hilbert\_results.json}：量子 Hilbert 空間模擬的共識態、系統一致性、Von Neumann 熵
         \item \texttt{*.csv}：參數敏感度分析結果
     \end{itemize}
-    \item \textbf{圖表生成}：論文圖表由 \texttt{simulation/generate\_all\_figures.py} 與 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 自動生成。PDF 圖表保存在 \texttt{simulation/output/figures/}；量子電路與分布 PNG（\texttt{latest\_quantum\_circuit.png}、\texttt{latest\_quantum\_distribution.png}）由量子 Hilbert 模擬產生。
+	    \item \textbf{圖表生成}：論文圖表由
+	    \par\noindent\path|simulation/generate_all_figures.py|
+	    與 \path|scripts/run_quantum_hilbert_figures.py| 自動生成。
+	    \par\noindent PDF 圖表保存在 \path|simulation/output/figures/|。
+	    量子電路與分布 PNG 為
+	    \path|latest_quantum_circuit.png| 與
+	    \path|latest_quantum_distribution.png|。
     \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
@@ -606,24 +643,26 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
 \toprule
 \textbf{資料集} & \textbf{來源} & \textbf{輸出路徑} \\
 \midrule
-Adult Income（訓練） & UCI ML Repository & \texttt{data/real\_world/adult.data} \\
-Adult Income（測試） & UCI ML Repository & \texttt{data/real\_world/adult.test} \\
-Adult Income（處理後） & --- & \texttt{data/adult.csv}（轉換後） \\
-COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
+Adult Income（訓練） & UCI ML Repository & \nolinkurl{data/real_world/adult.data} \\
+Adult Income（測試） & UCI ML Repository & \nolinkurl{data/real_world/adult.test} \\
+Adult Income（處理後） & --- & \nolinkurl{data/adult.csv}（轉換後） \\
+COMPAS & ProPublica GitHub & \nolinkurl{data/compas-scores-two-years.csv} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \textbf{取得與轉換步驟}：
 \begin{enumerate}
-    \item 執行 \texttt{scripts/fetch\_real\_data.sh} 下載 Adult（\url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}）與 COMPAS（\url{https://github.com/propublica/compas-analysis}）至 \texttt{data/}。
+    \item 執行 \path|scripts/fetch_real_data.sh| 下載 Adult 與 COMPAS 至 \path|data/|。Adult 來源為 \url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}；COMPAS 來源為 \url{https://github.com/propublica/compas-analysis}。
     \item 執行 \texttt{scripts/convert\_adult\_to\_csv.py} 將 UCI Adult 格式（無表頭、逗號分隔）轉換為含欄位名稱的 \texttt{data/adult.csv}；含缺失值（\texttt{?}）的列會被排除。
 \end{enumerate}
 
 \textbf{輸出路徑與案例對應}：
 \begin{itemize}
-    \item \texttt{data/adult.csv} $\rightarrow$ \texttt{simulation/real\_data/adult\_income\_case\_study.py}（需含 \texttt{income} 欄位）
-    \item \texttt{data/compas-scores-two-years.csv} $\rightarrow$ \texttt{simulation/real\_data/compas\_case\_study.py}（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
+	    \item Adult Income：\path|data/adult.csv|
+	    \par\noindent 對應 \path|simulation/real_data/adult_income_case_study.py|（需含 \texttt{income} 欄位）
+	    \item COMPAS：\path|data/compas-scores-two-years.csv|
+	    \par\noindent 對應 \path|simulation/real_data/compas_case_study.py|（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
 \end{itemize}
 
 \subsection{傅立葉頻譜分析}
@@ -656,7 +695,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     }{\IfFileExists{../figures/latest_quantum_circuit.png}{%
         \includegraphics[width=1.0\textwidth]{../figures/latest_quantum_circuit.png}%
     }{%
-        \textit{\small ［圖示待補］}
+        \missingfigureplaceholder
     }}
     \caption{動態產生的量子電路，代表智能體群體的社會糾纏。$U3$ 門表示 Bloch 球面上的個體倫理姿態，$R_{ZZ}$ 門表示智能體間的社會連結。}
     \label{fig:quantum_circuit_zh}
@@ -671,7 +710,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     }{\IfFileExists{../figures/latest_quantum_distribution.png}{%
         \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}%
     }{%
-        \textit{\small ［圖示待補］}
+        \missingfigureplaceholder
     }}
     \caption{模擬後的倫理態機率分布。峰值表示高機率的社會配置。}
     \label{fig:quantum_dist_zh}
@@ -704,7 +743,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
@@ -719,7 +758,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
@@ -734,7 +773,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/phase_transition.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/phase_transition.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{道德相變：隨衝突密度（複雜度）增加，基態保真度下降。崩潰點標記倫理 Zeta 函數的極點。}
@@ -1002,7 +1041,7 @@ Von Neumann 熵 & 0.2504 \\
 
 \subsection{實證案例研究：Adult Income 與延伸情境}
 
-為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，資料取得步驟請見第~\ref{subsec:real_world_data}小節。案例研究程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
+為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，資料取得步驟請見第~\ref{subsec:real_world_data}小節。案例研究程式位於 \path|simulation/real_data/adult_income_case_study.py|。}
 在此情境中，收入分類（\texttt{>50K} vs. \texttt{\textless=50K}）被視為具有分配正義含義的決策問題，錯誤類型對不同群體的實質影響並不對稱。
 我們比較了一個標準 logistic regression 模型與一個使用類別重加權（\texttt{class\_weight='balanced'}）的簡單緩解模型，並為每個測試樣本構造結合特徵量級與預測不確定度的複雜度 proxy，將所有誤分類樣本視為簡化版的倫理質數，據此估計實際的 $\Pi(x)$、$B(x)$ 與 $E(x)$ 曲線。
 
@@ -1056,7 +1095,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
       \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{COMPAS 與模擬判斷者的誤差增長比較。模擬智能體曲線（偏見判斷者）與 COMPAS 真實數據同繪於對數-對數圖，用於比較其結構性誤差累積型態，而非主張單一的普適誤差定律。}
@@ -1072,7 +1111,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/alpha_comparison_real_vs_simulated.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/alpha_comparison_real_vs_simulated.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{真實世界增長指數 $\alpha$ 與模擬參考判斷者之比較。將 Adult Income 與 COMPAS 案例研究和模擬保守判斷者對照，以脈絡化不同的結構性誤差增長區間。}
@@ -1087,7 +1126,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/compas_erh_bound.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/compas_erh_bound.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{ERH 式界線下的 COMPAS。$|E(x)|$ 與複雜度 $x$ 的對數-對數圖，含理論參考線 $C\cdot x^{0.5}$。擬合指數 $\alpha\approx-0.20$ 表示在所選 proxy 下屬於有界的次線性誤差增長，而非單獨構成公平性結論。}
@@ -1102,7 +1141,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/alpha_comparison_bar.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/alpha_comparison_bar.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{Radical、Conservative（模擬）、COMPAS 與 Adult Income 案例研究之擬合增長指數比較。特別標示 COMPAS $\approx-0.20$，以對照真實資料結果與模擬基線。}
@@ -1125,7 +1164,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/normalized_error_oscillation.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/normalized_error_oscillation.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{COMPAS 的正規化誤差振盪 $E(x)/\sqrt{x}$ 與信賴區間。可用於檢查 ERH 式正規化下是否保持有界，但不應視為公平性指標。}
@@ -1140,7 +1179,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。}
@@ -1155,7 +1194,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
@@ -1393,7 +1432,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/drift_monitoring.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/drift_monitoring.png}
     }{
-      \textit{\small ［圖示待補］}
+      \missingfigureplaceholder
     }
   }
   \caption{實時倫理漂移監控，顯示模擬系統性偏見衰減過程中 alpha 指數隨時間的變化。}
