@@ -115,13 +115,32 @@ mkdir -p figures
 # Copy figures from simulation/output/figures (where generate_all_figures.py saves them)
 if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.pdf 2>/dev/null)" ]; then
     cp simulation/output/figures/*.pdf figures/ 2>/dev/null || true
-    echo "  Copied figures from simulation/output/figures:"
-    ls -1 figures/*.pdf 2>/dev/null | wc -l | xargs echo "    Total:"
+    echo "  Copied PDF figures from simulation/output/figures"
 elif [ -d "simulation/output/figures" ]; then
-    echo "  ⚠ Warning: simulation/output/figures directory exists but is empty"
+    echo "  ⚠ Warning: simulation/output/figures directory exists but contains no PDFs"
 else
     echo "  ⚠ Warning: simulation/output/figures directory not found"
 fi
+
+if [ -d "simulation/output/figures" ] && [ "$(ls -A simulation/output/figures/*.png 2>/dev/null)" ]; then
+    cp simulation/output/figures/*.png figures/ 2>/dev/null || true
+    echo "  Copied PNG figures from simulation/output/figures"
+fi
+
+if [ -f "simulation/output/figures/latest_quantum_circuit.png" ]; then
+    cp simulation/output/figures/latest_quantum_circuit.png figures/ 2>/dev/null || true
+fi
+
+if [ -f "simulation/output/figures/latest_quantum_distribution.png" ]; then
+    cp simulation/output/figures/latest_quantum_distribution.png figures/ 2>/dev/null || true
+fi
+
+if [ -f "llm_stress_test_results/llm_stress_test_Pi_E.png" ]; then
+    cp llm_stress_test_results/llm_stress_test_Pi_E.png figures/ 2>/dev/null || true
+fi
+
+echo "  Figures now available in figures/:"
+find figures -maxdepth 1 -type f | sed 's#^#    #' | sort
 echo "✓ Figures prepared"
 echo ""
 
@@ -182,4 +201,3 @@ echo ""
 echo "=========================================="
 echo "Build completed!"
 echo "=========================================="
-
