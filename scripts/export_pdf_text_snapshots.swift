@@ -155,7 +155,7 @@ do {
             outputStem: "ethical_riemann_hypothesis_en",
             excerpts: [
                 ExcerptSpec(title: "Abstract Pi/B Excerpt", anchor: "introduce Π(x), the counting function for ethical primes"),
-                ExcerptSpec(title: "Motivation Citation Excerpt", anchor: "these systems fail [Jobin et al., 2019, Floridi et al., 2018]."),
+                ExcerptSpec(title: "Motivation Citation Excerpt", anchor: "these systems fail [Jobin et al.,"),
                 ExcerptSpec(title: "Figure 1 Caption Excerpt", anchor: "Dynamically generated quantum circuit")
             ]
         ),
@@ -164,7 +164,7 @@ do {
             outputStem: "ethical_riemann_hypothesis_zh",
             excerpts: [
                 ExcerptSpec(title: "Abstract Pi/B Excerpt", anchor: "並引入Π(x) 作為複雜度級別100 以下的倫理質數計數函數。透過建立類似於對數"),
-                ExcerptSpec(title: "Motivation Citation Excerpt", anchor: "理解這些系統何時以及如何失敗[Jobin et al., 2019, Floridi et al., 2018]。"),
+                ExcerptSpec(title: "Motivation Citation Excerpt", anchor: "如何失敗[Jobin et al.,"),
                 ExcerptSpec(title: "Figure 1 Caption Excerpt", anchor: "動態產生的量子電路")
             ]
         ),
