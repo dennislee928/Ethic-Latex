@@ -1353,24 +1353,24 @@ To validate the ERH framework across diverse high-stakes domains, we simulated 2
 
 \begin{table}[htbp]
 \centering
-\caption{Aggregate results for 20 simulation scenarios. Metrics are averaged across cases in each category. Dashes (\texttt{--}) indicate values pending simulation pipeline output.}
+\caption{Aggregate results for 20 simulation scenarios. Mistake rate, ethical primes, and $\alpha$ are category averages. ERH pass rate reports the share of scenarios in that category flagged as ERH-satisfied by the simulation pipeline.}
 \label{tab:20_cases_summary}
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Category} & \textbf{Mistake Rate} & \textbf{Primes} & \textbf{$\alpha$} & \textbf{ERH Satisfied} \\
+\textbf{Category} & \textbf{Mistake Rate} & \textbf{Primes} & \textbf{$\alpha$} & \textbf{ERH Pass Rate} \\
 \midrule
-Judiciary     & 0.529 & 6 & $0.542$ & Yes \\
-Medical       & 0.362 & 5 & $0.714$ & Yes \\
-Finance       & 0.386 & 3 & $0.549$ & Yes \\
-HR            & 0.572  & 6  & $0.560$  & Yes \\
-Governance    & 0.482 & 5 & $0.556$ & Yes \\
-Education     & 0.477 & 5 & $0.506$ & Yes \\
-Emerging (LLM)& 0.444 & 5 & $0.548$ & Yes \\
+Judiciary      & 0.529 & 6.0 & $0.542$ & 100\% \\
+Medical        & 0.362 & 5.0 & $0.714$ & 66.7\% \\
+Finance        & 0.386 & 3.7 & $0.549$ & 100\% \\
+HR             & 0.572 & 6.5 & $0.560$ & 100\% \\
+Governance     & 0.482 & 5.3 & $0.556$ & 100\% \\
+Education      & 0.477 & 5.0 & $0.506$ & 100\% \\
+Emerging (LLM) & 0.444 & 5.5 & $0.548$ & 100\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The simulation results confirm that while absolute mistake rates vary (e.g., higher in linguistically complex Hate Speech detection), the structural growth of errors remains strictly bounded, with $\alpha$ consistently below $0.5$ across all 20 scenarios.
+The simulation results show that absolute mistake rates vary by domain and that category-average exponents cluster near the ERH threshold rather than uniformly below it. Using the simulation pipeline's scenario-level compliance flag, pass rates range from 66.7\% to 100\% across categories, with the Medical group pulled down by the Organ Matching outlier. This section is therefore best read as evidence of broadly stable structure with a small number of meaningful exceptions, not as proof that every category-average $\alpha$ stays below 0.5.
 
 \subsection{Detailed Case-by-Case Analysis}
 
