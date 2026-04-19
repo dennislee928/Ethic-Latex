@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 PLACEHOLDERS = ["[To be filled]", "[Insert Data]", "[Pending]", "[TBD]"]
-ALL_CAPS_PLACEHOLDER = re.compile(r"\b[A-Z]{2,}(?:_[A-Z0-9]{2,})+\b")
+ALL_CAPS_PLACEHOLDER = re.compile(r"\[[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\]")
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
