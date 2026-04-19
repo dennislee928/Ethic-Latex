@@ -66,7 +66,7 @@ def insert_figure_latex(fig_file, info, lang='en'):
     
     latex_code = f"""\\begin{{figure}}[htbp]
   \\centering
-  \\includegraphics[width=0.8\\textwidth]{{figures/{fig_file}}}
+  \\includegraphics[width=0.8\\textwidth]{{../figures/{fig_file}}}
   \\caption{{{caption}}}
   \\label{{{label}}}
 \\end{{figure}}
@@ -77,17 +77,20 @@ def _insert_figure_if_exists(fig_file, info, lang):
     """Generate LaTeX with \\IfFileExists for optional figures."""
     caption = info['caption_en'] if lang == 'en' else info['caption_zh']
     label = info['label']
-    # Escape underscores in fallback text for LaTeX (avoids "Missing $ inserted")
-    fig_file_safe = fig_file.replace('_', r'\_')
+    placeholder = (
+        "Figure unavailable in this build."
+        if lang == 'en'
+        else "本次建置未包含此圖。"
+    )
     return f"""\\begin{{figure}}[htbp]
   \\centering
-  \\IfFileExists{{figures/{fig_file}}}{{
-    \\includegraphics[width=0.8\\textwidth]{{figures/{fig_file}}}
+  \\IfFileExists{{../figures/{fig_file}}}{{
+    \\includegraphics[width=0.8\\textwidth]{{../figures/{fig_file}}}
   }}{{
-    \\IfFileExists{{simulation/output/figures/{fig_file}}}{{
-      \\includegraphics[width=0.8\\textwidth]{{simulation/output/figures/{fig_file}}}
+    \\IfFileExists{{../simulation/output/figures/{fig_file}}}{{
+      \\includegraphics[width=0.8\\textwidth]{{../simulation/output/figures/{fig_file}}}
     }}{{
-      \\fbox{{\\parbox{{0.7\\textwidth}}{{\\centering Figure {fig_file_safe} (run pipeline to generate).}}}}
+      \\fbox{{\\parbox{{0.7\\textwidth}}{{\\centering {placeholder}}}}}
     }}
   }}
   \\caption{{{caption}}}
@@ -107,7 +110,7 @@ def integrate_figures_into_latex(latex_path, figures, lang='en'):
 
     # Skip results/framework insertion if main PDF figures already exist (avoid duplication)
     results_figures = [f for f, i in figures.items() if i.get('section') in ('results', 'framework')]
-    results_already_in = any(f"figures/{f}" in content or f"simulation/output/figures/{f}" in content for f in results_figures) if results_figures else False
+    results_already_in = any(f"../figures/{f}" in content or f"../simulation/output/figures/{f}" in content for f in results_figures) if results_figures else False
 
     # Insert figures in results section (skip if already present)
     if not results_already_in:
