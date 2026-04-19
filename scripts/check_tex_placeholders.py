@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Check for placeholder strings in .tex files before committing.
+Check thesis .tex files for placeholder strings and stale review regressions.
 
-Fails (exit 1) if any of [To be filled], [Insert Data], [Pending] are found.
-Use as pre-commit hook or in CI.
+Fails (exit 1) when any known placeholder or review-only artifact is present in
+the public thesis sources.
 
 Usage:
     python scripts/check_tex_placeholders.py
@@ -15,23 +15,38 @@ import re
 import sys
 from pathlib import Path
 
-PLACEHOLDERS = ["[To be filled]", "[Insert Data]", "[Pending]", "[TBD]"]
+PLACEHOLDERS = [
+    "[To be filled]",
+    "[Insert Data]",
+    "[Pending]",
+    "[TBD]",
+    "[YES/NO]",
+    "[Observation",
+    "待填入",
+    "由模擬管線自動填入",
+    "Section ??",
+    "Table ??",
+    "run pipeline",
+    "elementsofai.com/zh",
+    "conservative judges display r...",
+]
 ALL_CAPS_PLACEHOLDER = re.compile(r"\[[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\]")
+BROKEN_PI_PLACEHOLDER = re.compile(r"\\Pi\(\s*\)")
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 SKIP_DIRS = {".git", "node_modules", ".worktrees", ".venv", ".venv_erh", ".venv_new", ".venv_sphinx"}
-
-# Only the production-ready LaTeX sources are checked; draft originals are excluded.
-SKIP_FILES = {"ethical_riemann_hypothesis.tex"}
+THESIS_FILES = {
+    PROJECT_ROOT / "latex" / "ethical_riemann_hypothesis.tex",
+    PROJECT_ROOT / "latex" / "ethical_riemann_hypothesis_en.tex",
+    PROJECT_ROOT / "latex" / "ethical_riemann_hypothesis_zh.tex",
+}
 
 
 def main() -> int:
     found = []
-    for path in PROJECT_ROOT.rglob("*.tex"):
+    for path in sorted(THESIS_FILES):
         if any(part in SKIP_DIRS for part in path.parts):
-            continue
-        if path.name in SKIP_FILES:
             continue
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
@@ -39,6 +54,8 @@ def main() -> int:
                 if ph in text:
                     found.append((path, ph))
             for match in ALL_CAPS_PLACEHOLDER.finditer(text):
+                found.append((path, match.group(0)))
+            for match in BROKEN_PI_PLACEHOLDER.finditer(text):
                 found.append((path, match.group(0)))
         except Exception:
             pass

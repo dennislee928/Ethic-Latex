@@ -6,7 +6,7 @@ const fs = require('fs');
 program
     .name('erh-cli')
     .description('CLI for Ethical Riemann Hypothesis Framework')
-    .version('0.1.0');
+    .version('0.1.1');
 
 program.command('simulate')
     .description('Run a simulation via the API')
