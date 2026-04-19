@@ -3,10 +3,24 @@
 \usepackage{fontspec}
 \usepackage{xeCJK}
 \usepackage[expansion=false]{microtype}
-\setmainfont{Latin Modern Roman}
-% Use a widely available CJK font on cloud runners; if missing locally,
-% you may switch this to a system font such as "Microsoft JhengHei" or "PingFang TC".
-\setCJKmainfont{Noto Serif CJK SC}
+\IfFontExistsTF{Latin Modern Roman}{%
+  \setmainfont{Latin Modern Roman}%
+}{\IfFontExistsTF{Times New Roman}{%
+  \setmainfont{Times New Roman}%
+}{%
+  \setmainfont{Times}%
+}}
+% Prefer the project default CJK font, but fall back to common macOS fonts for
+% local builds where Noto CJK is not installed.
+\IfFontExistsTF{Noto Serif CJK SC}{%
+  \setCJKmainfont{Noto Serif CJK SC}%
+}{\IfFontExistsTF{PingFang TC}{%
+  \setCJKmainfont{PingFang TC}%
+}{\IfFontExistsTF{Hiragino Sans GB}{%
+  \setCJKmainfont{Hiragino Sans GB}%
+}{%
+  \setCJKmainfont{STHeiti}%
+}}}
 
 % Packages
 \usepackage[utf8]{inputenc}
