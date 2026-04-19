@@ -327,7 +327,7 @@ E(x) = \Pi(x) - B(x)
 這測量了倫理質數的實際分布與基準期望的偏差。
 \end{definition}
 
-\subsection{範例：計算 $\Pi(x)$}
+\subsection{範例：計算 \texorpdfstring{$\Pi(x)$}{Pi(x)}}
 
 考慮一個簡單範例，包含三個行動：
 \begin{itemize}
@@ -671,9 +671,9 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \toprule
 \textbf{指標} & \textbf{數值} \\
 \midrule
-共識態 (Consensus State) & [QUANTUM_CONSENSUS_STATE_ZH] \\
-系統相干性 (Coherence) & [QUANTUM_SYSTEM_COHERENCE_ZH] \\
-Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
+共識態 (Consensus State) & 11111111 \\
+系統相干性 (Coherence) & 0.9590 \\
+Von Neumann 熵 & 0.2504 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -688,7 +688,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure paper\_fig10\_phase\_transition\_h.pdf (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含量子相變圖。}}
     }
   }
   \caption{量子相變：磁化 vs. 橫場 $h$。臨界 $h_c$ 標記有序 $\to$ 無序。}
@@ -703,7 +703,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/von_neumann_entropy_over_time.pdf}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure von\_neumann\_entropy\_over\_time.pdf (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含 Von Neumann 熵圖。}}
     }
   }
   \caption{Von Neumann 熵 $S(\rho)$ 隨時間：迴聲室指標。低熵：高共識；高熵：無共識。}
@@ -718,7 +718,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/phase_transition.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/phase_transition.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure phase\_transition.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含道德相變圖。}}
     }
   }
   \caption{道德相變：隨衝突密度（複雜度）增加，基態保真度下降。崩潰點標記倫理 Zeta 函數的極點。}
@@ -749,6 +749,8 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
 \label{sec:results}
 
 我們呈現對 2000 個具有 Zipf 分布複雜度的行動進行評估的五個判斷系統的結果。
+
+\subsection{各判斷者結果}
 
 \subsubsection{偏見判斷者}
 
@@ -1025,7 +1027,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/alpha_comparison_real_vs_simulated.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_real_vs_simulated.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_real\_vs\_simulated.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含真實與模擬 alpha 比較圖。}}
     }
   }
   \caption{真實世界增長指數 $\alpha$ 與模擬參考判斷者之比較。將 Adult Income 與 COMPAS 案例研究和模擬保守判斷者對照，以脈絡化不同的結構性誤差增長區間。}
@@ -1040,7 +1042,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/compas_erh_bound.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/compas_erh_bound.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure compas\_erh\_bound.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含 COMPAS ERH 界線圖。}}
     }
   }
   \caption{ERH 式界線下的 COMPAS。$|E(x)|$ 與複雜度 $x$ 的對數-對數圖，含理論參考線 $C\cdot x^{0.5}$。擬合指數 $\alpha\approx-0.20$ 表示在所選 proxy 下屬於有界的次線性誤差增長，而非單獨構成公平性結論。}
@@ -1055,7 +1057,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/alpha_comparison_bar.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/alpha_comparison_bar.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure alpha\_comparison\_bar.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含 alpha 條形比較圖。}}
     }
   }
   \caption{Radical、Conservative（模擬）、COMPAS 與 Adult Income 案例研究之擬合增長指數比較。特別標示 COMPAS $\approx-0.20$，以對照真實資料結果與模擬基線。}
@@ -1078,11 +1080,11 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/normalized_error_oscillation.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/normalized_error_oscillation.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure normalized\_error\_oscillation.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含正規化誤差振盪圖。}}
     }
   }
   \caption{COMPAS 的正規化誤差振盪 $E(x)/\sqrt{x}$ 與信賴區間。可用於檢查 ERH 式正規化下是否保持有界，但不應視為公平性指標。}
-  \label{fig:normalized_oscillation}
+  \label{fig:normalized_oscillation_compas_zh}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -1093,7 +1095,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/latest_quantum_circuit.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_circuit.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_circuit.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含補充量子電路圖。}}
     }
   }
   \caption{代表倫理 Hilbert 空間的量子電路：$U3$ 門編碼 Bloch 球面位置，$R_{ZZ}$ 門模型社會糾纏。}
@@ -1108,7 +1110,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/latest_quantum_distribution.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/latest_quantum_distribution.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure latest\_quantum\_distribution.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含補充量子分布圖。}}
     }
   }
   \caption{量子模擬後倫理態的機率分布。峰值表示高機率社會配置。}
@@ -1346,7 +1348,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     \IfFileExists{simulation/output/figures/drift_monitoring.png}{
       \includegraphics[width=0.8\textwidth]{simulation/output/figures/drift_monitoring.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure drift\_monitoring.png (run pipeline to generate).}}
+      \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含倫理漂移監控圖。}}
     }
   }
   \caption{實時倫理漂移監控，顯示模擬系統性偏見衰減過程中 alpha 指數隨時間的變化。}
@@ -1462,6 +1464,6 @@ ERH 的明顯違反（例如持續觀察到 $\alpha > 0.5$）表明\emph{系統�
 本研究感謝所有為本文提供寶貴建議與反饋的同行。特別感謝 胡君毅先生 在研究過程中提供的指導與支持。本研究使用的開源軟體工具與 Python 生態系統為實驗分析提供了重要基礎。所有模擬程式碼與實驗數據均已公開至https://github.com/dennislee928/Ethic-Latex，以便於研究社群的重現與進一步發展。
 
 \bibliographystyle{plainnat}
-\bibliography{../references}
+\bibliography{references}
 
 \end{document}
