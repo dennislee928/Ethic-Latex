@@ -750,14 +750,14 @@ COMPAS & ProPublica GitHub & \path|data/compas-scores-two-years.csv| \\
 
 \textbf{Fetch and conversion steps}:
 \begin{enumerate}
-    \item Run \path|scripts/fetch_real_data.sh| to download Adult from \url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/} and COMPAS from \url{https://github.com/propublica/compas-analysis} into \path|data/|.
-    \item Run \path|scripts/convert_adult_to_csv.py| to convert the UCI Adult files into \path|data/adult.csv| with column headers; rows containing missing values (\texttt{?}) are dropped.
+    \item Run the repository's data-fetch script to download Adult from the UCI ML Repository and COMPAS from ProPublica into \path|data/|.
+    \item Run the Adult conversion script to produce \path|data/adult.csv| with column headers; rows containing missing values (\texttt{?}) are dropped.
 \end{enumerate}
 
 \textbf{Output paths and case study mapping}:
 \begin{itemize}
-    \item \path|data/adult.csv| $\rightarrow$ \path|simulation/real_data/adult_income_case_study.py| (requires the \texttt{income} column)
-    \item \path|data/compas-scores-two-years.csv| $\rightarrow$ \path|simulation/real_data/compas_case_study.py| (requires the columns \path|two_year_recid| and \path|decile_score|)
+    \item \path|data/adult.csv| is consumed by the Adult Income case study in \path|simulation/real_data/| and requires the \texttt{income} column.
+    \item \path|data/compas-scores-two-years.csv| is consumed by the COMPAS case study in \path|simulation/real_data/| and requires the columns \path|two_year_recid| and \path|decile_score|.
 \end{itemize}
 
 \subsection{Fourier Spectrum Analysis}
@@ -883,24 +883,33 @@ Von Neumann Entropy & 0.2504 \\
 \small
 \caption{Summary of error behavior across judge types. Mistake Rate and Mean $|\Delta(a)|$ are computed over $N = 2000$ actions. ``Within ERH-style bound?'' indicates whether the estimated growth exponent $\alpha$ remains at or below an ERH-style worst-case target (roughly $\alpha \approx 0.5$). ``Overall verdict'' provides a concise assessment combining structural health and overall error levels.}
 \label{tab:summary_judges}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.7cm} c c c c >{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}X}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.1cm} c c c c >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Judge} & \textbf{Mistake Rate} & \textbf{Mean $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{ERH Bound?} & \textbf{Verdict} & \textbf{Assessment} \\
+\textbf{Judge} & \textbf{Mistake Rate} & \textbf{Mean $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{ERH Bound?} & \textbf{Verdict} \\
 \midrule
-Biased       & 0.132 & 0.185 & $-0.629$ & Yes & Safe structure; bias persists & Rapidly decreasing $|E(x)|$, but systematic bias remains visible. \\
-Noisy        & 0.256 & 0.209 & $-0.171$ & Yes & Safe structure; error rate high & Growth is slow, yet random noise still drives many mistakes. \\
-Conservative & 0.611 & 0.342 & $-0.046$ & Yes & Safe structure; unusable accuracy & Tail growth stays flat, but the overall error level is too high. \\
-Radical      & 0.149 & 0.183 & $-0.452$ & Yes & Safe structure; acceptable overall & Benign long-tail growth, though simple cases can still be overshot. \\
-Quantum      & 0.750 & 0.995 & $-0.037$ & Yes & Safe structure; error rate too high & Structurally bounded, but current judgment quality is not usable. \\
+Biased       & 0.132 & 0.185 & $-0.629$ & Yes & Safe structure; bias persists \\
+Noisy        & 0.256 & 0.209 & $-0.171$ & Yes & Safe structure; error rate high \\
+Conservative & 0.611 & 0.342 & $-0.046$ & Yes & Safe structure; unusable accuracy \\
+Radical      & 0.149 & 0.183 & $-0.452$ & Yes & Safe structure; acceptable overall \\
+Quantum      & 0.750 & 0.995 & $-0.037$ & Yes & Safe structure; error rate too high \\
 \bottomrule
 \end{tabularx}
 \normalsize
 \end{table}
 
+\noindent\textbf{Qualitative notes.}
+\begin{itemize}
+    \item \textbf{Biased}: Rapidly decreasing $|E(x)|$, but systematic bias remains visible.
+    \item \textbf{Noisy}: Growth is slow, yet random noise still drives many mistakes.
+    \item \textbf{Conservative}: Tail growth stays flat, but the overall error level is too high.
+    \item \textbf{Radical}: Long-tail behavior is benign, though simple cases can still be overshot.
+    \item \textbf{Quantum}: Structurally bounded, but current judgment quality is not usable.
+\end{itemize}
+
 \section{Experimental Results}
 \label{sec:results}
 
-We present results for five judgment systems evaluated on 2000 actions with Zipf-distributed complexity.
+We present results for five judgment systems tested on 2000 actions with Zipf-distributed complexity.
 
 \subsection{Judge-Specific Profiles}
 
@@ -1631,7 +1640,7 @@ Credible near-term applications include supplementary audits for:
     \item \textbf{Resource allocation}: comparing mitigation strategies when standard metrics look similar but structural profiles differ
 \end{itemize}
 
-To support these applications, all simulation scripts, configuration files, detailed logs, and generated reports are available in our public repository at \url{https://github.com/dennislee928/Ethic-Latex}. The main reader-facing entry points are \path|docs/EXPERIMENT_REPORTS.md| and \path|simulation/output/|.
+To support these applications, all simulation scripts, configuration files, detailed logs, and generated reports are available in our public repository at \url{https://github.com/dennislee928/Ethic-Latex}. Readers can start with the consolidated experiment report and the generated outputs under \path|simulation/output/|.
 
 % ============================================
 % SECTION 9: CONCLUSION
@@ -1647,7 +1656,7 @@ This paper introduces the Ethical Riemann Hypothesis (ERH), a mathematical frame
     \item \textbf{Mathematical formalization}: We establish a rigorous mathematical framework for ethical primes and their distribution, defining action spaces, judgment systems, error terms, and baseline functions, while providing theoretical distinctions among different judge types.
     \item \textbf{ERH criterion}: We propose a quantitative standard $|E(x)| = O(x^{1/2+\varepsilon})$ for structurally healthy judgment systems, best interpreted as a guardrail for complexity-linked stability rather than as a complete deployment criterion.
     \item \textbf{Computational tools}: We develop a complete simulation framework and empirical testing tools, including reproducible experimental designs and detailed statistical analysis.
-    \item \textbf{Empirical findings}: Through comparative experiments across four judgment strategies, we demonstrate that different systems exhibit markedly different error patterns, and that remaining below the ERH-style worst-case bound does not guarantee overall judgment quality.
+    \item \textbf{Empirical findings}: Comparative experiments across four judgment strategies show that systems can remain below the ERH-style worst-case bound while still differing sharply in overall judgment quality.
     \item \textbf{Philosophical integration}: We establish connections between ERH and classical moral theories (consequentialism, deontology, virtue ethics) and discuss its positioning and limitations in different application contexts.
     \item \textbf{Practical applications}: We provide quantitative diagnostic tools that can support auditing, mitigation comparison, and complexity-aware monitoring in AI ethics workflows.
 \end{enumerate}
