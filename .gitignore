@@ -118,3 +118,5 @@ basement.md
 *.tsbuildinfo
 PROJECT_AUDIT_REPORT.md
 /docs/actions_error_log
+latex/ethical_riemann_hypothesis_zh.pdf
+latex/ethical_riemann_hypothesis.pdf
