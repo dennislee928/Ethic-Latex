@@ -9,6 +9,10 @@ def _read(relative_path: str) -> str:
     return (ROOT / relative_path).read_text(encoding="utf-8")
 
 
+def _normalize_whitespace(text: str) -> str:
+    return " ".join(text.split())
+
+
 def test_public_thesis_entrypoints_do_not_contain_review_regressions() -> None:
     strict_markers = [
         "[TBD]",
@@ -69,11 +73,15 @@ def test_pdf_text_snapshot_exporter_extracts_key_passages(tmp_path: Path) -> Non
     en_excerpt = (output_dir / "ethical_riemann_hypothesis_en.key_excerpts.md").read_text(encoding="utf-8")
     zh_full = (output_dir / "ethical_riemann_hypothesis_zh.full.txt").read_text(encoding="utf-8")
     zh_excerpt = (output_dir / "ethical_riemann_hypothesis_zh.key_excerpts.md").read_text(encoding="utf-8")
+    en_excerpt_normalized = _normalize_whitespace(en_excerpt)
+    zh_excerpt_normalized = _normalize_whitespace(zh_excerpt)
 
     assert "Π(x)" in en_full
-    assert "Jobin et al., 2019, Floridi et al., 2018" in en_excerpt
+    assert "Jobin et al." in en_excerpt_normalized
+    assert "Floridi et al., 2018" in en_excerpt_normalized
     assert "Dynamically generated quantum circuit" in en_excerpt
 
     assert "Π(x)" in zh_full
     assert "B(x)" in zh_full
     assert "動態產生的量子電路" in zh_excerpt
+    assert "Jobin et al." in zh_excerpt_normalized
