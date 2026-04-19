@@ -78,9 +78,9 @@ def _insert_figure_if_exists(fig_file, info, lang):
     caption = info['caption_en'] if lang == 'en' else info['caption_zh']
     label = info['label']
     placeholder = (
-        "Figure unavailable in this build."
+        r"\textit{\small [figure pending]}"
         if lang == 'en'
-        else "本次建置未包含此圖。"
+        else r"\textit{\small ［圖示待補］}"
     )
     return f"""\\begin{{figure}}[htbp]
   \\centering
@@ -90,7 +90,7 @@ def _insert_figure_if_exists(fig_file, info, lang):
     \\IfFileExists{{../simulation/output/figures/{fig_file}}}{{
       \\includegraphics[width=0.8\\textwidth]{{../simulation/output/figures/{fig_file}}}
     }}{{
-      \\fbox{{\\parbox{{0.7\\textwidth}}{{\\centering {placeholder}}}}}
+      {placeholder}
     }}
   }}
   \\caption{{{caption}}}
