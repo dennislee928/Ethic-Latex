@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 
@@ -53,3 +54,26 @@ def test_local_build_script_copies_quantum_png_assets() -> None:
 
     assert "latest_quantum_circuit.png" in build_script
     assert "latest_quantum_distribution.png" in build_script
+
+
+def test_pdf_text_snapshot_exporter_extracts_key_passages(tmp_path: Path) -> None:
+    output_dir = tmp_path / "pdf_text_snapshots"
+
+    subprocess.run(
+        ["bash", str(ROOT / "scripts" / "export_pdf_text_snapshots.sh"), str(output_dir)],
+        check=True,
+        cwd=ROOT,
+    )
+
+    en_full = (output_dir / "ethical_riemann_hypothesis_en.full.txt").read_text(encoding="utf-8")
+    en_excerpt = (output_dir / "ethical_riemann_hypothesis_en.key_excerpts.md").read_text(encoding="utf-8")
+    zh_full = (output_dir / "ethical_riemann_hypothesis_zh.full.txt").read_text(encoding="utf-8")
+    zh_excerpt = (output_dir / "ethical_riemann_hypothesis_zh.key_excerpts.md").read_text(encoding="utf-8")
+
+    assert "Π(x)" in en_full
+    assert "Jobin et al., 2019, Floridi et al., 2018" in en_excerpt
+    assert "Dynamically generated quantum circuit" in en_excerpt
+
+    assert "Π(x)" in zh_full
+    assert "B(x)" in zh_full
+    assert "動態產生的量子電路" in zh_excerpt
