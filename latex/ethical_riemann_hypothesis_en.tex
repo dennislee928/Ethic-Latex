@@ -55,6 +55,7 @@
 \maketitle
 
 \begin{abstract}
+\sloppy
 As artificial intelligence systems increasingly participate in moral decision-making, we urgently need rigorous frameworks to understand when and how these systems fail structurally. This paper proposes the \emph{Ethical Riemann Hypothesis} (ERH), a mathematical framework that quantifies error growth patterns in moral judgment systems through an analogy with prime number distribution in analytic number theory.
 
 We define ``ethical primes'' as fundamental misjudgments that cannot be reduced to simpler cases, and introduce $\Pi(x)$, the counting function for ethical primes up to complexity level $100$. By establishing a baseline expectation $B(x)$ analogous to the logarithmic integral, we characterize systematic deviations through the error term $E(x) = \Pi(x) - B(x)$. The ERH states that $|E(x)| \leq C \cdot x^{1/2 + \varepsilon}$ for constants $C, \varepsilon > 0$, indicating that errors in ``healthy'' judgment systems grow at most sublinearly.
@@ -790,7 +791,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     }{\IfFileExists{../figures/latest_quantum_circuit.png}{%
         \includegraphics[width=1.0\textwidth]{../figures/latest_quantum_circuit.png}%
     }{%
-        \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: quantum circuit image unavailable in this build.}}
+        \textit{\small [figure pending]}
     }}
     \caption{Dynamically generated quantum circuit representing the social entanglement of the agent population. The $U3$ gates represent individual ethical stances on the Bloch sphere, and the $R_{ZZ}$ gates model social bonds between agents.}
     \label{fig:quantum_circuit}
@@ -805,7 +806,7 @@ The measurement results (Figure~\ref{fig:quantum_dist}) reveal the ``collapsed''
     }{\IfFileExists{../figures/latest_quantum_distribution.png}{%
         \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}%
     }{%
-        \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: quantum state distribution unavailable in this build.}}
+        \textit{\small [figure pending]}
     }}
     \caption{Probability distribution of ethical states after simulation. Peaks represent highly probable societal configurations.}
     \label{fig:quantum_dist}
@@ -838,7 +839,7 @@ Von Neumann Entropy & 0.2504 \\
     \IfFileExists{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig10_phase_transition_h.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: phase-transition plot unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Quantum phase transition: magnetization vs. transverse field $h$. Critical $h_c$ marks ordered $\to$ disordered.}
@@ -853,7 +854,7 @@ Von Neumann Entropy & 0.2504 \\
     \IfFileExists{../simulation/output/figures/von_neumann_entropy_over_time.pdf}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/von_neumann_entropy_over_time.pdf}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: Von Neumann entropy plot unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Von Neumann entropy $S(\rho)$ over time: echo-chamber indicator. Low entropy: high consensus; high entropy: no consensus.}
@@ -868,7 +869,7 @@ Von Neumann Entropy & 0.2504 \\
     \IfFileExists{../simulation/output/figures/phase_transition.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/phase_transition.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: moral phase-transition image unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Moral phase transition: as conflict density (complexity) increases, ground-state fidelity drops. The collapse point marks the pole of the Ethical Zeta Function.}
@@ -999,7 +1000,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig1_pi_b_e.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig1_pi_b_e.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig1_pi_b_e.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: primary error-distribution figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
   \caption{Distribution functions $\Pi(x)$, $B(x)$, and $E(x)$ for the Biased Judge. The solid line represents the actual ethical prime count $\Pi(x)$, the dashed line shows the baseline expectation $B(x)$ (prime theorem analog), and the error term $E(x) = \Pi(x) - B(x)$ is shown as a dotted line. We observe that $E(x)$ gradually deviates from the baseline as complexity increases, indicating the presence of systematic bias.}
   \label{fig:pi_b_e}
 \end{figure}
@@ -1010,7 +1011,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig2_error_growth.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig2_error_growth.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig2_error_growth.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: error-growth figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
 \caption{Error growth analysis showing $|E(x)|$ vs. complexity $x$ in log-log scale. Linear regression yields an error growth exponent $\alpha = -0.629$ ($R^2 = 0.604$) with a bootstrap confidence interval (not shown) strictly below the ERH-style worst-case exponent of $0.5$. In our normalization, a negative exponent does not mean that the number of errors becomes negative; instead it indicates that, after dividing by the ERH-style baseline $x^{1/2+\varepsilon}$, the residual error term decays as complexity increases---intuitively, the judge is ``better than ERH'' at high $x$. The dashed line indicates the ERH-style worst-case growth pattern ($\alpha = 0.5$) for comparison.}
   \label{fig:error_growth}
 \end{figure}
@@ -1021,7 +1022,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig3_judge_comparison.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig3_judge_comparison.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig3_judge_comparison.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: judge-comparison figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
   \caption{Comparison of error term $E(x)$ growth across different judgment systems. The four judges (Biased, Noisy, Conservative, Radical) exhibit markedly different error patterns. The Radical Judge ($\alpha = -0.452$) and Biased Judge ($\alpha = -0.629$) show rapidly decreasing error terms, while the Noisy Judge ($\alpha = -0.171$) and Conservative Judge ($\alpha = -0.046$) display relatively flat error patterns. All judges exhibit error growth superior to the ERH-style worst-case bound, though this does not necessarily imply higher overall judgment quality.}
   \label{fig:judge_comparison}
 \end{figure}
@@ -1032,7 +1033,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig4_exponent_comparison.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig4_exponent_comparison.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig4_exponent_comparison.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: exponent-comparison figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
 \caption{Estimated growth exponent $\alpha$ by judge type. The bar chart compares error growth exponents across the four judges, with bootstrap confidence intervals (not shown) obtained from resampling the $(x,|E(x)|)$ pairs. Negative values here should be read under our chosen normalization $|E(x)| / x^{1/2+\varepsilon}$: they indicate that the normalized error term decays with complexity, i.e., that long-run error growth is strictly better than the ERH-style worst-case bound of $\alpha \approx 0.5$. The Radical Judge ($\alpha = -0.452$) performs best, followed by the Biased Judge ($\alpha = -0.629$), Noisy Judge ($\alpha = -0.171$), and Conservative Judge ($\alpha = -0.046$).}
   \label{fig:exponent_comparison}
 \end{figure}
@@ -1043,7 +1044,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig5_spectrum.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig5_spectrum.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig5_spectrum.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: Fourier spectrum figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
   \caption{Fourier spectrum analysis of the ethical zeta function $\zeta_E(s)$. The spectrum exhibits prominent components in the low-frequency region ($k < 10$), indicating that the distribution of ethical primes has long-period structural patterns rather than being completely random. The high-frequency region ($k > 20$) shows low-amplitude noise, indicating relatively random error distribution at fine-grained levels. Peak positions in the spectrum encode periodic information about error distribution, useful for identifying correlations between complexity levels.}
   \label{fig:spectrum}
 \end{figure}
@@ -1054,7 +1055,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig6_zeros.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig6_zeros.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig6_zeros.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: zeta-zero search figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
   \caption{Distribution of zeros of the ethical zeta function $\zeta_E(s)$ in the complex plane. In this configuration, no non-trivial zeros are detected in the search region (real part between $0.3$ and $0.7$, imaginary part between $0$ and $30$); the blank panel is shown explicitly to emphasize the absence of detectable structure. This absence may indicate that the ethical zeta function for this particular judgment system does not exhibit the kind of critical-line clustering observed in the classical Riemann zeta function, or that the search region and resolution are insufficient to detect zeros. Unlike the classical Riemann zeta function, whose zeros cluster near the critical line $\text{Re}(s) = 1/2$, the ethical zeta function may require different analytical approaches or exhibit zeros in regions not captured by this search.}
   \label{fig:zeros}
 \end{figure}
@@ -1065,7 +1066,7 @@ We present results for five judgment systems tested on 2000 actions with Zipf-di
     \includegraphics[width=0.8\textwidth]{../figures/paper_fig8_quantum_judge.pdf}%
   }{\IfFileExists{../simulation/output/figures/paper_fig8_quantum_judge.pdf}{%
     \includegraphics[width=0.8\textwidth]{../simulation/output/figures/paper_fig8_quantum_judge.pdf}%
-  }{\fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: critical-bound comparison figure unavailable in this build.}}}}
+  }{\textit{\small [figure pending]}}}
   \caption{$\Pi(x)$, $B(x)$, and $E(x)$ for the Quantum Judge. Superposition-based judgment via Rx$(\theta)$ with $\theta = c(a)/100 \cdot \pi$; uses qiskit-aer or NumPy fallback.}
   \label{fig:quantum_judge}
 \end{figure}
@@ -1226,7 +1227,7 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
     \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
       \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
-      \fbox{\parbox{0.75\textwidth}{\centering Figure placeholder: simulated-versus-COMPAS error-growth comparison unavailable in this build. The overlay is descriptive and should not be read as proof of universality or model identity.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Illustrative comparison between a simulated judge curve and COMPAS real-data error growth on the same log-log plot. Visual similarity is descriptive only; it does not establish universality or identify a unique underlying mechanism.}
@@ -1242,7 +1243,7 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
     \IfFileExists{../simulation/output/figures/alpha_comparison_real_vs_simulated.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/alpha_comparison_real_vs_simulated.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: real-versus-simulated alpha comparison unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Real-world growth exponent $\alpha$ versus synthetic reference judges. Compares the Adult Income and COMPAS case studies with a simulated Conservative judge to contextualize structural error-growth regimes.}
@@ -1257,7 +1258,7 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
     \IfFileExists{../simulation/output/figures/compas_erh_bound.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/compas_erh_bound.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: COMPAS ERH-bound plot unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{COMPAS under an ERH-style bound. Log-log plot of $|E(x)|$ versus complexity $x$ with theoretical reference line $C\cdot x^{0.5}$. The fitted exponent $\alpha\approx-0.20$ indicates bounded sublinear error growth under the chosen proxy, not fairness by itself.}
@@ -1272,7 +1273,7 @@ We apply the ERH framework to the ProPublica COMPAS recidivism dataset. We defin
     \IfFileExists{../simulation/output/figures/alpha_comparison_bar.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/alpha_comparison_bar.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: alpha-comparison bar chart unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Comparison of fitted growth exponents across Radical, Conservative (synthetic), COMPAS, and Adult Income case studies. COMPAS $\approx-0.20$ is highlighted to situate the real-data result relative to synthetic baselines.}
@@ -1303,7 +1304,7 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
     \IfFileExists{../simulation/output/figures/normalized_error_oscillation.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/normalized_error_oscillation.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: normalized error oscillation plot unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Normalized error oscillation $E(x)/\sqrt{x}$ with confidence interval for COMPAS. Useful for checking bounded behavior under the ERH-style normalization, not as a fairness metric.}
@@ -1318,7 +1319,7 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
     \IfFileExists{../simulation/output/figures/latest_quantum_circuit.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_circuit.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: supplementary quantum circuit unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Quantum circuit representing ethical Hilbert space: $U3$ gates encode Bloch sphere positions, $R_{ZZ}$ gates model social entanglement.}
@@ -1333,7 +1334,7 @@ The build pipeline (\texttt{build\_thesis\_gated.yml}) produces additional figur
     \IfFileExists{../simulation/output/figures/latest_quantum_distribution.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/latest_quantum_distribution.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: supplementary quantum distribution unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Probability distribution of ethical states after quantum simulation. Peaks indicate highly probable societal configurations.}
@@ -1571,7 +1572,7 @@ Beyond heuristic auditing, we implemented several advanced features for formal s
     \IfFileExists{../simulation/output/figures/drift_monitoring.png}{
       \includegraphics[width=0.8\textwidth]{../simulation/output/figures/drift_monitoring.png}
     }{
-      \fbox{\parbox{0.7\textwidth}{\centering Figure placeholder: ethical drift monitoring plot unavailable in this build.}}
+      \textit{\small [figure pending]}
     }
   }
   \caption{Real-time ethical drift monitoring showing alpha index tracking over time during a simulated systemic bias decay.}
