@@ -613,14 +613,16 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
         \item \texttt{quantum\_hilbert\_results.json}：量子 Hilbert 空間模擬的共識態、系統一致性、Von Neumann 熵
         \item \texttt{*.csv}：參數敏感度分析結果
     \end{itemize}
-	    \item \textbf{圖表生成}：論文圖表由
-	    \par\noindent\path|simulation/generate_all_figures.py|
-	    與 \path|scripts/run_quantum_hilbert_figures.py| 自動生成。
-	    \par\noindent PDF 圖表保存在 \path|simulation/output/figures/|。
-	    量子電路與分布 PNG 為
-	    \path|latest_quantum_circuit.png| 與
-	    \path|latest_quantum_distribution.png|。
-    \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
+	    \item \textbf{圖表生成}：論文圖表由下列腳本自動生成。
+	    \begin{quote}\ttfamily\small
+	    simulation/generate\_all\_figures.py\\
+	    scripts/run\_quantum\_hilbert\_figures.py
+	    \end{quote}
+	    PDF 圖表保存在 \path|simulation/output/figures/|。
+	    \par\noindent 量子電路 PNG：\path|latest_quantum_circuit.png|。
+	    \par\noindent 分布 PNG：\path|latest_quantum_distribution.png|。
+    \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。
+    \par\noindent 主要依賴包括 \texttt{numpy}、\texttt{scipy}、\texttt{matplotlib}、\texttt{pandas} 與 \texttt{jupyter}（用於 notebook 版本）。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
     cd simulation
@@ -637,32 +639,39 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
 
 \begin{table}[htbp]
 \centering
+\small
 \caption{真實世界資料來源、URL 與輸出路徑}
 \label{tab:real_data_sources_zh}
-\begin{tabularx}{\textwidth}{llX}
+\begin{tabularx}{\textwidth}{ll>{\raggedright\arraybackslash}X}
 \toprule
 \textbf{資料集} & \textbf{來源} & \textbf{輸出路徑} \\
 \midrule
-Adult Income（訓練） & UCI ML Repository & \nolinkurl{data/real_world/adult.data} \\
-Adult Income（測試） & UCI ML Repository & \nolinkurl{data/real_world/adult.test} \\
+Adult Income（訓練） & UCI ML Repo. & \nolinkurl{data/real_world/adult.data} \\
+Adult Income（測試） & UCI ML Repo. & \nolinkurl{data/real_world/adult.test} \\
 Adult Income（處理後） & --- & \nolinkurl{data/adult.csv}（轉換後） \\
-COMPAS & ProPublica GitHub & \nolinkurl{data/compas-scores-two-years.csv} \\
+COMPAS & ProPublica repo & \nolinkurl{data/compas-scores-two-years.csv} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \textbf{取得與轉換步驟}：
 \begin{enumerate}
-    \item 執行 \path|scripts/fetch_real_data.sh| 下載 Adult 與 COMPAS 至 \path|data/|。Adult 來源為 \url{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}；COMPAS 來源為 \url{https://github.com/propublica/compas-analysis}。
+    \item 執行 \path|scripts/fetch_real_data.sh| 下載 Adult 與 COMPAS 至 \path|data/|。
+    \par\noindent Adult 來源：\href{https://archive.ics.uci.edu/ml/machine-learning-databases/adult/}{UCI Adult dataset 頁面}。
+    \par\noindent COMPAS 來源：\href{https://github.com/propublica/compas-analysis}{ProPublica COMPAS repository}。
     \item 執行 \texttt{scripts/convert\_adult\_to\_csv.py} 將 UCI Adult 格式（無表頭、逗號分隔）轉換為含欄位名稱的 \texttt{data/adult.csv}；含缺失值（\texttt{?}）的列會被排除。
 \end{enumerate}
 
 \textbf{輸出路徑與案例對應}：
 \begin{itemize}
-	    \item Adult Income：\path|data/adult.csv|
-	    \par\noindent 對應 \path|simulation/real_data/adult_income_case_study.py|（需含 \texttt{income} 欄位）
-	    \item COMPAS：\path|data/compas-scores-two-years.csv|
-	    \par\noindent 對應 \path|simulation/real_data/compas_case_study.py|（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
+	    \item Adult Income：
+	    \par\noindent \path|data/adult.csv|
+	    \par\noindent \path|simulation/real_data/adult_income_case_study.py|
+	    \par\noindent 需含 \texttt{income} 欄位
+	    \item COMPAS：
+	    \par\noindent \path|data/compas-scores-two-years.csv|
+	    \par\noindent \path|simulation/real_data/compas_case_study.py|
+	    \par\noindent 需含 \texttt{two\_year\_recid} 與 \texttt{decile\_score} 欄位
 \end{itemize}
 
 \subsection{傅立葉頻譜分析}
