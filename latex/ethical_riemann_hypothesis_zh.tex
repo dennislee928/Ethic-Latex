@@ -3,6 +3,7 @@
 \usepackage{fontspec}
 \usepackage{xeCJK}
 \usepackage[expansion=false]{microtype}
+\defaultCJKfontfeatures{AutoFakeSlant=0.2}
 \IfFontExistsTF{Latin Modern Roman}{%
   \setmainfont{Latin Modern Roman}%
 }{\IfFontExistsTF{Times New Roman}{%
@@ -10,6 +11,11 @@
 }{%
   \setmainfont{Times}%
 }}
+\IfFontExistsTF{Menlo}{%
+  \setmonofont{Menlo}%
+}{\IfFontExistsTF{Latin Modern Mono}{%
+  \setmonofont{Latin Modern Mono}%
+}{}}
 % Prefer the project default CJK font, but fall back to common macOS fonts for
 % local builds where Noto CJK is not installed.
 \IfFontExistsTF{Noto Serif CJK SC}{%
@@ -20,6 +26,15 @@
   \setCJKmainfont{Hiragino Sans GB}%
 }{%
   \setCJKmainfont{STHeiti}%
+}}}
+\IfFontExistsTF{Noto Sans Mono CJK SC}{%
+  \setCJKmonofont{Noto Sans Mono CJK SC}%
+}{\IfFontExistsTF{PingFang TC}{%
+  \setCJKmonofont{PingFang TC}%
+}{\IfFontExistsTF{Hiragino Sans GB}{%
+  \setCJKmonofont{Hiragino Sans GB}%
+}{%
+  \setCJKmonofont{STHeiti}%
 }}}
 
 % Packages
@@ -549,11 +564,15 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
     \item \textbf{固定隨機種子}：所有模擬使用固定隨機種子（$seed = 42$），確保行動空間生成、雜訊產生與判斷評估的一致性。
     \item \textbf{參數記錄}：所有判斷者類型及其參數設定（如表~\ref{tab:parameters}）均明確記錄，便於重現與驗證。
     \item \textbf{行動生成過程}：行動空間的生成遵循以下步驟：
-    \begin{enumerate}
-        \item 複雜度 $c(a)$ 從 Zipf 分布中採樣：$c(a) \sim \text{Zipf}(\alpha=2.0)$，範圍 $[1, 100]$
-        \item 真實道德值 $V(a)$ 依複雜度依賴的模糊性生成：$V(a) = \text{sign}(\mathcal{N}(0,1)) \cdot \min(1, |\mathcal{N}(0,1)| \cdot (1 - c(a)/100))$，其中低複雜度案例（$c(a) \approx 1$）傾向於接近 $\pm 1$，高複雜度案例（$c(a) \approx 100$）傾向於接近 $0$
-        \item 重要性權重 $w(a)$ 從對數正態分布中採樣：$\log w(a) \sim \mathcal{N}(\mu=2, \sigma=1)$，確保少數行動具有高重要性
-    \end{enumerate}
+	    \begin{enumerate}
+	        \item 複雜度 $c(a)$ 從 Zipf 分布中採樣：$c(a) \sim \text{Zipf}(\alpha=2.0)$，範圍 $[1, 100]$
+	        \item 真實道德值 $V(a)$ 依複雜度依賴的模糊性生成：
+	        \[
+	        V(a) = \text{sign}(\mathcal{N}(0,1)) \cdot \min\left(1, |\mathcal{N}(0,1)| \cdot \left(1 - \frac{c(a)}{100}\right)\right)
+	        \]
+	        低複雜度案例（$c(a) \approx 1$）傾向於接近 $\pm 1$，高複雜度案例（$c(a) \approx 100$）則傾向於接近 $0$
+	        \item 重要性權重 $w(a)$ 從對數正態分布中採樣：$\log w(a) \sim \mathcal{N}(\mu=2, \sigma=1)$，確保少數行動具有高重要性
+	    \end{enumerate}
     \item \textbf{判斷系統實作細節}：
     \begin{itemize}
         \item \textbf{偏見判斷者}：$J(a) = V(a) + 0.2 \cdot (c(a)/100)^2 + \mathcal{N}(0, 0.1^2)$，偏見隨複雜度的平方增長
@@ -596,7 +615,7 @@ $\zeta_E(s)$ 在複平面中的零點分布編碼了倫理質數分布的「週�
         \item \texttt{quantum\_hilbert\_results.json}：量子 Hilbert 空間模擬的共識態、系統一致性、Von Neumann 熵
         \item \texttt{*.csv}：參數敏感度分析結果
     \end{itemize}
-    \item \textbf{圖表生成}：論文圖表由 \texttt{simulation/generate\_all\_figures.py} 與 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 自動生成。PDF 圖表保存在 \texttt{simulation/output/figures/}；量子電路與分布 PNG（\texttt{latest\_quantum\_circuit.png}、\texttt{latest\_quantum\_distribution.png}）由量子 Hilbert 模擬產生。
+	    \item \textbf{圖表生成}：論文圖表由 \path|simulation/generate_all_figures.py| 與 \path|scripts/run_quantum_hilbert_figures.py| 自動生成。PDF 圖表保存在 \path|simulation/output/figures/|；量子電路與分布 PNG（\path|latest_quantum_circuit.png|、\path|latest_quantum_distribution.png|）由量子 Hilbert 模擬產生。
     \item \textbf{環境依賴}：所有必要的 Python 套件列於 \texttt{requirements.txt}，建議使用 Python 3.10 或更高版本。主要依賴包括：numpy, scipy, matplotlib, pandas, jupyter（用於 notebook 版本）。
     \item \textbf{驗證與重現}：讀者可透過執行以下命令重現實驗：
     \begin{verbatim}
@@ -636,8 +655,8 @@ COMPAS & ProPublica GitHub & \texttt{data/compas-scores-two-years.csv} \\
 
 \textbf{輸出路徑與案例對應}：
 \begin{itemize}
-    \item \texttt{data/adult.csv} $\rightarrow$ \texttt{simulation/real\_data/adult\_income\_case\_study.py}（需含 \texttt{income} 欄位）
-    \item \texttt{data/compas-scores-two-years.csv} $\rightarrow$ \texttt{simulation/real\_data/compas\_case\_study.py}（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
+	    \item \path|data/adult.csv| $\rightarrow$ \path|simulation/real_data/adult_income_case_study.py|（需含 \texttt{income} 欄位）
+	    \item \path|data/compas-scores-two-years.csv| $\rightarrow$ \path|simulation/real_data/compas_case_study.py|（需含 \texttt{two\_year\_recid}、\texttt{decile\_score} 欄位）
 \end{itemize}
 
 \subsection{傅立葉頻譜分析}
@@ -1016,7 +1035,7 @@ Von Neumann 熵 & 0.2504 \\
 
 \subsection{實證案例研究：Adult Income 與延伸情境}
 
-為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，資料取得步驟請見第~\ref{subsec:real_world_data}小節。案例研究程式位於 \texttt{simulation/real\_data/adult\_income\_case\_study.py}。}
+為了說明 ERH 不僅適用於合成模擬，我們在 UCI Adult Income 資料集上進行了一個小型實證案例研究。\footnote{為便於可重現性，資料取得步驟請見第~\ref{subsec:real_world_data}小節。案例研究程式位於 \path|simulation/real_data/adult_income_case_study.py|。}
 在此情境中，收入分類（\texttt{>50K} vs. \texttt{\textless=50K}）被視為具有分配正義含義的決策問題，錯誤類型對不同群體的實質影響並不對稱。
 我們比較了一個標準 logistic regression 模型與一個使用類別重加權（\texttt{class\_weight='balanced'}）的簡單緩解模型，並為每個測試樣本構造結合特徵量級與預測不確定度的複雜度 proxy，將所有誤分類樣本視為簡化版的倫理質數，據此估計實際的 $\Pi(x)$、$B(x)$ 與 $E(x)$ 曲線。
 
