@@ -640,7 +640,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     }{\IfFileExists{../figures/latest_quantum_circuit.png}{%
         \includegraphics[width=1.0\textwidth]{../figures/latest_quantum_circuit.png}%
     }{%
-        \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 或 \texttt{enable\_quantum=True} 模擬以生成此圖。}}
+        \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含量子電路圖。}}
     }}
     \caption{動態產生的量子電路，代表智能體群體的社會糾纏。$U3$ 門表示 Bloch 球面上的個體倫理姿態，$R_{ZZ}$ 門表示智能體間的社會連結。}
     \label{fig:quantum_circuit_zh}
@@ -655,7 +655,7 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
     }{\IfFileExists{../figures/latest_quantum_distribution.png}{%
         \includegraphics[width=0.8\textwidth]{../figures/latest_quantum_distribution.png}%
     }{%
-        \fbox{\parbox{0.7\textwidth}{\centering 執行 \texttt{scripts/run\_quantum\_hilbert\_figures.py} 以生成此圖。}}
+        \fbox{\parbox{0.7\textwidth}{\centering 圖像預留位置：本次建置未包含量子分布圖。}}
     }}
     \caption{模擬後的倫理態機率分布。峰值表示高機率的社會配置。}
     \label{fig:quantum_dist_zh}
@@ -730,20 +730,31 @@ Von Neumann 熵 & 0.2504 \\
 
 \begin{table}[htbp]
 \centering
-\caption{各判斷者類型的誤差行為總覽。錯誤率與平均 $|\Delta(a)|$ 皆在 $N = 2000$ 個行動上計算。「是否在 ERH 式界限內？」表示估計增長指數 $\alpha$ 是否不超過 ERH 風格的最壞情況目標（約 $\alpha \approx 0.5$）。「整體評估」提供結合結構健康與整體錯誤水準的簡潔評估。}
+\small
+\caption{各判斷者類型的誤差行為總覽。錯誤率與平均 $|\Delta(a)|$ 皆在 $N = 2000$ 個行動上計算。「是否在 ERH 式界限內？」表示估計增長指數 $\alpha$ 是否維持在 ERH 風格的最壞情況目標以下（約 $\alpha \approx 0.5$）。「整體評估」用簡短語句總結結構健康與整體誤差水準。}
 \label{tab:summary_judges_zh}
-\begin{tabular}{lcccccp{5cm}}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.8cm} c >{\centering\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{判斷者類型} & \textbf{錯誤率} & \textbf{平均 $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{是否在 ERH 式界限內？} & \textbf{整體評估} & \textbf{質性評估} \\
+\textbf{類型} & \textbf{錯誤率} & \textbf{均值 $|\Delta(a)|$} & \textbf{$\alpha$} & \textbf{ERH?} & \textbf{整體評估} \\
 \midrule
-偏見判斷者       & 0.132 & 0.185 & $-0.629$ & 是 & 結構安全但具偏見 & 結構上非常安全（$|E(x)|$ 隨複雜度快速下降），但在某些區域仍呈現系統性偏見。 \\
-隨機判斷者       & 0.256 & 0.209 & $-0.171$ & 是 & 結構安全但錯誤率高 & 誤差增長緩慢，但整體錯誤率與倫理質數數量偏高，顯示中等複雜度區域受雜訊主導。 \\
-保守判斷者       & 0.611 & 0.342 & $-0.046$ & 是 & 結構安全但錯誤率過高不可用 & 誤差增長幾乎為零（沒有結構性爆炸），但整體錯誤水準極高，在道德上難以接受。 \\
-激進判斷者       & 0.149 & 0.183 & $-0.452$ & 是 & 結構安全，表現可接受 & 誤差增長相當溫和且錯誤率較低，但在簡單案例上的極端行為仍可能帶來倫理風險。 \\
-量子判斷者       & 0.750 & 0.995 & $-0.037$ & 是 & 結構安全但錯誤率過高 & 量子疊加態判斷；數值由模擬腳本填入。 \\
+偏見判斷者 & 0.132 & 0.185 & $-0.629$ & 是 & 結構安全但仍有偏見 \\
+隨機判斷者 & 0.256 & 0.209 & $-0.171$ & 是 & 結構安全但錯誤率偏高 \\
+保守判斷者 & 0.611 & 0.342 & $-0.046$ & 是 & 結構安全但準確度不可用 \\
+激進判斷者 & 0.149 & 0.183 & $-0.452$ & 是 & 結構安全且整體可接受 \\
+量子判斷者 & 0.750 & 0.995 & $-0.037$ & 是 & 結構安全但錯誤率過高 \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
+\normalsize
 \end{table}
+
+\noindent\textbf{質性補充。}
+\begin{itemize}
+    \item \textbf{偏見判斷者}：$|E(x)|$ 隨複雜度快速下降，但局部系統性偏見仍可見。
+    \item \textbf{隨機判斷者}：結構性增長溫和，但隨機雜訊仍帶來不少誤判。
+    \item \textbf{保守判斷者}：長尾沒有爆炸，卻以過高整體錯誤率換來表面穩定。
+    \item \textbf{激進判斷者}：長尾結構相對良性，但簡單案例上仍可能過度放大。
+    \item \textbf{量子判斷者}：形式上受界限約束，但當前判斷品質仍不具實務可用性。
+\end{itemize}
 
 \section{實驗結果與討論}
 \label{sec:results}
@@ -1011,7 +1022,7 @@ Von Neumann 熵 & 0.2504 \\
     \IfFileExists{../simulation/output/figures/universal_error_growth.png}{
       \includegraphics[width=0.85\textwidth]{../simulation/output/figures/universal_error_growth.png}
     }{
-      \fbox{\parbox{0.75\textwidth}{\centering 圖 6：COMPAS 與模擬判斷者的誤差增長比較。執行 \texttt{scripts/generate\_comprehensive\_report.py} 以生成。模擬智能體曲線與 COMPAS 真實數據同繪於對數-對數圖，用於比較其結構性誤差累積型態。}}
+      \fbox{\parbox{0.75\textwidth}{\centering 圖像預留位置：本次建置未包含 COMPAS 與模擬判斷者的誤差增長比較圖。}}
     }
   }
   \caption{COMPAS 與模擬判斷者的誤差增長比較。模擬智能體曲線（偏見判斷者）與 COMPAS 真實數據同繪於對數-對數圖，用於比較其結構性誤差累積型態，而非主張單一的普適誤差定律。}
@@ -1130,24 +1141,24 @@ Von Neumann 熵 & 0.2504 \\
 
 \begin{table}[htbp]
 \centering
-\caption{20 個模擬案例的彙整結果。各項指標為該類別下所有案例的平均值。[待填入] 將由模擬管線自動填入。}
+\caption{20 個模擬案例的彙整結果。錯誤率、倫理質數數量與 $\alpha$ 為各類別的平均值；ERH 通過率表示該類別中被模擬管線標記為 ERH satisfied 的案例比例。}
 \label{tab:20_cases_summary_zh}
 \begin{tabular}{lcccc}
 \toprule
-\textbf{類別} & \textbf{錯誤率} & \textbf{質數數量} & \textbf{$\alpha$} & \textbf{滿足 ERH} \\
+\textbf{類別} & \textbf{錯誤率} & \textbf{質數數量} & \textbf{$\alpha$} & \textbf{ERH 通過率} \\
 \midrule
-司法與安全     & 0.529 & 6 & $0.542$ & 是 \\
-醫療倫理       & 0.362 & 5 & $0.714$ & 是 \\
-金融與分配     & 0.386 & 3 & $0.549$ & 是 \\
-人力資源       & 0.572  & 6  & $0.560$  & 是 \\
-數位治理       & 0.482 & 5 & $0.556$ & 是 \\
-教育學術       & 0.477 & 5 & $0.506$ & 是 \\
-新興風險 (LLM) & 0.444 & 5 & $0.548$ & 是 \\
+司法與安全     & 0.529 & 6.0 & $0.542$ & 100\% \\
+醫療倫理       & 0.362 & 5.0 & $0.714$ & 66.7\% \\
+金融與分配     & 0.386 & 3.7 & $0.549$ & 100\% \\
+人力資源       & 0.572 & 6.5 & $0.560$ & 100\% \\
+數位治理       & 0.482 & 5.3 & $0.556$ & 100\% \\
+教育學術       & 0.477 & 5.0 & $0.506$ & 100\% \\
+新興風險 (LLM) & 0.444 & 5.5 & $0.548$ & 100\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-模擬結果證實，雖然絕對錯誤率隨領域複雜度有所波動（例如在語境極其複雜的「仇恨言論審核」中較高），但誤差的結構性增長在所有 20 個場景中皆嚴格受限，$\alpha$ 指數始終低於 $0.5$ 的臨界閾值。
+模擬結果顯示，不同領域的絕對錯誤率差異明顯，而類別平均 $\alpha$ 多半落在 ERH 臨界區附近。若依模擬管線的案例級 ERH 標記統計，除醫療倫理類別因 Organ Matching 個案而降為 66.7\% 外，其餘類別皆為 100\% 通過率；因此此節更適合解讀為「大多數案例維持結構穩定，但仍存在明確離群案例」，而非宣稱所有平均 $\alpha$ 都低於 0.5。
 
 \subsection{20 個模擬案例詳細分析}
 
