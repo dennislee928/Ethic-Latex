@@ -327,7 +327,7 @@ E(x) = \Pi(x) - B(x)
 這測量了倫理質數的實際分布與基準期望的偏差。
 \end{definition}
 
-\subsection{範例：計算 $\Pi(x)$}
+\subsection{範例：計算 \texorpdfstring{$\Pi(x)$}{Pi(x)}}
 
 考慮一個簡單範例，包含三個行動：
 \begin{itemize}
@@ -671,9 +671,9 @@ $|\psi_i\rangle = \cos\frac{\theta_i}{2}|0\rangle + e^{i\phi_i}\sin\frac{\theta_
 \toprule
 \textbf{指標} & \textbf{數值} \\
 \midrule
-共識態 (Consensus State) & [QUANTUM_CONSENSUS_STATE_ZH] \\
-系統相干性 (Coherence) & [QUANTUM_SYSTEM_COHERENCE_ZH] \\
-Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
+共識態 (Consensus State) & 11111111 \\
+系統相干性 (Coherence) & 0.9590 \\
+Von Neumann 熵 & 0.2504 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -749,6 +749,8 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
 \label{sec:results}
 
 我們呈現對 2000 個具有 Zipf 分布複雜度的行動進行評估的五個判斷系統的結果。
+
+\subsection{各判斷者結果}
 
 \subsubsection{偏見判斷者}
 
@@ -1082,7 +1084,7 @@ Von Neumann 熵 & [QUANTUM_VON_NEUMANN_ENTROPY_ZH] \\
     }
   }
   \caption{COMPAS 的正規化誤差振盪 $E(x)/\sqrt{x}$ 與信賴區間。可用於檢查 ERH 式正規化下是否保持有界，但不應視為公平性指標。}
-  \label{fig:normalized_oscillation}
+  \label{fig:normalized_oscillation_compas_zh}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -1462,6 +1464,6 @@ ERH 的明顯違反（例如持續觀察到 $\alpha > 0.5$）表明\emph{系統�
 本研究感謝所有為本文提供寶貴建議與反饋的同行。特別感謝 胡君毅先生 在研究過程中提供的指導與支持。本研究使用的開源軟體工具與 Python 生態系統為實驗分析提供了重要基礎。所有模擬程式碼與實驗數據均已公開至https://github.com/dennislee928/Ethic-Latex，以便於研究社群的重現與進一步發展。
 
 \bibliographystyle{plainnat}
-\bibliography{../references}
+\bibliography{references}
 
 \end{document}

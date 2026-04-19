@@ -11,10 +11,12 @@ Usage:
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
 PLACEHOLDERS = ["[To be filled]", "[Insert Data]", "[Pending]", "[TBD]"]
+ALL_CAPS_PLACEHOLDER = re.compile(r"\b[A-Z]{2,}(?:_[A-Z0-9]{2,})+\b")
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -36,6 +38,8 @@ def main() -> int:
             for ph in PLACEHOLDERS:
                 if ph in text:
                     found.append((path, ph))
+            for match in ALL_CAPS_PLACEHOLDER.finditer(text):
+                found.append((path, match.group(0)))
         except Exception:
             pass
 

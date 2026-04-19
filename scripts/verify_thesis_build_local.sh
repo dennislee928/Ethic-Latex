@@ -59,10 +59,13 @@ python scripts/generate_md_reports.py || true
 
 echo "=== [10/12] Compile English LaTeX (pdflatex) ==="
 if command -v pdflatex &>/dev/null; then
-  pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
-  bibtex ethical_riemann_hypothesis_en || true
-  pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
-  pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
+  (
+    cd latex
+    pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
+    bibtex ethical_riemann_hypothesis_en
+    pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
+    pdflatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_en.tex
+  )
   echo "✓ ethical_riemann_hypothesis_en.pdf"
 else
   echo "⚠ pdflatex not found, skipping English PDF"
@@ -70,18 +73,21 @@ fi
 
 echo "=== [11/12] Compile Chinese LaTeX (xelatex) ==="
 if command -v xelatex &>/dev/null; then
-  xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
-  if [ -f ethical_riemann_hypothesis_zh.aux ]; then
-    bibtex ethical_riemann_hypothesis_zh 2>/dev/null || true
+  (
+    cd latex
     xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
-    xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
-  fi
-  [ -f ethical_riemann_hypothesis_zh.pdf ] && echo "✓ ethical_riemann_hypothesis_zh.pdf" || echo "⚠ Chinese PDF skipped (install: tlmgr install xecjk ctex; or fonts-noto-cjk)"
+    if [ -f ethical_riemann_hypothesis_zh.aux ]; then
+      bibtex ethical_riemann_hypothesis_zh
+      xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
+      xelatex -interaction=nonstopmode -file-line-error -halt-on-error ethical_riemann_hypothesis_zh.tex 2>/dev/null || true
+    fi
+    [ -f ethical_riemann_hypothesis_zh.pdf ] && echo "✓ ethical_riemann_hypothesis_zh.pdf" || echo "⚠ Chinese PDF skipped (install: tlmgr install xecjk ctex; or fonts-noto-cjk)"
+  )
 else
   echo "⚠ xelatex not found, skipping Chinese PDF"
 fi
 
 echo "=== [12/12] Summary ==="
-[ -f ethical_riemann_hypothesis_en.pdf ] && echo "✓ ethical_riemann_hypothesis_en.pdf ($(wc -c < ethical_riemann_hypothesis_en.pdf) bytes)"
-[ -f ethical_riemann_hypothesis_zh.pdf ] && echo "✓ ethical_riemann_hypothesis_zh.pdf ($(wc -c < ethical_riemann_hypothesis_zh.pdf) bytes)"
+[ -f latex/ethical_riemann_hypothesis_en.pdf ] && echo "✓ latex/ethical_riemann_hypothesis_en.pdf ($(wc -c < latex/ethical_riemann_hypothesis_en.pdf) bytes)"
+[ -f latex/ethical_riemann_hypothesis_zh.pdf ] && echo "✓ latex/ethical_riemann_hypothesis_zh.pdf ($(wc -c < latex/ethical_riemann_hypothesis_zh.pdf) bytes)"
 echo "Done."

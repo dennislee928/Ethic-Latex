@@ -351,7 +351,7 @@ E(x) = \Pi(x) - B(x)
 This measures how the actual distribution of ethical primes deviates from the baseline expectation.
 \end{definition}
 
-\subsection{Example: Computing $\Pi(x)$}
+\subsection{Example: Computing \texorpdfstring{$\Pi(x)$}{Pi(x)}}
 
 Consider a simple example with three actions:
 \begin{itemize}
@@ -821,9 +821,9 @@ Table~\ref{tab:quantum_hilbert_stats} summarizes the key metrics from the quantu
 \toprule
 \textbf{Metric} & \textbf{Value} \\
 \midrule
-Consensus State & [QUANTUM_CONSENSUS_STATE] \\
-System Coherence & [QUANTUM_SYSTEM_COHERENCE] \\
-Von Neumann Entropy & [QUANTUM_VON_NEUMANN_ENTROPY] \\
+Consensus State & 11111111 \\
+System Coherence & 0.9590 \\
+Von Neumann Entropy & 0.2504 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -899,6 +899,8 @@ Quantum      & 0.750 & 0.995 & $-0.037$ & Yes & Structurally safe but error rate
 \label{sec:results}
 
 We present results for five judgment systems evaluated on 2000 actions with Zipf-distributed complexity.
+
+\subsection{Judge-Specific Profiles}
 
 \subsubsection{BiasedJudge}
 
@@ -1079,7 +1081,7 @@ We present results for five judgment systems evaluated on 2000 actions with Zipf
   \centering
   \includegraphics[width=0.9\textwidth]{../figures/paper_fig9_normalized_oscillation.pdf}
   \caption{Normalized oscillation $E(x)/\sqrt{x}$. If ERH holds, the curve remains bounded.}
-  \label{fig:normalized_oscillation}
+  \label{fig:normalized_oscillation_compas}
 \end{figure}
 }{}
 \IfFileExists{../figures/paper_fig11_prime_ladder.pdf}{%
@@ -1683,6 +1685,6 @@ We thank all colleagues who provided valuable suggestions and feedback for this 
 
 
 \bibliographystyle{plainnat}
-\bibliography{../references}
+\bibliography{references}
 
 \end{document}
