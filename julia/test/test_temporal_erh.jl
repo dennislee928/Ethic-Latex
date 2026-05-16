@@ -7,6 +7,7 @@ and stochastic perturbation.
 @testset "TemporalERH" begin
 
     import ..TemporalERH as TERH
+    using Random: Xoshiro
 
     # Convenience: build a TAction-like struct compatible with the module
     struct TAct
@@ -82,7 +83,6 @@ and stochastic perturbation.
         X_max = 15
         # Build synthetic actions
         function make_actions(n, seed)
-            import Random: Xoshiro
             rng = Xoshiro(seed)
             [TAct(i, 1.0 + 99rand(rng), rand(rng), 0.5 + rand(rng)) for i in 1:n]
         end

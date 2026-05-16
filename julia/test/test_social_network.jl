@@ -7,6 +7,7 @@ centrality measures, community detection, and all opinion dynamics models
 @testset "SocialNetwork" begin
 
     import ..SocialNetwork as SN
+    using Graphs
 
     # Helper: build a small network for repeated use
     function small_net(n=10; topology="small_world", seed=1)

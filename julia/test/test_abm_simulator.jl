@@ -8,6 +8,7 @@ ERH metric computation, calibration, and the HybridModel integration path.
     using ..ABMSimulator
     import ..ABMSimulator as ABMS
     using Agents: allagents, nv
+    using Random: Xoshiro
 
     # -----------------------------------------------------------------------
     # 1. Simulator creation
@@ -30,7 +31,6 @@ ERH metric computation, calibration, and the HybridModel integration path.
     # 2. Action generation
     # -----------------------------------------------------------------------
     @testset "generate_world" begin
-        import Random: Xoshiro
         actions = ABMS.generate_world(200; rng=Xoshiro(42))
         @test length(actions) == 200
         @test all(a -> 1.0 <= a.c <= 100.0, actions)
