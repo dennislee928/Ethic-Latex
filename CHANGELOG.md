@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - erh_core/analysis/zeta_function.py now delegates to Julia when PyJulia is available, falls back to pure Python
 
+### Implementation details
+- `julia/src/server.jl` — HTTP sidecar (port 8080) with 4 simulation modes (abm, temporal, fluid, hybrid); activate with `ERH_JULIA_BACKEND=true`
+- `julia/QUANTUM_NOTE.md` — documents which Python quantum files are replaced vs. kept
+- `erh_core/analysis/_zeta_pure.py` — pure-Python fallback preserved; `zeta_function.py` now auto-delegates to Julia when PyJulia available
+- Total new Julia code: ~6,500 lines across 11 source modules + 11 test files + 6 batch scripts
+
 ---
 
 ## [Unreleased] (prior)
