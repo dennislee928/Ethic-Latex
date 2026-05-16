@@ -225,8 +225,40 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
+  julia-simulate:
+    name: Julia Simulation Smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+
+      - uses: julia-actions/cache@v2
+
+      - name: Install Julia dependencies
+        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Run Julia simulation batch (smoke)
+        run: julia --project=julia julia/scripts/run_simulation_batch.jl --smoke
+        continue-on-error: true
+
+      - name: Run Julia phase transition (smoke)
+        run: julia --project=julia julia/scripts/run_phase_transition.jl --smoke
+        continue-on-error: true
+
+      - name: Upload Julia simulation results
+        uses: actions/upload-artifact@v4
+        with:
+          name: julia-simulation-smoke
+          path: results/julia/
+          if-no-files-found: ignore
+          retention-days: 5
+        continue-on-error: true
+
   report:
-    needs: [simulate, alpha-comparison, phase-transition]
+    needs: [simulate, alpha-comparison, phase-transition, julia-simulate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
