@@ -83,7 +83,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
-          julia --project=julia -e 'using Pkg; Pkg.instantiate()' || true
+          julia --project=julia -e '
+            using Pkg
+            Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                     "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+          ' || true
           julia --project=julia -e '
             push!(LOAD_PATH, "julia/src")
             include("julia/src/EthicalPrimes.jl")
@@ -91,3 +96,35 @@ jobs:
             println("EthicalPrimes.jl loads OK")
           ' || true
         continue-on-error: true
+
+  collect-errors:
+    name: Collect CI Errors
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+    steps:
+      - name: Write error report
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          report = {
+            "workflow": "multi_platform_test",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "known_errors": [
+              {"job": "test", "step": "Julia package smoke (Linux only)", "error": "Pkg.instantiate failed — wrong UUID for CSV and other packages"}
+            ]
+          }
+          with open("ci-errors-multi-platform-test.json", "w") as f:
+              json.dump(report, f, indent=2)
+          PYEOF
+
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-errors-multi_platform_test
+          path: ci-errors-multi-platform-test.json
+          retention-days: 3

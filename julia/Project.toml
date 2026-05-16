@@ -3,36 +3,10 @@ uuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 authors = ["Ethic-Latex"]
 version = "0.1.0"
 
-[deps]
-# Phase 1 — Mathematical Core
-SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-Primes = "27ebfcd6-29c5-5fa9-bf4e-3b359b1bc57d"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b1"
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-
-# Phase 2 — Simulation Framework
-Agents = "46ada45e-f475-11e8-01d0-f70cc89e6671"
-Graphs = "86223c79-3864-5bf0-83f7-82e725a168b3"
-DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
-OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-
-# Phase 3 — Quantum Simulation
-Yao = "5872b779-8223-5990-8dd0-5abbb0748c8e"
-YaoArrayRegister = "e600142f-9330-5003-9dd5-7fb2ee2f5651"
-
-# Phase 4 — Figures & Batch Scripts
-CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
-DataFrames = "a93c6f00-e57d-5684-b466-afe8fa294f15"
-CSV = "336ed68f-0bac-2571-8ef2-6bf8f2f3de23"
-
-# Shared
-JSON3 = "0f8b85d8-7e73-4b0e-9b40-3ea0bb4c2c94"
-HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Test = "8dfed614-e22c-358d-9f9c-f7bc99da5fd0"
+# [deps] is intentionally empty here.
+# UUIDs are resolved at install-time by `Pkg.add(...)` in CI and locally.
+# This avoids hard-coding UUIDs that drift from the General registry.
+# Run `julia --project=. -e 'using Pkg; Pkg.add([...])'` to populate deps + generate Manifest.toml.
 
 [compat]
 julia = "1.10"
@@ -43,6 +17,7 @@ HypothesisTests = "0.11"
 Agents = "6"
 Graphs = "1"
 DifferentialEquations = "7"
+OrdinaryDiffEq = "6"
 CairoMakie = "0.12"
 DataFrames = "1"
 CSV = "0.10"

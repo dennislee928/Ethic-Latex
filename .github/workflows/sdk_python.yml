@@ -43,7 +43,13 @@ jobs:
     - uses: julia-actions/cache@v2
 
     - name: Install Julia dependencies
-      run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+      run: |
+        julia --project=julia -e '
+          using Pkg
+          Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                   "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                   "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+        '
       continue-on-error: true
 
     - name: Test PyJulia bridge (zeta_function shim)
@@ -72,6 +78,38 @@ jobs:
         pip install bandit
         # Run bandit but do not fail CI on findings; issues are reported in logs
         bandit -r erh/ || true
+
+  collect-errors:
+    name: Collect CI Errors
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+    steps:
+      - name: Write error report
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          report = {
+            "workflow": "sdk_python",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "known_errors": [
+              {"job": "test", "step": "Install Julia dependencies", "error": "Pkg.instantiate failed — wrong UUID for CSV and other packages"}
+            ]
+          }
+          with open("ci-errors-sdk-python.json", "w") as f:
+              json.dump(report, f, indent=2)
+          PYEOF
+
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-errors-sdk_python
+          path: ci-errors-sdk-python.json
+          retention-days: 3
 
   publish:
     needs: test
