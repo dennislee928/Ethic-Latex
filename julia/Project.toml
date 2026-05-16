@@ -9,17 +9,8 @@ version = "0.1.0"
 # Run `julia --project=. -e 'using Pkg; Pkg.add([...])'` to populate deps + generate Manifest.toml.
 
 [compat]
+# Only the Julia version constraint is kept here.
+# Package compat bounds are added automatically when Pkg.add resolves and
+# writes them after deps are populated. Listing them without a [deps] entry
+# causes Julia's project validator to error ("not listed in deps").
 julia = "1.10"
-SpecialFunctions = "2"
-Primes = "0.5"
-Distributions = "0.25"
-HypothesisTests = "0.11"
-Agents = "6"
-Graphs = "1"
-DifferentialEquations = "7"
-OrdinaryDiffEq = "6"
-CairoMakie = "0.12"
-DataFrames = "1"
-CSV = "0.10"
-JSON3 = "1"
-HTTP = "1"
