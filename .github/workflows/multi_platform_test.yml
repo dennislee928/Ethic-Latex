@@ -72,3 +72,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y texlive-base texlive-latex-base latexmk
           latexmk -pdf -interaction=nonstopmode ethical_riemann_hypothesis_en.tex || echo "⚠ LaTeX compilation failed, continuing..."
+
+      - name: Set up Julia (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+
+      - name: Julia package smoke (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          julia --project=julia -e 'using Pkg; Pkg.instantiate()' || true
+          julia --project=julia -e '
+            push!(LOAD_PATH, "julia/src")
+            include("julia/src/EthicalPrimes.jl")
+            using .EthicalPrimes
+            println("EthicalPrimes.jl loads OK")
+          ' || true
+        continue-on-error: true

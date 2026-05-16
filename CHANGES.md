@@ -5,6 +5,21 @@ Each entry references the audit item ID and a short description.
 
 ---
 
+## 2026-05-16 — Julia Migration Started
+
+A new `julia/` package (`ERH.jl`) has been introduced on branch `feature-partialre-factor-via-julia` to replace compute-heavy Python components with Julia equivalents while keeping the Python path as the default for all production services.
+
+The migration is organized into four phases:
+
+- **Phase 1 (Mathematical Core):** Julia rewrites of the zeta function evaluator, ERH bound checker, ethical primes generator, and statistical analysis utilities, backed by `SpecialFunctions.jl`, `Primes.jl`, and `Distributions.jl`.
+- **Phase 2 (Simulation Framework):** ABM simulator, social network engine, temporal ERH model, hybrid model, and fluid dynamics model, using `Agents.jl`, `Graphs.jl`, and `DifferentialEquations.jl`.
+- **Phase 3 (Quantum Simulation):** Local state-vector simulation via `Yao.jl`, targeting 30x speedup over Qiskit Aer.
+- **Phase 4 (Batch Scripts):** Julia replacements for Python batch and figure-generation scripts, with Python originals kept as fallback.
+
+Package scaffold (`julia/Project.toml`, `julia/src/ERH.jl`) and the GitHub Actions CI workflow (`.github/workflows/julia_tests.yml`) are complete. Implementation agents are writing the phase source files in parallel. Python code is unchanged; the PyJulia bridge falls back to pure Python if Julia is not installed, ensuring no production impact.
+
+---
+
 ## Phase 1 — Security & Stability (Implemented)
 
 ### [VUL-001] Hardcoded IBM Quantum Token Removed

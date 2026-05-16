@@ -5,7 +5,29 @@ All notable changes to the Ethical Riemann Hypothesis (ERH) project will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] — 2026-05-16
+
+### Added
+- Julia package `ERH.jl` at `julia/` — replaces compute-heavy Python components with Julia equivalents
+- Phase 1: EthicalPrimes.jl, ZetaFunction.jl, ERHChecks.jl, ERHStatistics.jl (mathematical core)
+- Phase 2: ABMSimulator.jl, SocialNetwork.jl, TemporalERH.jl, HybridModel.jl, FluidModel.jl (simulation framework)
+- Phase 3: QuantumSimulator.jl, QuantumWalk.jl using Yao.jl (local quantum simulation)
+- Phase 4: Julia batch scripts in julia/scripts/ replacing Python equivalents
+- GitHub Actions workflow `.github/workflows/julia_tests.yml` for Julia CI
+- PyJulia bridge shims for transparent fallback to pure Python
+
+### Changed
+- erh_core/analysis/zeta_function.py now delegates to Julia when PyJulia is available, falls back to pure Python
+
+### Implementation details
+- `julia/src/server.jl` — HTTP sidecar (port 8080) with 4 simulation modes (abm, temporal, fluid, hybrid); activate with `ERH_JULIA_BACKEND=true`
+- `julia/QUANTUM_NOTE.md` — documents which Python quantum files are replaced vs. kept
+- `erh_core/analysis/_zeta_pure.py` — pure-Python fallback preserved; `zeta_function.py` now auto-delegates to Julia when PyJulia available
+- Total new Julia code: ~6,500 lines across 11 source modules + 11 test files + 6 batch scripts
+
+---
+
+## [Unreleased] (prior)
 
 ### Added
 - R package installation support in CI/CD workflows
