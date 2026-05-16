@@ -30,7 +30,13 @@ jobs:
       - uses: julia-actions/cache@v2
 
       - name: Install Julia dependencies
-        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+        run: |
+          julia --project=julia -e '
+            using Pkg
+            Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                     "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+          '
 
       - name: Run Julia tests
         run: julia --project=julia -e 'using Pkg; Pkg.test("ERH")'
@@ -60,7 +66,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Julia deps
-        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+        run: |
+          julia --project=julia -e '
+            using Pkg
+            Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                     "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+          '
 
       - name: Install PyJulia bridge
         run: |
@@ -70,3 +82,35 @@ jobs:
       - name: Run parity tests
         run: pytest tests/test_julia_parity.py -v --tb=short
         continue-on-error: true  # non-blocking until all phases complete
+
+  collect-errors:
+    name: Collect CI Errors
+    runs-on: ubuntu-latest
+    needs: [test, parity]
+    if: always()
+    steps:
+      - name: Write error report
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          report = {
+            "workflow": "julia_tests",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "known_errors": [
+              {"job": "test", "step": "Install Julia dependencies", "error": "Pkg.instantiate failed — wrong UUID for CSV and other packages"}
+            ]
+          }
+          with open("ci-errors-julia-tests.json", "w") as f:
+              json.dump(report, f, indent=2)
+          PYEOF
+
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-errors-julia_tests
+          path: ci-errors-julia-tests.json
+          retention-days: 3
