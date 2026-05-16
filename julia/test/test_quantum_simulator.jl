@@ -12,6 +12,8 @@ Verifies:
 using Test
 using LinearAlgebra
 using Statistics
+using Yao
+using YaoArrayRegister
 
 # Include the module directly (ERH.jl includes it, but for standalone clarity)
 include(joinpath(@__DIR__, "..", "src", "QuantumSimulator.jl"))
@@ -200,8 +202,12 @@ using .QuantumSimulator
             "phi"    => a["flexibility"] * 2π,
             "lambda" => a["resilience"] * π,
         ) for a in agent_data]
+
+        # Verify circuit applies without error and statevec is normalized
         circ, n_used = build_social_circuit(engine, states, adj)
-        reg = ERH.QuantumSimulator._apply_circ_internal(circ, n_used)
+        reg = apply!(zero_state(n_used), circ)
+        sv = statevec(reg)
+        @test sum(abs2, sv) ≈ 1.0 atol=1e-8
 
         # run_engine_simulation result
         result = run_engine_simulation(engine, agent_data, adj; shot_count=512)
