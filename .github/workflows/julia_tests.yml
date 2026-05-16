@@ -1,0 +1,72 @@
+name: Julia Tests
+
+on:
+  push:
+    paths:
+      - 'julia/**'
+      - '.github/workflows/julia_tests.yml'
+  pull_request:
+    paths:
+      - 'julia/**'
+      - '.github/workflows/julia_tests.yml'
+
+jobs:
+  test:
+    name: Julia ${{ matrix.julia-version }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: ['1.10', '1.11']
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+
+      - uses: julia-actions/cache@v2
+
+      - name: Install Julia dependencies
+        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Run Julia tests
+        run: julia --project=julia -e 'using Pkg; Pkg.test("ERH")'
+
+      - name: Check Julia package loads
+        run: julia --project=julia -e 'using ERH; @assert ERH.version() == v"0.1.0"'
+
+  parity:
+    name: Python ↔ Julia Parity
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+
+      - uses: julia-actions/cache@v2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Install Julia deps
+        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Install PyJulia bridge
+        run: |
+          pip install julia
+          python -c "import julia; julia.install()"
+
+      - name: Run parity tests
+        run: pytest tests/test_julia_parity.py -v --tb=short
+        continue-on-error: true  # non-blocking until all phases complete
