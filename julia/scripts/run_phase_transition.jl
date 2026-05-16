@@ -16,6 +16,7 @@ Usage:
 
 push!(LOAD_PATH, joinpath(@__DIR__, "..", "src"))
 using ERH
+using CairoMakie
 using JSON3
 using Random
 using Statistics
@@ -192,7 +193,6 @@ function main()
 
     if args["save_plot"]
         try
-            using CairoMakie
             fig = Figure(size=(800, 500))
             ax  = Axis(fig[1, 1];
                 xlabel="Coupling Strength J",
