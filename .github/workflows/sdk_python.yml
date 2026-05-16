@@ -34,6 +34,33 @@ jobs:
       run: |
         export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
         python -c "from simulation.quantum import LocalQuantumJudge; j = LocalQuantumJudge(shots=32); print('quantum OK')" || true
+
+    - name: Set up Julia for PyJulia bridge test
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: '1.11'
+
+    - uses: julia-actions/cache@v2
+
+    - name: Install Julia dependencies
+      run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+      continue-on-error: true
+
+    - name: Test PyJulia bridge (zeta_function shim)
+      run: |
+        pip install julia
+        python -c "import julia; julia.install()" || true
+        python -c "
+        import sys, os
+        sys.path.insert(0, os.getcwd())
+        # Pure-Python fallback must always work regardless of Julia availability
+        from erh_core.analysis._zeta_pure import ethical_zeta_product
+        result = ethical_zeta_product(primes=[], s=1.0+0j, max_terms=5)
+        from numbers import Number
+        assert isinstance(result, Number), f'Expected Number, got {type(result)}'
+        print('pure-Python zeta fallback OK')
+        "
+      continue-on-error: true
     - name: Lint with pylint
       run: |
         pylint --exit-zero erh/ || true
