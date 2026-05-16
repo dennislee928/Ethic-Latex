@@ -48,6 +48,7 @@ Pkg.activate(joinpath(@__DIR__, ".."))   # julia/Project.toml
 using HTTP
 using JSON3
 using Logging
+using Agents: allagents
 
 # Bring sibling modules into scope via the ERH package
 include(joinpath(@__DIR__, "ABMSimulator.jl"))
@@ -193,7 +194,6 @@ function handle_simulate(req::HTTP.Request)::HTTP.Response
             )
 
             # Social network + opinion dynamics
-            using Agents: allagents
             agents_vec  = collect(allagents(sim.model))
             agent_ids   = [a.id  for a in agents_vec]
             error_rates = [a.error_rate for a in agents_vec]

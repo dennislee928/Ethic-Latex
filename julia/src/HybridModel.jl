@@ -183,7 +183,6 @@ function run_hybrid_simulation!(
 
     # --- Network dynamics ---
     if model.config.enable_network_dynamics && model.network !== nothing
-        using Agents: allagents
         agents_vec = collect(allagents(model.abm.model))
         tendencies  = [a.judgment_tendency for a in agents_vec]
         agent_ids   = [a.id for a in agents_vec]
