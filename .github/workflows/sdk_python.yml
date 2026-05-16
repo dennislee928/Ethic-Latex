@@ -43,7 +43,13 @@ jobs:
     - uses: julia-actions/cache@v2
 
     - name: Install Julia dependencies
-      run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+      run: |
+        julia --project=julia -e '
+          using Pkg
+          Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                   "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                   "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+        '
       continue-on-error: true
 
     - name: Test PyJulia bridge (zeta_function shim)
