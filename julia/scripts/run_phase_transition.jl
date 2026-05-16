@@ -120,10 +120,7 @@ function main()
     end
 
     project_root = joinpath(@__DIR__, "..", "..")
-    output_dir   = something(
-        args["output_dir"] !== nothing ? args["output_dir"] : nothing,
-        joinpath(project_root, "simulation", "output"),
-    )
+    output_dir   = args["output_dir"] !== nothing ? args["output_dir"] : joinpath(project_root, "simulation", "output")
     mkpath(output_dir)
     figures_dir = joinpath(output_dir, "figures")
     mkpath(figures_dir)

@@ -25,6 +25,8 @@ using ERH
 using JSON3
 using Random
 using Statistics
+using CSV
+using DataFrames
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -126,7 +128,6 @@ function run_real_data_erh(csv_path::String, dataset_name::String; X_max=100)
         return Dict("data_not_found" => csv_path)
     end
     try
-        using CSV, DataFrames
         df = CSV.read(csv_path, DataFrame)
 
         # Try to find a "complexity" column (or use row index as proxy)
@@ -179,7 +180,7 @@ function main()
 
     project_root = joinpath(@__DIR__, "..", "..")
     default_out  = joinpath(project_root, "simulation", "output", "real_world_results.json")
-    output_path  = something(args["output"] !== nothing ? args["output"] : nothing, default_out)
+    output_path  = args["output"] !== nothing ? args["output"] : default_out
     mkpath(dirname(output_path))
 
     results = Dict{String, Any}(

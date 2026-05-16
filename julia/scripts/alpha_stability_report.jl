@@ -133,10 +133,7 @@ function main()
     end
 
     project_root = joinpath(@__DIR__, "..", "..")
-    output_path  = something(
-        args["output"] !== nothing ? args["output"] : nothing,
-        joinpath(project_root, "simulation", "output", "alpha_stability_report.md"),
-    )
+    output_path  = args["output"] !== nothing ? args["output"] : joinpath(project_root, "simulation", "output", "alpha_stability_report.md")
     mkpath(dirname(output_path))
 
     n_seeds    = args["n_seeds"]

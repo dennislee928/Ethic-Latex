@@ -170,10 +170,10 @@ function main()
 
     project_root  = joinpath(@__DIR__, "..", "..")
     default_out   = joinpath(project_root, "figures", "alpha_comparison_real_vs_simulated.png")
-    output_path   = something(args["output"] !== nothing ? args["output"] : nothing, default_out)
+    output_path   = args["output"] !== nothing ? args["output"] : default_out
 
     default_json  = joinpath(project_root, "simulation", "output", "real_world_results.json")
-    results_json  = something(args["results_json"] !== nothing ? args["results_json"] : nothing, default_json)
+    results_json  = args["results_json"] !== nothing ? args["results_json"] : default_json
 
     println("[alpha_comparison] Loading real-world alphas from $results_json ...")
     real_alphas = get_real_world_alphas(results_json)

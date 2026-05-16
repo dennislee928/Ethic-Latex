@@ -283,10 +283,7 @@ function main()
     end
 
     project_root = joinpath(@__DIR__, "..", "..")
-    output_dir   = something(
-        args["output_dir"] !== nothing ? args["output_dir"] : nothing,
-        joinpath(project_root, "figures"),
-    )
+    output_dir   = args["output_dir"] !== nothing ? args["output_dir"] : joinpath(project_root, "figures")
     mkpath(output_dir)
 
     setup_paper_style!()
