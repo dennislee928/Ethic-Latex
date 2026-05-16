@@ -17,6 +17,7 @@ module HybridModel
 
 using Statistics
 using LinearAlgebra
+using Agents: allagents
 
 # Sibling modules (resolved at ERH module level via include order in ERH.jl)
 import ..ABMSimulator as ABMS
@@ -101,7 +102,6 @@ function create_hybrid_model(; kwargs...)
     )
 
     # Build the social network from initial ABM agent state
-    using Agents: allagents
     agents_vec = collect(allagents(abm.model))
     agent_ids  = [a.id for a in agents_vec]
     error_rates = [a.error_rate for a in agents_vec]
