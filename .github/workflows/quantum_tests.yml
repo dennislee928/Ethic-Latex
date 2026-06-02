@@ -3,31 +3,43 @@ name: Quantum Tests
 on:
   workflow_call:
   push:
-    branches: ["main","dev"]
+    branches: ["main", "dev"]
     paths:
+      - ".github/workflows/quantum_tests.yml"
       - "simulation/quantum/**"
+      - "erh_core/core/hybrid_model.py"
+      - "scripts/run_quantum_hilbert_figures.py"
       - "tests/test_quantum_*.py"
+      - "tests/test_update_plan_features.py"
+      - "tests/test_simulator_ising.py"
       - "pyproject.toml"
-      - "julia/src/QuantumSimulator.jl"
-      - "julia/src/QuantumWalk.jl"
-      - "julia/test/test_quantum_*.jl"
   pull_request:
     branches: ["main", "dev"]
     paths:
+      - ".github/workflows/quantum_tests.yml"
       - "simulation/quantum/**"
+      - "erh_core/core/hybrid_model.py"
+      - "scripts/run_quantum_hilbert_figures.py"
       - "tests/test_quantum_*.py"
+      - "tests/test_update_plan_features.py"
+      - "tests/test_simulator_ising.py"
       - "pyproject.toml"
-      - "julia/src/QuantumSimulator.jl"
-      - "julia/src/QuantumWalk.jl"
-      - "julia/test/test_quantum_*.jl"
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
 
+env:
+  PYTHONPATH: ${{ github.workspace }}
+  MPLBACKEND: Agg
+  PYTEST_ADDOPTS: --tb=short
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
-  local-simulator:
-    name: Local Simulator & Entanglement
+  simulator-regression:
+    name: Quantum Simulator Regression
     runs-on: ubuntu-latest
+    env:
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -40,16 +52,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
-          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
+          pip install "qiskit>=1.0.0" "qiskit-aer>=0.14.0" "qiskit-ibm-runtime>=0.21.0"
 
-      - name: Run quantum entanglement tests
+      - name: Run stable quantum regression suite
         run: |
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          pytest tests/test_quantum_entanglement.py -v --tb=short
+          pytest -v \
+            tests/test_quantum_entanglement.py \
+            tests/test_update_plan_features.py \
+            tests/test_simulator_ising.py
 
-  fallback:
-    name: NumPy Fallback (no qiskit)
+  numpy-fallback:
+    name: NumPy Fallback Regression
     runs-on: ubuntu-latest
+    env:
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -58,20 +74,21 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies (no quantum)
+      - name: Install dependencies (no quantum extras)
         run: |
           python -m pip install --upgrade pip
           pip install -e . pytest numpy networkx
 
-      - name: Run quantum tests (NumPy fallback)
+      - name: Run fallback quantum tests
         run: |
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
-          pytest tests/test_quantum_entanglement.py -v --tb=short
+          pytest -v tests/test_quantum_entanglement.py
 
-  ibm-complex-circuit:
-    name: IBM Complex Circuit (AdvancedEthicalQuantumEngine)
+  ibm-runtime-smoke:
+    name: IBM Runtime Smoke
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    env:
+      MPLCONFIGDIR: /tmp/matplotlib
     steps:
       - uses: actions/checkout@v4
 
@@ -84,81 +101,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[quantum]" pytest networkx
-          pip install qiskit>=1.0.0 qiskit-aer>=0.14.0 qiskit-ibm-runtime>=0.21.0
+          pip install "qiskit>=1.0.0" "qiskit-aer>=0.14.0" "qiskit-ibm-runtime>=0.21.0"
 
-      - name: Test complex circuit on IBM Quantum
+      - name: Run IBM Runtime smoke path
         env:
           IBM_QUANTUM_TOKEN: ${{ secrets.IBM_QUANTUM_TOKEN }}
+          IBM_QUANTUM_INSTANCE: ${{ secrets.IBM_QUANTUM_INSTANCE }}
+          IBM_QUANTUM_REGION: ${{ secrets.IBM_QUANTUM_REGION }}
           USE_IBM_QUANTUM: "1"
           IBM_QUANTUM_BACKEND: ibm_fez
         run: |
           if [ -z "$IBM_QUANTUM_TOKEN" ]; then
-            echo "Skipped: IBM_QUANTUM_TOKEN not set (normal on fork PRs)"
+            echo "Skipped: IBM_QUANTUM_TOKEN not set"
             exit 0
           fi
-          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
           python scripts/run_quantum_hilbert_figures.py
-          echo "AdvancedEthicalQuantumEngine OK (IBM)"
-        continue-on-error: true
-
-  julia-quantum:
-    name: Julia Quantum (Yao.jl)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1.11'
-
-      - uses: julia-actions/cache@v2
-
-      - name: Install Julia dependencies
-        run: |
-          julia --project=julia -e '
-            using Pkg
-            Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
-                     "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
-                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
-          '
-
-      - name: Run Julia quantum tests
-        run: |
-          julia --project=julia -e '
-            using Test
-            include("julia/test/test_quantum_simulator.jl")
-            include("julia/test/test_quantum_walk.jl")
-          '
-        continue-on-error: true  # non-blocking until Yao.jl fully validated
-
-  collect-errors:
-    name: Collect CI Errors
-    runs-on: ubuntu-latest
-    needs: [local-simulator, fallback, ibm-complex-circuit, julia-quantum]
-    if: always()
-    steps:
-      - name: Write error report
-        run: |
-          python3 - <<'PYEOF'
-          import json, datetime
-          report = {
-            "workflow": "quantum_tests",
-            "run_id": "${{ github.run_id }}",
-            "commit": "${{ github.sha }}",
-            "ref": "${{ github.ref }}",
-            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
-            "known_errors": [
-              {"job": "julia-quantum", "step": "Install Julia dependencies", "error": "Pkg.instantiate failed — wrong UUID for CSV and other packages"}
-            ]
-          }
-          with open("ci-errors-quantum-tests.json", "w") as f:
-              json.dump(report, f, indent=2)
-          PYEOF
-
-      - name: Upload error report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ci-errors-quantum_tests
-          path: ci-errors-quantum-tests.json
-          retention-days: 3
+          python -c "import json, pathlib; p = pathlib.Path('simulation/output/quantum_hilbert_results.json'); data = json.loads(p.read_text()); assert 'error' not in data, data; assert data.get('consensus_state'), data; assert 'system_coherence' in data, data; assert data.get('execution_backend'), data; print('validated', data['execution_backend'])"

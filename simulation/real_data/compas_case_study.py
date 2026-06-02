@@ -140,6 +140,9 @@ def _agent_judgment_from_decile(decile_score: np.ndarray) -> np.ndarray:
 
 def _complexity_from_priors(df: pd.DataFrame) -> np.ndarray:
     """Complexity x from priors_count (criminal history length) + feature density."""
+    if {"priors_count", "c_charge_degree", "days_b_screening_arrest"}.issubset(df.columns):
+        return _complexity_from_charge(df).to_numpy()
+
     if "priors_count" in df.columns:
         priors = df["priors_count"].fillna(0).values.astype(float)
     else:
@@ -149,6 +152,34 @@ def _complexity_from_priors(df: pd.DataFrame) -> np.ndarray:
     if raw.max() <= raw.min():
         return np.ones(len(df), dtype=int)
     return (1 + 99 * (raw - raw.min()) / (raw.max() - raw.min() + 1e-8)).astype(int)
+
+
+def _complexity_from_charge(df: pd.DataFrame) -> pd.Series:
+    """
+    Richer COMPAS complexity from priors, charge severity, and screening lag.
+
+    Felony charges and delayed screening are treated as higher-complexity
+    contexts, then normalized to integer bins in [1, 100].
+    """
+    priors = df.get("priors_count", pd.Series(np.zeros(len(df)), index=df.index)).fillna(0).astype(float)
+    charge = (
+        df.get("c_charge_degree", pd.Series(["M"] * len(df), index=df.index))
+        .map({"F": 2, "M": 1})
+        .fillna(1)
+        .astype(float)
+    )
+    screening_days = (
+        df.get("days_b_screening_arrest", pd.Series(np.zeros(len(df)), index=df.index))
+        .fillna(0)
+        .astype(float)
+        .abs()
+    )
+    urgency = (screening_days > 7).astype(float) * 2.0
+    raw = priors + charge * 3.0 + urgency
+    if raw.max() <= raw.min():
+        return pd.Series(np.ones(len(df), dtype=int), index=df.index)
+    scaled = 1 + 99 * (raw - raw.min()) / (raw.max() - raw.min() + 1e-8)
+    return scaled.astype(int)
 
 
 def calculate_cumulative_error(
@@ -231,6 +262,62 @@ def run_compas_erh_analysis(data_path: Path | None = None) -> Dict[str, Any]:
         return {"x": x_vals.tolist(), "E_x": E_x.tolist(), "alpha": alpha, "C": C}
     except Exception as e:
         return {"error": str(e)}
+
+
+def _compas_group_result(group_name: str, df: pd.DataFrame) -> Dict[str, Any]:
+    truth = _ground_truth_from_recid(df["two_year_recid"].values)
+    judgment = _agent_judgment_from_decile(df["decile_score"])
+    complexity = _complexity_from_priors(df)
+    x_vals, E_x = calculate_cumulative_error(truth, judgment, complexity)
+    alpha, C = fit_power_law(x_vals, E_x)
+    alpha = float(np.clip(alpha, 0.0, 1.5))
+    predicted = np.where(judgment >= 0.0, 1.0, -1.0)
+    mistakes = predicted != truth
+    n_total = int(len(df))
+    n_mistakes = int(mistakes.sum())
+    return {
+        "group": group_name,
+        "alpha": float(alpha),
+        "C": float(C),
+        "erh_satisfied": bool(alpha < 0.6),
+        "n_total": n_total,
+        "n_mistakes": n_mistakes,
+        "mistake_rate": float(n_mistakes / n_total) if n_total else 0.0,
+        "x": x_vals.tolist(),
+        "E_x": E_x.tolist(),
+    }
+
+
+def run_compas_by_race(df: pd.DataFrame | None = None, data_path: Path | None = None) -> Dict[str, Any]:
+    """
+    Run COMPAS ERH analysis separately per race group.
+
+    Returns alpha and standard ERH summary fields for each group, allowing
+    direct comparison of whether errors compound differently by race.
+    """
+    if df is None:
+        path = (data_path or DEFAULT_DATA_PATH).resolve()
+        if not path.exists():
+            return {"error": "COMPAS CSV not found"}
+        df = load_compas_data(path)
+
+    required = {"race", "two_year_recid", "decile_score"}
+    missing = required.difference(df.columns)
+    if missing:
+        return {"error": f"Missing required columns: {sorted(missing)}"}
+
+    groups: Dict[str, Any] = {}
+    for race in sorted(str(r) for r in df["race"].dropna().unique()):
+        sub = df[df["race"].astype(str) == race].reset_index(drop=True)
+        if sub.empty:
+            continue
+        groups[race] = _compas_group_result(race, sub)
+
+    return {
+        "case_name": "compas_by_race",
+        "n_groups": len(groups),
+        "groups": groups,
+    }
 
 
 def run_compas_alpha(

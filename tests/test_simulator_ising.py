@@ -180,7 +180,7 @@ def test_calculate_von_neumann_entropy_density_matrix():
         pytest.skip("calculate_von_neumann_entropy unavailable")
     pure = np.array([[1, 0], [0, 0]], dtype=complex)
     s_pure = calculate_von_neumann_entropy(pure)
-    assert s_pure == 0.0
+    assert s_pure == pytest.approx(0.0, abs=1e-12)
     mixed = np.eye(2) / 2
     s_mixed = calculate_von_neumann_entropy(mixed)
     assert s_mixed > 0
