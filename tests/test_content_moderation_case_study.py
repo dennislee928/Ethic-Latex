@@ -1,4 +1,6 @@
 import math
+import sys
+import types
 
 import numpy as np
 
@@ -57,3 +59,32 @@ def test_run_content_moderation_erh_analysis_returns_standard_schema():
     assert len(result["x"]) == 100
     assert len(result["E_x"]) == 100
     assert np.all(np.isfinite(result["E_x"]))
+
+
+def test_content_moderation_offline_mode_avoids_hf_and_transformers(monkeypatch):
+    from simulation.real_data import content_moderation_case_study as case
+
+    datasets = types.ModuleType("datasets")
+    calls = {"datasets": 0, "transformers": 0}
+
+    def load_dataset(*args, **kwargs):
+        calls["datasets"] += 1
+        raise ValueError("offline mode must not call HuggingFace datasets")
+
+    datasets.load_dataset = load_dataset
+    transformers = types.ModuleType("transformers")
+
+    def pipeline(*args, **kwargs):
+        calls["transformers"] += 1
+        raise ValueError("offline mode must not load transformer models")
+
+    transformers.pipeline = pipeline
+    monkeypatch.setitem(sys.modules, "datasets", datasets)
+    monkeypatch.setitem(sys.modules, "transformers", transformers)
+    monkeypatch.setenv("ERH_REAL_WORLD_OFFLINE", "1")
+
+    result = case.run_content_moderation_erh_analysis(max_samples=8)
+
+    assert result["case_name"] == "content_moderation"
+    assert result["n_total"] == 8
+    assert calls == {"datasets": 0, "transformers": 0}
