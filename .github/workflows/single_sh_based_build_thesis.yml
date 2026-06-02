@@ -28,6 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - name: Run real-world ERH implementation
+        uses: ./.github/actions/real-world-erh
+
       - name: Run Unit Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
