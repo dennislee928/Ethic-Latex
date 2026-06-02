@@ -2,6 +2,18 @@
 
 This guide will help you install all dependencies for the Ethical Riemann Hypothesis project.
 
+## Installation Targets
+
+Status date: `2026-04-12`
+
+This repository has multiple install surfaces. Pick the smallest one that matches what you are trying to run:
+
+- **Security app backend:** `cd erh-security-app/backend && pip install -r requirements.txt`
+- **Security app frontend:** `cd erh-security-app/frontend && npm install`
+- **Root research / SDK environment:** `pip install -e . && pip install -r requirements.txt`
+
+The security app backend installs the root package in editable mode via `-e ../..`, so it can use the latest `erh_core` code without separately packaging it.
+
 ## Quick Installation
 
 ### Option 1: Use Installation Script (Recommended)
@@ -33,6 +45,20 @@ python3 -m venv .venv
 source .venv/bin/activate   # On Windows: .venv\Scripts\activate
 pip install -e .
 pip install -r requirements.txt
+```
+
+### Security App Only
+
+If you only need the currently revalidated security surface:
+
+```bash
+cd /path/to/Ethic-Latex/erh-security-app/backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cd ../frontend
+npm install
 ```
 
 **Note:** The `latex` package in requirements.txt is commented out because it's not a valid Python package. LaTeX rendering requires a system LaTeX installation (see below).
@@ -197,6 +223,18 @@ cd simulation
 python run_example.py
 ```
 
+For the currently revalidated security app path, verify with:
+
+```bash
+cd erh-security-app/backend
+python -m pytest tests -q
+
+cd ../frontend
+npm run typecheck
+npm run build
+npm run lint
+```
+
 You should see output like:
 ```
 [1/5] Generating action space...
@@ -275,4 +313,3 @@ After successful installation:
 4. **Read the paper:**
    - Compile LaTeX: `pdflatex ethical_riemann_hypothesis.tex`
    - Or view the source: `ethical_riemann_hypothesis.tex`
-

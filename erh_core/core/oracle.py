@@ -141,6 +141,30 @@ class HuggingFaceEthicalOracle:
                 with open(self.cache_path, "w", encoding="utf-8") as f:
                     json.dump(self._cache, f, indent=0)
             return v
+        except MemoryError:
+            # VUL-011: Differentiate fatal errors from transient ones.
+            logging.error(
+                "HuggingFaceEthicalOracle: out of memory during inference for model %s. "
+                "Consider reducing batch size or using a smaller model.",
+                self.model_name,
+            )
+            return 0.0
+        except RuntimeError as e:
+            # GPU/CUDA or tensor dimension errors — likely non-transient.
+            logging.error(
+                "HuggingFaceEthicalOracle: RuntimeError during inference (model=%s): %s. "
+                "Returning fallback value 0.0.",
+                self.model_name,
+                e,
+            )
+            return 0.0
         except Exception as e:
-            logging.warning("HuggingFaceEthicalOracle: inference failed: %s", e)
+            # Transient or unknown errors — log with context for debugging.
+            logging.warning(
+                "HuggingFaceEthicalOracle: inference failed (model=%s): %s. "
+                "Returning fallback value 0.0. "
+                "Note: this value is indistinguishable from a neutral ethical score.",
+                self.model_name,
+                e,
+            )
             return 0.0

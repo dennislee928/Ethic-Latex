@@ -2,14 +2,16 @@
 API routes for LaTeX rules management.
 """
 
+import logging
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..core.schemas import LatexRuleCreate, LatexRuleUpdate, LatexRuleRead
 from ..core.models import LatexRule
-from ..deps import get_db
+from ..deps import get_db, get_current_user_id
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -17,16 +19,15 @@ router = APIRouter()
 def create_rule(
     rule: LatexRuleCreate,
     db: Session = Depends(get_db),
+    owner_id: int = Depends(get_current_user_id),
 ):
     """
     Create a new LaTeX rule.
-    
-    Note: In a production system, you'd get the user_id from authentication.
-    For now, we'll use a default user_id of 1.
-    """
-    # TODO: Get user_id from authenticated user
-    owner_id = 1
 
+    VUL-003: owner_id is resolved from the authenticated user via
+    get_current_user_id(). Full JWT validation is pending (see deps.py).
+    """
+    logger.info("Creating rule for user_id=%d title=%r", owner_id, rule.title)
     db_rule = LatexRule(
         title=rule.title,
         content=rule.content,
@@ -44,10 +45,17 @@ def list_rules(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-    """List all LaTeX rules."""
-    # TODO: Filter by authenticated user
-    rules = db.query(LatexRule).offset(skip).limit(limit).all()
+    """List LaTeX rules owned by the authenticated user."""
+    # VUL-003: Filter by authenticated user to prevent cross-user data access.
+    rules = (
+        db.query(LatexRule)
+        .filter(LatexRule.owner_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return rules
 
 
@@ -55,9 +63,15 @@ def list_rules(
 def get_rule(
     rule_id: int,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-    """Get a specific LaTeX rule by ID."""
-    rule = db.query(LatexRule).filter(LatexRule.id == rule_id).first()
+    """Get a specific LaTeX rule by ID (must be owned by authenticated user)."""
+    # VUL-003: Combine id + owner filter to prevent access to other users' rules.
+    rule = (
+        db.query(LatexRule)
+        .filter(LatexRule.id == rule_id, LatexRule.owner_id == user_id)
+        .first()
+    )
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
     return rule
@@ -68,13 +82,17 @@ def update_rule(
     rule_id: int,
     rule_update: LatexRuleUpdate,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-    """Update an existing LaTeX rule."""
-    rule = db.query(LatexRule).filter(LatexRule.id == rule_id).first()
+    """Update an existing LaTeX rule (must be owned by authenticated user)."""
+    # VUL-003: Ownership enforced via combined filter.
+    rule = (
+        db.query(LatexRule)
+        .filter(LatexRule.id == rule_id, LatexRule.owner_id == user_id)
+        .first()
+    )
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
-
-    # TODO: Check ownership/authorization
 
     if rule_update.title is not None:
         rule.title = rule_update.title
@@ -85,6 +103,7 @@ def update_rule(
 
     db.commit()
     db.refresh(rule)
+    logger.info("Updated rule id=%d for user_id=%d", rule_id, user_id)
     return rule
 
 
@@ -92,15 +111,20 @@ def update_rule(
 def delete_rule(
     rule_id: int,
     db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ):
-    """Delete a LaTeX rule."""
-    rule = db.query(LatexRule).filter(LatexRule.id == rule_id).first()
+    """Delete a LaTeX rule (must be owned by authenticated user)."""
+    # VUL-003: Ownership enforced via combined filter.
+    rule = (
+        db.query(LatexRule)
+        .filter(LatexRule.id == rule_id, LatexRule.owner_id == user_id)
+        .first()
+    )
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    # TODO: Check ownership/authorization
-
     db.delete(rule)
     db.commit()
+    logger.info("Deleted rule id=%d for user_id=%d", rule_id, user_id)
     return {"message": "Rule deleted successfully"}
 

@@ -45,7 +45,7 @@ napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
+napoleon_use_ivar = True
 napoleon_use_param = True
 napoleon_use_rtype = True
 
@@ -56,3 +56,10 @@ autodoc_default_options = {
     'show-inheritance': True,
 }
 
+rst_prolog = """
+.. |Δ| replace:: ``|Δ|``
+.. |E(x)| replace:: ``|E(x)|``
+.. |α - 0.5| replace:: ``|α - 0.5|``
+.. |E(x,t)| replace:: ``|E(x,t)|``
+.. |Δ(a)| replace:: ``|Δ(a)|``
+"""

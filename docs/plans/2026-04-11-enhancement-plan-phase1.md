@@ -1,0 +1,119 @@
+# Enhancement Plan Phase 1 Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+
+**Goal:** Land the first stabilization tranche from `docs/ENHANCEMENT_PLAN.md` by fixing confirmed backend defects, repairing the broken security frontend API contract, and aligning nearby dependency, CI, and status docs.
+
+**Architecture:** Keep the scope narrow and repository-grounded. Stabilize the ERH security backend first with regression tests, then repair the dependent frontend contract, then update the minimum surrounding files that were directly preventing verification or misleading maintainers.
+
+**Tech Stack:** FastAPI, SQLAlchemy, Pydantic, pytest, Next.js, TypeScript, Streamlit, GitHub Actions
+
+---
+
+## Progress Update (2026-04-12)
+
+**Status:** Phase 1 stabilization tranche implemented and verified for the security backend/frontend surfaces.
+
+**Completed in repository:**
+- Backend regression harness added with SQLite-backed tests for config, verify route, simulation background-task session ownership, and simulation create/status/results route flow.
+- Local backend defaults switched to SQLite, `app.main` naming collision removed, and JSON columns made portable across SQLite/PostgreSQL.
+- Verification logic now flows through a shared helper and `POST /api/v1/verify/rule/{id}` is covered by a smoke test.
+- Simulation background tasks now create and close their own SQLAlchemy session.
+- Next.js security frontend now exports `HealthMonitorResponse` and `getHealth()`.
+- `simulation/app.py` imports `json`, the root environment includes `SQLAlchemy` and `pydantic-settings`, and the security workflow no longer calls undefined `npm test`.
+- Nearby stale status language in documentation was reduced.
+
+**Verification run on 2026-04-12:**
+- `erh-security-app/backend/tests`: `11 passed`
+- `erh-security-app/frontend`: `npm run build` passed
+- `erh-security-app/frontend`: `npm run lint` passed
+- `simulation/app.py`: `py_compile` passed
+
+**Follow-up completed after verification:**
+- Replaced deprecated `datetime.utcnow()` usage in the security backend with a shared UTC helper to reduce warning noise in tests.
+- Added an explicit Next.js security frontend typecheck step (`tsc --noEmit`) so the CI workflow now checks build, typecheck, and lint separately.
+- Made the backend SQLite test database path process-specific so concurrent verification runs do not collide on the same temp database file.
+- Added a dated verified-surfaces snapshot and architecture map to `README.md` and `docs/IMPLEMENTATION_STATUS.md` so repository-facing docs now match the latest stabilization evidence.
+- Updated `erh-security-app/README.md`, `docs/QUICKSTART.md`, and `docs/INSTALL.md` so run/install guidance explicitly separates the verified security app path from the broader research/simulation path.
+- Tightened `.github/workflows/multi_platform_test.yml` by removing shell-level failure suppression from the root SDK and ERH Phase 1 test steps, and by making the zeta-function smoke check assert a stable numeric contract instead of a brittle `complex` type check.
+- Updated `README_for_reviewers.md` so it explicitly describes the research/paper reproduction path rather than conflating it with the verified security app surface.
+- Added `docs/SUPPORTED_SURFACES.md` as the project-level architecture decision note naming the official backend/frontend surfaces, the canonical library surface, and provisional ownership.
+- Updated `docs/index.md` so the docs landing page points directly to the supported-surfaces note, installation, quickstart, and the current verified paths.
+- Added `.github/workflows/repo_smoke.yml` to run one repository-grounded smoke workflow covering the root Python path, the security backend, the security frontend, and the docs build.
+- Reduced Sphinx docs-build warning noise by adding the missing docs static directory, restoring the `erh.analysis.erh_checks` compatibility module, teaching Sphinx how to render the `|E(x)|`-style docstring text, and removing the top-level duplicate API package entries that were generating redundant object descriptions.
+- Aligned `.github/workflows/docs.yml` with the repo smoke docs path so it installs the project in editable mode and runs the same `python -m sphinx` build entrypoint.
+- Tightened both docs CI paths to use `sphinx -W` now that the docs build is warning-free.
+- Untracked generated documentation output under `docs/_build` and vendored dependencies under `js-sdk/node_modules` via `git rm --cached`, while tightening `.gitignore` so those generated trees stay out of the index without deleting local copies.
+- Untracked additional generated run outputs under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report/`, again preserving local files while removing them from Git tracking.
+- Reclassified `simulation/output/` as generated output in the research-facing docs, added a placeholder for `simulation/output/psychohistory_tests/`, and staged removal of the generated files in that tree so only `.gitkeep` structure remains intended for tracking.
+- Tightened `.gitignore` for `.cursor/`, `.venv_erh/`, and `.worktrees/`, and staged Phase 3 cleanup of the tracked local editor workspace plus the checked-in virtual environment so those local-only trees stop polluting repository review state.
+
+**Additional verification run on 2026-04-12:**
+- Root tests: `tests/test_sdk.py` + `tests/test_erh_phase1.py` => `8 passed`
+- Root smoke check for `simulation.models` and `simulation.analysis.zeta_function` passed
+- Docs build: `sphinx -b html docs docs/_build/html` succeeded with warnings
+- Docs build warning count reduced from `46` to `7`
+- Strict docs build: `sphinx -W -b html docs docs/_build/html` passed
+- Tracked generated files under `docs/_build` and `js-sdk/node_modules`: reduced from `248` to `0`
+- Tracked generated files under `results/`, `test_results/`, `tests/notebooks/output/`, `test_report/`, and `final_report`: reduced from `30` to `0`
+- Intended tracked state for `simulation/output/`: reduced from `25` generated artifacts to `3` `.gitkeep` placeholders
+- Additional tracked local-only trees now staged for removal from Git tracking: `.cursor/` (`306` files) and `.venv_erh/` (`657` files)
+
+### Task 1: Lock in backend regressions with tests
+
+**Files:**
+- Create: `erh-security-app/backend/tests/conftest.py`
+- Create: `erh-security-app/backend/tests/test_config.py`
+- Create: `erh-security-app/backend/tests/test_verify_router.py`
+- Create: `erh-security-app/backend/tests/test_simulate_router.py`
+
+**Intent:**
+- Reproduce the broken `verify_rule_by_id` flow.
+- Reproduce the need for a session-factory based simulation task.
+- Establish a local SQLite-backed backend test harness.
+
+### Task 2: Make backend import and local DB behavior sane
+
+**Files:**
+- Modify: `erh-security-app/backend/app/config.py`
+- Modify: `erh-security-app/backend/app/core/models.py`
+- Modify: `erh-security-app/backend/app/main.py`
+
+**Intent:**
+- Default local development to SQLite instead of an implicit PostgreSQL dependency.
+- Make JSON/JSONB columns portable across SQLite and PostgreSQL.
+- Remove the `settings` name collision in `app.main`.
+
+### Task 3: Fix backend route and background-task behavior
+
+**Files:**
+- Modify: `erh-security-app/backend/app/routers/verify.py`
+- Modify: `erh-security-app/backend/app/routers/simulate.py`
+
+**Intent:**
+- Share verification logic through a helper that accepts raw LaTeX content.
+- Make `verify_rule_by_id` call the shared helper correctly.
+- Make simulation background tasks own their SQLAlchemy session lifecycle.
+
+### Task 4: Repair the dependent frontend and utility path
+
+**Files:**
+- Modify: `erh-security-app/frontend/src/lib/api.ts`
+- Modify: `simulation/app.py`
+
+**Intent:**
+- Add the missing `HealthMonitorResponse` and `getHealth()` exports.
+- Fix the Streamlit results browser path by importing `json`.
+
+### Task 5: Align nearby support files
+
+**Files:**
+- Modify: `requirements.txt`
+- Modify: `.github/workflows/erh_security_app.yml`
+- Modify: `docs/IMPLEMENTATION_STATUS.md`
+- Modify: `tests/test_summary.md`
+
+**Intent:**
+- Add the root dependency needed for backend router tests in the repo `.venv`.
+- Remove the invalid `npm test` expectation from the security frontend workflow.
+- Reduce stale documentation claims that contradict the current tree or checked-in test artifacts.

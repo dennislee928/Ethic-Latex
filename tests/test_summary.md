@@ -133,10 +133,10 @@ run_all_tests.bat
 
 ## Expected Test Results
 
-All tests should pass with:
-- Unit tests: 6 test files, ~30+ test cases
-- Notebook tests: 1 notebook with 4 output file verifications
-- Integration tests: Full workflow verification
+Target state:
+- Unit tests pass for the maintained ERH core and backend surfaces.
+- Notebook tests pass only for notebooks that are still supported and whose outputs are still part of the active workflow.
+- Failing checked-in notebook output artifacts should be treated as stale evidence and either regenerated or removed.
 
 ## Dependencies
 
@@ -151,5 +151,4 @@ Tests require:
 - Fluid model tests are optional (computationally intensive)
 - Network tests use small populations for speed
 - All tests use fixed random seeds for reproducibility
-
 

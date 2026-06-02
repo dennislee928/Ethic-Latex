@@ -392,8 +392,9 @@ def compute_error_correction_impact(
 def analyze_error_growth(
     E_x: np.ndarray,
     x_values: np.ndarray,
-    expected_exponent: float = 0.5
-) -> dict:
+    expected_exponent: float = 0.5,
+    return_structured: bool = False,
+):
     """
     Analyze whether |E(x)| grows like x^α and estimate α.
     
@@ -417,13 +418,17 @@ def analyze_error_growth(
         - 'r_squared': goodness of fit
         - 'max_absolute_error': max |E(x)|
         - 'growth_rate': how E(x) grows
-        
+
+        When return_structured=True, returns a (dict, ERHCheckResult) tuple.
+
     Examples
     --------
     >>> Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes)
     >>> analysis = analyze_error_growth(E_x, x_vals)
     >>> print(f"Estimated exponent: {analysis['estimated_exponent']:.3f}")
     >>> print(f"ERH satisfied: {analysis['erh_satisfied']}")
+    >>> # Structured result:
+    >>> result_dict, erh_result = analyze_error_growth(E_x, x_vals, return_structured=True)
     """
     # Filter out zeros and take absolute value for exponent fitting
     abs_E = np.abs(E_x)
@@ -431,11 +436,10 @@ def analyze_error_growth(
 
     # Default structure if we do not have enough data
     if np.sum(valid_mask) < 5:
-        from ..analysis.erh_checks import check_erh_bound
+        from ..analysis.erh_checks import check_erh_bound, check_erh_bound_structured
 
         bound_stats = check_erh_bound(E_x, x_values)
-
-        return {
+        result = {
             'estimated_exponent': np.nan,
             'constant_C': np.nan,
             'erh_satisfied': bound_stats['erh_satisfied'],
@@ -447,6 +451,9 @@ def analyze_error_growth(
             'erh_max_ratio': bound_stats['max_ratio'],
             'erh_violation_rate': bound_stats['violation_rate'],
         }
+        if return_structured:
+            return result, check_erh_bound_structured(E_x, x_values)
+        return result
 
     x_valid = x_values[valid_mask]
     E_valid = abs_E[valid_mask]
@@ -507,7 +514,7 @@ def analyze_error_growth(
     else:
         growth_rate = 'superlinear'  # Problematic!
 
-    return {
+    result = {
         'estimated_exponent': float(alpha),
         'alpha_ci_low': float(ci_stats.get('alpha_ci_low', float('nan'))),
         'alpha_ci_high': float(ci_stats.get('alpha_ci_high', float('nan'))),
@@ -523,6 +530,14 @@ def analyze_error_growth(
         'erh_max_ratio': float(bound_stats['max_ratio']),
         'erh_violation_rate': float(bound_stats['violation_rate']),
     }
+
+    if return_structured:
+        try:
+            from erh_core.analysis.erh_checks import check_erh_bound_structured
+        except ImportError:
+            from ..analysis.erh_checks import check_erh_bound_structured
+        return result, check_erh_bound_structured(E_x, x_values)
+    return result
 
 
 def compare_error_distributions(

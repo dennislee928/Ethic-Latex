@@ -6,10 +6,13 @@ in psychohistory-style simulations. Networks represent information and influence
 propagation between AI judgment agents.
 """
 
+import logging
 import numpy as np
 import networkx as nx
 from typing import List, Optional, Dict, Tuple, Literal
 from .agent import EthicalAgent
+
+logger = logging.getLogger(__name__)
 
 
 class SocialNetwork:
@@ -400,6 +403,6 @@ class SocialNetwork:
             else:
                 plt.show()
         except ImportError:
-            print("matplotlib not available for visualization")
+            logger.warning("matplotlib not available for visualization")
 
 

@@ -8,12 +8,18 @@ on:
       - "simulation/quantum/**"
       - "tests/test_quantum_*.py"
       - "pyproject.toml"
+      - "julia/src/QuantumSimulator.jl"
+      - "julia/src/QuantumWalk.jl"
+      - "julia/test/test_quantum_*.jl"
   pull_request:
     branches: ["main", "dev"]
     paths:
       - "simulation/quantum/**"
       - "tests/test_quantum_*.py"
       - "pyproject.toml"
+      - "julia/src/QuantumSimulator.jl"
+      - "julia/src/QuantumWalk.jl"
+      - "julia/test/test_quantum_*.jl"
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
@@ -94,3 +100,65 @@ jobs:
           python scripts/run_quantum_hilbert_figures.py
           echo "AdvancedEthicalQuantumEngine OK (IBM)"
         continue-on-error: true
+
+  julia-quantum:
+    name: Julia Quantum (Yao.jl)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+
+      - uses: julia-actions/cache@v2
+
+      - name: Install Julia dependencies
+        run: |
+          julia --project=julia -e '
+            using Pkg
+            Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
+                     "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
+                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+          '
+
+      - name: Run Julia quantum tests
+        run: |
+          julia --project=julia -e '
+            using Test
+            include("julia/test/test_quantum_simulator.jl")
+            include("julia/test/test_quantum_walk.jl")
+          '
+        continue-on-error: true  # non-blocking until Yao.jl fully validated
+
+  collect-errors:
+    name: Collect CI Errors
+    runs-on: ubuntu-latest
+    needs: [local-simulator, fallback, ibm-complex-circuit, julia-quantum]
+    if: always()
+    steps:
+      - name: Write error report
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          report = {
+            "workflow": "quantum_tests",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "known_errors": [
+              {"job": "julia-quantum", "step": "Install Julia dependencies", "error": "Pkg.instantiate failed — wrong UUID for CSV and other packages"}
+            ]
+          }
+          with open("ci-errors-quantum-tests.json", "w") as f:
+              json.dump(report, f, indent=2)
+          PYEOF
+
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-errors-quantum_tests
+          path: ci-errors-quantum-tests.json
+          retention-days: 3

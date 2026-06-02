@@ -5,9 +5,7 @@ Core Modules
 ------------
 
 .. automodule:: erh.core
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
 
 .. automodule:: erh.core.action_space
    :members:
@@ -28,9 +26,7 @@ Analysis Modules
 ----------------
 
 .. automodule:: erh.analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :no-index:
 
 .. automodule:: erh.analysis.statistics
    :members:
@@ -49,4 +45,3 @@ Client API
    :members:
    :undoc-members:
    :show-inheritance:
-

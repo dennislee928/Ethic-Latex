@@ -25,7 +25,7 @@ def setup_paper_style():
     >>> setup_paper_style()
     >>> # All subsequent plots will use paper style
     """
-    # Use seaborn style as base
+    # Use seaborn style for publication quality
     sns.set_style("whitegrid")
     
     # Configure matplotlib for publication quality
@@ -818,6 +818,393 @@ def plot_phase_transition_diagram(
     ax.set_xlabel("Conflict Density (Complexity)", fontsize=12)
     ax.set_ylabel("Fidelity / Coherence", fontsize=12)
     ax.set_title("Moral Phase Transition: Ethical Conflict → Spin Glass Frustration")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_compas_erh_bound(
+    results: dict,
+    title: str = "COMPAS: Adherence to Riemann Bound",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot COMPAS ERH analysis: Complexity (log) vs |E(x)| (log) with theoretical bound.
+
+    X: Complexity (log scale).
+    Y: Cumulative Error |E(x)| (log scale).
+    Overlay: Theoretical bound y = C * x^0.5.
+    Overlay: Actual COMPAS error curve.
+
+    Parameters
+    ----------
+    results : dict
+        From run_compas_erh_analysis: keys 'x', 'E_x', 'alpha', 'C'.
+    """
+    setup_paper_style()
+    if "error" in results:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, f"Error: {results['error']}", ha="center", va="center")
+        return fig
+
+    x = np.array(results["x"])
+    E_x = np.array(results["E_x"])
+    abs_E = np.abs(E_x)
+    C = results.get("C", 1.0)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    valid = (abs_E > 0) & (x > 1)
+    if valid.sum() < 2:
+        ax.text(0.5, 0.5, "Insufficient data", ha="center", va="center")
+        return fig
+
+    ax.loglog(x[valid], abs_E[valid], "o-", label="COMPAS |E(x)|", linewidth=2, markersize=4)
+    x_ref = np.linspace(max(1, x.min()), x.max(), 100)
+    y_bound = C * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
+    ax.set_xlabel("Complexity $x$ (log scale)", fontsize=12)
+    ax.set_ylabel(r"$|E(x)|$ (log scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend()
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_universal_error_growth(
+    error_comparison: dict,
+    compas_results: dict,
+    title: str = "Universal Error Growth Laws",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot |E(x)| vs. complexity x in log-log scale for BOTH simulated agents AND COMPAS
+    on the same axes. When curves overlap, theory universality is visually proven.
+
+    Parameters
+    ----------
+    error_comparison : dict
+        From compare_error_distributions: judge name -> {x_values, E_x, analysis}.
+    compas_results : dict
+        From run_compas_erh_analysis: keys 'x', 'E_x', 'C'.
+    """
+    setup_paper_style()
+    colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"]
+    linestyles = ["-", "--", "-.", ":", "-", "--", "-."]
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    idx = 0
+    for name, data in error_comparison.items():
+        if "error" in data or "x_values" not in data:
+            continue
+        x_vals = np.array(data["x_values"])
+        E_x = np.array(data["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x_vals > 1)
+        if valid.sum() < 2:
+            continue
+        color = colors[idx % len(colors)]
+        ls = linestyles[idx % len(linestyles)]
+        ax.loglog(
+            x_vals[valid], abs_E[valid],
+            "o-", label=f"Simulated: {name}", linewidth=2, markersize=3,
+            color=color, linestyle=ls,
+        )
+        idx += 1
+
+    if "error" not in compas_results and "x" in compas_results:
+        x = np.array(compas_results["x"])
+        E_x = np.array(compas_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "s-", label="COMPAS (real data)", linewidth=2.5, markersize=5,
+                color="#e74c3c", linestyle="-",
+            )
+    # Always add ERH bound overlay
+    C = compas_results.get("C", 1.0) if "error" not in compas_results else 1.0
+    x_min = 1.0
+    x_max = 100.0
+    if "error" not in compas_results and "x" in compas_results:
+        x_arr = np.array(compas_results["x"])
+        x_min = max(1, float(np.min(x_arr)))
+        x_max = float(np.max(x_arr))
+    else:
+        for data in error_comparison.values():
+            if "error" not in data and "x_values" in data:
+                x_arr = np.array(data["x_values"])
+                x_max = max(x_max, float(np.max(x_arr)))
+                break
+    x_ref = np.linspace(x_min, x_max, 100)
+    y_bound = C * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2, label=r"$C \cdot x^{0.5}$ (ERH bound)")
+
+    ax.set_xlabel("Complexity $x$ (log scale)", fontsize=12)
+    ax.set_ylabel(r"$|E(x)|$ (log scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend(loc="best", fontsize=9)
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_empirical_comparison(
+    error_comparison: Optional[Dict[str, dict]] = None,
+    compas_results: Optional[dict] = None,
+    github_results: Optional[dict] = None,
+    huggingface_results: Optional[dict] = None,
+    title: str = "Empirical Validation: Real-World vs Theoretical Bound",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot empirical comparison: Theoretical bound, Radical simulation, COMPAS, GitHub, HuggingFace LLM.
+
+    Layer 1: Theoretical Bound ($C \\cdot x^{0.5}$).
+    Layer 2: Radical Agent Simulation curve.
+    Layer 3: COMPAS Data curve.
+    Layer 4: GitHub Data curve.
+    Layer 5: HuggingFace LLM (Moral Stories) curve.
+    Goal: Show real-world curves fall within theoretical bounds.
+
+    Parameters
+    ----------
+    error_comparison : dict, optional
+        From compare_error_distributions; used for Radical judge.
+    compas_results : dict, optional
+        From run_compas_erh_analysis: x, E_x, alpha, C.
+    github_results : dict, optional
+        From process_github: x, E_x, alpha, C.
+    huggingface_results : dict, optional
+        From process_huggingface_llm: x, E_x, alpha, C.
+    title : str
+        Plot title.
+    save_path : str, optional
+        Path to save figure.
+    show : bool
+        Whether to display.
+    """
+    setup_paper_style()
+    colors = ["#E69F00", "#56B4E9", "#e74c3c", "#2ecc71", "#9b59b6"]
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    x_min, x_max = 1.0, 100.0
+    C_ref = 1.0
+
+    # Layer 2: Radical Agent Simulation
+    if error_comparison and "Radical" in error_comparison:
+        data = error_comparison["Radical"]
+        if "error" not in data and "x_values" in data:
+            x_vals = np.array(data["x_values"])
+            E_x = np.array(data["E_x"])
+            abs_E = np.abs(E_x)
+            valid = (abs_E > 0) & (x_vals > 1)
+            if valid.sum() >= 2:
+                ax.loglog(
+                    x_vals[valid], abs_E[valid],
+                    "o-", label="Simulation (Radical)", linewidth=2, markersize=3,
+                    color=colors[0], alpha=0.8,
+                )
+                x_min = min(x_min, float(x_vals[valid].min()))
+                x_max = max(x_max, float(x_vals[valid].max()))
+
+    # Layer 3: COMPAS
+    if compas_results and "error" not in compas_results and "x" in compas_results:
+        x = np.array(compas_results["x"])
+        E_x = np.array(compas_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "s-", label="COMPAS (US Courts)", linewidth=2.5, markersize=4,
+                color=colors[2], alpha=0.9,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            C_ref = compas_results.get("C", C_ref)
+
+    # Layer 4: GitHub
+    if github_results and "error" not in github_results and "x" in github_results:
+        x = np.array(github_results["x"])
+        E_x = np.array(github_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "^-", label="GitHub (Open Source)", linewidth=2, markersize=3,
+                color=colors[3], alpha=0.8,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            if C_ref == 1.0:
+                C_ref = github_results.get("C", C_ref)
+
+    # Layer 5: HuggingFace LLM
+    if huggingface_results and "error" not in huggingface_results and "x" in huggingface_results:
+        x = np.array(huggingface_results["x"])
+        E_x = np.array(huggingface_results["E_x"])
+        abs_E = np.abs(E_x)
+        valid = (abs_E > 0) & (x > 1)
+        if valid.sum() >= 2:
+            ax.loglog(
+                x[valid], abs_E[valid],
+                "d-", label="HuggingFace LLM (Moral Stories)", linewidth=2, markersize=3,
+                color=colors[4], alpha=0.8,
+            )
+            x_min = min(x_min, float(x[valid].min()))
+            x_max = max(x_max, float(x[valid].max()))
+            if C_ref == 1.0:
+                C_ref = huggingface_results.get("C", C_ref)
+
+    # Layer 1: Theoretical Bound
+    x_ref = np.linspace(max(1.0, x_min), x_max, 100)
+    y_bound = C_ref * np.sqrt(x_ref)
+    ax.loglog(x_ref, y_bound, "--", color="gray", linewidth=2.5,
+              label=r"$C \cdot x^{1/2}$ (ERH bound)")
+
+    ax.set_xlabel("Complexity $x$ (Log Scale)", fontsize=12)
+    ax.set_ylabel(r"Error Magnitude $|E(x)|$ (Log Scale)", fontsize=12)
+    ax.set_title(title)
+    ax.legend(loc="best", fontsize=10)
+    ax.grid(True, which="both", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_alpha_comparison_bar(
+    synthetic_results: dict,
+    real_results: dict,
+    title: str = r"$\alpha$ Comparison: Synthetic vs Real-World",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Bar chart comparing alpha of Radical, Conservative, COMPAS, Adult.
+    Highlights COMPAS value (≈ -0.20).
+
+    Parameters
+    ----------
+    synthetic_results : dict
+        Keys like "Radical", "Conservative" with "alpha" value.
+    real_results : dict
+        Keys "compas", "adult" with "alpha" in nested dict.
+    """
+    setup_paper_style()
+    labels = []
+    values = []
+    colors = []
+
+    for name, data in synthetic_results.items():
+        if "alpha" in data:
+            labels.append(name)
+            values.append(data["alpha"])
+            colors.append("#3498db")
+
+    compas_alpha = real_results.get("compas", {}).get("alpha")
+    if compas_alpha is not None:
+        labels.append("COMPAS")
+        values.append(compas_alpha)
+        colors.append("#e74c3c")
+
+    adult_alpha = real_results.get("adult", {}).get("alpha")
+    if adult_alpha is not None:
+        labels.append("Adult")
+        values.append(adult_alpha)
+        colors.append("#2ecc71")
+
+    if not labels:
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.text(0.5, 0.5, "No alpha data", ha="center", va="center")
+        return fig
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    x_pos = np.arange(len(labels))
+    bars = ax.bar(x_pos, values, color=colors, edgecolor="black", linewidth=0.5)
+    ax.axhline(y=0.5, color="red", linestyle="--", alpha=0.7, label="ERH threshold (0.5)")
+    ax.axhline(y=-0.20, color="orange", linestyle=":", alpha=0.7, label="COMPAS ≈ -0.20")
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(labels, rotation=15, ha="right")
+    ax.set_ylabel(r"Growth exponent $\alpha$")
+    ax.set_title(title)
+    ax.legend(fontsize=9)
+    ax.grid(True, axis="y", alpha=0.3)
+    plt.tight_layout()
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+    return fig
+
+
+def plot_normalized_error_oscillation(
+    x: np.ndarray,
+    error: np.ndarray,
+    confidence_interval: Optional[Tuple[float, float]] = None,
+    title: str = r"Normalized Oscillation: $E(x)/\sqrt{x}$",
+    save_path: Optional[str] = None,
+    show: bool = True,
+) -> plt.Figure:
+    """
+    Plot E(x) / sqrt(x). Add horizontal lines for confidence intervals.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Complexity values.
+    error : np.ndarray
+        E(x) values.
+    confidence_interval : tuple (low, high), optional
+        Horizontal lines for confidence band.
+    """
+    setup_paper_style()
+    sqrt_x = np.sqrt(np.maximum(x, 1e-6))
+    ratio = np.where(sqrt_x > 1e-9, error / sqrt_x, 0.0)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(x, ratio, "o-", linewidth=2, markersize=4, label=r"$E(x)/\sqrt{x}$")
+    ax.axhline(y=0, color="k", linestyle="-", linewidth=0.8, alpha=0.3)
+    if confidence_interval is not None:
+        low, high = confidence_interval
+        ax.axhline(y=low, color="gray", linestyle=":", alpha=0.7)
+        ax.axhline(y=high, color="gray", linestyle=":", alpha=0.7)
+        ax.fill_between(x, low, high, alpha=0.1, color="gray")
+    ax.set_xlabel("Complexity $x$", fontsize=12)
+    ax.set_ylabel(r"$E(x) / \sqrt{x}$", fontsize=12)
+    ax.set_title(title)
     ax.legend()
     ax.grid(True, alpha=0.3)
     plt.tight_layout()

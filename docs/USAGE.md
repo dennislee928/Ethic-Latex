@@ -98,8 +98,8 @@ pdflatex ethical_riemann_hypothesis.tex
 ## File Locations
 
 ### Generated Outputs
-- **Figures**: `simulation/output/figures/`
-- **Reports**: `simulation/output/`
+- **Figures**: generated under `simulation/output/figures/`
+- **Reports**: generated under `simulation/output/`
 - **Paper PDF**: `ethical_riemann_hypothesis.pdf` (after compilation)
 
 ### Source Files
@@ -114,4 +114,3 @@ pdflatex ethical_riemann_hypothesis.tex
 2. **Generate your own figures** - Modify parameters in the notebooks
 3. **Read the paper** - Compile the LaTeX document
 4. **Extend the framework** - Add your own judgment systems or analysis methods
-

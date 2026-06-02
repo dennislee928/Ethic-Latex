@@ -119,6 +119,33 @@ def fit_error_growth(
     return result
 
 
+def fit_power_law_to_data(
+    x_values: np.ndarray,
+    error_values: np.ndarray,
+    model: str = 'power_law'
+) -> dict:
+    """
+    Fit power law |E(x)| ~ C * x^α to empirical data.
+
+    Parameters
+    ----------
+    x_values : np.ndarray
+        Complexity values x.
+    error_values : np.ndarray
+        Error values E(x).
+    model : str, default='power_law'
+        Model type; use 'power_law' for ERH exponent α.
+
+    Returns
+    -------
+    dict
+        exponent (α), constant (C), r_squared, formula; or error key.
+    """
+    E_x = np.asarray(error_values)
+    x = np.asarray(x_values)
+    return fit_error_growth(E_x, x, model=model)
+
+
 def bootstrap_exponent_ci(
     E_x: np.ndarray,
     x_values: np.ndarray,

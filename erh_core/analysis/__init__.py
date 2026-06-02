@@ -12,9 +12,19 @@ This package contains analysis tools including:
 # Import all analysis modules for easy access
 # Use try/except to handle missing or differently named functions
 try:
-    from erh_core.analysis.erh_checks import check_erh_bound
+    from erh_core.analysis.erh_checks import (
+        check_erh_bound,
+        check_erh_bound_structured,
+        judge_and_check_erh,
+        ERHCheckResult,
+    )
 except ImportError:
-    from .erh_checks import check_erh_bound
+    from .erh_checks import (
+        check_erh_bound,
+        check_erh_bound_structured,
+        judge_and_check_erh,
+        ERHCheckResult,
+    )
 
 try:
     from erh_core.analysis.statistics import generate_report, bootstrap_exponent_ci
@@ -78,6 +88,9 @@ except ImportError:
 
 __all__ = [
     "check_erh_bound",
+    "check_erh_bound_structured",
+    "judge_and_check_erh",
+    "ERHCheckResult",
     "generate_report", "bootstrap_exponent_ci",
     "generate_baseline_comparison_report",
     "build_m_sequence", "ethical_zeta_product", "find_approximate_zeros", "compute_spectrum",

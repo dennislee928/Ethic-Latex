@@ -5,7 +5,9 @@ services:
     image: postgres:15-alpine
     environment:
       POSTGRES_USER: erh_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-erh_password}
+      # VUL-009: No default password – must be provided via environment variable.
+      # Generate a strong password: python -c "import secrets; print(secrets.token_hex(32))"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: erh_database
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -46,13 +48,16 @@ services:
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
+    # VUL-010: Require token-based authentication for Jupyter.
+    # Set JUPYTER_TOKEN env var to a strong random token before starting.
+    # Generate one: python -c "import secrets; print(secrets.token_hex(32))"
     command: >
       python -m notebook
       --ip=0.0.0.0
       --port=8888
       --no-browser
       --allow-root
-      --NotebookApp.token=''
+      --NotebookApp.token=${JUPYTER_TOKEN}
       --NotebookApp.password=''
     depends_on:
       postgres:
@@ -94,7 +99,7 @@ services:
     volumes:
       - ./erh-security-app/backend:/app
     environment:
-      - DATABASE_URL=postgresql://erh_user:${POSTGRES_PASSWORD:-erh_password}@postgres:5432/erh_database
+      - DATABASE_URL=postgresql://erh_user:${POSTGRES_PASSWORD}@postgres:5432/erh_database
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:

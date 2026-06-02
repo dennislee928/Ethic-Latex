@@ -4,6 +4,36 @@
 
 This document tracks the implementation status of the theoretical deepening plan. The plan includes 7 phases with multiple tasks each.
 
+## Status Note
+
+This document reflects the intended theoretical roadmap, but parts of the implementation have moved since it was written. Several file paths below still point at legacy `simulation/...` locations even though active code now lives in `erh_core/...` or has not been preserved at the documented path. Treat this document as a historical plan snapshot until the implementation inventory is fully reconciled.
+
+## Current Verified Surfaces
+
+Status date: `2026-04-12`
+
+The latest stabilization pass verified these repository surfaces directly:
+
+- `erh-security-app/backend`
+  `11` backend tests pass, including config defaults, verification route flow, simulation background-task session ownership, and simulation create/status/results route flow.
+- `erh-security-app/frontend`
+  `npm run typecheck`, `npm run build`, and `npm run lint` pass.
+- `simulation/app.py`
+  Import and syntax checks pass after the results-browser `json` import fix.
+
+## Current Architecture Snapshot
+
+- **Canonical implementation code:** `erh_core/`
+- **Compatibility layers / SDK packaging:** `erh/`, `simulation/core/`, selected `simulation/analysis/`
+- **Currently revalidated app surface:** `erh-security-app/`
+- **Duplicate or still-unreconciled UI surfaces in tree:** `frontend/`, `erh-security-app/frontend-vite/`
+
+## Progress Note
+
+Recent stabilization work completed the Phase 1 known-breakage fixes for the security app and started the Phase 5 CI cleanup for that surface. The broader theoretical roadmap below remains useful context, but it should not be read as a current inventory of verified files.
+
+See [SUPPORTED_SURFACES.md](SUPPORTED_SURFACES.md) for the current supported-surface decision record.
+
 ## Completed Tasks
 
 ### Phase 1: Mathematical Metaphor Strengthening
@@ -160,5 +190,4 @@ The core theoretical framework is now significantly strengthened with:
 - Adaptive threshold systems
 - Quantified structural fundamentality
 
-All high-priority tasks from the plan have been completed, providing a solid foundation for further extensions.
-
+Many high-priority ideas from the plan influenced the current codebase, but the file inventory in this document is no longer fully trustworthy. Validate paths against the repository before using this page as an implementation source of truth.

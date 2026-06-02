@@ -21,11 +21,15 @@ wheels/
 *.egg
 #node-modules
 ./frontend/node_modules
+js-sdk/node_modules/
 *node_modules
+.next/
+
+# Docs build output
+docs/_build/
 
 # Git ignore folder
 .gitignore-folder
-.worktrees/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -38,6 +42,7 @@ ipython_config.py
 # Environment
 .env
 .venv
+.venv_erh/
 env/
 venv/
 ENV/
@@ -47,6 +52,7 @@ venv.bak/
 # IDEs
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -71,20 +77,26 @@ Thumbs.db
 !ethical_riemann_hypothesis.pdf
 
 # Simulation outputs
-simulation/output/*.pdf
-simulation/output/*.png
-simulation/output/*.jpg
-simulation/output/*.txt
-simulation/output/*.md
-
-# Keep folder structure
+simulation/output/**
 !simulation/output/.gitkeep
+!simulation/output/figures/
+simulation/output/figures/**
 !simulation/output/figures/.gitkeep
+!simulation/output/psychohistory_tests/
+simulation/output/psychohistory_tests/**
+!simulation/output/psychohistory_tests/.gitkeep
 
 # Figures
 figures/*.pdf
 figures/*.png
 !figures/.gitkeep
+
+# Generated run outputs and reports
+results/
+test_results/
+tests/notebooks/output/
+test_report/
+final_report/
 
 # Data
 *.csv
@@ -97,17 +109,11 @@ figures/*.png
 *.temp
 
 
-# Snyk Security Extension - AI Rules (auto-generated)
-.cursor\rules\snyk_rules.mdc
-
-# Snyk Security Extension - AI Rules (auto-generated)
-.cursor/rules/snyk_rules.mdc
+# Local workspace state
+.worktrees/
 basement.md
 /.ignore_ref
-.cursor/cursor-rules-cli/.plan1.md
-/.cursor/plan
 /Error_Log
-.cursor/plans/現代化_react_前端與後端擴展_5d32a3c1.plan.md
-.cursor/plan/cursor.plan.md
-/.venv_erh/lib
-/.cursor
+*.tsbuildinfo
+PROJECT_AUDIT_REPORT.md
+/docs/actions_error_log
