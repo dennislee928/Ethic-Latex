@@ -948,8 +948,10 @@ class AdvancedEthicalQuantumEngine:
                     if os.environ.get("IBM_QUANTUM_REGION"):
                         service_kw["region"] = os.environ["IBM_QUANTUM_REGION"]
                     self._service = QiskitRuntimeService(**service_kw)
-            except ImportError:
-                pass
+            except Exception as exc:
+                print(f"IBM Quantum service unavailable; falling back to local simulator: {exc}")
+                self.use_real_hardware = False
+                self._service = None
 
     def _get_ibm_backend(self):
         """Resolve IBM backend; fallback to simulator if hardware unavailable."""

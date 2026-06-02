@@ -32,6 +32,8 @@ def test_real_world_erh_composite_action_covers_new_cases():
     ]:
         assert script in action
 
+    assert 'ERH_REAL_WORLD_OFFLINE: "1"' in action
+
 
 def test_thesis_workflows_use_real_world_erh_composite_action():
     for workflow_path in WORKFLOWS:

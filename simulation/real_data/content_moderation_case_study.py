@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List
+import os
 import sys
 
 import numpy as np
@@ -127,6 +128,9 @@ def _load_hf_rows(dataset: str = "ethos", max_samples: int = 200) -> List[Modera
 
     The fallback keeps direct script execution useful in offline CI.
     """
+    if os.environ.get("ERH_REAL_WORLD_OFFLINE", "").lower() in {"1", "true", "yes"}:
+        return _default_stub_rows(max_samples)
+
     try:
         from datasets import load_dataset
     except ImportError:
@@ -184,6 +188,9 @@ def _heuristic_toxicity_scorer(text: str) -> float:
 
 def _get_default_scorer() -> ToxicityScorer:
     """Return Detoxify/Transformers scorer when installed, else a heuristic scorer."""
+    if os.environ.get("ERH_REAL_WORLD_OFFLINE", "").lower() in {"1", "true", "yes"}:
+        return _heuristic_toxicity_scorer
+
     try:
         from detoxify import Detoxify
 

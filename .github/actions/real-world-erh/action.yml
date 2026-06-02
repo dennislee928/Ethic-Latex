@@ -13,6 +13,8 @@ runs:
 
     - name: Run real-world ERH regression tests
       shell: bash
+      env:
+        ERH_REAL_WORLD_OFFLINE: "1"
       run: |
         export PYTHONPATH="${GITHUB_WORKSPACE:-$(pwd)}:${GITHUB_WORKSPACE:-$(pwd)}/erh_core:${PYTHONPATH}"
         pytest \
@@ -26,6 +28,8 @@ runs:
 
     - name: Run real-world ERH case scripts
       shell: bash
+      env:
+        ERH_REAL_WORLD_OFFLINE: "1"
       run: |
         export PYTHONPATH="${GITHUB_WORKSPACE:-$(pwd)}:${GITHUB_WORKSPACE:-$(pwd)}/erh_core:${PYTHONPATH}"
         mkdir -p simulation/output simulation/output/figures figures

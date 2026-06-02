@@ -136,6 +136,9 @@ def _stub_truthfulqa_rows(max_samples: int) -> List[TruthfulQARow]:
 
 
 def _load_truthfulqa_rows(max_samples: int = 200) -> List[TruthfulQARow]:
+    if os.environ.get("ERH_REAL_WORLD_OFFLINE", "").lower() in {"1", "true", "yes"}:
+        return _stub_truthfulqa_rows(max_samples)
+
     try:
         from datasets import load_dataset
 
