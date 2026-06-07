@@ -73,6 +73,15 @@ npm run dist:linux       # .deb + AppImage      (run on Linux)
 
 Output lands in `desktop/release/`.
 
+### macOS Gatekeeper (Bypass)
+
+If you are using an unsigned build (common for local or research versions),
+macOS will block the app by default.
+
+1.  **Right-click** the App icon and select **Open**.
+2.  Click **Open** in the confirmation dialog.
+3.  Or use the terminal: `sudo xattr -cr /Applications/ERH\ Ethics\ Inspector.app`
+
 ## CI/CD pipeline
 
 `desktop_build.yml` is **independent** of the research workflows (path-filtered

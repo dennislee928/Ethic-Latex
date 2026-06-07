@@ -99,24 +99,34 @@ ipcMain.handle('erh:exportResult', async (_e, result) => {
   }
 });
 
-// --- Optional auto-update (no-op if electron-updater absent) ------------------
+// --- Optional auto-update ----------------------------------------------------
 function initAutoUpdate() {
   if (!app.isPackaged) return;
   try {
     const { autoUpdater } = require('electron-updater');
-    autoUpdater.autoDownload = true;
+    autoUpdater.on('error', (err) => {
+      console.log('Update check skipped (no release found or offline):', err.message);
+    });
     autoUpdater.checkForUpdatesAndNotify().catch(() => {});
   } catch (_) { /* electron-updater not installed; skip */ }
 }
 
 app.whenReady().then(() => {
+  console.log('ERH Ethics Inspector starting...');
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { role: 'fileMenu' },
     { role: 'editMenu' },
     { role: 'viewMenu' },
     { role: 'windowMenu' },
   ]));
-  if (sidecar.available()) sidecar.start();
+
+  if (sidecar.available()) {
+    console.log('Sidecar (Tier B) binary detected, initializing...');
+    sidecar.start();
+  } else {
+    console.log('Sidecar not found, using Tier A (JS) fallback.');
+  }
+
   createWindow();
   initAutoUpdate();
   app.on('activate', () => {

@@ -11,6 +11,7 @@ This repository has multiple install surfaces. Pick the smallest one that matche
 - **Security app backend:** `cd erh-security-app/backend && pip install -r requirements.txt`
 - **Security app frontend:** `cd erh-security-app/frontend && npm install`
 - **Root research / SDK environment:** `pip install -e . && pip install -r requirements.txt`
+- **Desktop App:** For macOS installation troubleshooting (Gatekeeper), see [DESKTOP_APP.md](./DESKTOP_APP.md#macos-gatekeeper-bypass).
 
 The security app backend installs the root package in editable mode via `-e ../..`, so it can use the latest `erh_core` code without separately packaging it.
 

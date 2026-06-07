@@ -52,6 +52,20 @@ npm run dist:linux      # .deb + AppImage      (run on Linux)
 
 Output goes to `desktop/release/`.
 
+## macOS Gatekeeper (Bypass)
+
+Since this is an academic/research project, local builds and GitHub artifacts
+may be **unsigned**. When you open the `.dmg` or `.app` on macOS, you might see
+a warning that the developer cannot be verified.
+
+**To bypass this:**
+1.  **Right-click** (or Control-click) the App icon and select **Open**.
+2.  In the dialog that appears, click **Open** again.
+3.  Alternatively, if the app still won't run, execute this in your terminal:
+    ```bash
+    sudo xattr -cr /Applications/ERH\ Ethics\ Inspector.app
+    ```
+
 ## CI builds
 
 `.github/workflows/desktop_build.yml` builds installers for Windows, macOS, and
