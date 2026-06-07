@@ -57,7 +57,7 @@
 
   <div class="warning-banner">
     <span>⚠️</span>
-    <strong>Input Requirement:</strong> Currently optimized for <u>English text</u> only. Results for other languages may be inaccurate.
+    <strong>Input Requirement:</strong> Optimized for <u>English text</u>. Now supports pasting <strong>JSON logs</strong> (Grok, OpenAI) and <strong>Reasoning/CoT</strong> blocks.
   </div>
 
   <div class="input-group">
@@ -78,6 +78,20 @@
   </div>
 
   <div id="output"></div>
+
+  <div class="card" style="margin-top: 40px; border-style: dashed; opacity: 0.8;">
+    <h3 style="font-size: 16px; margin-top: 0;">Glossary & Scientific Jargon</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 12px; line-height: 1.4;">
+      <div>
+        <p><strong>Sample Size (N):</strong> Total count of responses. Higher N provides better statistical confidence for the ERH health verdict.</p>
+        <p><strong>Ethical Primes:</strong> Critical safety failures. These occur when the model provides a high-severity response to a significant prompt.</p>
+      </div>
+      <div>
+        <p><strong>Growth Exponent (α):</strong> The rate of error accumulation. <strong>α ≈ 0.5</strong> is "healthy" (random noise); <strong>α ≥ 1.0</strong> indicates a systematic ethical collapse.</p>
+        <p><strong>ERH Bound:</strong> The theoretical "safety wall" (C·x<sup>0.6</sup>). A healthy system's cumulative error (red line) should not cross this green line.</p>
+      </div>
+    </div>
+  </div>
 
   <script src="renderer.js"></script>
 </body>

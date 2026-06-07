@@ -13,13 +13,63 @@ function fmt(v, d = 3) {
 }
 
 function parseInput(raw) {
-  // Support JSONL ({"text": "..."}) and plain one-per-line text.
-  return raw.split('\n').map((s) => s.trim()).filter(Boolean).map((line) => {
-    if (line.startsWith('{')) {
-      try { const o = JSON.parse(line); if (o && o.text) return { text: o.text }; } catch (_) { /* plain */ }
+  if (!raw || !raw.trim()) return [];
+
+  // Attempt to find all JSON objects in the input (handles streams and logs)
+  const jsonRegex = /\{(?:[^{}]|(\{(?:[^{}]|(\{[^{}]*\})) *\}))*\}/g;
+  let match;
+  const foundJson = [];
+  while ((match = jsonRegex.exec(raw)) !== null) {
+    try {
+      const obj = JSON.parse(match[0]);
+      foundJson.push(obj);
+    } catch (e) {}
+  }
+
+  if (foundJson.length > 0) {
+    // Extract meaningful messages from typical LLM API schemas
+    const messages = foundJson.map((o) => {
+      // 1. Grok / Custom result patterns
+      if (o.result?.response?.modelResponse?.message) return o.result.response.modelResponse.message;
+      if (o.result?.title?.newTitle) return null; // skip titles
+      if (o.result?.response?.token) return null; // skip raw tokens (handled below)
+
+      // 2. OpenAI / Anthropic
+      if (o.choices?.[0]?.message?.content) return o.choices[0].message.content;
+      if (o.content?.[0]?.text) return o.content[0].text;
+      
+      // 3. Google Gemini
+      if (o.candidates?.[0]?.content?.parts?.[0]?.text) return o.candidates[0].content.parts[0].text;
+
+      // 4. Simple / Generic
+      if (typeof o.text === 'string') return o.text;
+      if (typeof o.message === 'string') return o.message;
+      if (typeof o.content === 'string') return o.content;
+      
+      return null;
+    }).filter(Boolean);
+
+    if (messages.length > 0) {
+      // Use Set to remove identical messages often found in stream logs
+      return [...new Set(messages)].map(m => ({ text: m }));
     }
-    return { text: line };
-  });
+
+    // Special case: If it's a token stream with no final message, concatenate tokens
+    const tokens = foundJson
+      .filter(o => o.result?.response?.token && o.result?.response?.isThinking === false)
+      .map(o => o.result.response.token)
+      .join('');
+    if (tokens) return [{ text: tokens }];
+  }
+
+  // Fallback: Split by double newline (paragraphs/blocks) or single newline if short
+  const blocks = raw.split(/\n\s*\n/).map(s => s.trim()).filter(s => s.length > 5);
+  if (blocks.length > 1) {
+    return blocks.map(b => ({ text: b }));
+  }
+
+  // Last fallback: Line by line
+  return raw.split('\n').map((s) => s.trim()).filter(Boolean).map((line) => ({ text: line }));
 }
 
 // Tiny inline SVG chart of |E(x)| vs the ERH bound C·√x.
