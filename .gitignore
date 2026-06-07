@@ -117,3 +117,4 @@ basement.md
 *.tsbuildinfo
 PROJECT_AUDIT_REPORT.md
 /docs/actions_error_log
+/desktop/release
