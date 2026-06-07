@@ -22,7 +22,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:win": "electron-builder --win nsis msi",
-    "dist:mac": "electron-builder --mac dmg",
+    "dist:mac": "npm run build:sidecar && electron-builder --mac dmg",
     "dist:linux": "electron-builder --linux deb AppImage"
   },
   "dependencies": {
@@ -77,7 +77,25 @@
       ],
       "icon": "build/icon.png",
       "category": "public.app-category.developer-tools",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "format": "UDZO",
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
     },
     "linux": {
       "target": [
