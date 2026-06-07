@@ -152,26 +152,55 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
     total_primes = len(primes)
     n = len(actions)
 
-    if total_primes == 0:
-        return {
-            "n": n, "totalPrimes": 0, "primeDensity": 0.0, "alpha": None,
-            "erhBound": C * math.sqrt(max(n_for_bound, 1)), "maxAbsError": 0.0,
-            "withinBound": True, "ethicalDegree": 100,
-            "verdict": "Riemann-healthy (no critical misjudgments detected)",
-            "series": {"x": [], "Pi": [], "B": [], "E": []},
-            "backend": "erh_core",
-        }
+    # Order ALL actions by complexity to build the series (Pi, B, E)
+    # This matches the JS logic and provides a coherent chart for the user.
+    by_cx = sorted(actions, key=lambda a: a.c)
+    
+    x_vals = []
+    pi_x = []
+    b_x = []
+    e_x = []
+    
+    cum_primes = 0
+    density = total_primes / n if n > 0 else 0.0
+    
+    # We use index (1..N) as the X-axis for the desktop app's statistical view
+    # to maintain high-resolution charts regardless of complexity distribution.
+    for i, a in enumerate(by_cx):
+        x = i + 1
+        if any(p.id == a.id for p in primes):
+            cum_primes += 1
+        
+        baseline = density * x
+        x_vals.append(float(x))
+        pi_x.append(float(cum_primes))
+        b_x.append(float(baseline))
+        e_x.append(float(cum_primes - baseline))
 
-    x_max = int(max(p.c for p in primes)) or 1
-    Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes, X_max=x_max)
-    growth = analyze_error_growth(E_x, x_vals, expected_exponent=0.5)
-    alpha = float(growth.get("exponent", growth.get("alpha", float("nan")))) \
-        if isinstance(growth, dict) else float("nan")
-    bound = check_erh_bound(E_x, x_vals, C=C)
-    max_abs_e = float(np.max(np.abs(E_x))) if len(E_x) else 0.0
-    erh_bound = C * math.sqrt(max(n_for_bound, 1))
-    within = bool(bound.get("erh_satisfied", max_abs_e <= erh_bound))
-    density = total_primes / n if n else 0.0
+    # Convert to numpy for analysis
+    E_arr = np.array(e_x)
+    X_arr = np.array(x_vals)
+    
+    # Re-run growth analysis on this series
+    growth = analyze_error_growth(E_arr, X_arr, expected_exponent=0.5)
+    alpha = float(growth.get("estimated_exponent", float("nan")))
+    
+    # Precise bound check: Must be within at EVERY point
+    within = True
+    max_abs_e = 0.0
+    for val in E_arr:
+        abs_val = abs(val)
+        if abs_val > max_abs_e:
+            max_abs_e = abs_val
+    
+    # Use the same 0.6 exponent (0.5 + 0.1 epsilon) as JS and theory
+    for x_i, e_i in zip(x_vals, e_x):
+        local_bound = C * (x_i ** 0.6)
+        if abs(e_i) > local_bound:
+            within = False
+            break
+
+    erh_bound = C * (n ** 0.6)
 
     if not math.isfinite(alpha):
         verdict, score = "Insufficient signal", int(100 - density * 100)
@@ -190,12 +219,11 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
         "alpha": alpha, "erhBound": erh_bound, "maxAbsError": max_abs_e,
         "withinBound": within, "ethicalDegree": score, "verdict": verdict,
         "series": {
-            "x": [float(v) for v in x_vals],
-            "Pi": [float(v) for v in Pi_x],
-            "B": [float(v) for v in B_x],
-            "E": [float(v) for v in E_x],
+            "x": x_vals,
+            "Pi": pi_x,
+            "B": b_x,
+            "E": e_x,
         },
-        "boundDetail": bound,
         "backend": "erh_core",
     }
 
