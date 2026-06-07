@@ -32,6 +32,7 @@ env:
   PYTHONPATH: ${{ github.workspace }}
   MPLBACKEND: Agg
   PYTEST_ADDOPTS: --tb=short
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   simulator-regression:

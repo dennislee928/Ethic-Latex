@@ -1,15 +1,15 @@
 {
   "name": "erh-js-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JavaScript SDK for the Ethical Riemann Hypothesis Framework",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "erh-cli": "./bin/erh-cli.js"
+    "erh-cli": "bin/erh-cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "test": "tsc --noEmit && echo \"Compilation check passed\""
+    "build": "node ./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "test": "node ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && echo \"Compilation check passed\""
   },
   "keywords": [
     "erh",

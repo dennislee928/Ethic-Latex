@@ -84,9 +84,9 @@ echo ""
 # Step 3: Verify required files exist
 echo "[3/6] Verifying required files..."
 REQUIRED_FILES=(
-    "ethical_riemann_hypothesis_en.tex"
-    "ethical_riemann_hypothesis_zh.tex"
-    "references.bib"
+    "latex/ethical_riemann_hypothesis_en.tex"
+    "latex/ethical_riemann_hypothesis_zh.tex"
+    "latex/references.bib"
 )
 
 ALL_FILES_EXIST=1
@@ -123,8 +123,8 @@ echo ""
 
 # Step 5: Verify PDF files
 echo "[5/6] Verifying PDF files..."
-PDF_EN="ethical_riemann_hypothesis_en.pdf"
-PDF_ZH="ethical_riemann_hypothesis_zh.pdf"
+PDF_EN="latex/ethical_riemann_hypothesis_en.pdf"
+PDF_ZH="latex/ethical_riemann_hypothesis_zh.pdf"
 
 VERIFICATION_PASSED=1
 
@@ -191,10 +191,10 @@ echo "[6/6] Running additional checks..."
 # Check for LaTeX compilation artifacts
 echo "  Checking LaTeX compilation artifacts..."
 ARTIFACTS=(
-    "ethical_riemann_hypothesis_en.aux"
-    "ethical_riemann_hypothesis_en.log"
-    "ethical_riemann_hypothesis_zh.aux"
-    "ethical_riemann_hypothesis_zh.log"
+    "latex/ethical_riemann_hypothesis_en.aux"
+    "latex/ethical_riemann_hypothesis_en.log"
+    "latex/ethical_riemann_hypothesis_zh.aux"
+    "latex/ethical_riemann_hypothesis_zh.log"
 )
 
 for artifact in "${ARTIFACTS[@]}"; do

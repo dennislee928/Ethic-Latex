@@ -1,0 +1,55 @@
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _read(relative_path: str) -> str:
+    return (ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def test_public_thesis_entrypoints_do_not_contain_review_regressions() -> None:
+    strict_markers = [
+        "[TBD]",
+        "[YES/NO]",
+        "[Observation",
+        "[figure pending]",
+        "Run simulation with",
+        "This section will be filled",
+        "待填入",
+        "由模擬管線自動填入",
+        "Section ??",
+        "Table ??",
+        r"\Pi( )",
+        "elementsofai.com/zh",
+        "conservative judges display r...",
+    ]
+
+    bilingual_markers = [
+        "[figure pending]",
+        "［圖示待補］",
+        "待填入",
+        "由模擬管線自動填入",
+        "Section ??",
+        "Table ??",
+        r"\Pi( )",
+        "elementsofai.com/zh",
+        "conservative judges display r...",
+        "run pipeline",
+    ]
+
+    for relative_path, markers in [
+        ("latex/ethical_riemann_hypothesis.tex", strict_markers),
+        ("latex/ethical_riemann_hypothesis_en.tex", bilingual_markers),
+        ("latex/ethical_riemann_hypothesis_zh.tex", bilingual_markers),
+    ]:
+        text = _read(relative_path)
+        for marker in markers:
+            assert marker not in text, f"{relative_path} still contains review marker: {marker}"
+
+
+def test_local_build_script_copies_quantum_png_assets() -> None:
+    build_script = _read("scripts/build_thesis.sh")
+
+    assert "latest_quantum_circuit.png" in build_script
+    assert "latest_quantum_distribution.png" in build_script

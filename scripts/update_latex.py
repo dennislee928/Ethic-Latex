@@ -16,7 +16,7 @@ def parse_results_summary(file_path):
     if not os.path.exists(file_path):
         print(f"Warning: Results summary file not found at {file_path}")
         print("Skipping LaTeX updates - this is expected if simulations haven't run yet")
-        sys.exit(0)  # Exit gracefully, don't break the workflow
+        return None  # Signal callers to skip data injection but still sanitize
 
     with open(file_path, 'r') as f:
         content = f.read()
@@ -283,20 +283,128 @@ def update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path
         print(f"Updated quantum Hilbert stats in {path}")
 
 
+def update_cases_20_results(latex_path_en, latex_path_zh, summary_json_path):
+    """Inject 20 simulation case metrics into LaTeX placeholders."""
+    if not os.path.exists(summary_json_path):
+        print(f"Warning: 20 cases summary not found at {summary_json_path}")
+        return
+
+    try:
+        with open(summary_json_path) as f:
+            summary = json.load(f)
+    except Exception as e:
+        print(f"Error reading {summary_json_path}: {e}")
+        return
+
+    # Category mapping: Category Name -> Placeholder Key
+    cat_mapping = {
+        "Judiciary": "JUD",
+        "Medical": "MED",
+        "Finance": "FIN",
+        "HR": "HR",
+        "Governance": "GOV",
+        "Education": "EDU",
+        "LLM": "LLM"
+    }
+
+    replacements = []
+    
+    # Handle Categories Summary
+    categories_data = summary.get("categories", {})
+    for cat, key in cat_mapping.items():
+        if cat in categories_data:
+            data = categories_data[cat]
+            replacements.append((f"[CASE_{key}_MR]", f"{data['mistake_rate']:.3f}"))
+            replacements.append((f"[CASE_{key}_PR]", f"{int(data['ethical_primes_count'])}"))
+            replacements.append((f"[CASE_{key}_AL]", f"${data['estimated_exponent']:.3f}$"))
+            erh_en = "Yes" if data['erh_satisfied_rate'] > 0.5 else "No"
+            erh_zh = "是" if data['erh_satisfied_rate'] > 0.5 else "否"
+            replacements.append((f"[CASE_{key}_ERH]", erh_en))
+            replacements.append((f"[CASE_{key}_ERH_ZH]", erh_zh))
+
+    # Handle Detailed Cases (subsections)
+    detailed_data = summary.get("detailed", {})
+    for case_name, data in detailed_data.items():
+        # Example: [CASE_Parole_Board_MR]
+        # Some case names have spaces or symbols, but the ones in simulate_20_cases.py are mostly clean
+        safe_name = case_name.replace(" ", "_").replace("-", "_")
+        replacements.append((f"[CASE_{safe_name}_MR]", f"{data['mistake_rate']:.3f}"))
+        replacements.append((f"[CASE_{safe_name}_PR]", f"{int(data['ethical_primes_count'])}"))
+        replacements.append((f"[CASE_{safe_name}_AL]", f"${data['estimated_exponent']:.3f}$"))
+        erh_en = "Yes" if data['erh_satisfied'] else "No"
+        erh_zh = "是" if data['erh_satisfied'] else "否"
+        replacements.append((f"[CASE_{safe_name}_ERH]", erh_en))
+        replacements.append((f"[CASE_{safe_name}_ERH_ZH]", erh_zh))
+
+    if "advanced" in summary:
+        adv = summary["advanced"]
+        replacements.append(("[MANIFOLD_ROUGHNESS]", f"{adv['manifold_roughness']:.4f}"))
+        replacements.append(("[DRIFT_ALPHA_FINAL]", f"${adv['drift_alpha_final']:.3f}$"))
+
+    for path in [latex_path_en, latex_path_zh]:
+        if not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+        for old, new in replacements:
+            content = content.replace(old, new)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"Updated 20 simulation cases (detailed) in {path}")
+
+
+def sanitize_unfilled_placeholders(latex_path_en: str, latex_path_zh: str) -> None:
+    """Replace any remaining [UPPER_CASE_TOKEN] placeholders with safe defaults.
+
+    Placeholders that were not filled by the data-injection steps contain
+    underscores (e.g. [CASE_JUD_MR]) which are special characters in LaTeX
+    and cause fatal 'Missing $ inserted' compilation errors.  This function
+    acts as a safety net and must run unconditionally after all data injection.
+    """
+    # Matches bracket-delimited ALL_CAPS tokens that contain at least one
+    # underscore, e.g. [CASE_JUD_MR], [MANIFOLD_ROUGHNESS].
+    # Deliberately excludes safe LaTeX optionals like [T1], [TBD], [H].
+    _PLACEHOLDER_RE = re.compile(r"\[[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\]")
+
+    for path in (latex_path_en, latex_path_zh):
+        if not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        matches = _PLACEHOLDER_RE.findall(content)
+        if matches:
+            print(f"  sanitizing {len(matches)} unfilled placeholder(s) in {path}: {sorted(set(matches))}")
+        content = _PLACEHOLDER_RE.sub("{--}", content)
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     results_path = os.path.join(base_dir, "simulation", "output", "results_summary.txt")
     quantum_json_path = os.path.join(base_dir, "simulation", "output", "quantum_hilbert_results.json")
-    latex_path_en = os.path.join(base_dir, "ethical_riemann_hypothesis_en.tex")
-    latex_path_zh = os.path.join(base_dir, "ethical_riemann_hypothesis_zh.tex")
+    cases_20_path = os.path.join(base_dir, "simulation", "output", "cases_20", "cases_20_summary.json")
+    latex_path_en = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_en.tex")
+    latex_path_zh = os.path.join(base_dir, "latex", "ethical_riemann_hypothesis_zh.tex")
 
     print(f"Reading results from: {results_path}")
     results = parse_results_summary(results_path)
 
-    print(f"Updating English LaTeX file: {latex_path_en}")
-    print(f"Updating Chinese LaTeX file: {latex_path_zh}")
-    update_latex_file_bilingual(latex_path_en, latex_path_zh, results)
+    if results is not None:
+        print(f"Updating English LaTeX file: {latex_path_en}")
+        print(f"Updating Chinese LaTeX file: {latex_path_zh}")
+        update_latex_file_bilingual(latex_path_en, latex_path_zh, results)
 
-    print(f"Injecting quantum Hilbert stats from: {quantum_json_path}")
-    update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path)
+        print(f"Injecting quantum Hilbert stats from: {quantum_json_path}")
+        update_quantum_hilbert_stats(latex_path_en, latex_path_zh, quantum_json_path)
+
+        print(f"Injecting 20 cases metrics from: {cases_20_path}")
+        update_cases_20_results(latex_path_en, latex_path_zh, cases_20_path)
+
+    # Always sanitize: replace any remaining [UPPER_CASE_TOKEN] placeholders with
+    # {--} so latexmk never encounters bare underscores outside math mode.
+    print("Sanitizing any unfilled placeholders in LaTeX files...")
+    sanitize_unfilled_placeholders(latex_path_en, latex_path_zh)
 
