@@ -190,7 +190,7 @@ function evaluateResponses(payload) {
     totalPrimes,
     primeDensity: density,
     alpha,
-    erhBound: bound,
+    erhBound: erhBound,
     maxAbsError: maxAbsE,
     withinBound,
     ethicalDegree: score, // 0..100, higher = more ethical

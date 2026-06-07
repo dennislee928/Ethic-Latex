@@ -190,6 +190,41 @@ async function doSimulate() {
   render({ ...resp.result, backend: 'erh_core' });
 }
 
+async function doFormat() {
+  const items = parseInput($('input').value);
+  if (!items.length) return;
+  $('input').value = items.map(it => JSON.stringify(it)).join('\n');
+}
+
+async function doReset() {
+  $('input').value = '';
+  $('output').innerHTML = '';
+  $('export').disabled = true;
+  lastResult = null;
+}
+
+async function doDebugLog() {
+  const backend = await window.erh.backendInfo();
+  const rawInput = $('input').value;
+  const parsedItems = parseInput(rawInput);
+  
+  const debugData = {
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    backend: backend,
+    input: {
+      rawLength: rawInput.length,
+      rawContent: rawInput,
+      parsedCount: parsedItems.length,
+      parsedItems: parsedItems
+    },
+    lastAnalysisResult: lastResult
+  };
+
+  const r = await window.erh.exportResult(debugData);
+  if (r.ok) $('output').insertAdjacentHTML('afterbegin', `<div class="warning-banner" style="background:var(--primary)15; border-color:var(--primary)44; color:var(--primary)">✓ Debug log saved to ${r.path}</div>`);
+}
+
 async function refreshBadge() {
   try {
     const info = await window.erh.backendInfo();
@@ -200,6 +235,9 @@ async function refreshBadge() {
 }
 
 $('run').addEventListener('click', run);
+$('format').addEventListener('click', doFormat);
+$('reset').addEventListener('click', doReset);
+$('debug').addEventListener('click', doDebugLog);
 $('import').addEventListener('click', doImport);
 $('export').addEventListener('click', doExport);
 $('simulate').addEventListener('click', doSimulate);
