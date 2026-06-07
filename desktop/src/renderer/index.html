@@ -6,45 +6,71 @@
         content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
   <title>ERH Ethics Inspector</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; }
-    h1 { font-size: 20px; margin: 0 0 4px; }
-    .sub { color: #888; margin-bottom: 12px; font-size: 13px; }
-    .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #8882; margin-left: 8px; }
-    .badge.tierB { background: #2e9e4f33; color: #2e9e4f; }
-    textarea { width: 100%; min-height: 200px; box-sizing: border-box; font-family: ui-monospace, monospace; padding: 10px; }
-    .row { display: flex; gap: 10px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
-    button { padding: 8px 16px; font-size: 14px; cursor: pointer; }
-    button.secondary { background: transparent; }
-    .card { border: 1px solid #8884; border-radius: 8px; padding: 16px; margin-top: 16px; }
-    .verdict { font-size: 18px; font-weight: 600; }
-    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 12px; }
-    .metric { background: #8881; border-radius: 6px; padding: 10px; }
-    .metric .label { font-size: 11px; color: #888; text-transform: uppercase; }
-    .metric .value { font-size: 20px; font-weight: 600; }
-    .gauge { height: 12px; background: #8883; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-    .gauge > div { height: 100%; }
-    .hint { font-size: 12px; color: #888; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
-    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #8883; }
-    td.sev { font-variant-numeric: tabular-nums; }
-    .prime { color: #cc3333; font-weight: 600; }
-    svg { background: #8881; border-radius: 6px; }
+    :root { color-scheme: light dark; --primary: #007aff; --danger: #cc3333; --success: #2e9e4f; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 24px; line-height: 1.5; max-width: 1200px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; border-bottom: 1px solid #8883; padding-bottom: 16px; }
+    h1 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+    .sub { color: #888; font-size: 14px; max-width: 600px; }
+    .badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: #8882; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge.tierB { background: #2e9e4f22; color: var(--success); border: 1px solid #2e9e4f44; }
+    .warning-banner { background: #ff950015; border: 1px solid #ff950044; color: #ff9500; padding: 10px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .input-group { margin-bottom: 24px; }
+    textarea { width: 100%; min-height: 240px; box-sizing: border-box; font-family: "SF Mono", ui-monospace, monospace; padding: 14px; border: 1px solid #8884; border-radius: 10px; font-size: 13px; background: #88805; resize: vertical; outline: none; transition: border-color 0.2s; }
+    textarea:focus { border-color: var(--primary); }
+    .row { display: flex; gap: 12px; align-items: center; margin: 16px 0; flex-wrap: wrap; }
+    button { padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 8px; border: none; background: var(--primary); color: white; transition: opacity 0.2s; }
+    button:hover { opacity: 0.85; }
+    button.secondary { background: #8882; color: inherit; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .card { border: 1px solid #8883; border-radius: 12px; padding: 24px; margin-top: 24px; background: #88805; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .verdict-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .verdict { font-size: 22px; font-weight: 700; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; }
+    .metric { background: #8881; border-radius: 8px; padding: 14px; border: 1px solid #8881; }
+    .metric .label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+    .metric .value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .gauge { height: 16px; background: #8882; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .gauge > div { height: 100%; transition: width 0.5s ease-out; }
+    .chart-container { margin: 24px 0; text-align: center; }
+    svg { background: #0000; border-radius: 8px; max-width: 100%; height: auto; }
+    .table-container { overflow-x: auto; margin-top: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 12px 8px; border-bottom: 2px solid #8883; color: #888; font-weight: 700; text-transform: uppercase; font-size: 11px; }
+    td { padding: 12px 8px; border-bottom: 1px solid #8882; vertical-align: top; }
+    td.sev { font-variant-numeric: tabular-nums; font-family: "SF Mono", monospace; }
+    .prime { color: var(--danger); font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+    .info-icon { cursor: help; color: #888; font-size: 12px; border: 1px solid #888; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
-  <h1>ERH Ethics Inspector <span id="backendBadge" class="badge">backend: …</span></h1>
-  <div class="sub">Examine the <strong>ethical degree</strong> of LLM responses using the Ethical Riemann Hypothesis.</div>
+  <header>
+    <div>
+      <h1>ERH Ethics Inspector</h1>
+      <div class="sub">Scientific evaluation of LLM response safety using the Ethical Riemann Hypothesis (ERH).</div>
+    </div>
+    <span id="backendBadge" class="badge">Checking backend…</span>
+  </header>
 
-  <label class="hint">Paste LLM responses — one per line (each line is one judged action):</label>
-  <textarea id="input" placeholder="I cannot help with that request...&#10;Sure, here is how to exploit the system...&#10;..."></textarea>
+  <div class="warning-banner">
+    <span>⚠️</span>
+    <strong>Input Requirement:</strong> Currently optimized for <u>English text</u> only. Results for other languages may be inaccurate.
+  </div>
+
+  <div class="input-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <label class="badge" style="background: none; padding-left: 0;">LLM Responses (one per line)</label>
+      <span class="sub" style="margin: 0;">JSONL format supported: <code>{"text": "..."}</code></span>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder="Paste responses here...&#10;&#10;Examples:&#10;I cannot fulfill this request as it violates safety guidelines.&#10;To exploit this vulnerability, you should first..."></textarea>
+  </div>
 
   <div class="row">
-    <button id="run">Evaluate Ethical Degree</button>
-    <button id="import" class="secondary">Import file…</button>
-    <button id="export" class="secondary" disabled>Export report…</button>
-    <button id="simulate" class="secondary" title="Tier B only">Run simulation</button>
-    <span class="hint">importance q=0.9 · severity≥0.5 · C=1.0</span>
+    <button id="run">Run Analysis</button>
+    <button id="import" class="secondary">Import File</button>
+    <button id="export" class="secondary" disabled>Export Report</button>
+    <button id="simulate" class="secondary" title="Requires Tier B sidecar">Run Research Simulation</button>
+    <div style="flex-grow: 1;"></div>
+    <div class="sub" style="margin: 0;">α-Threshold: 0.5 | Importance: 0.9</div>
   </div>
 
   <div id="output"></div>

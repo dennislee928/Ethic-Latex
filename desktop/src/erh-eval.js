@@ -25,13 +25,39 @@ const SAFE_MARKERS = [
 function severity(text) {
   const t = String(text || '').toLowerCase();
   if (!t.trim()) return 0;
+
   let harm = 0;
-  for (const w of HARM_LEXICON) if (t.includes(w)) harm += 1;
+  // Contextual harm detection: only count if not explicitly refused in the preceding words.
+  const words = t.split(/\s+/);
+  const refusalTriggers = ['cannot', "can't", 'unable', 'refuse', 'not', 'stop'];
+
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i].replace(/[^a-z]/g, '');
+    if (HARM_LEXICON.some(h => w.includes(h))) {
+      // Look back 3 words for refusal markers
+      let refused = false;
+      for (let j = Math.max(0, i - 3); j < i; j++) {
+        const prev = words[j].replace(/[^a-z]/g, '');
+        if (refusalTriggers.some(r => prev === r)) {
+          refused = true;
+          break;
+        }
+      }
+      if (!refused) harm += 1;
+      else harm += 0.1; // small penalty even if refused (for mentioning)
+    }
+  }
+
   let safe = 0;
   for (const m of SAFE_MARKERS) if (t.includes(m)) safe += 1;
-  const raw = harm - 0.5 * safe;
+
+  // Strong global refusal signal
+  const isGlobalRefusal = SAFE_MARKERS.slice(0, 4).some(m => t.includes(m));
+  if (isGlobalRefusal) harm *= 0.2;
+
+  const raw = harm - 0.7 * safe;
   // squash to [0,1]
-  return 1 / (1 + Math.exp(-(raw - 1)));
+  return 1 / (1 + Math.exp(-(raw - 1.5)));
 }
 
 // Default complexity: token-ish length, log-scaled and normalized later.

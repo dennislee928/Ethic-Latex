@@ -48,14 +48,14 @@ function itemRows(items) {
   const rows = items.slice(0, 200).map((it, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td>${(it.text || it.description || '').slice(0, 80).replace(/</g, '&lt;')}</td>
+      <td>${(it.text || it.description || '').slice(0, 100).replace(/</g, '&lt;')}...</td>
       <td class="sev">${fmt(it.severity, 2)}</td>
       <td class="sev">${fmt(it.complexity ?? it.c, 2)}</td>
-      <td>${it.isPrime || it.mistake_flag ? '<span class="prime">prime</span>' : ''}</td>
+      <td>${it.isPrime || it.mistake_flag ? '<span class="prime" title="Critical ethical misjudgment (Prime)">🚩 Prime</span>' : '<span style="color:#888">Safe</span>'}</td>
     </tr>`).join('');
-  return `<table>
-    <thead><tr><th>#</th><th>Response</th><th>Severity</th><th>Complexity</th><th>Flag</th></tr></thead>
-    <tbody>${rows}</tbody></table>`;
+  return `<div class="table-container"><table>
+    <thead><tr><th>#</th><th>Response Preview</th><th>Severity</th><th>Complexity</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
 }
 
 function render(r) {
@@ -64,18 +64,32 @@ function render(r) {
   const color = gaugeColor(r.ethicalDegree);
   $('output').innerHTML = `
     <div class="card">
-      <div class="verdict" style="color:${color}">${r.verdict}</div>
-      <div class="gauge"><div style="width:${r.ethicalDegree}%; background:${color}"></div></div>
-      <div class="hint">Ethical degree: <strong>${r.ethicalDegree}/100</strong> · backend: <strong>${r.backend || 'js'}</strong></div>
-      <div class="metrics">
-        <div class="metric"><div class="label">Responses (N)</div><div class="value">${r.n}</div></div>
-        <div class="metric"><div class="label">Ethical primes</div><div class="value">${r.totalPrimes}</div></div>
-        <div class="metric"><div class="label">Error exponent α</div><div class="value">${fmt(r.alpha)}</div></div>
-        <div class="metric"><div class="label">Max |E(x)|</div><div class="value">${fmt(r.maxAbsError, 2)}</div></div>
-        <div class="metric"><div class="label">ERH bound C·√N</div><div class="value">${fmt(r.erhBound, 2)}</div></div>
-        <div class="metric"><div class="label">Within bound?</div><div class="value">${r.withinBound ? 'Yes' : 'No'}</div></div>
+      <div class="verdict-header">
+        <div class="verdict" style="color:${color}">${r.verdict}</div>
+        <div class="badge" style="background:${color}22; color:${color}; border:1px solid ${color}44">Score: ${r.ethicalDegree}/100</div>
       </div>
-      ${chart(r.series || {})}
+      <div class="gauge"><div style="width:${r.ethicalDegree}%; background:${color}"></div></div>
+      <div class="metrics">
+        <div class="metric">
+          <div class="label">Sample Size (N) <span class="info-icon" title="Total number of evaluated responses">?</span></div>
+          <div class="value">${r.n}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Ethical Primes <span class="info-icon" title="Number of high-importance responses that failed the safety threshold">?</span></div>
+          <div class="value">${r.totalPrimes}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Growth Exponent (α) <span class="info-icon" title="The rate at which ethical errors grow with complexity. α ≤ 0.5 is healthy.">?</span></div>
+          <div class="value">${fmt(r.alpha)}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Within ERH Bound? <span class="info-icon" title="Checks if max cumulative error stays within C·√N">?</span></div>
+          <div class="value" style="color:${r.withinBound ? 'var(--success)' : 'var(--danger)'}">${r.withinBound ? 'Yes' : 'No'}</div>
+        </div>
+      </div>
+      <div class="chart-container">
+        ${chart(r.series || {})}
+      </div>
       ${itemRows(r.items)}
     </div>`;
 }
