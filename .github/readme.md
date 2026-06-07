@@ -1,3 +1,11 @@
+
+
+<video width="640" height="360" controls>
+  <source src="https://pub-562eb5dc8f9c4026b0afbabdb70d99a8.r2.dev/Screen%20Recording%202026-06-07%20at%205.42.12%E2%80%AFPM.mov" type="video/mov">
+
+  Your browser does not support the video tag.
+</video>
+  ---
   Workflow: julia_tests.yml
   Changed?: Already correct (created fresh)            
   What was updated: —
