@@ -1,0 +1,180 @@
+name: Desktop App (Cross-Platform Installers)
+
+# Independent CI/CD pipeline that builds the ERH Ethics Inspector desktop app
+# into native installers for Windows (.exe / .msi), macOS (.dmg), and Linux
+# (.deb / AppImage). Artifacts are uploaded for every build; version tags
+# (v*) additionally publish a GitHub Release.
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+    paths:
+      - "desktop/**"
+      - ".github/workflows/desktop_build.yml"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "desktop/**"
+      - ".github/workflows/desktop_build.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # needed to attach installers to Releases on tag builds
+
+jobs:
+  guard:
+    name: Check desktop app present
+    runs-on: ubuntu-latest
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f desktop/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "✓ desktop/package.json found."
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ desktop/package.json not found; skipping desktop build."
+          fi
+
+  build:
+    name: Build (${{ matrix.os }})
+    needs: guard
+    if: needs.guard.outputs.present == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+            artifact: erh-desktop-windows
+          - os: macos-latest
+            platform: mac
+            artifact: erh-desktop-macos
+          - os: ubuntu-latest
+            platform: linux
+            artifact: erh-desktop-linux
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Use Python (for erh_core sidecar)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: npm install
+
+      - name: Lint
+        working-directory: desktop
+        continue-on-error: true
+        run: npm run lint --if-present
+
+      - name: Test (Tier A scorer)
+        working-directory: desktop
+        run: npm test
+
+      # Tier B: freeze erh_core into a sidecar binary. If this fails, the app
+      # still ships and falls back to the Tier A JS scorer.
+      - name: Build erh_core sidecar
+        working-directory: desktop
+        continue-on-error: true
+        shell: bash
+        run: bash sidecar/build_sidecar.sh
+
+      # electron-builder picks targets from package.json "build". Passing the
+      # platform flag keeps each runner to its native installer set.
+      - name: Build installers
+        working-directory: desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Apple Signing & Notarization
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Certificate (base64 or path to .p12)
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        run: npx --no-install electron-builder --${{ matrix.platform }} --publish never
+
+      - name: List artifacts
+        working-directory: desktop
+        shell: bash
+        run: ls -la release || true
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            desktop/release/*.exe
+            desktop/release/*.msi
+            desktop/release/*.dmg
+            desktop/release/*.deb
+            desktop/release/*.AppImage
+          if-no-files-found: warn
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            installers/**/*.exe
+            installers/**/*.msi
+            installers/**/*.dmg
+            installers/**/*.deb
+            installers/**/*.AppImage
+          generate_release_notes: true
+
+  collect-errors:
+    name: Collect CI Errors
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always()
+    steps:
+      - name: Write error report
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          report = {
+            "workflow": "desktop_build",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "notes": "Cross-platform Electron installer build (win/mac/linux).",
+          }
+          with open("ci-errors-desktop-build.json", "w") as f:
+              json.dump(report, f, indent=2)
+          PYEOF
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-errors-desktop_build
+          path: ci-errors-desktop-build.json
+          retention-days: 3

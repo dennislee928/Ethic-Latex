@@ -25,6 +25,16 @@ js-sdk/node_modules/
 *node_modules
 .next/
 
+# Desktop app build artifacts
+desktop/release/
+desktop/sidecar/dist/
+desktop/sidecar/build/
+desktop/sidecar/*.spec
+
+# Keep desktop app icons (override the global `build/` ignore rule above)
+!desktop/build/
+!desktop/build/**
+
 # Docs build output
 docs/_build/
 
@@ -73,8 +83,9 @@ Thumbs.db
 *.fls
 *.pdf
 
-# But keep the paper PDF
-!ethical_riemann_hypothesis.pdf
+# But keep the committed paper PDFs (sources are in latex/)
+!latex/ethical_riemann_hypothesis.pdf
+!latex/ethical_riemann_hypothesis_zh.pdf
 
 # Simulation outputs
 simulation/output/**
@@ -117,3 +128,8 @@ basement.md
 *.tsbuildinfo
 PROJECT_AUDIT_REPORT.md
 /docs/actions_error_log
+/desktop/release
+desktop/sidecar.zip
+latex/ethical_riemann_hypothesis_zh.pdf
+latex/ethical_riemann_hypothesis.pdf
+ci-errors-desktop-build.json

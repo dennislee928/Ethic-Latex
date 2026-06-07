@@ -51,7 +51,7 @@ class DecisionTrace:
     delta : float
         J - V.
     mistake_flag : int
-        1 if |delta| > tau, else 0.
+        1 if `|delta|` > tau, else 0.
     top_features : List[Tuple[str, float]]
         Ordered list of (feature_name, contribution) pairs.
     reasoning : str
@@ -80,15 +80,20 @@ class BaseJudge(ABC):
     A judge takes an action and produces a moral judgment J(a),
     which may differ from the true value V(a).
 
-    Extended attributes (all default to non-intrusive values)
-    ---------------------------------------------------------
-    _calibrator         Fitted sklearn calibrator (None if uncalibrated).
-    _calibration_method "platt" | "isotonic" | None.
-    _decision_traces    List of DecisionTrace objects (populated only when
-                        _store_traces is True).
-    _store_traces       Toggle trace recording (default False).
-    abstention_threshold  When set, judge_or_abstain() returns None if
-                          calibrated_confidence() < threshold.
+    Attributes
+    ----------
+    _calibrator : Any or None
+        Fitted sklearn calibrator (None if uncalibrated).
+    _calibration_method : str or None
+        `"platt" | "isotonic" | None`.
+    _decision_traces : list of DecisionTrace
+        List of DecisionTrace objects (populated only when
+        _store_traces is True).
+    _store_traces : bool
+        Toggle trace recording (default False).
+    abstention_threshold : float or None
+        When set, judge_or_abstain() returns None if
+        calibrated_confidence() < threshold.
     """
 
     def __init__(self, name: str = "BaseJudge"):
@@ -189,15 +194,15 @@ class BaseJudge(ABC):
         """Fit a calibrator to align confidence scores with violation rates.
 
         After calling calibrate(), calibrated_confidence() uses the fitted
-        model rather than the raw |delta|/2 proxy.
+        model rather than the raw `|delta|/2` proxy.
 
         Parameters
         ----------
         calibration_actions : List[Action]
             Actions that already have action.J and action.mistake_flag set.
         method : str
-            "platt"    — LogisticRegression on |delta| scores.
-            "isotonic" — IsotonicRegression on sorted |delta| scores.
+            "platt"    — LogisticRegression on `|delta|` scores.
+            "isotonic" — IsotonicRegression on sorted `|delta|` scores.
 
         Raises
         ------
@@ -252,7 +257,7 @@ class BaseJudge(ABC):
         """Return P(violation) for *action*.
 
         Uses the fitted calibrator if available; otherwise falls back to
-        |J - V| / 2 as a raw unnormalised proxy (range 0–1).
+        `|J - V| / 2` as a raw unnormalised proxy (range 0–1).
 
         action.J must be set (or judge() is called internally to set it).
         """
@@ -584,7 +589,7 @@ class OracleDrivenJudge(BaseJudge):
     """Judge that sets V(a) from HuggingFaceEthicalOracle before computing J(a).
 
     Supports GroundTruthProxy priority: if csv_proxy has action_id, use it;
-    else use oracle.score(action.description). E(x) = |J - V|.
+    else use oracle.score(action.description). E(x) = `|J - V|`.
 
     Parameters
     ----------
@@ -1105,10 +1110,7 @@ def evaluate_judgement(
 ) -> Optional[List[Action]]:
     """Evaluate all actions with a given judge and compute errors.
 
-    For each action:
-    1. Computes J(a) using judge (or judge_or_abstain() if allow_abstention=True)
-    2. Computes error Δ(a) = J(a) - V(a)
-    3. Sets mistake_flag to 1 if |Δ(a)| > τ, else 0
+    Supports multidimensional moral values if Action.V_vector is present.
 
     Parameters
     ----------
@@ -1117,20 +1119,11 @@ def evaluate_judgement(
     tau : float, default=0.3
     inplace : bool, default=True
     allow_abstention : bool, default=False
-        When True and judge.abstention_threshold is set, abstained actions
-        have J=None and mistake_flag=None rather than a computed value.
 
     Returns
     -------
     Optional[List[Action]]
         None if inplace=True; copy of evaluated actions if inplace=False.
-
-    Examples
-    --------
-    >>> actions = generate_world(100)
-    >>> judge = BiasedJudge(bias_strength=0.2)
-    >>> evaluate_judgement(actions, judge, tau=0.3)
-    >>> mistakes = sum(a.mistake_flag for a in actions)
     """
     if not inplace:
         actions = copy.deepcopy(actions)
@@ -1146,12 +1139,28 @@ def evaluate_judgement(
             action.J = None
             action.delta = None
             action.mistake_flag = None
+            action.J_vector = None
+            action.delta_vector = None
         else:
             action.J = J
             action.delta = J - action.V
-            action.mistake_flag = 1 if abs(action.delta) > tau else 0
+            
+            # Handle multidimensional values if present
+            if action.V_vector is not None:
+                # For Multi-dimensional Zeta, we simulate multi-dim judgment
+                # by adding small independent noise to each dimension of V
+                noise = np.random.normal(0, abs(action.delta) * 0.5, len(action.V_vector))
+                action.J_vector = action.V_vector + (J - action.V) + noise
+                action.delta_vector = action.J_vector - action.V_vector
+                
+                # Mistake flag is 1 if any dimension exceeds tau or if scalar delta exceeds tau
+                # (Formalizing ethical phase transition as any dimension collapsing)
+                max_dim_delta = np.max(np.abs(action.delta_vector))
+                action.mistake_flag = 1 if (abs(action.delta) > tau or max_dim_delta > tau) else 0
+            else:
+                action.mistake_flag = 1 if abs(action.delta) > tau else 0
 
-        if judge._store_traces and J is not None:
+        if getattr(judge, '_store_traces', False) and J is not None:
             judge._decision_traces.append(judge.explain(action))
 
     if not inplace:

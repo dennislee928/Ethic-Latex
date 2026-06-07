@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "0 0 * * 0"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   real-data-preparation:
     name: Real Data Preparation
@@ -334,16 +337,18 @@ jobs:
 
       - name: Install R
         if: hashFiles('scripts/verify_analysis.R') != ''
+        continue-on-error: true
         run: |
           sudo apt-get update
           sudo apt-get install -y r-base
 
       - name: Install R packages
         if: hashFiles('scripts/verify_analysis.R') != ''
+        continue-on-error: true
         run: |
           if command -v Rscript &> /dev/null; then
             mkdir -p ~/R/library
-            Rscript -e ".libPaths(c('~/R/library', .libPaths())); install.packages('jsonlite', repos='https://cran.rstudio.com/', lib='~/R/library', quiet=TRUE)"
+            Rscript -e ".libPaths(c('~/R/library', .libPaths())); install.packages('jsonlite', repos='https://cran.rstudio.com/', lib='~/R/library', quiet=TRUE)" || true
           fi
 
       - name: Verify with R (Optional)
@@ -358,6 +363,7 @@ jobs:
         with:
           name: comprehensive-report
           path: final_report/
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Upload Figures for Thesis

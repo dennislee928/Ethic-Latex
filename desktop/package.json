@@ -1,0 +1,117 @@
+{
+  "name": "erh-desktop",
+  "productName": "ERH Ethics Inspector",
+  "version": "0.1.0",
+  "description": "Cross-platform desktop app that uses the Ethical Riemann Hypothesis (ERH) to examine the ethical degree of LLM responses.",
+  "author": {
+    "name": "Ethical AI Research",
+    "email": "admin@dennisleehappy.org"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/dennislee928/Ethic-Latex",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dennislee928/Ethic-Latex.git"
+  },
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "lint": "node -e \"require('./src/erh-eval.js'); console.log('lint: modules load OK')\"",
+    "test": "node test/erh-eval.test.js",
+    "build:sidecar": "bash sidecar/build_sidecar.sh",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis msi",
+    "dist:mac": "npm run build:sidecar && electron-builder --mac dmg",
+    "dist:linux": "electron-builder --linux deb AppImage"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "org.dennisleehappy.erh.inspector",
+    "productName": "ERH Ethics Inspector",
+    "copyright": "Copyright © 2026 Ethical AI Research",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "sidecar/dist",
+        "to": "sidecar",
+        "filter": [
+          "erh_sidecar",
+          "erh_sidecar.exe"
+        ]
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.developer-tools",
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": {
+        "teamId": "${env.APPLE_TEAM_ID}"
+      }
+    },
+    "dmg": {
+      "sign": false,
+      "format": "UDZO",
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "maintainer": "Ethical AI Research <admin@dennisleehappy.org>",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
+  }
+}

@@ -471,8 +471,9 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">analyze_error_growth</span><span class="p">(</span>
     <span class="n">E_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">x_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">expected_exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">expected_exponent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">return_structured</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze whether |E(x)| grows like x^α and estimate α.</span>
 <span class="sd">    </span>
@@ -496,13 +497,17 @@
 <span class="sd">        - &#39;r_squared&#39;: goodness of fit</span>
 <span class="sd">        - &#39;max_absolute_error&#39;: max |E(x)|</span>
 <span class="sd">        - &#39;growth_rate&#39;: how E(x) grows</span>
-<span class="sd">        </span>
+
+<span class="sd">        When return_structured=True, returns a (dict, ERHCheckResult) tuple.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; Pi_x, B_x, E_x, x_vals = compute_Pi_and_error(primes)</span>
 <span class="sd">    &gt;&gt;&gt; analysis = analyze_error_growth(E_x, x_vals)</span>
 <span class="sd">    &gt;&gt;&gt; print(f&quot;Estimated exponent: {analysis[&#39;estimated_exponent&#39;]:.3f}&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; print(f&quot;ERH satisfied: {analysis[&#39;erh_satisfied&#39;]}&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; # Structured result:</span>
+<span class="sd">    &gt;&gt;&gt; result_dict, erh_result = analyze_error_growth(E_x, x_vals, return_structured=True)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Filter out zeros and take absolute value for exponent fitting</span>
     <span class="n">abs_E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">E_x</span><span class="p">)</span>
@@ -510,11 +515,10 @@
 
     <span class="c1"># Default structure if we do not have enough data</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">valid_mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.erh_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_erh_bound</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.erh_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_erh_bound</span><span class="p">,</span> <span class="n">check_erh_bound_structured</span>
 
         <span class="n">bound_stats</span> <span class="o">=</span> <span class="n">check_erh_bound</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">{</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;estimated_exponent&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
             <span class="s1">&#39;constant_C&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
             <span class="s1">&#39;erh_satisfied&#39;</span><span class="p">:</span> <span class="n">bound_stats</span><span class="p">[</span><span class="s1">&#39;erh_satisfied&#39;</span><span class="p">],</span>
@@ -526,6 +530,9 @@
             <span class="s1">&#39;erh_max_ratio&#39;</span><span class="p">:</span> <span class="n">bound_stats</span><span class="p">[</span><span class="s1">&#39;max_ratio&#39;</span><span class="p">],</span>
             <span class="s1">&#39;erh_violation_rate&#39;</span><span class="p">:</span> <span class="n">bound_stats</span><span class="p">[</span><span class="s1">&#39;violation_rate&#39;</span><span class="p">],</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">return_structured</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">check_erh_bound_structured</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
 
     <span class="n">x_valid</span> <span class="o">=</span> <span class="n">x_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
     <span class="n">E_valid</span> <span class="o">=</span> <span class="n">abs_E</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
@@ -586,7 +593,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">growth_rate</span> <span class="o">=</span> <span class="s1">&#39;superlinear&#39;</span>  <span class="c1"># Problematic!</span>
 
-    <span class="k">return</span> <span class="p">{</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;estimated_exponent&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span>
         <span class="s1">&#39;alpha_ci_low&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ci_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alpha_ci_low&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">))),</span>
         <span class="s1">&#39;alpha_ci_high&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ci_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alpha_ci_high&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">))),</span>
@@ -601,7 +608,15 @@
         <span class="c1"># Additional diagnostics for the bound itself</span>
         <span class="s1">&#39;erh_max_ratio&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">bound_stats</span><span class="p">[</span><span class="s1">&#39;max_ratio&#39;</span><span class="p">]),</span>
         <span class="s1">&#39;erh_violation_rate&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">bound_stats</span><span class="p">[</span><span class="s1">&#39;violation_rate&#39;</span><span class="p">]),</span>
-    <span class="p">}</span></div>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">return_structured</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">erh_core.analysis.erh_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_erh_bound_structured</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..analysis.erh_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_erh_bound_structured</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">check_erh_bound_structured</span><span class="p">(</span><span class="n">E_x</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
