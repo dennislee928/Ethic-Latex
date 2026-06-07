@@ -118,3 +118,5 @@ basement.md
 PROJECT_AUDIT_REPORT.md
 /docs/actions_error_log
 /desktop/release
+desktop/sidecar.zip
+ci-errors-desktop-build.json
