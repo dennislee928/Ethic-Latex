@@ -1,0 +1,119 @@
+# Plan: Cross-Platform ERH Desktop App + CI/CD Installers
+
+- **Date:** 2026-06-07
+- **Owner:** ERH maintainers
+- **Status:** Phase 1 scaffolded (this commit); Phases 2–4 proposed
+- **Related:** `desktop/`, `.github/workflows/desktop_build.yml`, `erh_core/`, `js-sdk/`, `erh-security-app/`
+
+## 1. Goal
+
+Ship a downloadable desktop application that lets non-developers use ERH to
+**examine the ethical degree of an LLM's responses**, distributed as native
+installers for every major OS:
+
+| OS      | Installers              | electron-builder target |
+| :------ | :---------------------- | :---------------------- |
+| Windows | `.exe`, `.msi`          | `nsis`, `msi`           |
+| macOS   | `.dmg`                  | `dmg`                   |
+| Linux   | `.deb`, `.AppImage`     | `deb`, `AppImage`       |
+
+The build pipeline is **independent** of the existing thesis/simulation/SDK
+workflows so a desktop release never blocks (or is blocked by) research CI.
+
+## 2. Architecture decision
+
+**Framework: Electron + electron-builder.**
+
+- Reuses the existing web/JS surface (Next.js frontend, `erh-js-sdk`).
+- `electron-builder` natively emits `.exe`, `.msi`, `.dmg`, `.deb`, `.AppImage`
+  from one config — the exact set requested.
+- Alternative considered: **Tauri** (smaller binaries) — deferred because it
+  requires a Rust toolchain and a rewrite of the renderer bridge; revisit if
+  installer size becomes a concern.
+
+### Scoring backends (two tiers)
+
+1. **Tier A — zero-runtime JS scorer (Phase 1, shipped).**
+   `desktop/src/erh-eval.js` is a dependency-free JS port of the canonical
+   `erh_core` pipeline (`select_ethical_primes → Π(x)/B(x)/E(x) → fit α`) using a
+   lightweight severity heuristic as the `V(a)` proxy. No Python, no network.
+
+2. **Tier B — bundled `erh_core` Python sidecar (Phase 3).**
+   For production-grade scoring (real oracles, full analysis suite), bundle a
+   PyInstaller-frozen `erh_core` binary as an Electron *sidecar*. The main
+   process spawns it and talks over stdio/local HTTP. This is what lets the full
+   research feature-set ride inside the same installers (see §5).
+
+## 3. Phases
+
+### Phase 1 — Scaffold + CI (this commit) ✅
+- `desktop/` Electron app: `main.js`, `preload.js`, `erh-eval.js`, renderer UI.
+- `.github/workflows/desktop_build.yml`: matrix build on win/mac/linux, artifact
+  upload, GitHub Release on `v*` tags, graceful `guard` job + error collection.
+
+### Phase 2 — UX & packaging polish
+- App icons (`build/icon.ico`, `icon.icns`, `512x512.png`), commit a
+  `package-lock.json`, re-enable npm cache in CI.
+- File import (`.txt`/`.jsonl` of responses), CSV/JSON export of results,
+  per-item drill-down table, E(x) vs √x chart.
+- Code signing: Windows (`CSC_LINK`/`CSC_KEY_PASSWORD`), macOS notarization
+  (`APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`) via repo secrets.
+
+### Phase 3 — Python sidecar (Tier B scoring)
+- Add `desktop/sidecar/` build step: `pyinstaller --onefile` over a thin
+  `erh_core` CLI/HTTP entrypoint, per-OS, in the same matrix.
+- `extraResources` in electron-builder to ship the frozen binary; main process
+  detects and prefers the sidecar, falling back to Tier A JS if absent.
+
+### Phase 4 — Release management
+- Semantic version tags drive Releases; auto-generated notes.
+- Optional auto-update via `electron-updater` + the GitHub Releases feed.
+
+## 4. CI/CD pipeline (`desktop_build.yml`)
+
+```
+guard ──> build (win / mac / linux matrix) ──> release (tags only)
+                         └──────────────> collect-errors (always)
+```
+
+- Triggers: push to `main`, `v*` tags, PRs touching `desktop/**`, manual dispatch.
+- `paths:` filters keep it independent of research-code changes.
+- `permissions: contents: write` for Release asset upload.
+- Unsigned by default; signing secrets slot in without workflow changes.
+
+## 5. Bundling the full ERH capability set into the installers
+
+The README "What This Repository Can Do" list maps into the app as follows. All
+of it can ship inside the same `.exe/.msi/.dmg/.deb` via the **Tier B sidecar**,
+which exposes `erh_core` / `simulation` to the renderer:
+
+| Capability                        | In-app delivery                                            | Phase |
+| :-------------------------------- | :--------------------------------------------------------- | :---- |
+| Examine LLM ethical degree        | Tier A JS scorer (shipped)                                 | 1     |
+| Compute ERH metrics / health      | Sidecar `erh_core.analysis` (Π/B/E, α, zeta, health)       | 3     |
+| Simulate judgment systems / ABM   | Sidecar `simulation` (`generate_world`, judges, ABM)       | 3     |
+| Adversarial / red-team            | Sidecar `simulation/adversarial.py`                        | 3     |
+| Real-world case studies           | Bundle small CSVs as `extraResources`; run via sidecar     | 3     |
+| Security DevSecOps PoC            | Optional: ship `erh-security-app` backend as a sidecar too | 4     |
+| Quantum backend                   | Sidecar with NumPy fallback (qiskit optional, not bundled) | 4     |
+
+Constraints to note:
+- Bundling Python + scientific deps grows installer size (~80–150 MB). Acceptable
+  for a desktop research tool; AppImage/dmg compress well.
+- Quantum cloud and dataset-fetch features stay **opt-in** (network/credentials),
+  never required for the core offline ethical-degree workflow.
+
+## 6. Acceptance criteria
+
+- [ ] `desktop_build.yml` produces `.exe`, `.msi`, `.dmg`, `.deb`, `.AppImage`
+      artifacts on a manual dispatch run.
+- [ ] App launches and scores a pasted batch offline (Tier A).
+- [ ] Tagging `v0.1.0` publishes a Release with all installers attached.
+- [ ] (Phase 3) Sidecar present → metrics match `erh_core` reference within
+      tolerance; absent → graceful Tier A fallback.
+
+## 7. Risks
+
+- **Unsigned binaries** trigger SmartScreen/Gatekeeper warnings → Phase 2 signing.
+- **macOS notarization** requires a paid Apple Developer account.
+- **Sidecar size/startup** → lazy-spawn on first metric request; cache process.
