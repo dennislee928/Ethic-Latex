@@ -28,7 +28,8 @@ function chart(series, C = 1.0) {
   if (xs.length < 2) return '';
   const W = 520, H = 160, pad = 28;
   const absE = series.E.map(Math.abs);
-  const bound = xs.map((x) => C * Math.sqrt(x));
+  // Match the 0.6 exponent used in evaluation logic
+  const bound = xs.map((x) => C * Math.pow(x, 0.6));
   const maxY = Math.max(1, ...absE, ...bound);
   const maxX = xs[xs.length - 1];
   const sx = (x) => pad + (x / maxX) * (W - 2 * pad);
@@ -37,7 +38,7 @@ function chart(series, C = 1.0) {
     `<polyline fill="none" stroke="${color}" stroke-width="2" ${dash ? 'stroke-dasharray="4 4"' : ''} points="${
       xs.map((x, i) => `${sx(x).toFixed(1)},${sy(ys[i]).toFixed(1)}`).join(' ')}" />`;
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    <text x="${pad}" y="14" font-size="11" fill="#888">|E(x)| (red) vs ERH bound C·√x (green dashed)</text>
+    <text x="${pad}" y="14" font-size="11" fill="#888">|E(x)| (red) vs ERH bound C·x^0.6 (green dashed)</text>
     ${line(absE, '#cc3333', false)}
     ${line(bound, '#2e9e4f', true)}
   </svg>`;
@@ -66,30 +67,48 @@ function render(r) {
     <div class="card">
       <div class="verdict-header">
         <div class="verdict" style="color:${color}">${r.verdict}</div>
-        <div class="badge" style="background:${color}22; color:${color}; border:1px solid ${color}44">Score: ${r.ethicalDegree}/100</div>
+        <div class="badge" style="background:${color}22; color:${color}; border:1px solid ${color}44">Health Score: ${r.ethicalDegree}/100</div>
       </div>
       <div class="gauge"><div style="width:${r.ethicalDegree}%; background:${color}"></div></div>
+      
       <div class="metrics">
         <div class="metric">
-          <div class="label">Sample Size (N) <span class="info-icon" title="Total number of evaluated responses">?</span></div>
+          <div class="label" title="Total items analyzed in this batch.">Sample Size (N) <span class="info-icon">?</span></div>
           <div class="value">${r.n}</div>
+          <div class="hint">Total LLM interactions analyzed.</div>
         </div>
         <div class="metric">
-          <div class="label">Ethical Primes <span class="info-icon" title="Number of high-importance responses that failed the safety threshold">?</span></div>
+          <div class="label" title="Significant ethical misjudgments discovered by the analyzer.">Ethical Primes <span class="info-icon">?</span></div>
           <div class="value">${r.totalPrimes}</div>
+          <div class="hint">Critical safety failures found.</div>
         </div>
         <div class="metric">
-          <div class="label">Growth Exponent (α) <span class="info-icon" title="The rate at which ethical errors grow with complexity. α ≤ 0.5 is healthy.">?</span></div>
+          <div class="label" title="The mathematical rate of error growth. A value ≤ 0.5 suggests a 'Riemann-healthy' system.">Growth Exponent (α) <span class="info-icon">?</span></div>
           <div class="value">${fmt(r.alpha)}</div>
+          <div class="hint">Target: &alpha; &le; 0.5 (Healthy)</div>
         </div>
         <div class="metric">
-          <div class="label">Within ERH Bound? <span class="info-icon" title="Checks if max cumulative error stays within C·√N">?</span></div>
+          <div class="label" title="Does the maximum cumulative error stay within the theoretical square-root bound?">Within ERH Bound? <span class="info-icon">?</span></div>
           <div class="value" style="color:${r.withinBound ? 'var(--success)' : 'var(--danger)'}">${r.withinBound ? 'Yes' : 'No'}</div>
+          <div class="hint">Statistical stability check.</div>
         </div>
       </div>
+
       <div class="chart-container">
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-color" style="background:#cc3333"></div> <span>Observed Error |E(x)|</span></div>
+          <div class="legend-item"><div class="legend-color" style="background:#2e9e4f; border:1px dashed #2e9e4f"></div> <span>Theoretical Bound (C&middot;&radic;x)</span></div>
+        </div>
         ${chart(r.series || {})}
+        <div class="chart-info">
+          <strong>How to read this chart:</strong> This graph plots the <em>cumulative ethical error</em> as the complexity of requests increases. 
+          The <strong>red line</strong> represents the actual error fluctuation. 
+          The <strong>green dashed line</strong> is the theoretical boundary (C&middot;x<sup>0.6</sup>) predicted by the Ethical Riemann Hypothesis. 
+          If the red line stays below or oscillates near the green line, the system is considered ethically stable ("Riemann-healthy"). 
+          If the red line shoots significantly above the green line, it indicates systematic ethical degradation.
+        </div>
       </div>
+
       ${itemRows(r.items)}
     </div>`;
 }

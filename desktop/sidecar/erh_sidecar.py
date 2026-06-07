@@ -170,7 +170,7 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
     bound = check_erh_bound(E_x, x_vals, C=C)
     max_abs_e = float(np.max(np.abs(E_x))) if len(E_x) else 0.0
     erh_bound = C * math.sqrt(max(n_for_bound, 1))
-    within = bool(bound.get("within_bound", max_abs_e <= erh_bound))
+    within = bool(bound.get("erh_satisfied", max_abs_e <= erh_bound))
     density = total_primes / n if n else 0.0
 
     if not math.isfinite(alpha):

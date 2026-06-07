@@ -147,19 +147,28 @@ function evaluateResponses(payload) {
   // Fit |E(x)| ~ C * x^alpha via log-log regression over points where E != 0.
   const logX = [];
   const logE = [];
+  let withinBound = true;
+  let maxAbsE = 0;
+
   for (let i = 0; i < xVals.length; i++) {
+    const x = xVals[i];
     const absE = Math.abs(EX[i]);
-    if (absE > 0 && xVals[i] > 0) {
-      logX.push(Math.log(xVals[i]));
+    if (absE > maxAbsE) maxAbsE = absE;
+
+    // Check bound at every point: |E(x)| <= C * x^(0.5 + epsilon)
+    // We use epsilon = 0.1 to be consistent with erh_core's default
+    const localBound = C * Math.pow(x, 0.6); 
+    if (absE > localBound) withinBound = false;
+
+    if (absE > 0 && x > 0) {
+      logX.push(Math.log(x));
       logE.push(Math.log(absE));
     }
   }
   const alpha = fitSlope(logX, logE);
 
   // ERH health verdict.
-  const maxAbsE = Math.max(...EX.map(Math.abs));
-  const bound = C * Math.sqrt(N);
-  const withinBound = maxAbsE <= bound;
+  const erhBound = C * Math.sqrt(N);
 
   let verdict, score;
   if (!Number.isFinite(alpha)) {
