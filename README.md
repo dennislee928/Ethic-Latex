@@ -97,7 +97,9 @@ This project introduces the **Ethical Riemann Hypothesis (ERH)**. It posits that
 ---
 ## macOS Desktop Demo
 
-https://github.com/user-attachments/assets/11d00e57-6e4d-4ab7-91bc-58e05ed1da43
+> 🎬 GitHub README does not support inline video playback. Click the link below to watch the demo.
+
+**[▶ Watch Demo Video](https://github.com/user-attachments/assets/11d00e57-6e4d-4ab7-91bc-58e05ed1da43)**
 
 ### you can use pre-release "alpha mac app and sidecar"( Release title:alpha mac app and sidecar) to experiment.
 ---
