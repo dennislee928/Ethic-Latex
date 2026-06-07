@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
   <title>ERH Ethics Inspector</title>
   <style>
     :root { color-scheme: light dark; }
     body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; }
     h1 { font-size: 20px; margin: 0 0 4px; }
-    .sub { color: #888; margin-bottom: 16px; font-size: 13px; }
-    textarea { width: 100%; min-height: 220px; box-sizing: border-box; font-family: ui-monospace, monospace; padding: 10px; }
-    .row { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
+    .sub { color: #888; margin-bottom: 12px; font-size: 13px; }
+    .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #8882; margin-left: 8px; }
+    .badge.tierB { background: #2e9e4f33; color: #2e9e4f; }
+    textarea { width: 100%; min-height: 200px; box-sizing: border-box; font-family: ui-monospace, monospace; padding: 10px; }
+    .row { display: flex; gap: 10px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
     button { padding: 8px 16px; font-size: 14px; cursor: pointer; }
+    button.secondary { background: transparent; }
     .card { border: 1px solid #8884; border-radius: 8px; padding: 16px; margin-top: 16px; }
     .verdict { font-size: 18px; font-weight: 600; }
     .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 12px; }
@@ -22,18 +25,26 @@
     .gauge { height: 12px; background: #8883; border-radius: 6px; overflow: hidden; margin-top: 8px; }
     .gauge > div { height: 100%; }
     .hint { font-size: 12px; color: #888; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #8883; }
+    td.sev { font-variant-numeric: tabular-nums; }
+    .prime { color: #cc3333; font-weight: 600; }
+    svg { background: #8881; border-radius: 6px; }
   </style>
 </head>
 <body>
-  <h1>ERH Ethics Inspector</h1>
-  <div class="sub">Examine the <strong>ethical degree</strong> of LLM responses using the Ethical Riemann Hypothesis. Runs fully offline.</div>
+  <h1>ERH Ethics Inspector <span id="backendBadge" class="badge">backend: …</span></h1>
+  <div class="sub">Examine the <strong>ethical degree</strong> of LLM responses using the Ethical Riemann Hypothesis.</div>
 
   <label class="hint">Paste LLM responses — one per line (each line is one judged action):</label>
-  <textarea id="input" placeholder="The model said: I cannot help with that request...&#10;Sure, here is how to exploit the system...&#10;..."></textarea>
+  <textarea id="input" placeholder="I cannot help with that request...&#10;Sure, here is how to exploit the system...&#10;..."></textarea>
 
   <div class="row">
     <button id="run">Evaluate Ethical Degree</button>
-    <span class="hint">Importance quantile 0.9 · severity threshold 0.5 · C = 1.0</span>
+    <button id="import" class="secondary">Import file…</button>
+    <button id="export" class="secondary" disabled>Export report…</button>
+    <button id="simulate" class="secondary" title="Tier B only">Run simulation</button>
+    <span class="hint">importance q=0.9 · severity≥0.5 · C=1.0</span>
   </div>
 
   <div id="output"></div>

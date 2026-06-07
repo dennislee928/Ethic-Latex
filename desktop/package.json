@@ -11,12 +11,17 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "lint": "echo \"(no linter configured)\" && exit 0",
+    "lint": "node -e \"require('./src/erh-eval.js'); console.log('lint: modules load OK')\"",
+    "test": "node test/erh-eval.test.js",
+    "build:sidecar": "bash sidecar/build_sidecar.sh",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:win": "electron-builder --win nsis msi",
     "dist:mac": "electron-builder --mac dmg",
     "dist:linux": "electron-builder --linux deb AppImage"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^31.0.0",
@@ -34,11 +39,27 @@
       "src/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "sidecar/dist",
+        "to": "sidecar",
+        "filter": [
+          "erh_sidecar",
+          "erh_sidecar.exe"
+        ]
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
     "win": {
       "target": [
         "nsis",
         "msi"
       ],
+      "icon": "build/icon.png",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "nsis": {
@@ -49,6 +70,7 @@
       "target": [
         "dmg"
       ],
+      "icon": "build/icon.png",
       "category": "public.app-category.developer-tools",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
@@ -57,6 +79,7 @@
         "deb",
         "AppImage"
       ],
+      "icon": "build/icon.png",
       "category": "Utility",
       "maintainer": "Ethical AI Research <admin@dennisleehappy.org>",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
