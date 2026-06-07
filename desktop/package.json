@@ -1,0 +1,65 @@
+{
+  "name": "erh-desktop",
+  "productName": "ERH Ethics Inspector",
+  "version": "0.1.0",
+  "description": "Cross-platform desktop app that uses the Ethical Riemann Hypothesis (ERH) to examine the ethical degree of LLM responses.",
+  "author": {
+    "name": "Ethical AI Research",
+    "email": "admin@dennisleehappy.org"
+  },
+  "license": "MIT",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "lint": "echo \"(no linter configured)\" && exit 0",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis msi",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:linux": "electron-builder --linux deb AppImage"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "org.dennisleehappy.erh.inspector",
+    "productName": "ERH Ethics Inspector",
+    "copyright": "Copyright © 2026 Ethical AI Research",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.developer-tools",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "Utility",
+      "maintainer": "Ethical AI Research <admin@dennisleehappy.org>",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
+  }
+}

@@ -34,6 +34,42 @@ This repository still contains multiple historical and experimental surfaces. Th
 
 See [docs/SUPPORTED_SURFACES.md](docs/SUPPORTED_SURFACES.md) for the current supported-surface decision record.
 
+## 🧭 What This Repository Can Do
+
+This repository is both a **research artifact** (the ERH paper + simulations) and a set of **runnable tools** that apply the Ethical Riemann Hypothesis to real systems. At a glance, it can:
+
+### 1. Model & Simulate Moral Judgment Systems
+- Generate synthetic "moral action spaces" with tunable complexity distributions (`generate_world`).
+- Apply pluggable judges — `BiasedJudge`, `NoisyJudge`, conservative/radical, fuzzy, and oracle-driven — to produce judgments.
+- Run **Agent-Based Model (ABM)** simulations and **adversarial / red-team** stress tests against the ERH bound (`simulation/adversarial.py`, `erh_core/core/abm_simulator.py`).
+
+### 2. Compute ERH Metrics & Diagnose "Ethical Health"
+- Select **ethical primes** (critical misjudgments), compute the prime-counting function $\Pi(x)$, the baseline $B(x)$, and the error term $E(x)$.
+- Fit the **error-growth exponent $\alpha$** and check the ERH boundary ($\alpha \approx 0.5$ = healthy, $\alpha \geq 1$ = systematic failure).
+- Provide an **ethical zeta function**, zero analysis, statistical tests, fairness metrics, and a live **health monitor** (`E(x)` vs. Riemann bound).
+
+### 3. Examine an LLM's Response for "Ethical Degree"
+- Score model outputs through V(a) proxies — `HuggingFaceEthicalOracle` (toxicity → ethical score), `GroundTruthProxy`, and `OracleDrivenJudge` — to quantify how a model's judgments accumulate critical errors as task complexity grows.
+- This is the capability surfaced to end users by the planned **cross-platform desktop app** (see [docs/plans](docs/plans/)).
+
+### 4. Apply ERH to Real-World Datasets
+- Built-in case studies: **Adult Income**, **COMPAS**, **Exam Cheating** (UCI Student Performance), and **Sexual Abuse** (synthetic fallback), with fetch/convert scripts.
+- Empirical validation pipeline that computes real-vs-simulated $\alpha$ values.
+
+### 5. Security Application (DevSecOps PoC)
+- `erh-security-app/` — a **FastAPI backend + Next.js frontend** that ingests GitLab Merge Request / SAST data and quantifies **structural security-risk growth** using ERH metrics.
+
+### 6. Optional Quantum & HPC Backends
+- Quantum judgment oracle via `simulation/quantum/` (local simulator or IBM Quantum Runtime, with a NumPy fallback).
+- A **Julia** port for performance-sensitive paths (`julia/`).
+
+### 7. SDKs, Packaging & Publishing
+- **Python SDK** (`erh`, published to PyPI) and **JavaScript/TypeScript SDK** (`js-sdk`, published to npm as `erh-js-sdk`) with a CLI.
+- Reproducible builds via Docker, Binder, Streamlit Cloud, and the LaTeX paper toolchain.
+
+### 8. Continuous Integration
+- Workflows for thesis builds, simulations, quantum tests, multi-platform tests, SDK publishing, docs, and (new) **cross-platform desktop installers** (`.exe`, `.msi`, `.dmg`, `.deb`).
+
 ## 📖 Project Overview
 
 This project introduces the **Ethical Riemann Hypothesis (ERH)**. It posits that in a "healthy" moral judgment system, the cumulative error in predicting critical misjudgments grows at most like $\sqrt{x}$, where $x$ is the complexity of the decision.
