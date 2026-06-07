@@ -1,0 +1,140 @@
+name: Real-World ERH Implementation
+description: Run the real-world ERH case studies, regression tests, and cross-case comparison.
+
+inputs:
+  release-tag:
+    description: >-
+      Tag name for the GitHub Release that bundles the generated artifacts.
+      Defaults to a timestamped tag. Set to empty to skip creating a Release
+      (the artifacts are still uploaded as a workflow artifact).
+    required: false
+    default: ""
+  upload-artifact:
+    description: Whether to upload the generated outputs as a workflow artifact.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Install real-world ERH dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pytest matplotlib pandas numpy scipy scikit-learn
+
+    - name: Run real-world ERH regression tests
+      shell: bash
+      env:
+        ERH_REAL_WORLD_OFFLINE: "1"
+      run: |
+        export PYTHONPATH="${GITHUB_WORKSPACE:-$(pwd)}:${GITHUB_WORKSPACE:-$(pwd)}/erh_core:${PYTHONPATH}"
+        pytest \
+          tests/test_content_moderation_case_study.py \
+          tests/test_compas_real_world_extensions.py \
+          tests/test_medical_triage_case_study.py \
+          tests/test_truthfulqa_case_study.py \
+          tests/test_llm_bias_case_study.py \
+          tests/test_erh_case_comparison.py \
+          -v --tb=short
+
+    - name: Run real-world ERH case scripts
+      shell: bash
+      env:
+        ERH_REAL_WORLD_OFFLINE: "1"
+      run: |
+        export PYTHONPATH="${GITHUB_WORKSPACE:-$(pwd)}:${GITHUB_WORKSPACE:-$(pwd)}/erh_core:${PYTHONPATH}"
+        mkdir -p simulation/output simulation/output/figures figures
+        python simulation/real_data/content_moderation_case_study.py
+        python simulation/real_data/medical_triage_case_study.py
+        python simulation/real_data/truthfulqa_case_study.py
+        python simulation/real_data/llm_bias_case_study.py
+        python simulation/real_data/erh_case_comparison.py
+        cp simulation/output/erh_case_alpha_comparison.png figures/ 2>/dev/null || true
+
+    # ---- Final stage: bundle & release everything generated above ----
+    - name: Collect generated ERH artifacts
+      id: collect
+      shell: bash
+      run: |
+        set -euo pipefail
+        STAGE_DIR="real_world_erh_release"
+        rm -rf "$STAGE_DIR"
+        mkdir -p "$STAGE_DIR"
+
+        # Gather all generated result files (figures, data, reports) produced by
+        # the previous stages, preserving their relative paths.
+        for src in simulation/output figures; do
+          [ -d "$src" ] || continue
+          find "$src" -type f \
+            \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.pdf' \
+               -o -name '*.json' -o -name '*.csv' -o -name '*.txt' -o -name '*.md' \) \
+            -print0 | while IFS= read -r -d '' f; do
+              mkdir -p "$STAGE_DIR/$(dirname "$f")"
+              cp "$f" "$STAGE_DIR/$f"
+            done
+        done
+
+        # Write a manifest so consumers can see exactly what was generated.
+        {
+          echo "# Real-World ERH generated artifacts"
+          echo ""
+          echo "- Commit: ${GITHUB_SHA:-local}"
+          echo "- Workflow run: ${GITHUB_RUN_ID:-local}"
+          echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo ""
+          echo "## Files"
+          ( cd "$STAGE_DIR" && find . -type f | sort | sed 's/^\.\//- /' )
+        } > "$STAGE_DIR/MANIFEST.md"
+
+        # Create distributable archives.
+        ARCHIVE_BASE="real-world-erh-${GITHUB_RUN_ID:-local}"
+        tar -czf "${ARCHIVE_BASE}.tar.gz" -C "$STAGE_DIR" .
+        ( cd "$STAGE_DIR" && zip -qr "../${ARCHIVE_BASE}.zip" . )
+
+        FILE_COUNT=$(find "$STAGE_DIR" -type f | wc -l | tr -d ' ')
+        echo "stage_dir=$STAGE_DIR" >> "$GITHUB_OUTPUT"
+        echo "archive_base=$ARCHIVE_BASE" >> "$GITHUB_OUTPUT"
+        echo "file_count=$FILE_COUNT" >> "$GITHUB_OUTPUT"
+        echo "Collected $FILE_COUNT generated files into $STAGE_DIR"
+        ls -la "${ARCHIVE_BASE}.tar.gz" "${ARCHIVE_BASE}.zip"
+
+    - name: Upload generated artifacts (workflow artifact)
+      if: ${{ inputs.upload-artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: real-world-erh-artifacts
+        path: |
+          ${{ steps.collect.outputs.archive_base }}.tar.gz
+          ${{ steps.collect.outputs.archive_base }}.zip
+          ${{ steps.collect.outputs.stage_dir }}/**
+        if-no-files-found: warn
+        retention-days: 14
+
+    - name: Resolve release tag
+      id: tag
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.release-tag }}" ]; then
+          TAG="${{ inputs.release-tag }}"
+        elif [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
+          TAG="${GITHUB_REF#refs/tags/}"
+        else
+          TAG="real-world-erh-$(date -u +%Y%m%d)-${GITHUB_RUN_ID:-local}"
+        fi
+        echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        echo "Release tag: $TAG"
+
+    - name: Publish GitHub Release with generated artifacts
+      if: ${{ inputs.release-tag != '' || startsWith(github.ref, 'refs/tags/') }}
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.tag.outputs.tag }}
+        name: "Real-World ERH artifacts (${{ steps.tag.outputs.tag }})"
+        body_path: ${{ steps.collect.outputs.stage_dir }}/MANIFEST.md
+        files: |
+          ${{ steps.collect.outputs.archive_base }}.tar.gz
+          ${{ steps.collect.outputs.archive_base }}.zip
+        fail_on_unmatched_files: false
+        token: ${{ github.token }}

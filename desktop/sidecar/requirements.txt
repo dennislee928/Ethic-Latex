@@ -1,0 +1,5 @@
+# Sidecar build deps. erh_core + numpy come from the repo root requirements.
+# Install the repo (editable) so `erh_core` is importable when freezing.
+-e ../..
+numpy
+pyinstaller>=6.0

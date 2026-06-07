@@ -1,0 +1,47 @@
+name: Real-World ERH (Manual)
+
+# Manually-triggered pipeline that runs the real-world ERH case studies,
+# regression tests, and cross-case comparison via the composite action at
+# .github/actions/real-world-erh, then bundles and releases every artifact
+# generated in its final stage.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-tag:
+        description: >-
+          Tag for the GitHub Release bundling the generated artifacts.
+          Leave empty to skip the Release (artifacts are still uploaded as a
+          workflow artifact).
+        required: false
+        default: ""
+      upload-artifact:
+        description: Upload the generated outputs as a workflow artifact.
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: write   # required so the final stage can publish a GitHub Release
+
+jobs:
+  real-world-erh:
+    name: Run real-world ERH and release artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run real-world ERH implementation
+        uses: ./.github/actions/real-world-erh
+        with:
+          release-tag: ${{ inputs.release-tag }}
+          upload-artifact: ${{ inputs.upload-artifact }}

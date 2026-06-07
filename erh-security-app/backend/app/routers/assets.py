@@ -6,9 +6,15 @@ from fastapi.responses import FileResponse
 
 router = APIRouter()
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
+# Directories scanned for PDF figures (category_name, path)
 FIGURE_DIRECTORIES = (
     ("figures", PROJECT_ROOT / "figures"),
     ("simulation", PROJECT_ROOT / "simulation" / "output" / "figures"),
+)
+# Directories scanned for top-level document PDFs (e.g. thesis papers)
+DOCUMENT_DIRECTORIES = (
+    PROJECT_ROOT,
+    PROJECT_ROOT / "latex",
 )
 
 
@@ -37,10 +43,15 @@ def _resolve_project_path(relative_path: str) -> Path:
 
 @router.get("/index", tags=["assets"])
 def get_asset_index() -> dict:
-    documents = [
-        _build_asset(path.relative_to(PROJECT_ROOT), "document")
-        for path in sorted(PROJECT_ROOT.glob("*.pdf"))
-    ]
+    seen_names: set[str] = set()
+    documents: list[dict] = []
+    for directory in DOCUMENT_DIRECTORIES:
+        if not directory.exists():
+            continue
+        for path in sorted(directory.glob("*.pdf")):
+            if path.name not in seen_names:
+                seen_names.add(path.name)
+                documents.append(_build_asset(path.relative_to(PROJECT_ROOT), "document"))
 
     figures: list[dict] = []
     for category, directory in FIGURE_DIRECTORIES:

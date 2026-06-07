@@ -11,15 +11,15 @@ REM Create release directory
 if not exist "%RELEASE_DIR%" mkdir "%RELEASE_DIR%"
 
 REM Copy PDFs (assuming they are generated)
-if exist "ethical_riemann_hypothesis_en.pdf" (
-    copy "ethical_riemann_hypothesis_en.pdf" "%RELEASE_DIR%\"
+if exist "latex/ethical_riemann_hypothesis_en.pdf" (
+    copy "latex/ethical_riemann_hypothesis_en.pdf" "%RELEASE_DIR%\"
     echo [OK] Copied English PDF
 ) else (
     echo [WARNING] ethical_riemann_hypothesis_en.pdf not found. Please compile first.
 )
 
-if exist "ethical_riemann_hypothesis_zh.pdf" (
-    copy "ethical_riemann_hypothesis_zh.pdf" "%RELEASE_DIR%\"
+if exist "latex/ethical_riemann_hypothesis_zh.pdf" (
+    copy "latex/ethical_riemann_hypothesis_zh.pdf" "%RELEASE_DIR%\"
     echo [OK] Copied Chinese PDF
 ) else (
     echo [WARNING] ethical_riemann_hypothesis_zh.pdf not found. Please compile first.

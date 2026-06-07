@@ -1,0 +1,16 @@
+name = "ERH"
+uuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+authors = ["Ethic-Latex"]
+version = "0.1.0"
+
+# [deps] is intentionally empty here.
+# UUIDs are resolved at install-time by `Pkg.add(...)` in CI and locally.
+# This avoids hard-coding UUIDs that drift from the General registry.
+# Run `julia --project=. -e 'using Pkg; Pkg.add([...])'` to populate deps + generate Manifest.toml.
+
+[compat]
+# Only the Julia version constraint is kept here.
+# Package compat bounds are added automatically when Pkg.add resolves and
+# writes them after deps are populated. Listing them without a [deps] entry
+# causes Julia's project validator to error ("not listed in deps").
+julia = "1.10"
