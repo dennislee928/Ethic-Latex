@@ -65,6 +65,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Use Python (for erh_core sidecar)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Install dependencies
         working-directory: desktop
@@ -75,13 +82,31 @@ jobs:
         continue-on-error: true
         run: npm run lint --if-present
 
+      - name: Test (Tier A scorer)
+        working-directory: desktop
+        run: npm test
+
+      # Tier B: freeze erh_core into a sidecar binary. If this fails, the app
+      # still ships and falls back to the Tier A JS scorer.
+      - name: Build erh_core sidecar
+        working-directory: desktop
+        continue-on-error: true
+        shell: bash
+        run: bash sidecar/build_sidecar.sh
+
       # electron-builder picks targets from package.json "build". Passing the
       # platform flag keeps each runner to its native installer set.
       - name: Build installers
         working-directory: desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # CSC_* unset => unsigned builds. Add signing secrets later if needed.
+          # Signing slots in via repo secrets without workflow changes.
+          # If a secret is unset the build is simply unsigned.
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: npx --no-install electron-builder --${{ matrix.platform }} --publish never
 
       - name: List artifacts

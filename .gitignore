@@ -25,6 +25,16 @@ js-sdk/node_modules/
 *node_modules
 .next/
 
+# Desktop app build artifacts
+desktop/release/
+desktop/sidecar/dist/
+desktop/sidecar/build/
+desktop/sidecar/*.spec
+
+# Keep desktop app icons (override the global `build/` ignore rule above)
+!desktop/build/
+!desktop/build/**
+
 # Docs build output
 docs/_build/
 

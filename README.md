@@ -50,7 +50,7 @@ This repository is both a **research artifact** (the ERH paper + simulations) an
 
 ### 3. Examine an LLM's Response for "Ethical Degree"
 - Score model outputs through V(a) proxies — `HuggingFaceEthicalOracle` (toxicity → ethical score), `GroundTruthProxy`, and `OracleDrivenJudge` — to quantify how a model's judgments accumulate critical errors as task complexity grows.
-- This is the capability surfaced to end users by the planned **cross-platform desktop app** (see [docs/plans](docs/plans/)).
+- Surfaced to end users by the **ERH Ethics Inspector desktop app** (`desktop/`): paste LLM responses and get an ethical-degree score (0–100) + ERH health verdict, fully offline. See **[docs/DESKTOP_APP.md](docs/DESKTOP_APP.md)**.
 
 ### 4. Apply ERH to Real-World Datasets
 - Built-in case studies: **Adult Income**, **COMPAS**, **Exam Cheating** (UCI Student Performance), and **Sexual Abuse** (synthetic fallback), with fetch/convert scripts.
@@ -435,7 +435,8 @@ The following table is a placeholder to be filled with simulation results.
 ## 📚 Documentation and Future Work
 
 - **Simulation Framework:** See `simulation/README.md`
-- **CI/Workflows:** `build_thesis_gated.yml` runs simulation → quantum tests → thesis build; `simulation.yml` fetches real data and empirical sources (HuggingFace, AITA, GitHub PR); `build_thesis.yml` fetches and processes case-study CSV before running Adult/Exam Cheating/Sexual Abuse case studies.
+- **CI/Workflows:** `build_thesis_gated.yml` runs simulation → quantum tests → thesis build; `simulation.yml` fetches real data and empirical sources (HuggingFace, AITA, GitHub PR); `build_thesis.yml` fetches and processes case-study CSV before running Adult/Exam Cheating/Sexual Abuse case studies; `desktop_build.yml` builds the cross-platform desktop installers (`.exe`/`.msi`/`.dmg`/`.deb`/`.AppImage`).
+- **Desktop App:** See [docs/DESKTOP_APP.md](docs/DESKTOP_APP.md) — the ERH Ethics Inspector (`desktop/`), an offline desktop tool to examine the ethical degree of LLM responses.
 - **Installation Guide:** See `docs/INSTALL.md` (includes venv and optional qiskit/quantum setup)
 - **Theory:** See `ethical_riemann_hypothesis.tex`
 - **Tests:** `pytest tests/` (includes `test_quantum_entanglement.py`, psychohistory integration)
