@@ -100,13 +100,11 @@ jobs:
         working-directory: desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Signing slots in via repo secrets without workflow changes.
-          # If a secret is unset the build is simply unsigned.
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Unsigned builds. NOTE: do not set an empty CSC_LINK — electron-builder
+          # treats it as a (missing) file path and fails. To enable signing, add
+          # the CSC_LINK / CSC_KEY_PASSWORD (and Apple notarization) secrets and
+          # reference them here only when non-empty.
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: npx --no-install electron-builder --${{ matrix.platform }} --publish never
 
       - name: List artifacts

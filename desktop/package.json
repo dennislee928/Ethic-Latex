@@ -8,6 +8,11 @@
     "email": "admin@dennisleehappy.org"
   },
   "license": "MIT",
+  "homepage": "https://github.com/dennislee928/Ethic-Latex",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dennislee928/Ethic-Latex.git"
+  },
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
