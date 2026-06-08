@@ -24,12 +24,23 @@
   - Go/Gin firewall `services/ai-gateway/` — **builds + vets clean**, e2e tested:
     benign passes, harmful blocked via Go→Python gRPC. Dockerfile + README.
   - K8s sidecar manifests `deploy/k8s/erh-sidecar/` (app+engine, gateway+engine).
-- [ ] **Phase 2 — IAM/CSPM**: adapter + `/v1/iam/audit` DONE in Phase 0; remaining =
-  docs + example. (Optional Go dispatch center reuses gateway skeleton — deferred.)
-- [ ] **Phase 3 — UEBA**: adapter + `/v1/ueba/evaluate` DONE in Phase 0; remaining =
-  Next.js dashboard route in `erh-security-app/frontend/`.
-- [ ] **Phase 4 — SDKs/docs/CI**: extend `erh`+`erh-js-sdk` with `evaluate()`; docs/products/*;
-  update README + SUPPORTED_SURFACES; CI workflows for engine + gateway.
+- [x] **Phase 2 — IAM/CSPM** — DONE & tested. `/v1/iam/audit` flags over-broad grants as
+  ethical primes with MITRE IOB tags (example `erh_engine/examples/iam_grants.json` →
+  risk 68, ERH violated). Wildcard breadth + precision penalty fixed. Docs `docs/products/iam-cspm.md`.
+  (Optional Go dispatch center reuses gateway skeleton — deferred, not required.)
+- [x] **Phase 3 — UEBA** — DONE & tested (dashboard + endpoint).
+- [x] **Phase 4 — SDKs/docs/CI** — DONE.
+  - `erh/client.py::ERHEngineClient.evaluate()` + `js-sdk` `ERHEngineClient.evaluate()` (both typecheck).
+  - `docs/products/{README,ai-gateway,iam-cspm,ueba,compliance}.md`.
+  - README "5b. Cloud-Native ERH Products" + verified-surfaces; `docs/SUPPORTED_SURFACES.md` updated.
+  - CI: `.github/workflows/erh_engine.yml` (engine tests + gateway build/vet + docker).
+
+### ALL PHASES COMPLETE. Branch `feature/erh-engine`. Verified:
+- `PYTHONPATH=. .venv/bin/python -m pytest tests/erh_engine_tests/ -q` → 7 passed.
+- frontend `typecheck`/`lint`/`build` pass (`/ueba` route).
+- `services/ai-gateway`: `go build`/`go vet` clean; e2e block/pass verified.
+- Remaining optional/manual: live-credential runs (OpenAI/AWS), docker image builds in CI,
+  push branch + open PR.
 
 ## Context
 

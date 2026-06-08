@@ -57,8 +57,21 @@ class IAMAuditRequest(BaseModel):
     params: EvaluateParams = Field(default_factory=EvaluateParams)
 
 
+def _baseline_scope(grant: IAMGrant) -> float:
+    """Least-privilege baseline V: always the safe pole (+1).
+
+    V is the ideal — a grant scoped exactly to what is needed. The actual grant
+    J is measured against it, so the over-permission gap is ``J - V``.
+    """
+    return 1.0
+
+
 def _granted_scope(grant: IAMGrant) -> float:
-    """Actual granted scope J in [-1, 1]; -1 = maximally over-broad."""
+    """Actual granted scope J in [-1, 1]; -1 = maximally over-broad / over-granted.
+
+    Penalizes wildcards, raw breadth, and low precision against the
+    least-privilege baseline (granted actions not actually needed).
+    """
     wild = any(a.strip() == "*" or a.strip().endswith(":*") for a in grant.actions)
     wild_res = any(r.strip() == "*" for r in grant.resources)
     breadth = len(grant.actions) + len(grant.resources)
@@ -68,20 +81,15 @@ def _granted_scope(grant: IAMGrant) -> float:
     if wild_res:
         score -= 0.8
     score -= min(0.8, breadth / 50.0)
+
+    # Precision penalty: fraction of granted actions that are NOT needed.
+    if grant.needed_actions:
+        granted = set(grant.actions)
+        if granted:
+            precision = len(set(grant.needed_actions) & granted) / len(granted)
+            score -= (1.0 - precision)  # 0 when perfectly scoped, up to -1 when none needed
+
     return float(max(-1.0, score))
-
-
-def _baseline_scope(grant: IAMGrant) -> float:
-    """Least-privilege baseline V; +1 when grant equals what's needed."""
-    if not grant.needed_actions:
-        return 1.0
-    needed = set(grant.needed_actions)
-    granted = set(grant.actions)
-    # Fraction of granted actions that are actually required.
-    if not granted:
-        return 1.0
-    precision = len(needed & granted) / len(granted)
-    return float(max(-1.0, 2.0 * precision - 1.0))
 
 
 def _iob_tags(grant: IAMGrant) -> List[str]:
