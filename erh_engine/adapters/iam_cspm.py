@@ -95,10 +95,18 @@ def _iob_tags(grant: IAMGrant) -> List[str]:
     return sorted(set(tags))
 
 
+def _effective_count(items: List[str]) -> int:
+    """Count scope items; a wildcard expands to a large effective breadth."""
+    wild = any(s.strip() == "*" or s.strip().endswith(":*") for s in items)
+    base = len(items)
+    return base + (40 if wild else 0)
+
+
 def grants_to_samples(grants: List[IAMGrant]) -> List[Sample]:
     samples: List[Sample] = []
     for i, g in enumerate(grants):
-        breadth = max(1, len(g.actions) * max(1, len(g.resources)))
+        # Wildcards dominate breadth: a "*" grant is maximally broad, not size-1.
+        breadth = max(1, _effective_count(g.actions) * _effective_count(g.resources))
         complexity = float(min(100.0, breadth))
         weight = float(g.asset_criticality * (2.0 if g.internet_exposed else 1.0))
         samples.append(
