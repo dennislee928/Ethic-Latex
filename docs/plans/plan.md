@@ -4,6 +4,30 @@
 > `/Users/dennis_leedennis_lee/Documents/GitHub/Ethic-Latex/docs/plans/plan.md`.
 > (During plan mode only the harness plan file is editable; the content is identical.)
 
+## Progress / Status (resume here)
+
+> Updated incrementally during implementation on branch `feature/erh-engine`.
+
+- [x] **Phase 0 — `erh_engine` interface (REST + gRPC)** — DONE & tested.
+  - `erh_engine/contracts/schemas.py` (Sample/EvaluateRequest/EvaluateResponse).
+  - `erh_engine/engine.py` (`evaluate()` wraps erh_core; NaN-safe; carries context).
+  - `erh_engine/rest/main.py` (`/v1/health`, `/v1/evaluate` + adapter routers).
+  - `erh_engine/proto/erh_engine.proto` + generated stubs + `grpc/server.py` + `translate.py`.
+  - `erh_engine/serve.py` (ERH_MODE rest|grpc|both), `Dockerfile`, `requirements.txt`.
+  - Adapters: `adapters/{scoring,llm,iam_cspm,ueba}.py` (live path + fallback).
+  - Tests: `tests/erh_engine_tests/test_engine.py` — **7 passing** (REST↔gRPC↔direct parity).
+  - NOTE: installed `grpcio`/`grpcio-tools` into `.venv`. Run tests with
+    `PYTHONPATH=. .venv/bin/python -m pytest tests/erh_engine_tests/ -q`.
+- [ ] **Phase 1 — AI Gateway**: Go/Gin proxy (`services/ai-gateway/`), CLI gate
+  (`erh_engine/cli.py`) + `.github/actions/erh-gate/`, K8s sidecar (`deploy/k8s/erh-sidecar/`).
+  (LLM adapter already done in Phase 0.)
+- [ ] **Phase 2 — IAM/CSPM**: adapter + `/v1/iam/audit` DONE in Phase 0; remaining =
+  optional Go dispatch center + docs.
+- [ ] **Phase 3 — UEBA**: adapter + `/v1/ueba/evaluate` DONE in Phase 0; remaining =
+  Next.js dashboard route in `erh-security-app/frontend/`.
+- [ ] **Phase 4 — SDKs/docs/CI**: extend `erh`+`erh-js-sdk` with `evaluate()`; docs/products/*;
+  update README + SUPPORTED_SURFACES; CI workflows for engine + gateway.
+
 ## Context
 
 Today the ERH framework's value is mostly framed as research + an LLM "ethical-degree"

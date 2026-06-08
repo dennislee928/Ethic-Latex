@@ -1,0 +1,10 @@
+# erh_engine service dependencies (REST + gRPC).
+# The ERH algorithm itself comes from the repo root package (erh_core), installed
+# via PYTHONPATH in the image.
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.0.0
+grpcio>=1.60.0
+numpy>=1.20.0
+scipy>=1.7.0
+requests>=2.28.0
