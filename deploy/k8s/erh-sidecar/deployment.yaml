@@ -1,0 +1,56 @@
+# ERH engine as a sidecar (Sidecar Pattern).
+#
+# The application container talks to the ERH engine over localhost:50051 (gRPC)
+# with minimal latency — the engine shares the Pod's network namespace. Use this
+# when a microservice needs to ERH-validate high-risk logic decisions inline.
+#
+#   kubectl apply -f deploy/k8s/erh-sidecar/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-erh-sidecar
+  labels:
+    app: app-with-erh-sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-with-erh-sidecar
+  template:
+    metadata:
+      labels:
+        app: app-with-erh-sidecar
+    spec:
+      containers:
+        # ---- your application ----
+        - name: app
+          image: your-app:latest
+          env:
+            - name: ERH_ENGINE_ADDR
+              value: "localhost:50051"   # sidecar over loopback
+          ports:
+            - containerPort: 8080
+
+        # ---- ERH engine sidecar (gRPC only) ----
+        - name: erh-engine
+          image: ghcr.io/dennislee928/erh-engine:latest
+          env:
+            - name: ERH_MODE
+              value: "grpc"
+            - name: ERH_GRPC_PORT
+              value: "50051"
+          ports:
+            - containerPort: 50051
+              name: grpc
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 5
+            periodSeconds: 10

@@ -18,11 +18,14 @@
   - Tests: `tests/erh_engine_tests/test_engine.py` — **7 passing** (REST↔gRPC↔direct parity).
   - NOTE: installed `grpcio`/`grpcio-tools` into `.venv`. Run tests with
     `PYTHONPATH=. .venv/bin/python -m pytest tests/erh_engine_tests/ -q`.
-- [ ] **Phase 1 — AI Gateway**: Go/Gin proxy (`services/ai-gateway/`), CLI gate
-  (`erh_engine/cli.py`) + `.github/actions/erh-gate/`, K8s sidecar (`deploy/k8s/erh-sidecar/`).
-  (LLM adapter already done in Phase 0.)
+- [x] **Phase 1 — AI Gateway** — DONE & tested.
+  - CLI gate `erh_engine/cli.py` (+ example cases) — verified PASS/FAIL exit codes.
+  - GH composite action `.github/actions/erh-gate/` + workflow `.github/workflows/erh-llm-gate.yml`.
+  - Go/Gin firewall `services/ai-gateway/` — **builds + vets clean**, e2e tested:
+    benign passes, harmful blocked via Go→Python gRPC. Dockerfile + README.
+  - K8s sidecar manifests `deploy/k8s/erh-sidecar/` (app+engine, gateway+engine).
 - [ ] **Phase 2 — IAM/CSPM**: adapter + `/v1/iam/audit` DONE in Phase 0; remaining =
-  optional Go dispatch center + docs.
+  docs + example. (Optional Go dispatch center reuses gateway skeleton — deferred.)
 - [ ] **Phase 3 — UEBA**: adapter + `/v1/ueba/evaluate` DONE in Phase 0; remaining =
   Next.js dashboard route in `erh-security-app/frontend/`.
 - [ ] **Phase 4 — SDKs/docs/CI**: extend `erh`+`erh-js-sdk` with `evaluate()`; docs/products/*;
