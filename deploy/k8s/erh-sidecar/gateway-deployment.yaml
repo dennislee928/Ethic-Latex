@@ -1,0 +1,54 @@
+# Standalone AI-gateway + ERH engine (two containers, same Pod) deployment for
+# the runtime AI firewall pattern. The gateway proxies LLM traffic and consults
+# the engine sidecar over localhost.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: erh-ai-gateway
+  labels:
+    app: erh-ai-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: erh-ai-gateway
+  template:
+    metadata:
+      labels:
+        app: erh-ai-gateway
+    spec:
+      containers:
+        - name: ai-gateway
+          image: ghcr.io/dennislee928/erh-ai-gateway:latest
+          env:
+            - name: GATEWAY_ADDR
+              value: ":8080"
+            - name: ERH_ENGINE_ADDR
+              value: "localhost:50051"
+            - name: MAX_RISK
+              value: "50"
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llm-credentials
+                  key: api-key
+          ports:
+            - containerPort: 8080
+        - name: erh-engine
+          image: ghcr.io/dennislee928/erh-engine:latest
+          env:
+            - name: ERH_MODE
+              value: "grpc"
+          ports:
+            - containerPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: erh-ai-gateway
+spec:
+  selector:
+    app: erh-ai-gateway
+  ports:
+    - port: 80
+      targetPort: 8080

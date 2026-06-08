@@ -1,0 +1,23 @@
+name: ERH LLM Gate
+
+# Runs the ERH-based LLM safety/logic gate on PRs that touch prompts, the engine,
+# or the gate test cases. Blocks merge when misjudgment divergence is too high.
+on:
+  pull_request:
+    paths:
+      - "erh_engine/**"
+      - "erh_core/**"
+      - ".github/workflows/erh-llm-gate.yml"
+  workflow_dispatch: {}
+
+jobs:
+  llm-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ERH gate (recorded responses)
+        uses: ./.github/actions/erh-gate
+        with:
+          cases: erh_engine/examples/llm_gate_cases.json
+          max-risk: "50"
+        # To run live, add: provider: openai / model: gpt-4o and set OPENAI_API_KEY secret.

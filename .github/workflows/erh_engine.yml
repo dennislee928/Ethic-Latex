@@ -1,0 +1,61 @@
+name: ERH Engine
+
+# Tests + container builds for the standardized ERH engine (REST + gRPC) and the
+# Go/Gin AI gateway.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "erh_engine/**"
+      - "erh_core/**"
+      - "services/ai-gateway/**"
+      - "tests/erh_engine_tests/**"
+      - ".github/workflows/erh_engine.yml"
+  pull_request:
+    paths:
+      - "erh_engine/**"
+      - "erh_core/**"
+      - "services/ai-gateway/**"
+      - "tests/erh_engine_tests/**"
+  workflow_dispatch: {}
+
+jobs:
+  engine-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install -r erh_engine/requirements.txt
+          pip install grpcio-tools pytest
+      - name: Run engine tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/erh_engine_tests -q
+
+  gateway-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - name: Build & vet ai-gateway
+        working-directory: services/ai-gateway
+        run: |
+          go build ./...
+          go vet ./...
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [engine-tests, gateway-build]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build engine image
+        run: docker build -f erh_engine/Dockerfile -t erh-engine:ci .
+      - name: Build gateway image
+        run: docker build -t erh-ai-gateway:ci services/ai-gateway

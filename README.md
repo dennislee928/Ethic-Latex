@@ -21,9 +21,11 @@ This repository still contains multiple historical and experimental surfaces. Th
 ### Currently Verified Surfaces
 
 - `erh-security-app/backend`: FastAPI security backend with `11` passing backend tests.
-- `erh-security-app/frontend`: Next.js security frontend with passing `typecheck`, `build`, and `lint`.
+- `erh-security-app/frontend`: Next.js security frontend with passing `typecheck`, `build`, and `lint` (now includes a `/ueba` insider-threat dashboard).
 - `simulation/app.py`: Streamlit entrypoint imports and syntax checks pass after the `json` import fix.
 - `erh`, `simulation`, `erh_core`: Root Python packages remain the canonical library surface for the research and SDK code paths.
+- `erh_engine`: Standardized ERH evaluation service (REST + gRPC) with `7` passing tests (REST↔gRPC↔direct parity). The universal interface behind the cloud-native products.
+- `services/ai-gateway`: Go/Gin runtime AI firewall; `go build`/`go vet` clean, e2e-verified against the engine over gRPC.
 
 ### Architecture Map
 
@@ -58,6 +60,13 @@ This repository is both a **research artifact** (the ERH paper + simulations) an
 
 ### 5. Security Application (DevSecOps PoC)
 - `erh-security-app/` — a **FastAPI backend + Next.js frontend** that ingests GitLab Merge Request / SAST data and quantifies **structural security-risk growth** using ERH metrics.
+
+### 5b. Cloud-Native ERH Products (universal decision-evaluation engine)
+- `erh_engine/` — a **standardized ERH evaluation service** over `erh_core` exposing one contract (`Sample → EvaluateRequest/EvaluateResponse`) via **REST** (`POST /v1/evaluate`) and **gRPC** (`ERHEngine.Evaluate`). Run with `PYTHONPATH=. ERH_MODE=both python -m erh_engine.serve` or `docker build -f erh_engine/Dockerfile -t erh-engine .`.
+- **AI Gateway / LLM-DR** — runtime AI firewall (`services/ai-gateway/`, Go/Gin), CI/CD gate (`erh_engine/cli.py` + `.github/actions/erh-gate/`), and K8s sidecar (`deploy/k8s/erh-sidecar/`).
+- **Cloud IAM / CSPM** — least-privilege divergence audit at `POST /v1/iam/audit` with MITRE ATT&CK IOB tags (`erh_engine/adapters/iam_cspm.py`).
+- **UEBA insider-threat** — behavioral convergence-domain drift at `POST /v1/ueba/evaluate`, visualized in the frontend `/ueba` dashboard.
+- See **[docs/products/](docs/products/README.md)** for per-product guides and the compliance mapping (NIST AI RMF, CSA, MITRE).
 
 ### 6. Optional Quantum & HPC Backends
 - Quantum judgment oracle via `simulation/quantum/` (local simulator or IBM Quantum Runtime, with a NumPy fallback).

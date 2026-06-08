@@ -9,6 +9,7 @@ This note records the repository's currently supported user-facing surfaces and 
 - **Official backend surface:** `erh-security-app/backend`
 - **Official frontend surface:** `erh-security-app/frontend`
 - **Canonical implementation library:** `erh_core/`
+- **Standardized service surface:** `erh_engine/` (REST + gRPC evaluation interface + domain adapters; the universal substrate for the cloud-native products) and `services/ai-gateway/` (Go/Gin runtime AI firewall edge)
 - **Security app status:** first-class supported application surface for the current operational path
 - **Research/simulation status:** supported as research and reproduction tooling, not as the primary operational app
 - **Duplicate UI surfaces:** retained in-tree for now, but not part of the current supported app path
