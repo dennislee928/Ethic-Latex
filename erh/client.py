@@ -72,3 +72,44 @@ class ERHRemoteClient:
         resp = requests.post(f"{self.base_url}/simulate", json=payload)
         resp.raise_for_status()
         return resp.json()
+
+
+class ERHEngineClient:
+    """
+    Client for the standardized ERH engine (``erh_engine`` REST service).
+
+    Wraps the universal ``POST /v1/evaluate`` contract so external systems can
+    obtain an ERH verdict (erh_satisfied, risk_score, primes, curves) for any
+    batch of domain-agnostic decision samples.
+
+    Example
+    -------
+    >>> client = ERHEngineClient("http://localhost:8000")
+    >>> client.evaluate([
+    ...     {"id": "a", "complexity": 10, "value": 1.0, "judgment": -1.0, "weight": 5.0},
+    ... ])["risk_score"]
+    """
+
+    def __init__(self, base_url: str = "http://localhost:8000"):
+        self.base_url = base_url.rstrip("/")
+
+    def health(self) -> bool:
+        try:
+            resp = requests.get(f"{self.base_url}/v1/health", timeout=10)
+            return resp.status_code == 200
+        except requests.RequestException:
+            return False
+
+    def evaluate(
+        self,
+        samples: List[Dict[str, Any]],
+        params: Optional[Dict[str, Any]] = None,
+        judge_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate a batch of samples against the ERH bound."""
+        payload: Dict[str, Any] = {"samples": samples, "params": params or {}}
+        if judge_name:
+            payload["judge_name"] = judge_name
+        resp = requests.post(f"{self.base_url}/v1/evaluate", json=payload, timeout=60)
+        resp.raise_for_status()
+        return resp.json()
