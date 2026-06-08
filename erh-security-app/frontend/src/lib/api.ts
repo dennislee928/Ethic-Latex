@@ -62,5 +62,57 @@ export async function getHealth(judgeType: JudgeType): Promise<HealthMonitorResp
   return fetchJson<HealthMonitorResponse>(`/analysis/health?judge_type=${judgeType}`);
 }
 
+// ---------------------------------------------------------------------------
+// erh_engine client (standardized ERH evaluation service, REST /v1/*).
+// Used by the UEBA dashboard to render behavioral-deviation trajectories.
+// ---------------------------------------------------------------------------
+
+const ENGINE_BASE = process.env.NEXT_PUBLIC_ERH_ENGINE_BASE ?? 'http://localhost:8000';
+
+export interface EngineCurve {
+  x: number[];
+  y: number[];
+}
+
+export interface EngineEvaluateResponse {
+  erh_satisfied: boolean;
+  risk_score: number;
+  violation_rate: number;
+  max_ratio: number;
+  estimated_exponent: number;
+  num_samples: number;
+  num_primes: number;
+  primes: Array<{
+    id: string;
+    complexity: number;
+    delta: number;
+    weight: number;
+    context: Record<string, unknown>;
+  }>;
+  error_curve?: EngineCurve | null;
+  pi_curve?: EngineCurve | null;
+}
+
+export interface UEBAEvent {
+  id?: string;
+  user: string;
+  hour: number;
+  bytes_downloaded?: number;
+  sensitive?: boolean;
+  is_baseline?: boolean;
+}
+
+export async function evaluateUeba(events: UEBAEvent[]): Promise<EngineEvaluateResponse> {
+  const res = await fetch(`${ENGINE_BASE}/v1/ueba/evaluate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ events, params: { include_curves: true } })
+  });
+  if (!res.ok) {
+    throw new Error(`Engine request failed with status ${res.status}`);
+  }
+  return (await res.json()) as EngineEvaluateResponse;
+}
+
 
 
