@@ -36,17 +36,11 @@ type config struct {
 }
 
 func loadConfig() config {
-	getenv := func(k, d string) string {
-		if v := os.Getenv(k); v != "" {
-			return v
-		}
-		return d
-	}
-	maxRisk, _ := strconv.ParseFloat(getenv("MAX_RISK", "50"), 64)
+	maxRisk, _ := strconv.ParseFloat(getenvDefault("MAX_RISK", "50"), 64)
 	return config{
-		listenAddr:  getenv("GATEWAY_ADDR", ":8080"),
-		engineAddr:  getenv("ERH_ENGINE_ADDR", "localhost:50051"),
-		upstreamURL: getenv("LLM_UPSTREAM_URL", "https://api.openai.com/v1/chat/completions"),
+		listenAddr:  getenvDefault("GATEWAY_ADDR", ":8080"),
+		engineAddr:  getenvDefault("ERH_ENGINE_ADDR", "localhost:50051"),
+		upstreamURL: getenvDefault("LLM_UPSTREAM_URL", "https://api.openai.com/v1/chat/completions"),
 		apiKey:      os.Getenv("LLM_API_KEY"),
 		maxRisk:     maxRisk,
 	}
