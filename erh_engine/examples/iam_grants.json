@@ -1,0 +1,29 @@
+{
+  "grants": [
+    {
+      "principal": "ci-deployer",
+      "actions": ["*"],
+      "resources": ["*"],
+      "needed_actions": ["s3:PutObject", "ecr:PushImage"],
+      "asset_criticality": 9,
+      "internet_exposed": true
+    },
+    {
+      "principal": "readonly-analyst",
+      "actions": ["s3:GetObject", "s3:ListBucket"],
+      "resources": ["arn:aws:s3:::reports/*"],
+      "needed_actions": ["s3:GetObject", "s3:ListBucket"],
+      "asset_criticality": 2,
+      "internet_exposed": false
+    },
+    {
+      "principal": "billing-bot",
+      "actions": ["iam:*", "billing:Get*"],
+      "resources": ["*"],
+      "needed_actions": ["billing:GetUsage"],
+      "asset_criticality": 6,
+      "internet_exposed": false
+    }
+  ],
+  "params": { "include_curves": false }
+}
