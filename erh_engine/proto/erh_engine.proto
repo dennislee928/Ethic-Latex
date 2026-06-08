@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package erh_engine;
+
+// Mirrors erh_engine.contracts.schemas field-for-field. The gRPC path is the
+// low-latency channel used by the Kubernetes sidecar and the Go/Gin edge proxy.
+service ERHEngine {
+  rpc Evaluate (EvaluateRequest) returns (EvaluateResponse);
+  rpc Health (HealthRequest) returns (HealthResponse);
+}
+
+message Sample {
+  string id = 1;
+  double complexity = 2;
+  double value = 3;
+  double judgment = 4;
+  double weight = 5;
+  // JSON-encoded context object (kept opaque on the wire).
+  string context_json = 6;
+}
+
+message EvaluateParams {
+  double tau = 1;
+  double C = 2;
+  double epsilon = 3;
+  double slack_factor = 4;
+  double allowed_violation_rate = 5;
+  string baseline = 6;
+  double importance_quantile = 7;
+  int32 x_max = 8;            // 0 => auto
+  bool include_curves = 9;
+}
+
+message EvaluateRequest {
+  repeated Sample samples = 1;
+  EvaluateParams params = 2;
+  string judge_name = 3;
+}
+
+message PrimeRef {
+  string id = 1;
+  double complexity = 2;
+  double delta = 3;
+  double weight = 4;
+  string context_json = 5;
+}
+
+message Curve {
+  repeated double x = 1;
+  repeated double y = 2;
+}
+
+message EvaluateResponse {
+  bool erh_satisfied = 1;
+  double risk_score = 2;
+  double violation_rate = 3;
+  double max_ratio = 4;
+  double bound_value = 5;
+  double estimated_exponent = 6;
+  double r_squared = 7;
+  int32 num_samples = 8;
+  int32 num_primes = 9;
+  string bound_type = 10;
+  string judge_name = 11;
+  repeated PrimeRef primes = 12;
+  Curve pi_curve = 13;
+  Curve error_curve = 14;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+  string version = 3;
+}

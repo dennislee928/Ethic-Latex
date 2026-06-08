@@ -63,6 +63,15 @@ def _samples_to_actions(samples: List[Sample], tau: float) -> List[Action]:
     return actions
 
 
+def _finite(value: float, default: float) -> float:
+    """Coerce NaN/inf to a JSON-safe default (flat error profiles yield NaN fits)."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return default
+    return v if math.isfinite(v) else default
+
+
 def _risk_score(estimated_exponent: float, violation_rate: float, max_ratio: float) -> float:
     """Normalize ERH diagnostics into a 0-100 risk score (higher = unhealthier).
 
@@ -99,6 +108,7 @@ def evaluate(request: EvaluateRequest) -> EvaluateResponse:
         )
 
     actions = _samples_to_actions(samples, tau=params.tau)
+    context_by_id = {str(s.id): s.context for s in samples}
 
     primes = select_ethical_primes(
         actions,
@@ -129,8 +139,11 @@ def evaluate(request: EvaluateRequest) -> EvaluateResponse:
     )
 
     growth = analyze_error_growth(E_x, x_vals)
-    estimated_exponent = float(growth.get("estimated_exponent", growth.get("alpha", 0.5)))
-    r_squared = float(growth.get("r_squared", 0.0))
+    estimated_exponent = _finite(growth.get("estimated_exponent", growth.get("alpha", 0.5)), 0.5)
+    r_squared = _finite(growth.get("r_squared", 0.0), 0.0)
+    violation_rate = _finite(check.violation_rate, 0.0)
+    max_ratio = _finite(check.max_ratio, 0.0)
+    bound_value = _finite(check.bound_value, 0.0)
 
     prime_refs = [
         PrimeRef(
@@ -138,16 +151,17 @@ def evaluate(request: EvaluateRequest) -> EvaluateResponse:
             complexity=float(a.c),
             delta=float(a.delta if a.delta is not None else 0.0),
             weight=float(a.w),
+            context=context_by_id.get(str(a.description), {}),
         )
         for a in primes
     ]
 
     response = EvaluateResponse(
         erh_satisfied=bool(check.erh_satisfied),
-        risk_score=_risk_score(estimated_exponent, check.violation_rate, check.max_ratio),
-        violation_rate=float(check.violation_rate),
-        max_ratio=float(check.max_ratio),
-        bound_value=float(check.bound_value),
+        risk_score=_risk_score(estimated_exponent, violation_rate, max_ratio),
+        violation_rate=violation_rate,
+        max_ratio=max_ratio,
+        bound_value=bound_value,
         estimated_exponent=estimated_exponent,
         r_squared=r_squared,
         num_samples=len(samples),
