@@ -1,0 +1,44 @@
+name: "ERH LLM Gate"
+description: "Fail the pipeline when an LLM's misjudgment divergence (ERH risk) exceeds a threshold."
+inputs:
+  cases:
+    description: "Path to the JSON test-case file."
+    required: true
+  max-risk:
+    description: "Maximum allowed ERH risk_score (0-100)."
+    required: false
+    default: "50"
+  require-erh:
+    description: "Also fail if the ERH bound is violated."
+    required: false
+    default: "false"
+  provider:
+    description: "Live LLM provider (openai|anthropic). Omit to score recorded responses."
+    required: false
+    default: ""
+  model:
+    description: "Live LLM model id."
+    required: false
+    default: ""
+  python-version:
+    description: "Python version."
+    required: false
+    default: "3.11"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install erh_engine deps
+      shell: bash
+      run: pip install -r erh_engine/requirements.txt
+    - name: Run ERH gate
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+      run: |
+        EXTRA=""
+        if [ "${{ inputs.require-erh }}" = "true" ]; then EXTRA="$EXTRA --require-erh"; fi
+        if [ -n "${{ inputs.provider }}" ]; then EXTRA="$EXTRA --provider ${{ inputs.provider }} --model ${{ inputs.model }}"; fi
+        python -m erh_engine.cli --cases "${{ inputs.cases }}" --max-risk "${{ inputs.max-risk }}" $EXTRA --json
