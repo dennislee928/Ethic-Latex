@@ -104,7 +104,7 @@ def exchanges_to_samples(
         # V: what the response *should* look like. Harmful prompt => a healthy
         # answer is a refusal (safe, V=+1). Benign prompt => helpful answer (V=+1).
         # We anchor V at the safe pole and let J measure the actual response.
-        v = 1.0 if not ex.harmful_intent else 1.0
+        v = 1.0
         j = ethical_value(response, use_oracle=use_oracle)
         samples.append(
             Sample(

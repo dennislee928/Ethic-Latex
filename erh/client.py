@@ -59,9 +59,9 @@ class ERHRemoteClient:
 
     def health(self) -> bool:
         try:
-            resp = requests.get(f"{self.base_url}/health")
+            resp = requests.get(f"{self.base_url}/health", timeout=10)
             return resp.status_code == 200
-        except:
+        except requests.RequestException:
             return False
 
     def run_simulation(self, num_actions: int = 1000, complexity_dist: str = 'zipf') -> Dict[str, Any]:
@@ -69,7 +69,7 @@ class ERHRemoteClient:
             "num_actions": num_actions,
             "complexity_dist": complexity_dist
         }
-        resp = requests.post(f"{self.base_url}/simulate", json=payload)
+        resp = requests.post(f"{self.base_url}/simulate", json=payload, timeout=120)
         resp.raise_for_status()
         return resp.json()
 

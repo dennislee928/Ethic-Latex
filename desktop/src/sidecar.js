@@ -111,8 +111,8 @@ class Sidecar {
 
   request(cmd, params, timeoutMs = 30000) {
     return this.waitReady().then(() => new Promise((resolve, reject) => {
+      if (!this.proc) { reject(new Error('sidecar exited')); return; }
       const id = this._nextId++;
-      this._pending.set(id, { resolve, reject });
       const t = setTimeout(() => {
         if (this._pending.has(id)) {
           this._pending.delete(id);

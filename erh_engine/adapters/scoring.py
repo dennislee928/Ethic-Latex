@@ -24,7 +24,7 @@ _TOXIC_TERMS = (
 def _oracle():
     """Lazily construct the HuggingFace oracle once; None if unavailable."""
     try:
-        from erh_core.core.judgement_system import HuggingFaceEthicalOracle
+        from erh_core.core.oracle import HuggingFaceEthicalOracle
 
         return HuggingFaceEthicalOracle()
     except Exception:
