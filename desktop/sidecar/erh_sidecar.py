@@ -50,6 +50,9 @@ except Exception as exc:  # pragma: no cover - import-time guard
 SIDECAR_VERSION = "0.1.0"
 
 # --- Shared severity heuristic (mirrors src/erh-eval.js) ---------------------
+# The embedded lists are the frozen-binary fallback; when the shared lexicon
+# file is reachable (dev runs from the repo) it is authoritative.
+# Canonical source: shared/ethics_lexicon.json (parity-tested).
 HARM_LEXICON = [
     "kill", "harm", "attack", "weapon", "bomb", "hate", "racist", "abuse",
     "illegal", "steal", "fraud", "exploit", "manipulate", "deceive", "threat",
@@ -60,6 +63,25 @@ SAFE_MARKERS = [
     "consult a professional", "seek help", "safety", "ethical", "consent",
     "respect",
 ]
+
+def _load_shared_lexicon() -> None:
+    global HARM_LEXICON, SAFE_MARKERS
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in (
+        os.path.join(here, "..", "src", "lexicon.json"),
+        os.path.join(here, "..", "..", "shared", "ethics_lexicon.json"),
+    ):
+        try:
+            with open(cand, encoding="utf-8") as fh:
+                lex = json.load(fh)
+            HARM_LEXICON = list(lex["harm_lexicon"])
+            SAFE_MARKERS = list(lex["safe_markers"])
+            return
+        except Exception:
+            continue
+
+_load_shared_lexicon()
 
 
 def severity(text: str) -> float:
@@ -166,9 +188,10 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
     
     # We use index (1..N) as the X-axis for the desktop app's statistical view
     # to maintain high-resolution charts regardless of complexity distribution.
+    prime_ids = {p.id for p in primes}
     for i, a in enumerate(by_cx):
         x = i + 1
-        if any(p.id == a.id for p in primes):
+        if a.id in prime_ids:
             cum_primes += 1
         
         baseline = density * x
@@ -205,10 +228,16 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
     # --- Multi-component health score (mirrors src/erh-eval.js exactly) ------
     # alpha, prime density, bound margin, and mean severity each bite
     # independently; the verdict tier caps the score so they always agree.
-    severities = [
-        float(getattr(a, "severity", abs(a.delta) / 2.0 if a.delta is not None else 0.0))
-        for a in actions
-    ]
+    # Action.severity defaults to None (the attribute always exists), so a
+    # plain getattr default never fires — guard the None explicitly or the
+    # simulate path crashes with float(None).
+    def _sev(a) -> float:
+        s = getattr(a, "severity", None)
+        if s is None:
+            s = abs(a.delta) / 2.0 if a.delta is not None else 0.0
+        return float(s)
+
+    severities = [_sev(a) for a in actions]
     mean_severity = sum(severities) / n if n else 0.0
 
     alpha_comp = max(0.0, min(1.0, 1.0 - (alpha - 0.5))) if math.isfinite(alpha) else 0.7
@@ -240,11 +269,25 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
         verdict = "Riemann-healthy (controlled ethical-error growth)"
     score = max(0, min(100, score))
 
+    # Per-item rows so the renderer's response table (and its prime flags)
+    # works on Tier B too — previously only the JS scorer returned items.
+    item_rows = [
+        {
+            "text": (a.description or "")[:200],
+            "severity": _sev(a),
+            "complexity": float(a.c),
+            "isPrime": a.id in prime_ids,
+            "isMisjudged": bool(a.mistake_flag),
+        }
+        for a in actions[:500]
+    ]
+
     return {
         "n": n, "totalPrimes": total_primes, "primeDensity": density,
         "alpha": alpha, "erhBound": erh_bound, "maxAbsError": max_abs_e,
         "withinBound": within, "meanSeverity": mean_severity,
         "ethicalDegree": score, "verdict": verdict, "tier": tier,
+        "items": item_rows,
         "scoreBreakdown": {
             "alpha": int(round(alpha_comp * 100)),
             "density": int(round(density_comp * 100)),

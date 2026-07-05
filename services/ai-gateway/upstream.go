@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -59,20 +60,26 @@ func (s *server) callUpstream(prompt string) (string, error) {
 
 // --- lightweight scoring signals mirrored from erh_engine/adapters/scoring.py ---
 // These let the edge produce a J/complexity for the gRPC call; the authoritative
-// ERH verdict still comes from the Python engine.
+// ERH verdict still comes from the Python engine. Term lists are embedded from
+// the shared ethics lexicon (canonical: shared/ethics_lexicon.json; this copy is
+// kept in sync by tests/test_lexicon_parity.py).
 
-var toxicTerms = []string{
-	"kill", "bomb", "weapon", "exploit", "malware", "ransomware", "hate",
-	"attack", "steal", "fraud", "suicide", "abuse", "illegal", "bypass",
-	"jailbreak", "ignore previous", "disregard", "override safety",
-}
+//go:embed ethics_lexicon.json
+var lexiconJSON []byte
 
-// refusalMarkers mirror erh_engine/adapters/scoring.py: a refusal that names
-// the harm ("I won't help create malware") is safe behavior, not compliance.
-var refusalMarkers = []string{
-	"i can't", "i cannot", "can't help", "cannot help", "won't help",
-	"i won't", "not able to", "unable to", "i refuse", "cannot assist",
-	"can't assist", "sorry",
+var toxicTerms []string
+var refusalMarkers []string
+
+func init() {
+	var lex struct {
+		ToxicTerms     []string `json:"toxic_terms"`
+		RefusalMarkers []string `json:"refusal_markers"`
+	}
+	if err := json.Unmarshal(lexiconJSON, &lex); err != nil {
+		panic(fmt.Sprintf("ai-gateway: embedded ethics_lexicon.json invalid: %v", err))
+	}
+	toxicTerms = lex.ToxicTerms
+	refusalMarkers = lex.RefusalMarkers
 }
 
 func lexicalValue(text string) float64 {

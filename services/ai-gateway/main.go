@@ -15,10 +15,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/dennislee928/ethic-latex/ai-gateway/pb"
@@ -57,13 +59,42 @@ type chatRequest struct {
 	Weight        float64 `json:"weight"`
 }
 
-type server struct {
-	cfg    config
-	engine pb.ERHEngineClient
+// sessionWindow is how many recent exchanges per client feed the ERH
+// evaluation. A window (not a single sample) lets the engine fit the error
+// growth exponent over the client's trajectory — the actual ERH signal.
+const sessionWindow = 32
+
+type session struct {
+	mu      sync.Mutex
+	seq     int
+	samples []*pb.Sample
 }
 
-// score asks the ERH engine to evaluate a single prompt/response exchange.
-func (s *server) score(prompt, response string, harmful bool, weight float64) (*pb.EvaluateResponse, error) {
+type server struct {
+	cfg      config
+	engine   pb.ERHEngineClient
+	mu       sync.Mutex
+	sessions map[string]*session
+}
+
+func (s *server) sessionFor(id string) *session {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.sessions == nil {
+		s.sessions = make(map[string]*session)
+	}
+	sess, ok := s.sessions[id]
+	if !ok {
+		sess = &session{}
+		s.sessions[id] = sess
+	}
+	return sess
+}
+
+// score appends this exchange to the client's rolling window and asks the ERH
+// engine to evaluate the whole window, so the verdict reflects the session's
+// error-growth trajectory rather than one isolated sample.
+func (s *server) score(clientID, prompt, response string, harmful bool, weight float64) (*pb.EvaluateResponse, error) {
 	if weight <= 0 {
 		weight = 1
 	}
@@ -72,24 +103,28 @@ func (s *server) score(prompt, response string, harmful bool, weight float64) (*
 	if harmful {
 		weight *= 4
 	}
-	// V anchored at the safe pole; J is the safety value of the actual response.
-	// The Python LLM adapter computes the real safety values; here we forward raw
-	// text by delegating scoring through a single-sample evaluate where the edge
-	// pre-normalizes nothing and lets the engine decide. We approximate J with a
-	// neutral 0 and rely on context for the engine-side adapter in richer setups;
-	// for the firewall hot-path we send the lexical signal via complexity/judgment
-	// computed below.
+	sess := s.sessionFor(clientID)
+	sess.mu.Lock()
+	sess.seq++
 	sample := &pb.Sample{
-		Id:         "live-0",
+		Id:         fmt.Sprintf("%s-%d", clientID, sess.seq),
 		Complexity: textComplexity(prompt),
 		Value:      1.0,
 		Judgment:   lexicalValue(response),
 		Weight:     weight,
 	}
+	sess.samples = append(sess.samples, sample)
+	if len(sess.samples) > sessionWindow {
+		sess.samples = sess.samples[len(sess.samples)-sessionWindow:]
+	}
+	window := make([]*pb.Sample, len(sess.samples))
+	copy(window, sess.samples)
+	sess.mu.Unlock()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	return s.engine.Evaluate(ctx, &pb.EvaluateRequest{
-		Samples:   []*pb.Sample{sample},
+		Samples:   window,
 		Params:    &pb.EvaluateParams{Tau: 0.3, C: 1, Epsilon: 0.1, SlackFactor: 1.5},
 		JudgeName: "ai-gateway",
 	})
@@ -109,8 +144,12 @@ func (s *server) handleChat(c *gin.Context) {
 		return
 	}
 
-	// 2. Score the exchange with the ERH engine.
-	verdict, err := s.score(req.Prompt, response, req.HarmfulIntent, req.Weight)
+	// 2. Score the client's rolling window with the ERH engine.
+	clientID := c.GetHeader("X-Client-Id")
+	if clientID == "" {
+		clientID = c.ClientIP()
+	}
+	verdict, err := s.score(clientID, req.Prompt, response, req.HarmfulIntent, req.Weight)
 	if err != nil {
 		// Fail closed: if we cannot score, do not leak an unvetted response.
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "erh engine unavailable", "detail": err.Error()})

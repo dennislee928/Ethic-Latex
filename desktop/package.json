@@ -17,7 +17,7 @@
   "scripts": {
     "start": "electron .",
     "lint": "node -e \"require('./src/erh-eval.js'); console.log('lint: modules load OK')\"",
-    "test": "node test/erh-eval.test.js",
+    "test": "node test/erh-eval.test.js && node test/renderer.test.js",
     "build:sidecar": "bash sidecar/build_sidecar.sh",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
