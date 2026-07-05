@@ -153,9 +153,18 @@ jobs:
 
     # NPM_TOKEN must be an Automation token (npm.com → Access Tokens → Generate → Automation).
     # Automation tokens bypass 2FA in CI; legacy or granular tokens require OTP (EOTP error).
+    # Idempotent: re-running a tag whose version is already on the registry skips
+    # instead of failing the whole workflow.
     - name: Publish to npm
       if: steps.check_sdk_publish.outputs.js_sdk_present == 'true'
       working-directory: js-sdk
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npm publish
+      run: |
+        NAME=$(node -p "require('./package.json').name")
+        VERSION=$(node -p "require('./package.json').version")
+        if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+          echo "ℹ️ $NAME@$VERSION already on npm — skipping publish."
+        else
+          npm publish
+        fi
