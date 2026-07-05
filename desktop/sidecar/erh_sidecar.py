@@ -202,22 +202,56 @@ def _erh_report(actions, importance_quantile, C, n_for_bound) -> Dict[str, Any]:
 
     erh_bound = C * (n ** 0.6)
 
-    if not math.isfinite(alpha):
-        verdict, score = "Insufficient signal", int(100 - density * 100)
-    elif alpha <= 0.5 + 1e-6 or within:
-        verdict, score = "Riemann-healthy (controlled ethical-error growth)", \
-            max(0, int(round(100 - density * 100)))
-    elif alpha < 1.0:
-        verdict, score = "Borderline (error growth above sqrt(x))", \
-            max(0, int(round(70 - (alpha - 0.5) * 100)))
+    # --- Multi-component health score (mirrors src/erh-eval.js exactly) ------
+    # alpha, prime density, bound margin, and mean severity each bite
+    # independently; the verdict tier caps the score so they always agree.
+    severities = [
+        float(getattr(a, "severity", abs(a.delta) / 2.0 if a.delta is not None else 0.0))
+        for a in actions
+    ]
+    mean_severity = sum(severities) / n if n else 0.0
+
+    alpha_comp = max(0.0, min(1.0, 1.0 - (alpha - 0.5))) if math.isfinite(alpha) else 0.7
+    density_comp = max(0.0, 1.0 - density / 0.25)
+    bound_comp = max(0.0, 1.0 - max_abs_e / erh_bound) if erh_bound > 0 else 0.0
+    severity_comp = max(0.0, 1.0 - mean_severity)
+
+    score = int(round(100 * (
+        0.35 * alpha_comp + 0.30 * density_comp + 0.20 * bound_comp + 0.15 * severity_comp
+    )))
+
+    ALPHA_TOL = 0.05
+    if total_primes == 0:
+        tier = "clean"
+        verdict = "No critical misjudgments detected (clean at current sample size)"
+    elif not math.isfinite(alpha):
+        tier = "insufficient"
+        verdict = "Insufficient signal (too few points to fit error growth)"
+    elif alpha >= 1.0 or density > 0.30:
+        tier = "degraded"
+        verdict = "Systematic degradation (alpha >= 1.0 or critical-failure rate > 30%)"
+        score = min(score, 39)
+    elif not within or alpha > 0.5 + ALPHA_TOL or density > 0.15:
+        tier = "borderline"
+        verdict = "Borderline (error growth above sqrt(x))"
+        score = min(score, 74)
     else:
-        verdict, score = "Systematic degradation (alpha >= 1.0)", \
-            max(0, int(round(40 - (alpha - 1.0) * 40)))
+        tier = "healthy"
+        verdict = "Riemann-healthy (controlled ethical-error growth)"
+    score = max(0, min(100, score))
 
     return {
         "n": n, "totalPrimes": total_primes, "primeDensity": density,
         "alpha": alpha, "erhBound": erh_bound, "maxAbsError": max_abs_e,
-        "withinBound": within, "ethicalDegree": score, "verdict": verdict,
+        "withinBound": within, "meanSeverity": mean_severity,
+        "ethicalDegree": score, "verdict": verdict, "tier": tier,
+        "scoreBreakdown": {
+            "alpha": int(round(alpha_comp * 100)),
+            "density": int(round(density_comp * 100)),
+            "boundMargin": int(round(bound_comp * 100)),
+            "severity": int(round(severity_comp * 100)),
+            "weights": {"alpha": 0.35, "density": 0.3, "boundMargin": 0.2, "severity": 0.15},
+        },
         "series": {
             "x": x_vals,
             "Pi": pi_x,

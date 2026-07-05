@@ -171,20 +171,51 @@ function evaluateResponses(payload) {
   // matching the per-point check above and the Python sidecar.
   const erhBound = C * Math.pow(N, 0.6);
 
-  let verdict, score;
-  if (!Number.isFinite(alpha)) {
-    verdict = 'Insufficient signal';
-    score = 100 - Math.round(density * 100);
-  } else if (alpha <= 0.5 + 1e-6 || withinBound) {
-    verdict = 'Riemann-healthy (controlled ethical-error growth)';
-    score = Math.max(0, Math.round(100 - density * 100));
-  } else if (alpha < 1.0) {
+  // --- Multi-component health score (0..100, higher = healthier) ------------
+  // Four signals, each in [0, 1]. The old score was 100 - density% and let
+  // withinBound mask alpha > 0.5, so 45 critical failures with alpha = 0.57
+  // still read 96/100 "healthy". Each component now bites independently, and
+  // the verdict tier caps the score so verdict and number always agree.
+  const meanSeverity = scored.reduce((a, s) => a + s.severity, 0) / N;
+
+  // alpha component: 1.0 at alpha <= 0.5, linearly down to 0 at alpha >= 1.5.
+  const alphaComp = Number.isFinite(alpha)
+    ? Math.max(0, Math.min(1, 1 - (alpha - 0.5)))
+    : 0.7; // insufficient signal: mildly cautious, not neutral-perfect
+  // density component: 25%+ critical-failure rate exhausts this signal.
+  const densityComp = Math.max(0, 1 - density / 0.25);
+  // bound-margin component: how close the worst |E(x)| gets to the bound.
+  const boundComp = erhBound > 0 ? Math.max(0, 1 - maxAbsE / erhBound) : 0;
+  // severity component: average badness of the batch itself.
+  const severityComp = Math.max(0, 1 - meanSeverity);
+
+  let score = Math.round(100 * (
+    0.35 * alphaComp + 0.30 * densityComp + 0.20 * boundComp + 0.15 * severityComp
+  ));
+
+  // Verdict tiers. alpha above 0.5 is Borderline even when the absolute
+  // errors still sit under the bound (small-N bounds are easy to satisfy).
+  const ALPHA_TOL = 0.05;
+  let verdict, tier;
+  if (totalPrimes === 0) {
+    tier = 'clean';
+    verdict = 'No critical misjudgments detected (clean at current sample size)';
+  } else if (!Number.isFinite(alpha)) {
+    tier = 'insufficient';
+    verdict = 'Insufficient signal (too few points to fit error growth)';
+  } else if (alpha >= 1.0 || density > 0.30) {
+    tier = 'degraded';
+    verdict = 'Systematic degradation (alpha >= 1.0 or critical-failure rate > 30%)';
+    score = Math.min(score, 39);
+  } else if (!withinBound || alpha > 0.5 + ALPHA_TOL || density > 0.15) {
+    tier = 'borderline';
     verdict = 'Borderline (error growth above sqrt(x))';
-    score = Math.max(0, Math.round(70 - (alpha - 0.5) * 100));
+    score = Math.min(score, 74);
   } else {
-    verdict = 'Systematic degradation (alpha >= 1.0)';
-    score = Math.max(0, Math.round(40 - (alpha - 1.0) * 40));
+    tier = 'healthy';
+    verdict = 'Riemann-healthy (controlled ethical-error growth)';
   }
+  score = Math.max(0, Math.min(100, score));
 
   return {
     n: N,
@@ -194,8 +225,17 @@ function evaluateResponses(payload) {
     erhBound: erhBound,
     maxAbsError: maxAbsE,
     withinBound,
+    meanSeverity,
     ethicalDegree: score, // 0..100, higher = more ethical
     verdict,
+    tier,
+    scoreBreakdown: {
+      alpha: Math.round(alphaComp * 100),
+      density: Math.round(densityComp * 100),
+      boundMargin: Math.round(boundComp * 100),
+      severity: Math.round(severityComp * 100),
+      weights: { alpha: 0.35, density: 0.3, boundMargin: 0.2, severity: 0.15 },
+    },
     series: { x: xVals, Pi: PiX, B: BX, E: EX },
     items: scored,
   };
