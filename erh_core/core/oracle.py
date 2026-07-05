@@ -128,12 +128,22 @@ class HuggingFaceEthicalOracle:
                 logits = outputs.logits
                 if logits.shape[-1] == 1:
                     prob = torch.sigmoid(logits).item()
-                else:
+                elif self.use_sentiment_model:
                     probs = torch.softmax(logits, dim=-1)
-                    if self.use_sentiment_model:
-                        prob = probs[0][2].item() if probs.shape[-1] > 2 else probs[0][1].item()
-                    else:
-                        prob = probs[0][1].item() if probs.shape[-1] > 1 else probs[0][0].item()
+                    prob = probs[0][2].item() if probs.shape[-1] > 2 else probs[0][1].item()
+                else:
+                    # Toxicity heads like unitary/toxic-bert are MULTI-LABEL:
+                    # each label needs its own sigmoid. Softmax across labels
+                    # dilutes strong signals and index [1] is "severe_toxic",
+                    # so toxic text used to score as safe. Prefer the "toxic"
+                    # label when present, else the strongest label.
+                    probs = torch.sigmoid(logits)[0]
+                    id2label = getattr(self._model.config, "id2label", None) or {}
+                    toxic_idx = next(
+                        (int(i) for i, name in id2label.items() if str(name).lower() == "toxic"),
+                        None,
+                    )
+                    prob = probs[toxic_idx].item() if toxic_idx is not None else probs.max().item()
             v = self._to_V(float(prob))
             self._cache[key] = v
             if self.cache_path:
