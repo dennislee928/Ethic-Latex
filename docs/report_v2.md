@@ -100,8 +100,10 @@ blockmaps + `latest-mac.yml`, re-frozen sidecar inside, launch-verified.
 | ERH Engine (incl. new over-refusal + parity tests) | ✅ |
 | ERH LLM Gate (incl. new sensitivity must-fail) | ✅ |
 | Repository Smoke | ✅ |
-| `v0.1.1` tag: Desktop release / Python SDK / Julia | 🔄 running at time of writing (release publishes installers + updater feed on completion) |
+| `v0.1.1` tag: Desktop release | ✅ **GitHub Release published** with `.dmg` (145 MB), `.zip`, `.exe`, `.msi`, `.deb`, `.AppImage`, all three `.blockmap`s, and `latest.yml` / `latest-mac.yml` / `latest-linux.yml` — **auto-update is now active on every platform** |
+| `v0.1.1` tag: Python SDK | ✅ (`twine --skip-existing` idempotent) |
 | `v0.1.1` tag: Node.js SDK | ⚠ `npm publish` 404 — the `NPM_TOKEN` secret is invalid/expired (npm masks auth failures as 404) and `erh-js-sdk@0.1.1` already exists; publish step made idempotent (`8351d09`), **token must be rotated by the repo owner** |
+| Julia Tests | 🔄 still precompiling at time of writing (now bounded at 120 min; root-cause fixes — stdlib deps, Test target, Yao packages — landed in `fddfd49`) |
 
 ### PDFs (pulled from the v2 CI run)
 
