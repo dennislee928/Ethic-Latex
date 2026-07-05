@@ -252,7 +252,8 @@ jobs:
             using Pkg
             Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
                      "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
-                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+                     "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP",
+                     "Yao", "YaoArrayRegister"])
           '
 
       - name: Run Julia simulation batch (smoke)

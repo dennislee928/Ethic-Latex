@@ -3,14 +3,24 @@ uuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 authors = ["Ethic-Latex"]
 version = "0.1.0"
 
-# [deps] is intentionally empty here.
-# UUIDs are resolved at install-time by `Pkg.add(...)` in CI and locally.
-# This avoids hard-coding UUIDs that drift from the General registry.
-# Run `julia --project=. -e 'using Pkg; Pkg.add([...])'` to populate deps + generate Manifest.toml.
+# Standard-library deps are declared here: their UUIDs ship with Julia itself
+# and are identical on every version, so nothing can drift. Without them,
+# `using ERH` fails to precompile ("Package ERH does not have Statistics in
+# its dependencies"). Registry packages (Agents, Graphs, HTTP, JSON3,
+# OrdinaryDiffEq, Yao, ...) are still resolved at install time by
+# `Pkg.add(...)` in CI and locally, which appends them to [deps] with
+# registry-resolved UUIDs.
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
 
 [compat]
-# Only the Julia version constraint is kept here.
-# Package compat bounds are added automatically when Pkg.add resolves and
-# writes them after deps are populated. Listing them without a [deps] entry
-# causes Julia's project validator to error ("not listed in deps").
 julia = "1.10"

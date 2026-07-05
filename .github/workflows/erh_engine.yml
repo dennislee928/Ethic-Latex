@@ -30,7 +30,9 @@ jobs:
       - name: Install deps
         run: |
           pip install -r erh_engine/requirements.txt
-          pip install grpcio-tools pytest
+          # httpx/httpx2: starlette's TestClient transport (package name changed
+          # in newer starlette releases). Install both to cover either version.
+          pip install grpcio-tools pytest httpx httpx2
       - name: Run engine tests
         env:
           PYTHONPATH: ${{ github.workspace }}
