@@ -43,14 +43,19 @@ def request_from_pb(req: "pb.EvaluateRequest") -> EvaluateRequest:
         for s in req.samples
     ]
     p = req.params
+
+    def opt(name: str, default: float) -> float:
+        # proto3 `optional` presence: honor an explicit 0, fall back only when unset.
+        return getattr(p, name) if p.HasField(name) else default
+
     params = EvaluateParams(
-        tau=p.tau or 0.3,
-        C=p.C or 1.0,
-        epsilon=p.epsilon if p.epsilon else 0.1,
-        slack_factor=p.slack_factor or 1.5,
-        allowed_violation_rate=p.allowed_violation_rate or 0.05,
+        tau=opt("tau", 0.3),
+        C=opt("C", 1.0),
+        epsilon=opt("epsilon", 0.1),
+        slack_factor=opt("slack_factor", 1.5),
+        allowed_violation_rate=opt("allowed_violation_rate", 0.05),
         baseline=p.baseline or "prime_theorem",
-        importance_quantile=p.importance_quantile or 0.9,
+        importance_quantile=opt("importance_quantile", 0.9),
         x_max=p.x_max or None,
         include_curves=p.include_curves,
     )

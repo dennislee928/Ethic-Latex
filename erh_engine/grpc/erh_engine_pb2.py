@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x65rh_engine.proto\x12\nerh_engine\"o\n\x06Sample\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\ncomplexity\x18\x02 \x01(\x01\x12\r\n\x05value\x18\x03 \x01(\x01\x12\x10\n\x08judgment\x18\x04 \x01(\x01\x12\x0e\n\x06weight\x18\x05 \x01(\x01\x12\x14\n\x0c\x63ontext_json\x18\x06 \x01(\t\"\xc5\x01\n\x0e\x45valuateParams\x12\x0b\n\x03tau\x18\x01 \x01(\x01\x12\t\n\x01\x43\x18\x02 \x01(\x01\x12\x0f\n\x07\x65psilon\x18\x03 \x01(\x01\x12\x14\n\x0cslack_factor\x18\x04 \x01(\x01\x12\x1e\n\x16\x61llowed_violation_rate\x18\x05 \x01(\x01\x12\x10\n\x08\x62\x61seline\x18\x06 \x01(\t\x12\x1b\n\x13importance_quantile\x18\x07 \x01(\x01\x12\r\n\x05x_max\x18\x08 \x01(\x05\x12\x16\n\x0einclude_curves\x18\t \x01(\x08\"v\n\x0f\x45valuateRequest\x12#\n\x07samples\x18\x01 \x03(\x0b\x32\x12.erh_engine.Sample\x12*\n\x06params\x18\x02 \x01(\x0b\x32\x1a.erh_engine.EvaluateParams\x12\x12\n\njudge_name\x18\x03 \x01(\t\"_\n\x08PrimeRef\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\ncomplexity\x18\x02 \x01(\x01\x12\r\n\x05\x64\x65lta\x18\x03 \x01(\x01\x12\x0e\n\x06weight\x18\x04 \x01(\x01\x12\x14\n\x0c\x63ontext_json\x18\x05 \x01(\t\"\x1d\n\x05\x43urve\x12\t\n\x01x\x18\x01 \x03(\x01\x12\t\n\x01y\x18\x02 \x03(\x01\"\xf0\x02\n\x10\x45valuateResponse\x12\x15\n\rerh_satisfied\x18\x01 \x01(\x08\x12\x12\n\nrisk_score\x18\x02 \x01(\x01\x12\x16\n\x0eviolation_rate\x18\x03 \x01(\x01\x12\x11\n\tmax_ratio\x18\x04 \x01(\x01\x12\x13\n\x0b\x62ound_value\x18\x05 \x01(\x01\x12\x1a\n\x12\x65stimated_exponent\x18\x06 \x01(\x01\x12\x11\n\tr_squared\x18\x07 \x01(\x01\x12\x13\n\x0bnum_samples\x18\x08 \x01(\x05\x12\x12\n\nnum_primes\x18\t \x01(\x05\x12\x12\n\nbound_type\x18\n \x01(\t\x12\x12\n\njudge_name\x18\x0b \x01(\t\x12$\n\x06primes\x18\x0c \x03(\x0b\x32\x14.erh_engine.PrimeRef\x12#\n\x08pi_curve\x18\r \x01(\x0b\x32\x11.erh_engine.Curve\x12&\n\x0b\x65rror_curve\x18\x0e \x01(\x0b\x32\x11.erh_engine.Curve\"\x0f\n\rHealthRequest\"B\n\x0eHealthResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t2\x93\x01\n\tERHEngine\x12\x45\n\x08\x45valuate\x12\x1b.erh_engine.EvaluateRequest\x1a\x1c.erh_engine.EvaluateResponse\x12?\n\x06Health\x12\x19.erh_engine.HealthRequest\x1a\x1a.erh_engine.HealthResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x65rh_engine.proto\x12\nerh_engine\"o\n\x06Sample\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\ncomplexity\x18\x02 \x01(\x01\x12\r\n\x05value\x18\x03 \x01(\x01\x12\x10\n\x08judgment\x18\x04 \x01(\x01\x12\x0e\n\x06weight\x18\x05 \x01(\x01\x12\x14\n\x0c\x63ontext_json\x18\x06 \x01(\t\"\xc1\x02\n\x0e\x45valuateParams\x12\x10\n\x03tau\x18\x01 \x01(\x01H\x00\x88\x01\x01\x12\x0e\n\x01\x43\x18\x02 \x01(\x01H\x01\x88\x01\x01\x12\x14\n\x07\x65psilon\x18\x03 \x01(\x01H\x02\x88\x01\x01\x12\x19\n\x0cslack_factor\x18\x04 \x01(\x01H\x03\x88\x01\x01\x12#\n\x16\x61llowed_violation_rate\x18\x05 \x01(\x01H\x04\x88\x01\x01\x12\x10\n\x08\x62\x61seline\x18\x06 \x01(\t\x12 \n\x13importance_quantile\x18\x07 \x01(\x01H\x05\x88\x01\x01\x12\r\n\x05x_max\x18\x08 \x01(\x05\x12\x16\n\x0einclude_curves\x18\t \x01(\x08\x42\x06\n\x04_tauB\x04\n\x02_CB\n\n\x08_epsilonB\x0f\n\r_slack_factorB\x19\n\x17_allowed_violation_rateB\x16\n\x14_importance_quantile\"v\n\x0f\x45valuateRequest\x12#\n\x07samples\x18\x01 \x03(\x0b\x32\x12.erh_engine.Sample\x12*\n\x06params\x18\x02 \x01(\x0b\x32\x1a.erh_engine.EvaluateParams\x12\x12\n\njudge_name\x18\x03 \x01(\t\"_\n\x08PrimeRef\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\ncomplexity\x18\x02 \x01(\x01\x12\r\n\x05\x64\x65lta\x18\x03 \x01(\x01\x12\x0e\n\x06weight\x18\x04 \x01(\x01\x12\x14\n\x0c\x63ontext_json\x18\x05 \x01(\t\"\x1d\n\x05\x43urve\x12\t\n\x01x\x18\x01 \x03(\x01\x12\t\n\x01y\x18\x02 \x03(\x01\"\xf0\x02\n\x10\x45valuateResponse\x12\x15\n\rerh_satisfied\x18\x01 \x01(\x08\x12\x12\n\nrisk_score\x18\x02 \x01(\x01\x12\x16\n\x0eviolation_rate\x18\x03 \x01(\x01\x12\x11\n\tmax_ratio\x18\x04 \x01(\x01\x12\x13\n\x0b\x62ound_value\x18\x05 \x01(\x01\x12\x1a\n\x12\x65stimated_exponent\x18\x06 \x01(\x01\x12\x11\n\tr_squared\x18\x07 \x01(\x01\x12\x13\n\x0bnum_samples\x18\x08 \x01(\x05\x12\x12\n\nnum_primes\x18\t \x01(\x05\x12\x12\n\nbound_type\x18\n \x01(\t\x12\x12\n\njudge_name\x18\x0b \x01(\t\x12$\n\x06primes\x18\x0c \x03(\x0b\x32\x14.erh_engine.PrimeRef\x12#\n\x08pi_curve\x18\r \x01(\x0b\x32\x11.erh_engine.Curve\x12&\n\x0b\x65rror_curve\x18\x0e \x01(\x0b\x32\x11.erh_engine.Curve\"\x0f\n\rHealthRequest\"B\n\x0eHealthResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t2\x93\x01\n\tERHEngine\x12\x45\n\x08\x45valuate\x12\x1b.erh_engine.EvaluateRequest\x1a\x1c.erh_engine.EvaluateResponse\x12?\n\x06Health\x12\x19.erh_engine.HealthRequest\x1a\x1a.erh_engine.HealthResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,19 +34,19 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_SAMPLE']._serialized_start=32
   _globals['_SAMPLE']._serialized_end=143
   _globals['_EVALUATEPARAMS']._serialized_start=146
-  _globals['_EVALUATEPARAMS']._serialized_end=343
-  _globals['_EVALUATEREQUEST']._serialized_start=345
-  _globals['_EVALUATEREQUEST']._serialized_end=463
-  _globals['_PRIMEREF']._serialized_start=465
-  _globals['_PRIMEREF']._serialized_end=560
-  _globals['_CURVE']._serialized_start=562
-  _globals['_CURVE']._serialized_end=591
-  _globals['_EVALUATERESPONSE']._serialized_start=594
-  _globals['_EVALUATERESPONSE']._serialized_end=962
-  _globals['_HEALTHREQUEST']._serialized_start=964
-  _globals['_HEALTHREQUEST']._serialized_end=979
-  _globals['_HEALTHRESPONSE']._serialized_start=981
-  _globals['_HEALTHRESPONSE']._serialized_end=1047
-  _globals['_ERHENGINE']._serialized_start=1050
-  _globals['_ERHENGINE']._serialized_end=1197
+  _globals['_EVALUATEPARAMS']._serialized_end=467
+  _globals['_EVALUATEREQUEST']._serialized_start=469
+  _globals['_EVALUATEREQUEST']._serialized_end=587
+  _globals['_PRIMEREF']._serialized_start=589
+  _globals['_PRIMEREF']._serialized_end=684
+  _globals['_CURVE']._serialized_start=686
+  _globals['_CURVE']._serialized_end=715
+  _globals['_EVALUATERESPONSE']._serialized_start=718
+  _globals['_EVALUATERESPONSE']._serialized_end=1086
+  _globals['_HEALTHREQUEST']._serialized_start=1088
+  _globals['_HEALTHREQUEST']._serialized_end=1103
+  _globals['_HEALTHRESPONSE']._serialized_start=1105
+  _globals['_HEALTHRESPONSE']._serialized_end=1171
+  _globals['_ERHENGINE']._serialized_start=1174
+  _globals['_ERHENGINE']._serialized_end=1321
 # @@protoc_insertion_point(module_scope)

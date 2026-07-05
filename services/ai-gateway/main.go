@@ -36,7 +36,11 @@ type config struct {
 }
 
 func loadConfig() config {
-	maxRisk, _ := strconv.ParseFloat(getenvDefault("MAX_RISK", "50"), 64)
+	maxRisk, err := strconv.ParseFloat(getenvDefault("MAX_RISK", "50"), 64)
+	if err != nil {
+		log.Printf("invalid MAX_RISK %q, using default 50", os.Getenv("MAX_RISK"))
+		maxRisk = 50
+	}
 	return config{
 		listenAddr:  getenvDefault("GATEWAY_ADDR", ":8080"),
 		engineAddr:  getenvDefault("ERH_ENGINE_ADDR", "localhost:50051"),
@@ -62,6 +66,11 @@ type server struct {
 func (s *server) score(prompt, response string, harmful bool, weight float64) (*pb.EvaluateResponse, error) {
 	if weight <= 0 {
 		weight = 1
+	}
+	// A declared harmful intent raises the stakes of a misjudgment: weight the
+	// sample up so the engine treats an unsafe answer as a critical prime.
+	if harmful {
+		weight *= 4
 	}
 	// V anchored at the safe pole; J is the safety value of the actual response.
 	// The Python LLM adapter computes the real safety values; here we forward raw

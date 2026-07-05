@@ -20,13 +20,16 @@ message Sample {
 }
 
 message EvaluateParams {
-  double tau = 1;
-  double C = 2;
-  double epsilon = 3;
-  double slack_factor = 4;
-  double allowed_violation_rate = 5;
+  // `optional` gives explicit field presence: a client-set 0 (e.g. tau=0,
+  // allowed_violation_rate=0) is distinguishable from "unset, use default",
+  // keeping gRPC results identical to REST.
+  optional double tau = 1;
+  optional double C = 2;
+  optional double epsilon = 3;
+  optional double slack_factor = 4;
+  optional double allowed_violation_rate = 5;
   string baseline = 6;
-  double importance_quantile = 7;
+  optional double importance_quantile = 7;
   int32 x_max = 8;            // 0 => auto
   bool include_curves = 9;
 }
