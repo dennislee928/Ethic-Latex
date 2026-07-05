@@ -174,7 +174,9 @@ def compute_complexity_from_scores(
     and map the result monotonically into an integer scale [1, 100].
     """
     # Use feature magnitude as a proxy for ``information load''
-    feature_mag = np.linalg.norm(X.values, axis=1)
+    # (coerce to float: one-hot/bool columns can leave X.values object-dtyped,
+    # which np.linalg.norm cannot reduce)
+    feature_mag = np.linalg.norm(np.asarray(X.values, dtype=float), axis=1)
     feature_mag = (feature_mag - feature_mag.min()) / (feature_mag.max() - feature_mag.min() + 1e-8)
 
     # Predictive uncertainty: highest near 0.5
@@ -468,11 +470,16 @@ def run_real_data_case_study(
         # for illustrating ERH-style growth curves on real data.
         _, _, base_err, mit_err = fit_logistic_models(X, y)
 
-        x_matrix = X.values
-        dummy_probs = np.full(shape=(len(x_matrix),), fill_value=0.5)
+        # The error vectors come from the 30% test split made inside
+        # fit_logistic_models; rebuild the same split (same seed/stratify)
+        # so the complexity vector aligns with them.
+        _, x_test, _, _ = train_test_split(
+            X.values, y, test_size=0.3, random_state=42, stratify=y
+        )
+        dummy_probs = np.full(shape=(len(x_test),), fill_value=0.5)
 
         base_complexities = compute_complexity_from_scores(
-            pd.DataFrame(x_matrix), dummy_probs
+            pd.DataFrame(x_test), dummy_probs
         )
         mit_complexities = base_complexities.copy()
 

@@ -13,6 +13,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -45,13 +46,15 @@ jobs:
 
     - uses: julia-actions/cache@v2
 
+    # Only the packages the zeta-shim bridge test can touch. The full stack
+    # (DifferentialEquations, CairoMakie, ...) takes hours to resolve/precompile
+    # and once burned the whole 6h job limit — julia_tests.yml covers it.
     - name: Install Julia dependencies
+      timeout-minutes: 20
       run: |
         julia --project=julia -e '
           using Pkg
-          Pkg.add(["SpecialFunctions", "Primes", "Distributions", "HypothesisTests",
-                   "Agents", "Graphs", "DifferentialEquations", "OrdinaryDiffEq",
-                   "CairoMakie", "DataFrames", "CSV", "JSON3", "HTTP"])
+          Pkg.add(["SpecialFunctions", "Primes"])
         '
       continue-on-error: true
 

@@ -7,4 +7,5 @@ pydantic>=2.0.0
 grpcio>=1.60.0
 numpy>=1.20.0
 scipy>=1.7.0
+networkx>=2.6.0
 requests>=2.28.0

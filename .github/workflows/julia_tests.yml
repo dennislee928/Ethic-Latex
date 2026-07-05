@@ -14,6 +14,9 @@ jobs:
   test:
     name: Julia ${{ matrix.julia-version }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    # Bound Julia dependency resolution/precompilation — it has previously hung
+    # until the 6h GitHub job limit cancelled the run.
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -47,6 +50,7 @@ jobs:
   parity:
     name: Python ↔ Julia Parity
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     needs: test
 
     steps:

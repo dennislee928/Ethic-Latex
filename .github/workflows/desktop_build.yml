@@ -112,8 +112,15 @@ jobs:
         # Notarization is opt-in: only when the Apple secrets are configured.
         # package.json ships with notarize:false so unsigned/local builds work.
         run: |
+          # Unconfigured secrets arrive as empty strings; electron-builder then
+          # tries to resolve CSC_LINK="" as a certificate file path and fails
+          # with "<projectDir> not a file". Unset anything empty or dangling.
+          if [ -z "${CSC_LINK:-}" ]; then unset CSC_LINK CSC_KEY_PASSWORD; fi
+          if [ -z "${APPLE_ID:-}" ] || [ -z "${APPLE_TEAM_ID:-}" ]; then
+            unset APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+          fi
           EXTRA_ARGS=()
-          if [ "${{ matrix.platform }}" = "mac" ] && [ -n "$APPLE_TEAM_ID" ] && [ -n "$APPLE_ID" ]; then
+          if [ "${{ matrix.platform }}" = "mac" ] && [ -n "${APPLE_TEAM_ID:-}" ] && [ -n "${APPLE_ID:-}" ]; then
             EXTRA_ARGS+=(-c.mac.notarize.teamId="$APPLE_TEAM_ID")
           fi
           npx --no-install electron-builder --${{ matrix.platform }} --publish never "${EXTRA_ARGS[@]}"

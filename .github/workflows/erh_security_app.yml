@@ -112,6 +112,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # ghcr.io requires lowercase repository names; github.repository may not be.
+      - name: Compute lowercase image prefix
+        id: image
+        run: echo "prefix=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
@@ -120,8 +125,8 @@ jobs:
           target: backend
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/erh-security-app-backend:latest
-            ghcr.io/${{ github.repository }}/erh-security-app-backend:${{ github.sha }}
+            ${{ steps.image.outputs.prefix }}/erh-security-app-backend:latest
+            ${{ steps.image.outputs.prefix }}/erh-security-app-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -134,7 +139,7 @@ jobs:
           target: frontend
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/erh-security-app-frontend:latest
-            ghcr.io/${{ github.repository }}/erh-security-app-frontend:${{ github.sha }}
+            ${{ steps.image.outputs.prefix }}/erh-security-app-frontend:latest
+            ${{ steps.image.outputs.prefix }}/erh-security-app-frontend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

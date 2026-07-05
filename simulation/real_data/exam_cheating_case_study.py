@@ -155,7 +155,7 @@ def compute_complexity_from_scores(
     - Combine L2 norm of standardized features and predictive uncertainty (high at 0.5)
     - Monotonically map to integer scale [1, 100].
     """
-    feature_mag = np.linalg.norm(X.values, axis=1)
+    feature_mag = np.linalg.norm(np.asarray(X.values, dtype=float), axis=1)
     feature_mag = (feature_mag - feature_mag.min()) / (feature_mag.max() - feature_mag.min() + 1e-8)
     uncertainty = 1.0 - np.abs(probs - 0.5) * 2.0  # in [0,1]
     raw = 0.5 * feature_mag + 0.5 * uncertainty

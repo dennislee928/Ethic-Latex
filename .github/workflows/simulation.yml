@@ -231,6 +231,10 @@ jobs:
   julia-simulate:
     name: Julia Simulation Smoke
     runs-on: ubuntu-latest
+    # Julia dependency resolution/precompilation has previously hung for the
+    # full 6h job limit and cancelled downstream gated workflows; bound it so a
+    # hang degrades to a skipped smoke run instead.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
@@ -241,6 +245,8 @@ jobs:
       - uses: julia-actions/cache@v2
 
       - name: Install Julia dependencies
+        timeout-minutes: 90
+        continue-on-error: true
         run: |
           julia --project=julia -e '
             using Pkg

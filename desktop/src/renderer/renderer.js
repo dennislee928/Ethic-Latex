@@ -147,7 +147,7 @@ function render(r) {
       <div class="chart-container">
         <div class="chart-legend">
           <div class="legend-item"><div class="legend-color" style="background:#cc3333"></div> <span>Observed Error |E(x)|</span></div>
-          <div class="legend-item"><div class="legend-color" style="background:#2e9e4f; border:1px dashed #2e9e4f"></div> <span>Theoretical Bound (C&middot;&radic;x)</span></div>
+          <div class="legend-item"><div class="legend-color" style="background:#2e9e4f; border:1px dashed #2e9e4f"></div> <span>Theoretical Bound (C&middot;x<sup>0.6</sup>)</span></div>
         </div>
         ${chart(r.series || {})}
         <div class="chart-info">
