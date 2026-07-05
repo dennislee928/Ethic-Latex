@@ -241,7 +241,8 @@ class TestERHCheckResult:
         evaluate_judgement(actions, judge, tau=0.3)
 
         primes = select_ethical_primes(actions)
-        x_values, Pi_x, E_x = compute_Pi_and_error(actions, primes)
+        x_max = max(2, int(max(a.c for a in actions)))
+        _Pi_x, _B_x, E_x, x_values = compute_Pi_and_error(primes, X_max=x_max)
 
         result = judge_and_check_erh(actions, judge, E_x, x_values, log=False)
         assert isinstance(result, ERHCheckResult)

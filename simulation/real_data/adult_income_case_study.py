@@ -571,7 +571,8 @@ def run_intersectional_erh_analysis(
         primes = select_ethical_primes(group_actions)
         if not primes:
             continue
-        x_values, _pi, E_x = compute_Pi_and_error(group_actions, primes)
+        x_max = max(2, int(max(a.c for a in group_actions)))
+        _pi, _b, E_x, x_values = compute_Pi_and_error(primes, X_max=x_max)
         if len(x_values) < 2:
             continue
         erh_result = check_erh_bound_structured(E_x, x_values, judge_name=group_label)

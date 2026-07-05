@@ -806,7 +806,8 @@ class TemporalJudge(BaseJudge):
             raise ValueError("Window too small to compute ERH status (need ≥ 2 actions).")
 
         primes = select_ethical_primes(window_actions)
-        x_values, Pi_x, E_x = compute_Pi_and_error(window_actions, primes)
+        x_max = max(2, int(np.ceil(max(a.c for a in window_actions))))
+        _Pi_x, _B_x, E_x, x_values = compute_Pi_and_error(primes, X_max=x_max)
 
         if len(x_values) == 0:
             raise ValueError("No valid ERH data points in current window.")
@@ -1080,7 +1081,8 @@ class FederatedJudge(BaseJudge):
                 action_id += 1
 
         primes = select_ethical_primes(synthetic_actions)
-        x_values, Pi_x, E_x = compute_Pi_and_error(synthetic_actions, primes)
+        x_max = max(2, int(max(global_counts.keys())))
+        _Pi_x, _B_x, E_x, x_values = compute_Pi_and_error(primes, X_max=x_max)
 
         if len(x_values) == 0:
             raise ValueError("No valid ERH data points after aggregating partitions.")
