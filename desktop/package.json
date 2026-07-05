@@ -1,7 +1,7 @@
 {
   "name": "erh-desktop",
   "productName": "ERH Ethics Inspector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cross-platform desktop app that uses the Ethical Riemann Hypothesis (ERH) to examine the ethical degree of LLM responses.",
   "author": {
     "name": "Ethical AI Research",
