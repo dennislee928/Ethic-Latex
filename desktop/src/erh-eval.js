@@ -167,8 +167,9 @@ function evaluateResponses(payload) {
   }
   const alpha = fitSlope(logX, logE);
 
-  // ERH health verdict.
-  const erhBound = C * Math.sqrt(N);
+  // ERH health verdict. Bound uses x^(0.5 + epsilon) with epsilon = 0.1,
+  // matching the per-point check above and the Python sidecar.
+  const erhBound = C * Math.pow(N, 0.6);
 
   let verdict, score;
   if (!Number.isFinite(alpha)) {

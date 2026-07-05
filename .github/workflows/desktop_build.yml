@@ -98,16 +98,25 @@ jobs:
       # platform flag keeps each runner to its native installer set.
       - name: Build installers
         working-directory: desktop
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Apple Signing & Notarization
+          # Apple Signing & Notarization (electron-builder reads
+          # APPLE_APP_SPECIFIC_PASSWORD, not APPLE_ID_PASSWORD)
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           # Certificate (base64 or path to .p12)
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-        run: npx --no-install electron-builder --${{ matrix.platform }} --publish never
+        # Notarization is opt-in: only when the Apple secrets are configured.
+        # package.json ships with notarize:false so unsigned/local builds work.
+        run: |
+          EXTRA_ARGS=()
+          if [ "${{ matrix.platform }}" = "mac" ] && [ -n "$APPLE_TEAM_ID" ] && [ -n "$APPLE_ID" ]; then
+            EXTRA_ARGS+=(-c.mac.notarize.teamId="$APPLE_TEAM_ID")
+          fi
+          npx --no-install electron-builder --${{ matrix.platform }} --publish never "${EXTRA_ARGS[@]}"
 
       - name: List artifacts
         working-directory: desktop
@@ -123,8 +132,11 @@ jobs:
             desktop/release/*.exe
             desktop/release/*.msi
             desktop/release/*.dmg
+            desktop/release/*.zip
             desktop/release/*.deb
             desktop/release/*.AppImage
+            desktop/release/*.blockmap
+            desktop/release/latest*.yml
           if-no-files-found: warn
           retention-days: 14
 
@@ -146,8 +158,11 @@ jobs:
             installers/**/*.exe
             installers/**/*.msi
             installers/**/*.dmg
+            installers/**/*.zip
             installers/**/*.deb
             installers/**/*.AppImage
+            installers/**/*.blockmap
+            installers/**/latest*.yml
           generate_release_notes: true
 
   collect-errors:
