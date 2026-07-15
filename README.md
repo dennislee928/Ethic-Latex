@@ -506,3 +506,7 @@ This project is licensed under the **MIT License**.
 Contributions, suggestions, and discussions are welcome.
 
 **Contact:** admin@dennisleehappy.org
+
+
+---
+Julia language: [#JuliaLang](https://julialang.org/) | [JuliaLang GitHub](https://github.com/JuliaLang/julia)
