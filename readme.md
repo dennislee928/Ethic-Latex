@@ -509,4 +509,5 @@ Contributions, suggestions, and discussions are welcome.
 
 
 ---
-Julia language: [#JuliaLang](https://julialang.org/) | [JuliaLang GitHub](https://github.com/JuliaLang/julia)
+
+Julia language: [#JuliaLang](https://julialang.org/) | [JuliaLang GitHub](https://github.com/JuliaLang/julia) | #JuliaLang
