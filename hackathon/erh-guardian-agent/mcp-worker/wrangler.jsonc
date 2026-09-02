@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "erh-guardian-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [{ "name": "ERH_GUARDIAN_MCP", "class_name": "ErhGuardianMCP" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ErhGuardianMCP"] }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "erh-guardian",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ],
+  "observability": { "enabled": true }
+}
