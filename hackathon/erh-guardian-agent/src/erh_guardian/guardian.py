@@ -35,8 +35,13 @@ def build_guardian(
     profile: Optional[ValueProfile] = None,
     approval_callback: Optional[ApprovalCallback] = None,
     model_id: Optional[str] = None,
+    extra_tools: Optional[list] = None,
 ) -> tuple[Agent, GuardianGate]:
-    """Build the guardian agent and its gate (exposed for audit access)."""
+    """Build the guardian agent and its gate (exposed for audit access).
+
+    ``extra_tools`` lets callers add MCP-discovered tools (see mcp_link):
+    pass ``mcp_client.list_tools_sync()`` while the client context is open.
+    """
     profile = profile or ValueProfile.load()
     gate = GuardianGate(profile, approval_callback=approval_callback)
     model = BedrockModel(
@@ -46,7 +51,7 @@ def build_guardian(
     )
     agent = Agent(
         model=model,
-        tools=ALL_TOOLS,
+        tools=ALL_TOOLS + list(extra_tools or []),
         system_prompt=SYSTEM_PROMPT,
         hooks=[gate],
         name="erh-guardian",

@@ -77,10 +77,23 @@ def cmd_demo() -> int:
 
 def cmd_chat() -> int:
     """Interactive guardian backed by Bedrock (requires AWS credentials)."""
-    from .guardian import build_guardian
+    import contextlib
 
-    agent, gate = build_guardian(approval_callback=_terminal_approval)
-    print("ERH Guardian ready (Ctrl-D to exit).")
+    from .guardian import build_guardian
+    from .mcp_link import mcp_client_from_env
+
+    mcp_client = mcp_client_from_env()
+    with mcp_client or contextlib.nullcontext():
+        extra_tools = mcp_client.list_tools_sync() if mcp_client else None
+        agent, gate = build_guardian(
+            approval_callback=_terminal_approval, extra_tools=extra_tools
+        )
+        return _chat_loop(agent, gate, mcp_connected=mcp_client is not None)
+
+
+def _chat_loop(agent, gate, mcp_connected: bool = False) -> int:
+    print("ERH Guardian ready (Ctrl-D to exit)."
+          + (" MCP worker connected." if mcp_connected else ""))
     try:
         while True:
             try:
