@@ -41,6 +41,14 @@ flowchart LR
 - **Profile**: a validated value-alignment profile (risk threshold, protected topics,
   auto-approve list) that conditions every gate decision.
 
+## Project layout
+
+- `src/erh_guardian/` — Strands agent: ERH tools, GuardianGate (HITL hook), CLI
+- `mcp-worker/` — Cloudflare Worker MCP server: value profiles + decision audit log on D1
+  (streamable HTTP `/mcp`, SSE `/sse`, REST `/api/*` for the panel)
+- `ui/` — transparency panel (Vite + React): profile, risk bars, ERH verdicts
+- `tests/` — offline tests (no Bedrock/AWS calls)
+
 ## Setup
 
 Requires Python 3.10+, an AWS account with Bedrock model access (Claude), and AWS
@@ -67,6 +75,9 @@ Optional environment variables:
 - `AWS_REGION` (default `us-west-2`)
 - `ERH_GUARDIAN_MODEL` (default `global.anthropic.claude-sonnet-4-6`)
 - `ERH_GUARDIAN_PROFILE` — path to a value-alignment profile JSON
+- `ERH_GUARDIAN_MCP_URL` — streamable HTTP MCP endpoint of the deployed worker
+  (e.g. `https://erh-guardian-mcp.<account>.workers.dev/mcp`); enables profile
+  persistence and the decision audit log
 
 ## Pre-existing code disclosure
 

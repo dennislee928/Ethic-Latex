@@ -104,6 +104,16 @@ Key seams in the existing code:
 
 ## 5. Phase timeline (Sep 2 → Sep 14)
 
+> **Progress (Sep 2, branch `feat-hackthon-agents`)**: Phase 1 is DONE and Phase 2/3 MVPs
+> exist in `hackathon/erh-guardian-agent/`: Strands agent + @tool wrappers + GuardianGate
+> (7 tests passing, offline `erh-guardian demo` verified), engine Bedrock branch +
+> over-refusal fix (9 engine tests passing), Cloudflare MCP worker (profiles/decisions on
+> D1, typechecked, migration generated), Strands↔MCP wiring, and a Vite/React transparency
+> panel (build verified). Remaining: AWS accounts/credits (Phase 0 human steps), live
+> Bedrock smoke test, worker+UI deploy, TanStack Start/shadcn upgrade (optional),
+> AgentCore, video + Devpost submission — and extracting `hackathon/erh-guardian-agent/`
+> to its own public repo before submitting.
+
 ### Phase 0 — Compliance & accounts (Sep 2–3)
 - [ ] Create AWS Builder ID; register on Devpost; **request $50 credits (hard deadline Sep 11)**.
 - [ ] Enable Bedrock model access (Claude Sonnet) in the target region — approval can take time, do this first.
