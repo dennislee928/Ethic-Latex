@@ -129,20 +129,49 @@ export class ErhGuardianMCP extends McpAgent<Env> {
   }
 }
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// Read-only REST endpoints feeding the transparency panel UI.
+async function handleApi(pathname: string, url: URL, env: Env): Promise<Response | null> {
+  const db = drizzle(env.DB);
+  const profileId = url.searchParams.get("profile_id") ?? "default";
+
+  if (pathname === "/api/profile") {
+    const rows = await db.select().from(profiles).where(eq(profiles.id, profileId)).limit(1);
+    return Response.json(rows[0] ?? null, { headers: CORS });
+  }
+  if (pathname === "/api/decisions") {
+    const limit = Math.min(100, Number(url.searchParams.get("limit") ?? 50) || 50);
+    const rows = await db
+      .select()
+      .from(decisions)
+      .where(eq(decisions.profileId, profileId))
+      .orderBy(desc(decisions.createdAt), desc(decisions.id))
+      .limit(limit);
+    return Response.json(rows, { headers: CORS });
+  }
+  return null;
+}
+
 export default {
-  fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const { pathname } = new URL(request.url);
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    const url = new URL(request.url);
+    const { pathname } = url;
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-        },
+        headers: { ...CORS, "Access-Control-Max-Age": "86400" },
       });
+    }
+
+    if (pathname.startsWith("/api/")) {
+      const apiResponse = await handleApi(pathname, url, env);
+      if (apiResponse) return apiResponse;
     }
 
     if (pathname === "/health") {
