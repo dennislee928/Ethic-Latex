@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "erh-guardian-agent"
+version = "0.1.0"
+description = "ERH Guardian - a values-aligned Strands agent whose every consequential action is scored by the Ethical Riemann Hypothesis engine"
+authors = [{ name = "Dennis Lee" }]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "strands-agents>=1.50.0",
+    "strands-agents-tools>=0.2.0",
+    "boto3>=1.34.0",
+    "pydantic>=2.0.0",
+    # ERH engine (disclosed pre-existing code): installed from the Ethic-Latex
+    # repository root — see README setup instructions.
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "networkx>=2.6.0",
+    "fastapi>=0.95.0",
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+erh-guardian = "erh_guardian.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
