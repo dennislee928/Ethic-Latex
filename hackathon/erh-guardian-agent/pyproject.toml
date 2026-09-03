@@ -18,7 +18,7 @@ dependencies = [
     # ERH engine (disclosed pre-existing code), pinned to the exact Ethic-Latex
     # commit this project was built against. PyPI `erh` is an alternative source;
     # inside the Ethic-Latex monorepo, _bootstrap.py falls back to the repo root.
-    "erh @ git+https://github.com/dennislee928/Ethic-Latex@a936de01d1dbdac94a4b1368e13afb501fe5ce9a",
+    "erh @ git+https://github.com/dennislee928/Ethic-Latex@525a6823714ad5844497f3525b9c0810adecffed",
 ]
 
 [project.optional-dependencies]
