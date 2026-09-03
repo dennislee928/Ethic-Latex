@@ -20,7 +20,7 @@
 - Video: `____________________`
 - Live transparency panel: `____________________`
 - builder.aws.com post: `____________________`
-- AWS Builder ID email: `____________________`
+- AWS Builder ID email: `pcleegood@gmail.com` (display name: pei chen lee)
 
 ---
 
