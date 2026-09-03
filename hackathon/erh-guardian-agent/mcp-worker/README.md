@@ -19,9 +19,21 @@ npm run db:migrate:local     # local dev
 npm run db:migrate           # remote
 
 npm run dev                  # http://localhost:8787
+
+# set the shared secret guarding /mcp, /sse and non-GET /api/* (skip = open, dev only)
+npx wrangler secret put MCP_AUTH_TOKEN
+
 npx wrangler deploy
 curl https://erh-guardian-mcp.<account>.workers.dev/health
 ```
+
+## Auth
+
+`/mcp`, `/sse` and any non-GET `/api/*` require `Authorization: Bearer <MCP_AUTH_TOKEN>`
+once the secret is set; requests without it get a 401. `GET /api/profile`,
+`GET /api/decisions` and `/health` are intentionally public — they feed the read-only
+transparency panel. When `MCP_AUTH_TOKEN` is unset (local `wrangler dev`), the guard is
+skipped and a warning is logged.
 
 ## Connecting from the Strands agent
 
@@ -29,7 +41,10 @@ curl https://erh-guardian-mcp.<account>.workers.dev/health
 from mcp.client.streamable_http import streamablehttp_client
 from strands.tools.mcp import MCPClient
 
-mcp = MCPClient(lambda: streamablehttp_client("https://erh-guardian-mcp.<account>.workers.dev/mcp"))
+mcp = MCPClient(lambda: streamablehttp_client(
+    "https://erh-guardian-mcp.<account>.workers.dev/mcp",
+    headers={"Authorization": "Bearer <MCP_AUTH_TOKEN>"},
+))
 with mcp:
     tools = mcp.list_tools_sync()
     agent = Agent(model=bedrock_model, tools=[*ALL_TOOLS, *tools])

@@ -17,6 +17,9 @@ import { decisions, profiles } from "./db/schema";
 export interface Env {
   DB: D1Database;
   ERH_GUARDIAN_MCP: DurableObjectNamespace;
+  /** Shared secret for the MCP write surface (`wrangler secret put MCP_AUTH_TOKEN`).
+   * Unset (local `wrangler dev`) leaves the worker open for development. */
+  MCP_AUTH_TOKEN?: string;
 }
 
 const json = (data: unknown) => ({
@@ -135,6 +138,27 @@ const CORS = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+/**
+ * Bearer-token guard for the write surface (/mcp, /sse, and any non-GET /api/*).
+ * The transparency panel's read-only GETs and /health stay public by design.
+ * Returns null when the request may proceed, or a 401 response otherwise.
+ */
+function requireAuth(request: Request, env: Env): Response | null {
+  if (!env.MCP_AUTH_TOKEN) {
+    console.warn(
+      "MCP_AUTH_TOKEN is not set — /mcp, /sse and write endpoints are UNAUTHENTICATED. " +
+        "Fine for local dev; set it with `wrangler secret put MCP_AUTH_TOKEN` before deploying.",
+    );
+    return null;
+  }
+  const header = request.headers.get("Authorization") ?? "";
+  if (header === `Bearer ${env.MCP_AUTH_TOKEN}`) return null;
+  return Response.json(
+    { error: "unauthorized", detail: "Missing or invalid bearer token." },
+    { status: 401, headers: CORS },
+  );
+}
+
 // Read-only REST endpoints feeding the transparency panel UI.
 async function handleApi(pathname: string, url: URL, env: Env): Promise<Response | null> {
   const db = drizzle(env.DB);
@@ -170,6 +194,11 @@ export default {
     }
 
     if (pathname.startsWith("/api/")) {
+      // GETs feed the public transparency panel; anything else needs the token.
+      if (request.method !== "GET") {
+        const denied = requireAuth(request, env);
+        if (denied) return denied;
+      }
       const apiResponse = await handleApi(pathname, url, env);
       if (apiResponse) return apiResponse;
     }
@@ -182,9 +211,13 @@ export default {
       });
     }
     if (pathname.startsWith("/sse")) {
+      const denied = requireAuth(request, env);
+      if (denied) return denied;
       return ErhGuardianMCP.serveSSE("/sse").fetch(request, env, ctx);
     }
     if (pathname.startsWith("/mcp")) {
+      const denied = requireAuth(request, env);
+      if (denied) return denied;
       return ErhGuardianMCP.serve("/mcp").fetch(request, env, ctx);
     }
     return new Response("Not Found", { status: 404 });

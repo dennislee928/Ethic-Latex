@@ -22,17 +22,14 @@ Every remediation is ERH-scored and gated.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    U[User / CLI / UI] <--> A[Strands Agent<br/>Bedrock Claude]
-    A --> T1["@tool score_text"]
-    A --> T2["@tool erh_evaluate_actions"]
-    A --> T3["@tool audit_iam_grants"]
-    A --> T4["@tool apply_iam_remediation<br/>(consequential — gated)"]
-    G[GuardianGate hook<br/>BeforeToolCallEvent] -. "ERH score > threshold?<br/>cancel + ask human" .-> T4
-    T1 & T2 & T3 --> E["ERH engine<br/>erh_engine.evaluate()"]
-    P[(Value-alignment profile<br/>risk threshold · boundaries)] --> G
-```
+![Full system architecture](./docs/architecture.svg)
+
+The GuardianGate decision path in isolation:
+
+![GuardianGate flow](./docs/guardian-gate.svg)
+
+(Mermaid sources: [`docs/architecture.mmd`](./docs/architecture.mmd),
+[`docs/guardian-gate.mmd`](./docs/guardian-gate.mmd); PNG exports alongside.)
 
 - **Agent**: Strands `Agent` with `BedrockModel` (Claude on Amazon Bedrock).
 - **Tools**: thin `@tool` wrappers over the ERH engine's pure `evaluate()` contract.
@@ -55,10 +52,9 @@ Requires Python 3.10+, an AWS account with Bedrock model access (Claude), and AW
 credentials configured (`aws configure` or environment variables).
 
 ```bash
-# from the Ethic-Latex repository root
+# from this repository's root
 python -m venv .venv && source .venv/bin/activate
-pip install numpy scipy networkx fastapi requests pydantic   # ERH engine deps
-pip install -e hackathon/erh-guardian-agent[dev]
+pip install -e '.[dev]'   # pulls the ERH engine pinned in pyproject.toml
 
 # run the interactive guardian (needs Bedrock access)
 erh-guardian chat
@@ -67,8 +63,15 @@ erh-guardian chat
 erh-guardian demo
 
 # tests
-pytest hackathon/erh-guardian-agent/tests -q
+pytest tests -q
 ```
+
+The ERH engine (disclosed pre-existing code) is installed automatically as the
+`erh` dependency, pinned to an exact
+[Ethic-Latex](https://github.com/dennislee928/Ethic-Latex) commit in
+`pyproject.toml`. `pip install erh` from PyPI is an alternative source. When this
+directory lives inside the Ethic-Latex monorepo, the engine is also picked up
+directly from the repo root without installation.
 
 Optional environment variables:
 
@@ -78,6 +81,9 @@ Optional environment variables:
 - `ERH_GUARDIAN_MCP_URL` — streamable HTTP MCP endpoint of the deployed worker
   (e.g. `https://erh-guardian-mcp.<account>.workers.dev/mcp`); enables profile
   persistence and the decision audit log
+- `ERH_GUARDIAN_MCP_TOKEN` — bearer token for the worker's MCP endpoints; must
+  match the `MCP_AUTH_TOKEN` secret the worker was deployed with (the worker's
+  read-only `/api/*` panel feed stays public and needs no token)
 
 ## Pre-existing code disclosure
 

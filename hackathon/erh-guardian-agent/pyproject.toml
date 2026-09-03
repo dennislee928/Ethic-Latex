@@ -15,13 +15,10 @@ dependencies = [
     "strands-agents-tools>=0.2.0",
     "boto3>=1.34.0",
     "pydantic>=2.0.0",
-    # ERH engine (disclosed pre-existing code): installed from the Ethic-Latex
-    # repository root — see README setup instructions.
-    "numpy>=1.20.0",
-    "scipy>=1.7.0",
-    "networkx>=2.6.0",
-    "fastapi>=0.95.0",
-    "requests>=2.28.0",
+    # ERH engine (disclosed pre-existing code), pinned to the exact Ethic-Latex
+    # commit this project was built against. PyPI `erh` is an alternative source;
+    # inside the Ethic-Latex monorepo, _bootstrap.py falls back to the repo root.
+    "erh @ git+https://github.com/dennislee928/Ethic-Latex@a936de01d1dbdac94a4b1368e13afb501fe5ce9a",
 ]
 
 [project.optional-dependencies]
