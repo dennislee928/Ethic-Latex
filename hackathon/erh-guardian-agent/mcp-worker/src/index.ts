@@ -213,12 +213,12 @@ export default {
     if (pathname.startsWith("/sse")) {
       const denied = requireAuth(request, env);
       if (denied) return denied;
-      return ErhGuardianMCP.serveSSE("/sse").fetch(request, env, ctx);
+      return ErhGuardianMCP.serveSSE("/sse", { binding: "ERH_GUARDIAN_MCP" }).fetch(request, env, ctx);
     }
     if (pathname.startsWith("/mcp")) {
       const denied = requireAuth(request, env);
       if (denied) return denied;
-      return ErhGuardianMCP.serve("/mcp").fetch(request, env, ctx);
+      return ErhGuardianMCP.serve("/mcp", { binding: "ERH_GUARDIAN_MCP" }).fetch(request, env, ctx);
     }
     return new Response("Not Found", { status: 404 });
   },

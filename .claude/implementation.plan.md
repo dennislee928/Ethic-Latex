@@ -104,6 +104,13 @@ Key seams in the existing code:
 
 ## 5. Phase timeline (Sep 2 → Sep 14)
 
+> **Progress (Sep 3, branch `feat-hackthon-agents`)**: Bedrock access GRANTED and live
+> smoke test passed (incl. a real GuardianGate block + human denial); bearer-token auth
+> shipped and verified locally (plus McpAgent binding fix); engine dep pinned via git+sha
+> and fresh-clone verified; diagrams exported; engine-only PR #95 replaces #94;
+> `erh-guardian-split` branch ready for extraction. Remaining: Devpost join + credits
+> (human), repo creation + push, worker/UI deploy, video, submission.
+>
 > **Progress (Sep 2, branch `feat-hackthon-agents`)**: Phase 1 is DONE and Phase 2/3 MVPs
 > exist in `hackathon/erh-guardian-agent/`: Strands agent + @tool wrappers + GuardianGate
 > (7 tests passing, offline `erh-guardian demo` verified), engine Bedrock branch +
@@ -116,36 +123,36 @@ Key seams in the existing code:
 
 ### Phase 0 — Compliance & accounts (Sep 2–3)
 - [ ] Create AWS Builder ID; register on Devpost; **request $50 credits (hard deadline Sep 11)**.
-- [ ] Enable Bedrock model access (Claude Sonnet) in the target region — approval can take time, do this first.
+- [x] Enable Bedrock model access (Claude Sonnet) in the target region — approval can take time, do this first. *(Done 2026-09-03: account 711553772978, `global.anthropic.claude-sonnet-4-6` Converse verified in us-west-2.)*
 - [ ] Create new public repo `erh-guardian-agent`, MIT license, README stub with **disclosure section**: "Uses the pre-existing open-source ERH engine from dennislee928/Ethic-Latex as a scoring library."
-- [ ] Decide dependency mode: `pip install erh` (PyPI package exists) or git dependency on Ethic-Latex.
+- [x] Decide dependency mode: `pip install erh` (PyPI package exists) or git dependency on Ethic-Latex. *(Decided: git dep pinned to sha in pyproject.toml; PyPI noted as alternative. Fresh-clone install verified.)*
 
 ### Phase 1 — Strands agent core (Sep 3–5)
-- [ ] `pip install strands-agents strands-agents-tools boto3`; smoke-test `Agent(model=BedrockModel(...))("hello")`.
-- [ ] Implement `@tool` wrappers: `erh_evaluate` (over `erh_engine.evaluate`), `score_text` (over `ethical_value`/`text_complexity`), `audit_iam`.
-- [ ] Agent system prompt encoding the guardian behavior: score-before-act, threshold gate, explain verdicts in plain language.
-- [ ] HITL gate: Strands hook (or tool-result branch) that pauses and emits an approval request when `risk_score > profile.threshold` or `erh_satisfied == false`.
-- [ ] In Ethic-Latex: add `bedrock` branch to `_call_provider()`; fix the `harmful_intent` bug (small upstream PR — keeps engine improvements in the base repo, agent code in the new repo).
-- [ ] CLI demo working end-to-end (this alone is a submittable fallback).
+- [x] `pip install strands-agents strands-agents-tools boto3`; smoke-test `Agent(model=BedrockModel(...))("hello")`.
+- [x] Implement `@tool` wrappers: `erh_evaluate` (over `erh_engine.evaluate`), `score_text` (over `ethical_value`/`text_complexity`), `audit_iam`.
+- [x] Agent system prompt encoding the guardian behavior: score-before-act, threshold gate, explain verdicts in plain language.
+- [x] HITL gate: Strands hook (or tool-result branch) that pauses and emits an approval request when `risk_score > profile.threshold` or `erh_satisfied == false`.
+- [x] In Ethic-Latex: add `bedrock` branch to `_call_provider()`; fix the `harmful_intent` bug (small upstream PR — keeps engine improvements in the base repo, agent code in the new repo).
+- [x] CLI demo working end-to-end (this alone is a submittable fallback).
 
 ### Phase 2 — MCP server + persistence on Cloudflare (Sep 5–8)
-- [ ] Scaffold Worker from `cloudflare-mcp-server` skill; streamable-HTTP MCP endpoint.
-- [ ] D1 + Drizzle schema (`drizzle-orm-d1` skill): `profiles` (values, boundaries, risk threshold), `decisions` (action, scores, verdict, approved_by), `audit_log`.
-- [ ] MCP tools: `get_profile` / `update_profile`, `log_decision`, `list_decisions`, optional `erh_evaluate` proxy to the FastAPI engine (deploy `erh_engine` container to Render/Railway using existing Dockerfile, or keep engine local in the agent process and use MCP only for state).
-- [ ] Connect Strands `MCPClient` to the Worker URL; verify the agent reads its profile and logs decisions autonomously.
-- [ ] Auth: keep it simple — bearer token; upgrade with `mcp-oauth-cloudflare` only if time allows.
+- [x] Scaffold Worker from `cloudflare-mcp-server` skill; streamable-HTTP MCP endpoint.
+- [x] D1 + Drizzle schema (`drizzle-orm-d1` skill): `profiles` (values, boundaries, risk threshold), `decisions` (action, scores, verdict, approved_by), `audit_log`.
+- [x] MCP tools: `get_profile` / `update_profile`, `log_decision`, `list_decisions`, optional `erh_evaluate` proxy to the FastAPI engine (deploy `erh_engine` container to Render/Railway using existing Dockerfile, or keep engine local in the agent process and use MCP only for state).
+- [x] Connect Strands `MCPClient` to the Worker URL; verify the agent reads its profile and logs decisions autonomously.
+- [x] Auth: keep it simple — bearer token; upgrade with `mcp-oauth-cloudflare` only if time allows. *(Done: `MCP_AUTH_TOKEN` guard on /mcp, /sse, non-GET /api/*; panel GETs stay public; local 401/200 verified. Also fixed McpAgent binding name — serve() needs `{ binding: "ERH_GUARDIAN_MCP" }`.)*
 
 ### Phase 3 — Frontend (Sep 8–11)
 - [ ] TanStack Start app (skill template) + `tailwind-v4-shadcn`; deploy on Cloudflare.
 - [ ] Chat view streaming agent output (`agent.stream_async` behind a small FastAPI/WebSocket bridge, or poll the decision log for MVP).
 - [ ] HITL approval cards (approve / deny / adjust threshold) writing back through MCP.
-- [ ] Transparency panel: risk_score gauge, α exponent, ERH bound pass/fail, ethical primes list (data already in `EvaluateResponse.primes` / curves).
+- [x] Transparency panel: risk_score gauge, α exponent, ERH bound pass/fail, ethical primes list (data already in `EvaluateResponse.primes` / curves). *(Shipped as the Vite/React panel, not TanStack Start.)*
 - [ ] Values-profile onboarding form with `react-hook-form` + `zod` matching the D1 schema.
 - [ ] Dark mode (default in the shadcn template) — cheap Design-criterion points.
 
 ### Phase 4 — Deploy, docs, demo (Sep 11–14)
 - [ ] Optional stretch: deploy agent to **Bedrock AgentCore Runtime** (judges reward it); otherwise show local agent + live Cloudflare UI.
-- [ ] Architecture diagram (export the mermaid above), README with full setup, disclosure statement, license check.
+- [x] Architecture diagram (export the mermaid above), README with full setup, disclosure statement, license check. *(docs/architecture + guardian-gate as mmd/svg/png, matched to the as-built system; README rewritten for the standalone repo.)*
 - [ ] ≤5-min video: 30s problem ("agents need measurable ethics, not vibes") → 3 min live demo (IAM audit, threshold breach → HITL card, transparency panel) → 60s architecture + Strands depth → close with track/impact.
 - [ ] Devpost text description; optional builder.aws.com blog "Agents for Humans: measuring agent ethics with the Ethical Riemann Hypothesis" (+0.6).
 - [ ] **Submit ≥24h early (Sep 13).**

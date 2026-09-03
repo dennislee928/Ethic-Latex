@@ -1,5 +1,12 @@
 # ERH Guardian Agent
 
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+![Strands Agents](https://img.shields.io/badge/AWS-Strands%20Agents-orange.svg)
+![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-232F3E.svg)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020.svg)
+![Tests](https://img.shields.io/badge/tests-7%20passing-brightgreen.svg)
+
 A values-aligned AI agent built on the **AWS Strands Agents SDK** (Amazon Bedrock) whose
 every consequential action is scored by the **Ethical Riemann Hypothesis (ERH) engine**
 before it executes — with a human-in-the-loop gate when risk exceeds the user's threshold.
