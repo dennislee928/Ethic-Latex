@@ -1,0 +1,9 @@
+flowchart LR
+    U[User / CLI / UI] <--> A[Strands Agent<br/>Bedrock Claude]
+    A --> T1["@tool score_text"]
+    A --> T2["@tool erh_evaluate_actions"]
+    A --> T3["@tool audit_iam_grants"]
+    A --> T4["@tool apply_iam_remediation<br/>(consequential — gated)"]
+    G[GuardianGate hook<br/>BeforeToolCallEvent] -. "ERH score > threshold?<br/>cancel + ask human" .-> T4
+    T1 & T2 & T3 --> E["ERH engine<br/>erh_engine.evaluate()"]
+    P[(Value-alignment profile<br/>risk threshold · boundaries)] --> G

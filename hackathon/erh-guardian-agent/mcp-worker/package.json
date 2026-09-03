@@ -1,0 +1,27 @@
+{
+  "name": "erh-guardian-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker MCP server for ERH Guardian: value profiles + decision audit log on D1",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply erh-guardian --local",
+    "db:migrate": "wrangler d1 migrations apply erh-guardian --remote"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "agents": "^0.3.6",
+    "drizzle-orm": "^0.44.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260831.1",
+    "drizzle-kit": "^0.31.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.40.0"
+  }
+}

@@ -1,0 +1,37 @@
+flowchart LR
+    subgraph UI["Transparency Panel — React + Vite (Cloudflare Pages)"]
+        PANEL[Profile · risk bars ·<br/>recent gate decisions<br/>poll every 5 s]
+    end
+
+    subgraph AGENT["ERH Guardian — Strands Agent (Python)<br/>Claude on Amazon Bedrock, us-west-2"]
+        LOOP[Agent loop]
+        GATE["GuardianGate hook<br/>BeforeToolCallEvent → cancel_tool"]
+        T1["@tool score_text"]
+        T2["@tool erh_evaluate_actions"]
+        T3["@tool audit_iam_grants"]
+        T4["@tool apply_iam_remediation<br/>(consequential — gated)"]
+        MCPC["MCP client — streamable HTTP<br/>Authorization: Bearer token"]
+        PROF[(Value-alignment profile<br/>risk threshold · protected topics)]
+    end
+
+    subgraph CF["erh-guardian-mcp — Cloudflare Worker"]
+        MCPS["MCP tools: get_profile ·<br/>update_profile · log_decision ·<br/>list_decisions  (bearer-token auth)"]
+        API["GET /api/profile · /api/decisions<br/>(public, read-only)"]
+        D1[(D1 + Drizzle<br/>profiles · decisions)]
+    end
+
+    subgraph ERH["ERH Engine (pre-existing, disclosed — MIT)"]
+        ENG["erh_engine.evaluate()<br/>risk_score · α exponent · ethical primes"]
+    end
+
+    USER([User / CLI]) <--> LOOP
+    LOOP --> T1 & T2 & T3
+    LOOP -->|proposed call| GATE
+    GATE -->|approved| T4
+    GATE -.->|blocked → human approval| USER
+    PROF --> GATE
+    T1 & T2 & T3 & T4 --> ENG
+    LOOP --> MCPC <--> MCPS
+    MCPS <--> D1
+    API --> D1
+    PANEL --> API
