@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@import url("https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+* { margin: 0; box-sizing: border-box; }
+body {
+  width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse 80% 55% at 50% -10%, #1c0607 0%, transparent 60%), #0a0a0a;
+  color: #f1f0f6; font-family: "IBM Plex Mono", monospace;
+  display: flex; align-items: center; justify-content: center;
+}
+.wrap { text-align: center; max-width: 1500px; }
+h1 {
+  font-family: "UnifrakturMaguntia", serif; font-weight: 400; font-size: 96px;
+  text-shadow: 0 0 30px rgba(226,32,31,.5), 0 0 4px rgba(226,32,31,.9);
+}
+.track {
+  margin-top: 20px; font-family: "Cinzel", serif; font-size: 30px; font-weight: 700;
+  letter-spacing: .28em; text-transform: uppercase; color: #e2201f;
+}
+.cols { margin-top: 52px; display: flex; gap: 36px; justify-content: center; text-align: left; }
+.col {
+  flex: 1; border: 1px solid #303038; border-top: 2px solid #7a1211;
+  padding: 26px 30px; background: linear-gradient(180deg,#17171a,#131314);
+}
+.col h2 {
+  font-family: "Cinzel", serif; font-size: 19px; letter-spacing: .2em;
+  text-transform: uppercase; color: #e2201f; margin-bottom: 14px;
+}
+.col p { font-size: 21px; line-height: 1.55; color: #d4d3d8; }
+.links { margin-top: 54px; font-size: 25px; line-height: 1.9; }
+.links span { color: #8b8a92; }
+.links b { color: #f1f0f6; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ERH Guardian</h1>
+    <div class="track">Professional Agents</div>
+    <div class="cols">
+      <div class="col">
+        <h2>Who benefits</h2>
+        <p>IT &amp; security teams giving agents real write access — IAM, infra, anything consequential.</p>
+      </div>
+      <div class="col">
+        <h2>What they get</h2>
+        <p>A 0–100 pre-action risk score, a hard human-approval boundary, and a public audit trail.</p>
+      </div>
+      <div class="col">
+        <h2>Why it matters</h2>
+        <p>Unmeasured autonomy compounds: one misjudgment is noise, systematic drift (α→1) is an incident.</p>
+      </div>
+    </div>
+    <div class="links">
+      <span>code</span> <b>github.com/dennislee928/erh-guardian-agent</b><br>
+      <span>live</span> <b>erh-guardian-ui.pages.dev</b>
+    </div>
+  </div>
+</body>
+</html>

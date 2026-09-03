@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@import url("https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+* { margin: 0; box-sizing: border-box; }
+body {
+  width: 1920px; height: 1080px; overflow: hidden;
+  background: radial-gradient(ellipse 80% 55% at 50% -10%, #1c0607 0%, transparent 60%), #0a0a0a;
+  color: #f1f0f6; font-family: "IBM Plex Mono", monospace;
+  display: flex; align-items: center; justify-content: center;
+}
+.wrap { text-align: center; }
+h1 {
+  font-family: "UnifrakturMaguntia", serif; font-weight: 400; font-size: 150px;
+  text-shadow: 0 0 34px rgba(226,32,31,.5), 0 0 4px rgba(226,32,31,.9);
+}
+.tag {
+  margin-top: 28px; font-size: 34px; color: #d4d3d8; letter-spacing: .02em;
+}
+.tag b { color: #e2201f; font-weight: 600; }
+.alpha {
+  margin-top: 56px; display: inline-block; padding: 18px 44px;
+  border: 1px solid #7a1211; border-left: 4px solid #e2201f;
+  font-size: 30px; color: #f1f0f6; background: rgba(226,32,31,.06);
+}
+.alpha .ok { color: #8b8a92; }
+.alpha .bad { color: #e2201f; font-weight: 600; }
+.foot {
+  margin-top: 64px; font-family: "Cinzel", serif; font-size: 20px;
+  letter-spacing: .34em; text-transform: uppercase; color: #8b8a92;
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ERH Guardian</h1>
+    <div class="tag">Agents need <b>measurable</b> ethics, not vibes.</div>
+    <div class="alpha">
+      <span class="ok">α ≈ 0.5 &nbsp;→&nbsp; healthy judgment</span>
+      &nbsp;&nbsp;·&nbsp;&nbsp;
+      <span class="bad">α → 1 &nbsp;→&nbsp; systematic failure</span>
+    </div>
+    <div class="foot">✠ scored before it acts · Agents for Humans 2026 ✠</div>
+  </div>
+</body>
+</html>
