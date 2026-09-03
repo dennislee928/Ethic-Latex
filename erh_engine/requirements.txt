@@ -7,4 +7,7 @@ pydantic>=2.0.0
 grpcio>=1.60.0
 numpy>=1.20.0
 scipy>=1.7.0
+# erh_core.core.social_network / prime_dependency_graph import networkx, and
+# importing erh_engine pulls them in transitively.
+networkx>=2.6.0
 requests>=2.28.0
