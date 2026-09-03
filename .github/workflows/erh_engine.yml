@@ -30,7 +30,7 @@ jobs:
       - name: Install deps
         run: |
           pip install -r erh_engine/requirements.txt
-          pip install grpcio-tools pytest
+          pip install grpcio-tools pytest httpx
       - name: Run engine tests
         env:
           PYTHONPATH: ${{ github.workspace }}
