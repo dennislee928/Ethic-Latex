@@ -14,6 +14,22 @@ before it executes — with a human-in-the-loop gate when risk exceeds the user'
 Built for the [Agents for Humans hackathon](https://agentsforhumans.devpost.com/)
 (Professional Agents track).
 
+**Live transparency panel:** https://erh-guardian-ui.pages.dev
+
+## Pitch
+
+1. **What pain does it solve?** Agents are getting write access to production
+   systems, and "the model seemed aligned" is not an audit trail. Teams have no
+   quantitative pre-action risk measure, no hard boundary the agent can't talk
+   itself past, and no log a reviewer can read after the fact.
+2. **Who is it for?** IT and security teams handing agents real operational
+   power — IAM remediation, infra changes, anything consequential.
+3. **Why do humans need ethically-aligned agents?** Because unmeasured autonomy
+   compounds: one misjudgment is noise, a *systematic* bias (α → 1) is an
+   incident. ERH Guardian makes the drift visible before it acts, keeps a human
+   in the loop at the user's own risk threshold, and logs every decision to a
+   public panel — measurable ethics, not vibes.
+
 ## Why
 
 Agents need *measurable* ethics, not vibes. The ERH engine treats critical misjudgments
@@ -91,6 +107,27 @@ Optional environment variables:
 - `ERH_GUARDIAN_MCP_TOKEN` — bearer token for the worker's MCP endpoints; must
   match the `MCP_AUTH_TOKEN` secret the worker was deployed with (the worker's
   read-only `/api/*` panel feed stays public and needs no token)
+
+## Deploy the worker + transparency panel
+
+```bash
+# 1. MCP worker (Cloudflare Worker + D1) — full guide in mcp-worker/README.md
+cd mcp-worker && npm install
+npx wrangler d1 create erh-guardian        # paste database_id into wrangler.jsonc
+npm run db:migrate                          # remote migration
+npx wrangler secret put MCP_AUTH_TOKEN      # guards /mcp, /sse, non-GET /api/*
+npx wrangler deploy
+
+# 2. Transparency panel (React + Vite on Cloudflare Pages)
+cd ../ui && npm install
+VITE_API_URL=https://erh-guardian-mcp.<account>.workers.dev npm run build
+npx wrangler pages deploy dist --project-name erh-guardian-ui
+
+# 3. Point the agent at the worker
+export ERH_GUARDIAN_MCP_URL=https://erh-guardian-mcp.<account>.workers.dev/mcp
+export ERH_GUARDIAN_MCP_TOKEN=<same value as the MCP_AUTH_TOKEN secret>
+erh-guardian chat   # discovers get_profile / update_profile / log_decision / list_decisions
+```
 
 ## Pre-existing code disclosure
 
