@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "erh-guardian",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "c9dadacc-f07e-4b45-93ad-253d5f139d16"
     }
   ],
   "observability": { "enabled": true }
