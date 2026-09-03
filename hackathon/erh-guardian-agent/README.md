@@ -97,8 +97,14 @@ Optional environment variables:
 Per the hackathon rules, this project was newly created during the submission period
 and **discloses** its use of the pre-existing open-source ERH engine
 ([dennislee928/Ethic-Latex](https://github.com/dennislee928/Ethic-Latex), MIT):
-`erh_engine` / `erh_core` provide the ethical-scoring mathematics; everything under
-`hackathon/erh-guardian-agent/` (the Strands agent, tools, HITL gate, CLI, UI) is new.
+`erh_engine` / `erh_core` provide the ethical-scoring mathematics, consumed as the
+`erh` dependency pinned to an exact commit in `pyproject.toml`. Everything in this
+repository (the Strands agent, tools, HITL gate, CLI, MCP worker, UI) is new.
+
+Engine improvements made *during* the hackathon (the Bedrock provider and the
+over-refusal scoring fix) were contributed back upstream in
+[Ethic-Latex PR #95](https://github.com/dennislee928/Ethic-Latex/pull/95) (merged),
+so the old/new boundary is auditable commit-by-commit.
 
 ## License
 
