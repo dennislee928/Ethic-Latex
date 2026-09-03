@@ -1,4 +1,13 @@
 import { useEffect, useState } from "react";
+import {
+  DotMatrixText,
+  DottedDivider,
+  GlitchText,
+  PillBadge,
+  ProgressDots,
+  TerminalBlink,
+  nothing,
+} from "@dennislee928/nothingx-react-components";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
 
@@ -26,6 +35,12 @@ const VERDICT_LABEL: Record<Decision["verdict"], string> = {
   auto_approved: "auto-approved",
   human_approved: "human approved",
   blocked: "blocked",
+};
+
+const VERDICT_VARIANT: Record<Decision["verdict"], "live" | "off" | "neutral"> = {
+  auto_approved: "off",
+  human_approved: "neutral",
+  blocked: "live",
 };
 
 function riskClass(score: number, threshold: number): string {
@@ -69,23 +84,34 @@ export default function App() {
   return (
     <main>
       <header>
-        <h1>ERH Guardian</h1>
+        <div className="masthead">
+          <h1>
+            <GlitchText active>ERH Guardian</GlitchText>
+          </h1>
+          <PillBadge variant="live">watching</PillBadge>
+        </div>
         <p className="sub">
-          Transparency panel — every consequential agent action, scored before it ran.
+          <TerminalBlink>
+            Transparency panel — every consequential agent action, scored before it ran.
+          </TerminalBlink>
         </p>
+        <DottedDivider />
       </header>
 
       {error && <div className="banner">{error}</div>}
 
       <section className="cards">
         <div className="card">
-          <h2>Value profile</h2>
+          <h2>☨ Value profile</h2>
           {profile ? (
             <>
               <div className="stat">
-                <span className="big">{threshold}</span>
+                <DotMatrixText color={nothing.colors.red} dotSize={5} gap={2}>
+                  {String(threshold)}
+                </DotMatrixText>
                 <span>/100 risk threshold</span>
               </div>
+              <ProgressDots value={threshold} max={100} />
               <p className="muted">Protected topics</p>
               <ul>
                 {profile.protectedTopics.map((t) => (
@@ -98,20 +124,24 @@ export default function App() {
           )}
         </div>
         <div className="card">
-          <h2>Session</h2>
+          <h2>☨ Session</h2>
           <div className="stat">
-            <span className="big">{rows.length}</span>
+            <DotMatrixText color={nothing.colors.surfaceLight} dotSize={5} gap={2}>
+              {String(rows.length)}
+            </DotMatrixText>
             <span>gate decisions</span>
           </div>
           <div className="stat">
-            <span className="big">{blocked}</span>
+            <DotMatrixText color={nothing.colors.red} dotSize={5} gap={2}>
+              {String(blocked)}
+            </DotMatrixText>
             <span>blocked pending human review</span>
           </div>
         </div>
       </section>
 
       <section className="card">
-        <h2>Decision audit log</h2>
+        <h2>☨ Decision audit log</h2>
         {rows.length === 0 ? (
           <p className="muted">No decisions logged yet — run the agent.</p>
         ) : (
@@ -140,7 +170,7 @@ export default function App() {
                         <span>{Math.round(r.riskScore)}</span>
                       </div>
                     </td>
-                    <td>
+                    <td className="mono">
                       {r.erhSatisfied == null
                         ? "—"
                         : r.erhSatisfied
@@ -148,7 +178,9 @@ export default function App() {
                           : `FAIL (α=${r.estimatedExponent?.toFixed(2) ?? "?"})`}
                     </td>
                     <td>
-                      <span className={`chip ${r.verdict}`}>{VERDICT_LABEL[r.verdict]}</span>
+                      <PillBadge variant={VERDICT_VARIANT[r.verdict]}>
+                        {VERDICT_LABEL[r.verdict]}
+                      </PillBadge>
                     </td>
                   </tr>
                 ))}
@@ -157,6 +189,13 @@ export default function App() {
           </div>
         )}
       </section>
+
+      <footer>
+        <DottedDivider />
+        <p className="colophon">
+          ✠ scored before it acts · nothing hidden · nothing forgiven ✠
+        </p>
+      </footer>
     </main>
   );
 }

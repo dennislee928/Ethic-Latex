@@ -9,7 +9,10 @@
     "noEmit": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@dennislee928/nothingx-react-components": ["./src/nothingx.d.ts"]
+    }
   },
   "include": ["src"]
 }
