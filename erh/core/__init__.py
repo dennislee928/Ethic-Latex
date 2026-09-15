@@ -19,7 +19,7 @@ from erh_core.core.ethical_primes import (
 )
 from erh_core.core.agent import EthicalAgent, AgentPopulation, SimpleEthicalAgent
 from erh_core.core.social_network import SocialNetwork
-from erh_core.core.meta_monitor import MetaMonitor, ERHParameters
+from erh_core.core.meta_monitor import MetaMonitor, ERHParameters, CorrectionAction
 from erh_core.core.abm_simulator import ABMSimulator
 from erh_core.core.hybrid_model import HybridPsychohistoryModel
 from erh_core.core.temporal_erh import (
@@ -73,6 +73,7 @@ __all__ = [
     "SocialNetwork",
     "MetaMonitor",
     "ERHParameters",
+    "CorrectionAction",
     "ABMSimulator",
     "HybridPsychohistoryModel",
 ]

@@ -2,13 +2,6 @@
 Unit tests for meta-monitor module.
 """
 
-import sys
-import os
-from pathlib import Path
-
-simulation_dir = Path(__file__).parent.parent / "simulation"
-sys.path.insert(0, str(simulation_dir))
-
 import numpy as np
 import pytest
 from erh.core.meta_monitor import MetaMonitor, ERHParameters, CorrectionAction
