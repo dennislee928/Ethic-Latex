@@ -15,7 +15,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.2",
     "agents": "^0.3.6",
-    "drizzle-orm": "^0.44.0",
+    "drizzle-orm": "^0.45.2",
     "zod": "^3.25.0"
   },
   "devDependencies": {
