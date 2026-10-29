@@ -29,7 +29,7 @@
     "electron-updater": "^6.3.9"
   },
   "devDependencies": {
-    "electron": "^31.0.0",
+    "electron": "^42.11.16",
     "electron-builder": "^24.13.3"
   },
   "build": {
