@@ -113,5 +113,8 @@
       "maintainer": "Ethical AI Research <admin@dennisleehappy.org>",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
+  },
+  "overrides": {
+    "tar": "^7.5.21"
   }
 }
