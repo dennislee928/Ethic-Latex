@@ -116,6 +116,7 @@
   },
   "overrides": {
     "tar": "^7.5.21",
-    "brace-expansion": "^2.1.7"
+    "brace-expansion": "^2.1.7",
+    "@xmldom/xmldom": "^0.9.12"
   }
 }
