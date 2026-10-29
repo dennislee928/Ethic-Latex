@@ -25,6 +25,7 @@
   "overrides": {
     "brace-expansion": "^2.1.7",
     "js-yaml": "^4.3.2",
-    "postcss": "^8.5.23"
+    "postcss": "^8.5.23",
+    "minimatch": "^9.0.7"
   }
 }
