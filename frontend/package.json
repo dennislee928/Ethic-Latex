@@ -49,6 +49,7 @@
   "overrides": {
     "tinypool": "^2.1.2",
     "dompurify": "^3.4.17",
-    "brace-expansion": "^2.1.7"
+    "brace-expansion": "^2.1.7",
+    "js-yaml": "^4.3.2"
   }
 }
