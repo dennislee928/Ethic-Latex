@@ -66,6 +66,7 @@
     "@vitest/mocker": "^4.1.12",
     "esbuild": "^0.25.0",
     "postcss-selector-parser": "^6.1.5",
-    "ajv": "^6.14.0"
+    "ajv": "^6.14.0",
+    "baseline-browser-mapping": "^2.11.0"
   }
 }
