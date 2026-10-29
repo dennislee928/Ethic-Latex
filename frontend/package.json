@@ -64,6 +64,7 @@
     "rollup": "^4.59.0",
     "react-router": "^7.18.0",
     "@vitest/mocker": "^4.1.12",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "postcss-selector-parser": "^6.1.5"
   }
 }
