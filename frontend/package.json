@@ -45,5 +45,8 @@
     "@typescript-eslint/parser": "^6.21.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6"
+  },
+  "overrides": {
+    "tinypool": "^2.1.2"
   }
 }
