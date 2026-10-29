@@ -23,5 +23,8 @@
     "drizzle-kit": "^0.31.0",
     "typescript": "^5.8.0",
     "wrangler": "^4.40.0"
+  },
+  "overrides": {
+    "proxy-addr": "^2.0.8"
   }
 }
